@@ -4,6 +4,7 @@ This is a template meant to kickstart dapps.
 ![Next dapp starter kit](/public/next-dapp-starter-kit.png)
 
 ## Tech stack
+
 - [nextjs](https://nextjs.org/)
 - [typescript](https://www.typescriptlang.org/)
 - [tailwindcss](https://tailwindcss.com/)
