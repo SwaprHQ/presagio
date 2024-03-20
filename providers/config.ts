@@ -2,7 +2,7 @@ import { createConfig, fallback, http } from "wagmi";
 import { getDefaultConfig } from "connectkit";
 import { gnosis, mainnet } from "wagmi/chains";
 import { safe } from "wagmi/connectors";
-import { ChainId, RPC_LIST } from "@/app/constants";
+import { ChainId, RPC_LIST } from "@/constants";
 
 const defaultConfig = getDefaultConfig({
   chains: [mainnet, gnosis],
