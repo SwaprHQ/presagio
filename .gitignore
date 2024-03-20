@@ -37,3 +37,6 @@ next-env.d.ts
 
 # enviornment variables
 .env
+
+# custom output dir
+dist
