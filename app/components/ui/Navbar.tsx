@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ConnectButton } from "..";
 
 export const Navbar = () => {
   return (
@@ -20,16 +21,7 @@ export const Navbar = () => {
             </div>
           </Link>
 
-          <div className="hidden px-3 py-2 capitalize cursor-pointer bg-stone-800 hover:bg-stone-700 rounded-2xl md:block text-nowrap">
-            24.3 XDAI
-          </div>
-          <div className="flex px-3 py-2 space-x-2 capitalize cursor-pointer bg-stone-800 hover:bg-stone-700 rounded-2xl">
-            <div className="rounded-full size-6 bg-slate-400"></div>
-            <p className="text-nowrap">
-              <span className="hidden md:block">0x7e...4c3d</span>
-              <span className="md:hidden">0x7..3d</span>
-            </p>
-          </div>
+          <ConnectButton />
           <div className="px-3 py-2 capitalize cursor-pointer bg-stone-800 hover:bg-stone-700 rounded-2xl">
             <div className="flex items-center space-x-2 &#9660">
               <div className="bg-green-700 rounded-full size-5"></div>
