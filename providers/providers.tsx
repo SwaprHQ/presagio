@@ -17,8 +17,9 @@ export const Providers = ({ children }: PropsWithChildren) => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <ConnectKitProvider options={connectKitOptions}></ConnectKitProvider>
-        {children}
+        <ConnectKitProvider options={connectKitOptions}>
+          {children}
+        </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
