@@ -9,7 +9,7 @@ export default function AppPage() {
           🔮 All markets
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(q => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((q) => (
             <Link key={q} href={`questions/${q.toString()}`}>
               <Card />
             </Link>
