@@ -1,5 +1,9 @@
+"use client";
+
 import { Card } from "@/app/components/ui";
 import Link from "next/link";
+import { Button } from "swapr-ui";
+import "swapr-ui/styles.css";
 
 export default function AppPage() {
   return (
@@ -7,7 +11,9 @@ export default function AppPage() {
       <div>
         <h1 className="mb-12 text-2xl font-semibold text-white">
           🔮 All markets
+          <Button size="sm">Test</Button>
         </h1>
+        <div></div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(q => (
             <Link key={q} href={`questions/${q.toString()}`}>
