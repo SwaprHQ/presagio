@@ -1,3 +1,5 @@
+"use client";
+
 import { Card } from "@/app/components/ui";
 import Link from "next/link";
 
