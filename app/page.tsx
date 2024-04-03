@@ -31,7 +31,7 @@ export default function AppPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
           {markets?.fixedProductMarketMakers &&
             markets.fixedProductMarketMakers.map(market => (
-              <Link key={market.id} href={`questions/${market.id}`}>
+              <Link key={market.id} href={`markets/${market.id}`}>
                 <CardMarket market={market} />
               </Link>
             ))}
