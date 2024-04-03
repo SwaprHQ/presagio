@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Logo } from "swapr-ui";
 
 import { OutcomeBar } from "@/app/components";
-import { Card } from "@/app/components/ui";
+import { Card, ScrollArea } from "@/app/components/ui";
 import { FixedProductMarketMaker } from "@/queries/omen";
 import { remainingTime } from "@/utils/dates";
 import { formattedNumberDollars } from "@/utils/currencies";
@@ -28,9 +28,9 @@ export const CardMarket = ({ market }: CardMarketProps) => {
       <section className="p-4 h-[160px] flex flex-col justify-between">
         <div className="flex space-x-4 ">
           <div className="size-[40px] bg-text-low-em rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
-          <p className="flex-1 font-semibold text-text-high-em">
+          <ScrollArea className="flex-1 font-semibold text-text-high-em h-[98px]">
             {market.title}
-          </p>
+          </ScrollArea>
         </div>
         <OutcomeBar
           market={market}

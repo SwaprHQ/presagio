@@ -10,6 +10,7 @@
     "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@radix-ui/react-scroll-area": "^1.0.5",
     "@tanstack/react-query": "^5.28.4",
     "class-variance-authority": "^0.7.0",
     "connectkit": "^1.7.2",
