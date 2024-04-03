@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { Inter } from "next/font/google";
 
-import "./globals.css";
 import "swapr-ui/styles.css";
+import "./globals.css";
 
 import { Providers } from "@/providers";
 import { Navbar, Footer } from "@/app/components/ui";
@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className}`}>
+    <html lang="en" data-theme="dark" style={{ colorScheme: "dark" }}>
+      <body className={`${inter.className} bg-surface-surface-bg`}>
         <Providers>
           <Navbar />
           {children}
