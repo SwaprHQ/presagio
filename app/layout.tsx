@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Inter } from "next/font/google";
+import { Manrope } from "next/font/google";
 
 import "swapr-ui/styles.css";
 import "./globals.css";
@@ -8,7 +8,7 @@ import "./globals.css";
 import { Providers } from "@/providers";
 import { Navbar, Footer } from "@/app/components/ui";
 
-const inter = Inter({ subsets: ["latin"] });
+const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Presagio 👁️",
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" style={{ colorScheme: "dark" }}>
-      <body className={`${inter.className} bg-surface-surface-bg`}>
+      <body className={`${manrope.className} bg-surface-surface-bg`}>
         <Providers>
           <Navbar />
           {children}
