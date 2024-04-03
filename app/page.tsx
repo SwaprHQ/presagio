@@ -1,10 +1,27 @@
 "use client";
 
-import { CardMarket } from "@/app/components";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { Button } from "swapr-ui";
+import {
+  FixedProductMarketMaker,
+  FixedProductMarketMaker_OrderBy,
+  OrderDirection,
+  getMarkets,
+} from "@/queries/omen";
+import { CardMarket } from "@/app/components";
 
 export default function AppPage() {
+  const { data: markets } = useQuery({
+    queryKey: ["getMarkets"],
+    queryFn: async () =>
+      getMarkets({
+        first: 10,
+        skip: 0,
+        orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
+      }),
+  });
+
   return (
     <div className="px-6 mt-12 space-y-12 md:flex md:flex-col md:items-center">
       <div>
@@ -12,11 +29,12 @@ export default function AppPage() {
           🔮 All markets
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(q => (
-            <Link key={q} href={`questions/${q.toString()}`}>
-              <CardMarket />
-            </Link>
-          ))}
+          {markets?.fixedProductMarketMakers &&
+            markets.fixedProductMarketMakers.map(market => (
+              <Link key={market.id} href={`questions/${market.id}`}>
+                <CardMarket market={market} />
+              </Link>
+            ))}
         </div>
       </div>
     </div>
