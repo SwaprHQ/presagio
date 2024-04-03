@@ -36,14 +36,16 @@ export const OutcomeBar = ({
   return (
     <div className="flex space-x-1">
       <div
-        className={`flex items-center h-8 px-2 bg-surface-success-accent-1 rounded-s-8 w-[${option0.roundedPrice}%]`}
+        className="flex items-center h-8 px-2 bg-surface-success-accent-1 rounded-s-8"
+        style={{ width: `${option0.roundedPrice}%` }}
       >
         <p className="w-full uppercase text-text-success-em">
           {`${option0.title} - ${option0.price}%`}
         </p>
       </div>
       <div
-        className={`flex items-center w-full h-8 px-2 bg-surface-danger-accent-1 rounded-e-8 w-[${option1.roundedPrice}%]`}
+        className="flex items-center w-full h-8 px-2 bg-surface-danger-accent-1 rounded-e-8"
+        style={{ width: `${option1.roundedPrice}%` }}
       >
         <p className="w-full text-right uppercase text-text-danger-em">
           {`${option1.title} - ${option1.price}%`}
