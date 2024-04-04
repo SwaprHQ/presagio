@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/app/components/ui";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
@@ -8,9 +7,10 @@ import {
   OrderDirection,
   getMarkets,
 } from "@/queries/omen";
+import { CardMarket, LoadingCardMarket } from "@/app/components";
 
 export default function AppPage() {
-  const { data: markets } = useQuery({
+  const { data: markets, isLoading } = useQuery({
     queryKey: ["getMarkets"],
     queryFn: async () =>
       getMarkets({
@@ -28,12 +28,16 @@ export default function AppPage() {
           🔮 All markets
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
-          {markets?.fixedProductMarketMakers &&
-            markets.fixedProductMarketMakers.map((market) => (
-              <Link key={market.id} href={`questions/${market.id}`}>
-                <Card market={market} />
-              </Link>
-            ))}
+          {isLoading
+            ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => (
+                <LoadingCardMarket key={index} />
+              ))
+            : markets?.fixedProductMarketMakers &&
+              markets.fixedProductMarketMakers.map(market => (
+                <Link key={market.id} href={`markets/${market.id}`}>
+                  <CardMarket market={market} />
+                </Link>
+              ))}
         </div>
       </div>
     </div>
