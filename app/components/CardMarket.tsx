@@ -1,27 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { Logo } from "swapr-ui";
 
 import { OutcomeBar } from "@/app/components";
 import { Card, ScrollArea } from "@/app/components/ui";
 import { FixedProductMarketMaker } from "@/queries/omen";
-import { remainingTime } from "@/utils/dates";
 import { formattedNumberDollars } from "@/utils/currencies";
+import { remainingTime } from "@/utils/dates";
 
 interface CardMarketProps {
   market: FixedProductMarketMaker;
 }
 
 export const CardMarket = ({ market }: CardMarketProps) => {
-  const outcome0Price = market.outcomeTokenMarginalPrices
-    ? (+market.outcomeTokenMarginalPrices[0] * 100).toFixed(2)
-    : 0;
-  const outcome1Price = market.outcomeTokenMarginalPrices
-    ? (+market.outcomeTokenMarginalPrices[1] * 100).toFixed(2)
-    : 0;
-
-  const closingDate = new Date(+market.openingTimestamp * 1000).toUTCString();
+  const closingDate = new Date(+market.openingTimestamp * 1000);
 
   return (
     <Card>
@@ -32,11 +24,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
             {market.title}
           </ScrollArea>
         </div>
-        <OutcomeBar
-          market={market}
-          outcome0Price={outcome0Price}
-          outcome1Price={outcome1Price}
-        />
+        <OutcomeBar market={market} />
       </section>
       <section className="flex items-center h-[40px] px-4 border-t border-outline-base-em">
         <div className="flex items-center justify-between w-full space-x-4">

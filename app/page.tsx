@@ -3,13 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
-  FixedProductMarketMaker,
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
   getMarkets,
 } from "@/queries/omen";
 import { CardMarket, LoadingCardMarket } from "@/app/components";
-import { Card } from "@/app/components/ui";
 
 export default function AppPage() {
   const { data: markets, isLoading } = useQuery({

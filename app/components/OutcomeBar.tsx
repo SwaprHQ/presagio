@@ -1,53 +1,55 @@
 "use client";
 
 import { FixedProductMarketMaker } from "@/queries/omen";
-import { Tag } from "swapr-ui";
+import { cx } from "class-variance-authority";
 
 interface OutcomeBarProps {
   market: FixedProductMarketMaker;
-  outcome0Price: any;
-  outcome1Price: any;
 }
 
-export const OutcomeBar = ({
-  market,
-  outcome0Price,
-  outcome1Price,
-}: OutcomeBarProps) => {
-  function formatRoundNumber(number: string | number) {
-    number = parseFloat(number.toString()); // Parse the number to handle string inputs as well
-    return Math.ceil(number); // Round up to the nearest integer
-  }
+export const OutcomeBar = ({ market }: OutcomeBarProps) => {
+  const outcome0Price = market.outcomeTokenMarginalPrices
+    ? (+market.outcomeTokenMarginalPrices[0] * 100).toFixed(2)
+    : 0;
+  const outcome1Price = market.outcomeTokenMarginalPrices
+    ? (+market.outcomeTokenMarginalPrices[1] * 100).toFixed(2)
+    : 0;
 
   const option0 = {
     title: market.outcomes?.[0],
-    roundedPrice: formatRoundNumber(outcome0Price),
-    price: outcome0Price,
-  };
-  const option1 = {
-    title: market.outcomes?.[1],
-    roundedPrice: formatRoundNumber(outcome1Price),
     price: outcome0Price,
   };
 
-  if (option0.roundedPrice <= 0 && option1.roundedPrice <= 0)
-    return <Tag colorScheme="quaternary">Closed</Tag>;
+  const option1 = {
+    title: market.outcomes?.[1],
+    price: outcome1Price,
+  };
 
   return (
     <div className="flex space-x-1">
       <div
-        className="flex items-center h-8 px-2 bg-surface-success-accent-1 rounded-s-8"
-        style={{ width: `${option0.roundedPrice}%` }}
+        className={cx(
+          "flex items-center h-8 px-2 rounded-s-8",
+          option0.price == 0
+            ? "bg-outline-low-em"
+            : "bg-surface-success-accent-1 text-text-success-em"
+        )}
+        style={{ width: option0.price == 0 ? "50%" : `${option0.price}%` }}
       >
-        <p className="w-full uppercase text-text-success-em">
+        <p className="w-full uppercase">
           {`${option0.title} - ${option0.price}%`}
         </p>
       </div>
       <div
-        className="flex items-center w-full h-8 px-2 bg-surface-danger-accent-1 rounded-e-8"
-        style={{ width: `${option1.roundedPrice}%` }}
+        className={cx(
+          "flex items-center h-8 px-2 rounded-e-8",
+          option0.price == 0
+            ? "bg-outline-low-em"
+            : "bg-surface-danger-accent-1 text-text-danger-em"
+        )}
+        style={{ width: option1.price == 0 ? "50%" : `${option1.price}%` }}
       >
-        <p className="w-full text-right uppercase text-text-danger-em">
+        <p className="w-full text-right uppercase">
           {`${option1.title} - ${option1.price}%`}
         </p>
       </div>
