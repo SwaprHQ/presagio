@@ -78,14 +78,14 @@ const getMarketsQuery = gql`
   query GetMarkets(
     $first: Int!
     $skip: Int!
-    $sortBy: String
-    $sortByDirection: String
+    $orderBy: String
+    $orderDirection: String
   ) {
     fixedProductMarketMakers(
       first: $first
       skip: $skip
-      orderBy: $sortBy
-      orderDirection: $sortByDirection
+      orderBy: $orderBy
+      orderDirection: $orderDirection
     ) {
       ...marketData
       __typename

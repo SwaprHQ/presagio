@@ -1,10 +1,10 @@
-import { SwapboxContainer } from "@/app/components";
 import { QueryClient } from "@tanstack/react-query";
 import {
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
   getMarkets,
 } from "@/queries/omen";
+import { MarketDetails } from "./MarketDetails";
 
 // Return a list of `params` to populate the [slug] dynamic segment
 export async function generateStaticParams() {
@@ -25,14 +25,14 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function QuestionPage({
+export default async function MarketsPage({
   params,
 }: {
   params: { id: string };
 }) {
   return (
-    <main className="w-full px-6 mt-12 space-y-12 md:flex md:flex-col md:items-center">
-      <SwapboxContainer id={params.id} />
+    <main className="w-full px-6 mt-16 flex flex-col items-center">
+      <MarketDetails id={params.id} />
     </main>
   );
 }
