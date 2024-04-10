@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { Manrope } from "next/font/google";
 
-import "swapr-ui/styles.css";
 import "./globals.css";
+import "swapr-ui/colors.css";
 
 import { Providers } from "@/providers";
 import { Navbar, Footer } from "@/app/components/ui";
