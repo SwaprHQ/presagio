@@ -42,7 +42,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           Go back
         </Button>
       </Link>
-      <div className="bg-surface-surface-0 w-full max-w-[464px] h-[544px] rounded-16 border border-outline-base-em">
+      <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
         <div className="p-5 space-y-4">
           <div className="flex justify-between items-center">
             <Tag
@@ -78,7 +78,7 @@ const LoadingMarketDetails = () => (
       <div className="size-8 rounded-8 bg-outline-low-em animate-pulse"></div>
       <div className="w-14 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
-    <div className="bg-surface-surface-0 w-full max-w-[464px] h-[544px] rounded-16 border border-outline-base-em">
+    <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
       <div className="p-5 space-y-4">
         <div className="flex justify-between items-center">
           <div className="w-20 h-7 rounded-8 bg-outline-low-em animate-pulse" />
@@ -86,11 +86,20 @@ const LoadingMarketDetails = () => (
         </div>
         <div className="flex space-x-4">
           <div className="size-20 rounded-8 flex-shrink-0 bg-outline-low-em animate-pulse" />
-          <div className="w-full h-20 rounded-8 bg-outline-low-em animate-pulse" />
+          <div className="w-full h-28 rounded-8 bg-outline-low-em animate-pulse" />
         </div>
-        <div className="!mt-7 w-full h-7 rounded-8 bg-outline-low-em animate-pulse" />
+        <div className="!mt-7 w-full h-10 rounded-8 bg-outline-low-em animate-pulse" />
       </div>
-      <div className="p-2 w-full h-[348px]">
+      <div className="p-2 w-full h-28">
+        <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
+      </div>
+      <div className="p-2 w-full h-28">
+        <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
+      </div>
+      <div className="p-2 w-full h-14">
+        <div className="w-full h-full" />
+      </div>
+      <div className="p-2 w-full h-16">
         <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
       </div>
     </div>

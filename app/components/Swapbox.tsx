@@ -13,7 +13,7 @@ export const Swapbox = () => {
       <SwapInput
         title="You Swap"
         value={tokenInAmount}
-        onChange={(event) => {
+        onChange={event => {
           setTokenInAmount(event.target.value);
         }}
         onClick={() => console.log("I want to change token")}
@@ -36,10 +36,30 @@ export const Swapbox = () => {
       <SwapInput
         title="To Receive"
         value={tokenOutAmount}
-        onChange={(event) => {
+        onChange={event => {
           setTokenOutAmount(event.target.value);
         }}
       />
+      <div>
+        <div className="px-3 py-1">
+          <div className="flex items-center justify-between">
+            <p className=" text-text-low-em">Price</p>
+            <div className="flex items-center space-x-1">
+              <p>1 SDAI</p>
+              <p>=</p>
+              <p className="text-text-success-em">1.2 YES</p>
+              <p className=" text-text-low-em">(≈ $200.75)</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <p className=" text-text-low-em">Slippage</p>
+            <p>2%</p>
+          </div>
+        </div>
+        <Button width="full" variant="pastel" className="mt-4" size="lg">
+          Enter amount
+        </Button>
+      </div>
     </div>
   );
 };
