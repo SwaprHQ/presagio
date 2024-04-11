@@ -3,7 +3,7 @@ import { ConnectButton } from "..";
 
 export const Navbar = () => {
   return (
-    <nav className="bg-[#0C0C0C] h-20 py-5 px-6">
+    <nav className=" bg-surface-surface-0 h-20 py-5 px-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/">

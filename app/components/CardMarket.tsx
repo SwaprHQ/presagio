@@ -49,14 +49,14 @@ export const CardMarket = ({ market }: CardMarketProps) => {
 };
 
 export const LoadingCardMarket = () => (
-  <Card className="sm:w-[344px] h-[202px] p-4 flex flex-col justify-between">
-    <div className="space-y-4">
-      <div className="h-24 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
+  <Card className="sm:w-[344px] h-[202px]">
+    <div className="space-y-3 p-4">
+      <div className="h-[80px] rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="h-9 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between px-4">
       <div className="w-20 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="w-32 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="w-20 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
   </Card>
 );

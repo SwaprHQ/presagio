@@ -31,7 +31,7 @@ export default async function MarketsPage({
   params: { id: string };
 }) {
   return (
-    <main className="w-full px-6 mt-16 flex flex-col items-center">
+    <main className="w-full px-6 mt-12 flex flex-col items-center">
       <MarketDetails id={params.id} />
     </main>
   );
