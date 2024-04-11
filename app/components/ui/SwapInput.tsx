@@ -10,6 +10,7 @@ import { Button, Icon, Logo } from "swapr-ui";
 interface SwapInputProps extends PropsWithChildren {
   title: string;
   value?: string;
+  selectedToken?: string;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
@@ -20,6 +21,7 @@ export const SwapInput = ({
   value,
   onChange,
   onClick,
+  selectedToken,
 }: SwapInputProps) => {
   return (
     <div className="p-4 space-y-1 bg-surface-surface-1 rounded-16">
@@ -46,7 +48,7 @@ export const SwapInput = ({
             alt="token logo"
             size="xs"
           />
-          <p className="font-semibold">SDAI</p>
+          <p className="font-semibold">{selectedToken}</p>
           <Icon name="chevron-down" />
         </Button>
       </div>
