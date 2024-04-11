@@ -6,9 +6,10 @@ import { getMarket } from "@/queries/omen";
 import { Button, IconButton, Tag } from "swapr-ui";
 import { remainingTime } from "@/utils/dates";
 import Link from "next/link";
+import { Address } from "viem";
 
 interface MarketDetailsProps {
-  id: string;
+  id: Address;
 }
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
@@ -65,7 +66,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           </div>
         </div>
         <div className="p-2">
-          <Swapbox />
+          <Swapbox id={id} />
         </div>
       </div>
     </div>
