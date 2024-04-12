@@ -11,8 +11,8 @@ import { Navbar, Footer } from "@/app/components/ui";
 const manrope = Manrope({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Presagio 👁️",
-  description: "Template for kickstarting dapps.",
+  title: "Presagio 👁️ - The Prediction Market on Gnosis",
+  description: "Win with your predicitons.",
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" style={{ colorScheme: "dark" }}>
-      <body className={`${manrope.className} bg-surface-surface-bg`}>
+      <body className={`${manrope.className} bg-surface-surface-bg text-base`}>
         <Providers>
           <Navbar />
           {children}
