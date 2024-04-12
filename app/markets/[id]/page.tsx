@@ -5,6 +5,7 @@ import {
   getMarkets,
 } from "@/queries/omen";
 import { MarketDetails } from "./MarketDetails";
+import { Address } from "viem";
 
 // Return a list of `params` to populate the [slug] dynamic segment
 export async function generateStaticParams() {
@@ -13,7 +14,7 @@ export async function generateStaticParams() {
     queryKey: ["getMarkets"],
     queryFn: async () =>
       getMarkets({
-        first: 10,
+        first: 100,
         skip: 0,
         orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
         orderDirection: OrderDirection.Desc,
@@ -28,7 +29,7 @@ export async function generateStaticParams() {
 export default async function MarketsPage({
   params,
 }: {
-  params: { id: string };
+  params: { id: Address };
 }) {
   return (
     <main className="w-full px-6 mt-12 flex flex-col items-center">

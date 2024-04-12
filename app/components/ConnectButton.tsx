@@ -6,13 +6,15 @@ import { useBalance, useEnsAvatar } from "wagmi";
 
 import { ChainId } from "@/constants";
 import { Address, formatEther } from "viem";
-import { Button, ButtonSizeProp } from "swapr-ui";
+import { Button, ButtonProps, ButtonSizeProp } from "swapr-ui";
+import { PropsWithChildren } from "react";
 
 interface CustomConnectButtonProps {
   address: Address;
   onClick: () => void;
   ensName?: string;
   size?: ButtonSizeProp;
+  width?: ButtonProps["width"];
 }
 
 const CustomConnectButton = ({
@@ -20,6 +22,7 @@ const CustomConnectButton = ({
   ensName,
   onClick,
   size,
+  width,
 }: CustomConnectButtonProps) => {
   const { data: avatar } = useEnsAvatar({
     name: ensName,
@@ -51,6 +54,7 @@ const CustomConnectButton = ({
       <Button
         onClick={onClick}
         size={size}
+        width={width}
         className="!bg-surface-surface-0 rounded-20 shadow-3 !ring-0"
       >
         {avatar && (
@@ -71,16 +75,17 @@ const CustomConnectButton = ({
   );
 };
 
-interface ConnectButtonProps {
+interface ConnectButtonProps extends PropsWithChildren {
   size?: ButtonSizeProp;
-  text?: string;
+  width?: ButtonProps["width"];
   className?: string;
 }
 
 export const ConnectButton = ({
   className,
   size,
-  text,
+  width,
+  children,
 }: ConnectButtonProps) => {
   return (
     <ConnectKitButton.Custom>
@@ -90,12 +95,13 @@ export const ConnectButton = ({
         if (!isConnected || !address)
           return (
             <Button
+              width={width}
               size={size}
               onClick={show}
               className={className}
               variant="pastel"
             >
-              {text ? text : "Connect"}
+              {children ? children : "Connect"}
             </Button>
           );
 
@@ -105,6 +111,7 @@ export const ConnectButton = ({
             ensName={ensName}
             onClick={show}
             size={size}
+            width={width}
           />
         );
       }}

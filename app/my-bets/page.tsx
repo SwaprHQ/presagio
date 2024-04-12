@@ -4,22 +4,28 @@ import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
 import {
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
-  getMarkets,
+  getAccountMarkets,
 } from "@/queries/omen";
 import { useQuery } from "@tanstack/react-query";
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
+import { useAccount } from "wagmi";
 
 export default function MyBetsPage() {
-  const { data: markets, isLoading } = useQuery({
-    queryKey: ["getMarkets"],
+  const { address } = useAccount();
+  const { data: accountMarkets, isLoading } = useQuery({
+    queryKey: ["getAccountMarkets"],
     queryFn: async () =>
-      getMarkets({
+      getAccountMarkets({
         first: 10,
         skip: 0,
         orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
         orderDirection: OrderDirection.Desc,
+        id: address?.toLowerCase() as string,
       }),
+    enabled: !!address,
   });
+
+  const markets = accountMarkets?.account?.fpmmParticipations;
 
   return (
     <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
@@ -46,12 +52,12 @@ export default function MyBetsPage() {
             <TabBody className="mt-8">
               <TabPanel className="space-y-4">
                 {isLoading
-                  ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => (
+                  ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((index) => (
                       <LoadingCardBet key={index} />
                     ))
-                  : markets?.fixedProductMarketMakers &&
-                    markets.fixedProductMarketMakers.map(market => (
-                      <CardBet market={market} key={market.id} />
+                  : markets &&
+                    markets.map((market) => (
+                      <CardBet market={market.fpmm} key={market.id} />
                     ))}
               </TabPanel>
               <TabPanel>
