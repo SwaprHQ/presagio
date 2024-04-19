@@ -10,8 +10,10 @@
     "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
+    "@fvictorio/newton-raphson-method": "^1.0.5",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@tanstack/react-query": "^5.28.4",
+    "big.js": "^6.2.1",
     "class-variance-authority": "^0.7.0",
     "connectkit": "^1.7.2",
     "date-fns": "^3.6.0",
@@ -28,6 +30,7 @@
     "@graphql-codegen/cli": "5.0.2",
     "@graphql-codegen/typescript": "4.0.6",
     "@graphql-codegen/typescript-graphql-request": "^6.2.0",
+    "@types/big.js": "^6.2.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
