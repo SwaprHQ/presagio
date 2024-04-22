@@ -25,7 +25,7 @@ export const CardBet = ({ market }: CardBetProps) => {
         randomOutcome === "loss" && "from-[#131313] to-[#301111]"
       )}
     >
-      <Link key={market.id} href={`markets/${market.id}`} className="block">
+      <Link key={market.id} href={`markets?id=${market.id}`} className="block">
         <section className="p-4 h-[144px] flex flex-col justify-between space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex space-x-2">

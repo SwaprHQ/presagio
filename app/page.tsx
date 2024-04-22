@@ -29,12 +29,12 @@ export default function AppPage() {
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  2xl:max-w-[1424px] 2xl:grid-cols-4 gap-4">
           {isLoading
-            ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => (
+            ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((index) => (
                 <LoadingCardMarket key={index} />
               ))
             : markets?.fixedProductMarketMakers &&
-              markets.fixedProductMarketMakers.map(market => (
-                <Link key={market.id} href={`markets/${market.id}`}>
+              markets.fixedProductMarketMakers.map((market) => (
+                <Link key={market.id} href={`markets?id=${market.id}`}>
                   <CardMarket market={market} />
                 </Link>
               ))}
