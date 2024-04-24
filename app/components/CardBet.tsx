@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
 import { Button, Logo, Tag } from "swapr-ui";
+import { fromHex } from "viem";
 
 interface BetProps {
   userPosition: UserPosition;
@@ -16,7 +17,7 @@ interface BetProps {
 export const CardBet = ({ userPosition }: BetProps) => {
   const conditionId = userPosition.position.conditionIdsStr;
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["getConditionMarket", conditionId],
     queryFn: async () =>
       getConditionMarket({
@@ -31,18 +32,20 @@ export const CardBet = ({ userPosition }: BetProps) => {
     ?.fixedProductMarketMakers[0] as FixedProductMarketMaker;
 
   const closingDate = new Date(+market.openingTimestamp * 1000);
-  const answer = market.question?.currentAnswer;
-
+  const answer =
+    market.question.currentAnswer &&
+    fromHex(market.question.currentAnswer, "number");
   const outcomeIndex = userPosition.position.indexSets[0];
 
   const outcomes = userPosition.position.conditions[0].outcomes;
   const outcomeString = outcomes ? outcomes[outcomeIndex - 1] : "";
 
-  const winner = answer === "win";
-  const loser = answer === "loss";
+  const hasFinished = !!answer;
+  const isWinner = hasFinished && answer == outcomeIndex;
+  const isLoser = hasFinished && answer != outcomeIndex;
 
   const outcomeAmountString = answer
-    ? winner
+    ? isWinner
       ? "You won"
       : "You lost"
     : "Potential win";
@@ -51,9 +54,9 @@ export const CardBet = ({ userPosition }: BetProps) => {
     <Card
       className={cx(
         "w-full bg-gradient-to-b from-[#F1F1F1] dark:from-[#131313]",
-        winner &&
+        isWinner &&
           "from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]",
-        loser &&
+        isLoser &&
           "from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]"
       )}
     >
@@ -110,7 +113,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
               />
             </div>
           </div>
-          {answer && (
+          {isWinner && (
             <Button size="sm" colorScheme="success" variant="pastel">
               Reedem
             </Button>

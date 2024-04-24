@@ -14,7 +14,7 @@ import { useAccount } from "wagmi";
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["getUserPositions"],
     queryFn: async () =>
       getUserPositions({
@@ -47,7 +47,7 @@ export default function MyBetsPage() {
 
             <TabBody className="mt-8">
               <TabPanel className="space-y-4">
-                {isLoading || isFetching ? (
+                {isLoading ? (
                   <LoadingBets />
                 ) : (
                   data &&
