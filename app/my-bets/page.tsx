@@ -1,31 +1,27 @@
 "use client";
 
 import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
+import { getUserPositions } from "@/queries/conditional-tokens";
 import {
-  FixedProductMarketMaker_OrderBy,
-  OrderDirection,
-  getAccountMarkets,
-} from "@/queries/omen";
+  Position,
+  User,
+  UserPosition,
+} from "@/queries/conditional-tokens/types";
 import { useQuery } from "@tanstack/react-query";
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
 import { useAccount } from "wagmi";
 
 export default function MyBetsPage() {
   const { address } = useAccount();
-  const { data: accountMarkets, isLoading } = useQuery({
-    queryKey: ["getAccountMarkets"],
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["getUserPositions"],
     queryFn: async () =>
-      getAccountMarkets({
-        first: 10,
-        skip: 0,
-        orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
-        orderDirection: OrderDirection.Desc,
+      getUserPositions({
         id: address?.toLowerCase() as string,
       }),
     enabled: !!address,
   });
-
-  const markets = accountMarkets?.account?.fpmmParticipations;
 
   return (
     <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
@@ -39,9 +35,9 @@ export default function MyBetsPage() {
           >
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
               <TabStyled>
-                All bets{" "}
+                All bets
                 <div className="bg-surface-surface-0 text-2xs border border-outline-low-em rounded-6 p-1 px-1.5 ml-2">
-                  09
+                  {data?.userPositions.length ?? "-"}
                 </div>
               </TabStyled>
               <TabStyled>Active</TabStyled>
@@ -51,14 +47,14 @@ export default function MyBetsPage() {
 
             <TabBody className="mt-8">
               <TabPanel className="space-y-4">
-                {isLoading
-                  ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((index) => (
-                      <LoadingCardBet key={index} />
-                    ))
-                  : markets &&
-                    markets.map((market) => (
-                      <CardBet market={market.fpmm} key={market.id} />
-                    ))}
+                {isLoading || isFetching ? (
+                  <LoadingBets />
+                ) : (
+                  data &&
+                  data?.userPositions.map((position: UserPosition) => (
+                    <CardBet userPosition={position} key={position.id} />
+                  ))
+                )}
               </TabPanel>
               <TabPanel>
                 <div className="bg-surface-primary-accent-1 p-5 rounded-4">
@@ -82,3 +78,6 @@ export default function MyBetsPage() {
     </div>
   );
 }
+
+const LoadingBets = () =>
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => <LoadingCardBet key={index} />);

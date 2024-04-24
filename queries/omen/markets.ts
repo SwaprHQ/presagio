@@ -2,12 +2,11 @@ import { gql, request } from "graphql-request";
 import {
   Query,
   QueryAccountArgs,
+  QueryConditionArgs,
   QueryFixedProductMarketMakerArgs,
   QueryFixedProductMarketMakersArgs,
 } from "./types";
-
-const OMEN_SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/protofire/omen-xdai";
+import { OMEN_SUBGRAPH_URL } from "@/constants";
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -208,6 +207,60 @@ const getAccountMarketsQuery = gql`
   }
 `;
 
+const getConditionMarketQuery = gql`
+  query OmenConditionsQuery($id: ID!) {
+    conditions(where: { id: $id }) {
+      fixedProductMarketMakers {
+        ...marketData
+      }
+    }
+  }
+
+  fragment marketData on FixedProductMarketMaker {
+    id
+    collateralVolume
+    collateralToken
+    creationTimestamp
+    lastActiveDay
+    outcomeTokenAmounts
+    runningDailyVolumeByHour
+    scaledLiquidityParameter
+    title
+    outcomes
+    openingTimestamp
+    arbitrator
+    category
+    templateId
+    scaledLiquidityParameter
+    curatedByDxDao
+    klerosTCRregistered
+    outcomeTokenMarginalPrices
+    condition {
+      id
+      oracle
+      scalarLow
+      scalarHigh
+      __typename
+    }
+    question {
+      id
+      data
+      currentAnswer
+      outcomes
+      answers {
+        answer
+        bondAggregate
+        __typename
+      }
+      __typename
+    }
+    outcomes
+    outcomeTokenMarginalPrices
+    usdVolume
+    __typename
+  }
+`;
+
 const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
   request<Pick<Query, "fixedProductMarketMaker">>(
     OMEN_SUBGRAPH_URL,
@@ -231,4 +284,11 @@ const getAccountMarkets = async (
     params
   );
 
-export { getMarket, getMarkets, getAccountMarkets };
+const getConditionMarket = async (params: QueryConditionArgs) =>
+  request<Pick<Query, "conditions">>(
+    OMEN_SUBGRAPH_URL,
+    getConditionMarketQuery,
+    params
+  );
+
+export { getMarket, getMarkets, getAccountMarkets, getConditionMarket };

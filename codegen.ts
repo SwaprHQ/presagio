@@ -1,10 +1,18 @@
+import {
+  CONDITIONAL_TOKENS_SUBGRAPH_URL,
+  OMEN_SUBGRAPH_URL,
+} from "@/constants";
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "https://api.thegraph.com/subgraphs/name/protofire/omen-xdai",
   generates: {
-    "models/omen/subgraph.ts": {
+    "queries/omen/types.ts": {
+      schema: OMEN_SUBGRAPH_URL,
+      plugins: ["typescript", "typescript-graphql-request"],
+    },
+    "queries/conditional-tokens/types.ts": {
+      schema: CONDITIONAL_TOKENS_SUBGRAPH_URL,
       plugins: ["typescript", "typescript-graphql-request"],
     },
   },
