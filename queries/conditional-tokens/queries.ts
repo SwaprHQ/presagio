@@ -1,8 +1,5 @@
 // @ts-nocheck
-import {
-  QueryUserPositionArgs,
-  UserUserPositionsArgs,
-} from "@/queries/conditional-tokens/types";
+import { QueryUserPositionArgs } from "@/queries/conditional-tokens/types";
 import { gql, request } from "graphql-request";
 
 const CONDITIONAL_TOKENS_SUBGRAPH_URL =

@@ -1,54 +1,45 @@
 "use client";
 
-import { Card } from "@/app/components/ui";
-import { UserPosition } from "@/queries/conditional-tokens/types";
-import { FixedProductMarketMaker, getConditionMarket } from "@/queries/omen";
-import { remainingTime } from "@/utils/dates";
 import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
+
 import { Button, Logo, Tag } from "swapr-ui";
-import { fromHex } from "viem";
+import { Card } from "@/app/components/ui";
+
+import { UserPosition } from "@/queries/conditional-tokens/types";
+import { getConditionMarket } from "@/queries/omen";
+
+import { remainingTime } from "@/utils/dates";
+import { MarketModel, PositionModel } from "@/models";
 
 interface BetProps {
   userPosition: UserPosition;
 }
 
 export const CardBet = ({ userPosition }: BetProps) => {
-  const conditionId = userPosition.position.conditionIdsStr;
+  const position = new PositionModel(userPosition.position);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getConditionMarket", conditionId],
+    queryKey: ["getConditionMarket", position.conditionId],
     queryFn: async () =>
       getConditionMarket({
-        id: conditionId,
+        id: position.conditionId,
       }),
-    enabled: !!conditionId,
+    enabled: !!position.conditionId,
   });
 
-  if (isLoading || isFetching) return <LoadingCardBet />;
+  if (isLoading) return <LoadingCardBet />;
 
-  const market: FixedProductMarketMaker = data?.conditions[0]
-    ?.fixedProductMarketMakers[0] as FixedProductMarketMaker;
+  const market =
+    data?.conditions[0] &&
+    new MarketModel(data?.conditions[0]?.fixedProductMarketMakers[0]);
 
-  const closingDate = new Date(+market.openingTimestamp * 1000);
-  const answer =
-    market.question.currentAnswer &&
-    fromHex(market.question.currentAnswer, "number");
-  const outcomeIndex = userPosition.position.indexSets[0];
+  // emptyState
+  if (!market) return;
 
-  const outcomes = userPosition.position.conditions[0].outcomes;
-  const outcomeString = outcomes ? outcomes[outcomeIndex - 1] : "";
-
-  const hasFinished = !!answer;
-  const isWinner = hasFinished && answer == outcomeIndex;
-  const isLoser = hasFinished && answer != outcomeIndex;
-
-  const outcomeAmountString = answer
-    ? isWinner
-      ? "You won"
-      : "You lost"
-    : "Potential win";
+  const isWinner = market.isWinner(position.outcomeIndex);
+  const isLoser = market.isLoser(position.outcomeIndex);
 
   return (
     <Card
@@ -60,25 +51,29 @@ export const CardBet = ({ userPosition }: BetProps) => {
           "from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]"
       )}
     >
-      <Link key={market.id} href={`markets?id=${market.id}`} className="block">
+      <Link
+        key={market.data.id}
+        href={`markets?id=${market.data.id}`}
+        className="block"
+      >
         <section className="p-4 h-[144px] flex flex-col justify-between space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex space-x-2">
               <Tag colorScheme="quaternary" size="sm" className="capitalize">
-                {market.category}
+                {market.data.category}
               </Tag>
               <Tag colorScheme="success" size="sm">
-                You chose {outcomeString}
+                You chose {position.outcomeString()}
               </Tag>
             </div>
             <p className="text-sm text-text-low-em">
-              {remainingTime(closingDate)}
+              {remainingTime(market.closingDate)}
             </p>
           </div>
           <div className="flex space-x-4 ">
             <div className="size-[40px] bg-text-low-em rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
             <div className="flex-1 text-normal md:text-xl font-semibold text-text-high-em h-[80px] overflow-y-auto">
-              {market.title}
+              {market.data.title}
             </div>
           </div>
         </section>
@@ -101,7 +96,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
             </div>
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">
-                {outcomeAmountString}:
+                {market.outcomeAmountString(position.outcomeIndex)}:
               </p>
               <p className="text-sm font-semibold text-text-high-em">
                 300 <span>SDAI</span>
