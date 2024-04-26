@@ -1,7 +1,17 @@
+import { Token } from "@/entities";
+
 export const ChainId = {
   ETHEREUM: 1,
   GNOSIS: 100,
 };
+
+export const WXADI = new Token(
+  100,
+  "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
+  18,
+  "WXDAI",
+  "Wrapped xDAI"
+);
 
 // RPC endpoints
 export const RPC_LIST: { [chainId: number]: string } = {
