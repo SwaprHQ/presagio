@@ -1,49 +1,85 @@
 "use client";
 
-import { Card } from "@/app/components/ui";
-import { FixedProductMarketMaker } from "@/queries/omen";
-import { remainingTime } from "@/utils/dates";
+import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
-import { Button, Logo, Tag } from "swapr-ui";
 
-interface CardBetProps {
-  market: FixedProductMarketMaker;
+import { Button, Logo, Tag } from "swapr-ui";
+import { Card } from "@/app/components/ui";
+
+import { UserPosition } from "@/queries/conditional-tokens/types";
+import { getConditionMarket } from "@/queries/omen";
+
+import { remainingTime } from "@/utils/dates";
+import { MarketModel, PositionModel } from "@/models";
+
+interface BetProps {
+  userPosition: UserPosition;
 }
 
-export const CardBet = ({ market }: CardBetProps) => {
-  const closingDate = new Date(+market.openingTimestamp * 1000);
+export const CardBet = ({ userPosition }: BetProps) => {
+  const position = new PositionModel(userPosition.position);
 
-  const outcomes = ["win", "loss", "-"];
-  const randomOutcome = outcomes[Math.floor(Math.random() * outcomes.length)];
+  const { data, isLoading } = useQuery({
+    queryKey: ["getConditionMarket", position.conditionId],
+    queryFn: async () =>
+      getConditionMarket({
+        id: position.conditionId,
+      }),
+    enabled: !!position.conditionId,
+  });
+
+  if (isLoading) return <LoadingCardBet />;
+
+  const market =
+    data?.conditions[0] &&
+    new MarketModel(data?.conditions[0]?.fixedProductMarketMakers[0]);
+
+  // emptyState
+  if (!market) return;
+
+  const isWinner = market.isWinner(position.outcomeIndex);
+  const isLoser = market.isLoser(position.outcomeIndex);
+
+  const outcomeAmountString = market.isClosed
+    ? isWinner
+      ? "You won"
+      : "You lost"
+    : "Potential win";
 
   return (
     <Card
       className={cx(
-        "w-full bg-gradient-to-b from-[#131313]",
-        randomOutcome === "win" && "from-[#131313] to-[#11301F]",
-        randomOutcome === "loss" && "from-[#131313] to-[#301111]"
+        "w-full bg-gradient-to-b from-[#F1F1F1] dark:from-[#131313]",
+        isWinner &&
+          "from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]",
+        isLoser &&
+          "from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]"
       )}
     >
-      <Link key={market.id} href={`markets?id=${market.id}`} className="block">
+      <Link
+        key={market.data.id}
+        href={`markets?id=${market.data.id}`}
+        className="block"
+      >
         <section className="p-4 h-[144px] flex flex-col justify-between space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex space-x-2">
-              <Tag colorScheme="quaternary" size="sm">
-                Election
+              <Tag colorScheme="quaternary" size="sm" className="capitalize">
+                {market.data.category}
               </Tag>
               <Tag colorScheme="success" size="sm">
-                You chose Yes
+                You chose {position.outcomeString()}
               </Tag>
             </div>
             <p className="text-sm text-text-low-em">
-              {remainingTime(closingDate)}
+              {remainingTime(market.closingDate)}
             </p>
           </div>
           <div className="flex space-x-4 ">
             <div className="size-[40px] bg-text-low-em rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
             <div className="flex-1 text-normal md:text-xl font-semibold text-text-high-em h-[80px] overflow-y-auto">
-              {market.title}
+              {market.data.title}
             </div>
           </div>
         </section>
@@ -61,24 +97,28 @@ export const CardBet = ({ market }: CardBetProps) => {
               <Logo
                 src="https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/100/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo-128.png"
                 alt="token logo"
-                size="xs"
+                className="size-3"
               />
             </div>
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">You won:</p>
+              <p className="text-sm font-semibold text-text-med-em">
+                {outcomeAmountString}:
+              </p>
               <p className="text-sm font-semibold text-text-high-em">
                 300 <span>SDAI</span>
               </p>
               <Logo
                 src="https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/100/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo-128.png"
                 alt="token logo"
-                size="xs"
+                className="size-3"
               />
             </div>
           </div>
-          <Button size="sm" colorScheme="success" variant="pastel">
-            Reedem
-          </Button>
+          {isWinner && (
+            <Button size="sm" colorScheme="success" variant="pastel">
+              Reedem
+            </Button>
+          )}
         </div>
       </section>
     </Card>
@@ -92,11 +132,11 @@ export const LoadingCardBet = () => (
         <div className="w-48 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
         <div className="w-32 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
       </div>{" "}
-      <div className="h-24 rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="h-20 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
     <div className="flex items-center justify-between">
-      <div className="w-48 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="w-20 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="w-48 h-6 rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="w-20 h-6 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
   </Card>
 );
