@@ -11,7 +11,7 @@ export class PositionModel {
     this.outcomes = position.conditions?.[0]?.outcomes;
   }
 
-  outcomeString(): string {
+  getOutcome(): string {
     return this.outcomes ? this.outcomes[this.outcomeIndex - 1] : "";
   }
 }

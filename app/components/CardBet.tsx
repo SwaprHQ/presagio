@@ -63,7 +63,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
                 {market.data.category}
               </Tag>
               <Tag colorScheme="success" size="sm">
-                You chose {position.outcomeString()}
+                You chose {position.getOutcome()}
               </Tag>
             </div>
             <p className="text-sm text-text-low-em">
