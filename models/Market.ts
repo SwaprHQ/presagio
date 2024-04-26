@@ -17,11 +17,11 @@ export class MarketModel {
   }
 
   isWinner(outcomeIndex: number) {
-    return this.answer == outcomeIndex;
+    return this.answer == outcomeIndex - 1;
   }
 
   isLoser(outcomeIndex: number) {
-    return this.answer && this.answer != outcomeIndex;
+    return this.answer && this.answer != outcomeIndex - 1;
   }
 
   outcomeAmountString(outcomeIndex: number): string {

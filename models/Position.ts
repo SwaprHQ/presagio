@@ -3,7 +3,7 @@ import { Position } from "@/queries/conditional-tokens/types";
 export class PositionModel {
   conditionId: string;
   outcomeIndex: number;
-  outcomes: string[] | undefined | null;
+  outcomes?: string[] | null;
 
   constructor(position: Position) {
     this.conditionId = position.conditionIdsStr;

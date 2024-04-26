@@ -41,6 +41,12 @@ export const CardBet = ({ userPosition }: BetProps) => {
   const isWinner = market.isWinner(position.outcomeIndex);
   const isLoser = market.isLoser(position.outcomeIndex);
 
+  const outcomeAmountString = market.isClosed
+    ? isWinner
+      ? "You won"
+      : "You lost"
+    : "Potential win";
+
   return (
     <Card
       className={cx(
@@ -96,7 +102,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
             </div>
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">
-                {market.outcomeAmountString(position.outcomeIndex)}:
+                {outcomeAmountString}:
               </p>
               <p className="text-sm font-semibold text-text-high-em">
                 300 <span>SDAI</span>
