@@ -1,12 +1,10 @@
-// @ts-nocheck
+import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from "@/constants";
 import {
+  Query,
   QueryUserPositionArgs,
-  UserUserPositionsArgs,
+  QueryUserPositionsArgs,
 } from "@/queries/conditional-tokens/types";
 import { gql, request } from "graphql-request";
-
-const CONDITIONAL_TOKENS_SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/gnosis/conditional-tokens-gc/";
 
 const getUserPositionsQuery = gql`
   query OmenGetMyMarkets($id: ID!) {
@@ -50,7 +48,9 @@ const getUserPositionsQuery = gql`
   }
 `;
 
-const getUserPositions = async (params: QueryUserPositionArgs) =>
+const getUserPositions = async (
+  params: QueryUserPositionArgs & QueryUserPositionsArgs
+) =>
   request<Pick<Query, "userPositions">>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
     getUserPositionsQuery,
