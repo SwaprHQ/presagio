@@ -79,6 +79,8 @@ interface ConnectButtonProps extends PropsWithChildren {
   size?: ButtonSizeProp;
   width?: ButtonProps["width"];
   className?: string;
+  variant?: ButtonProps["variant"];
+  colorScheme?: ButtonProps["colorScheme"];
 }
 
 export const ConnectButton = ({
@@ -86,6 +88,8 @@ export const ConnectButton = ({
   size,
   width,
   children,
+  variant = "pastel",
+  colorScheme,
 }: ConnectButtonProps) => {
   return (
     <ConnectKitButton.Custom>
@@ -99,7 +103,8 @@ export const ConnectButton = ({
               size={size}
               onClick={show}
               className={className}
-              variant="pastel"
+              variant={variant}
+              colorScheme={colorScheme}
             >
               {children ? children : "Connect"}
             </Button>

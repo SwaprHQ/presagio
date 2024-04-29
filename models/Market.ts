@@ -10,7 +10,7 @@ export class MarketModel {
   constructor(market: FixedProductMarketMaker) {
     this.data = market;
     this.closingDate = new Date(+market.openingTimestamp * 1000);
-    this.answer = market.question?.currentAnswer
+    this.answer = market?.question?.currentAnswer
       ? fromHex(market.question.currentAnswer, "number")
       : null;
     this.isClosed = !!this.answer;
@@ -21,6 +21,6 @@ export class MarketModel {
   }
 
   isLoser(outcomeIndex: number) {
-    return this.isClosed && this.answer != outcomeIndex - 1;
+    return this.answer && this.answer != outcomeIndex - 1;
   }
 }
