@@ -32,13 +32,13 @@ export default function MyBetsPage() {
   const userPositions = data?.userPositions ?? [];
   const emptyData = data && data.userPositions.length == 0;
 
-  const filterActiveBets = (userPositions: UserPosition[]) =>
-    userPositions?.filter(
-      position => position.position.conditions[0].resolved === false
-    );
+  const filterActiveBets = userPositions?.filter(
+    position => position.position.conditions[0].resolved === false
+  );
 
-  const filterClompleteBets = (userPositions: UserPosition[]) =>
-    userPositions?.filter(position => position.position.conditions[0].resolved);
+  const filterClompleteBets = userPositions?.filter(
+    position => position.position.conditions[0].resolved
+  );
 
   if (!address) return <NoWalletState />;
 
@@ -59,9 +59,7 @@ export default function MyBetsPage() {
               </TabStyled>
               <TabStyled>
                 Active
-                <TabBetCounter>
-                  {filterActiveBets(userPositions).length ?? "-"}
-                </TabBetCounter>
+                <TabBetCounter>{filterActiveBets.length ?? "-"}</TabBetCounter>
               </TabStyled>
               <TabStyled>
                 Unredeemed
@@ -70,7 +68,7 @@ export default function MyBetsPage() {
               <TabStyled>
                 Complete
                 <TabBetCounter>
-                  {filterClompleteBets(userPositions).length ?? "-"}
+                  {filterClompleteBets.length ?? "-"}
                 </TabBetCounter>
               </TabStyled>
             </TabHeader>
@@ -90,16 +88,14 @@ export default function MyBetsPage() {
               <TabPanel>
                 {isLoading ? (
                   <LoadingBets />
-                ) : filterClompleteBets.length === 0 ? (
+                ) : filterActiveBets.length === 0 ? (
                   <div className="bg-surface-surface-1 p-6 rounded-12 space-y-4">
                     <p>No active bets</p>
                   </div>
                 ) : (
-                  filterActiveBets(userPositions).map(
-                    (position: UserPosition) => (
-                      <CardBet userPosition={position} key={position.id} />
-                    )
-                  )
+                  filterActiveBets.map((position: UserPosition) => (
+                    <CardBet userPosition={position} key={position.id} />
+                  ))
                 )}
               </TabPanel>
               <TabPanel>
@@ -115,11 +111,9 @@ export default function MyBetsPage() {
                     <p>No complete bets</p>
                   </div>
                 ) : (
-                  filterClompleteBets(userPositions).map(
-                    (position: UserPosition) => (
-                      <CardBet userPosition={position} key={position.id} />
-                    )
-                  )
+                  filterClompleteBets.map((position: UserPosition) => (
+                    <CardBet userPosition={position} key={position.id} />
+                  ))
                 )}
               </TabPanel>
             </TabBody>
