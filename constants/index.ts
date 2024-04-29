@@ -5,7 +5,7 @@ export const ChainId = {
   GNOSIS: 100,
 };
 
-export const WXADI = new Token(
+export const WXDAI = new Token(
   100,
   "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d",
   18,

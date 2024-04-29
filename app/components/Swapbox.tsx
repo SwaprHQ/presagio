@@ -21,7 +21,7 @@ import {
 } from "@/utils/price";
 import { ConfirmTrade } from "./ConfirmTrade";
 import { ModalId, useModalContext } from "@/context/ModalContext";
-import { WXADI } from "@/constants";
+import { WXDAI } from "@/constants";
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = "1";
@@ -74,7 +74,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const { data: allowance, refetch: refetchCollateralAllowence } =
     useReadContract({
       abi: erc20Abi,
-      address: WXADI.address,
+      address: WXDAI.address,
       functionName: "allowance",
       args: [address as Address, id],
       query: { enabled: !!address },
@@ -90,7 +90,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const { data: balance, refetch: refetchCollateralBalance } = useReadContract({
     abi: erc20Abi,
-    address: WXADI.address,
+    address: WXDAI.address,
     functionName: "balanceOf",
     args: [address as Address],
     query: { enabled: !!address },
@@ -153,7 +153,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const swapState: Record<SwapDirection, SwapState> = {
     [SwapDirection.BUY]: {
-      inToken: WXADI.symbol || "-",
+      inToken: WXDAI.symbol || "-",
       outToken: outcome.name,
       changeInToken: () => {},
       changeOutToken: changeOutcome,
@@ -167,7 +167,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     },
     [SwapDirection.SELL]: {
       inToken: outcome.name,
-      outToken: WXADI.symbol || "-",
+      outToken: WXDAI.symbol || "-",
       changeInToken: changeOutcome,
       changeOutToken: () => {},
       tokenPrice: formatTokenPrice(oneShareSellPrice as bigint),
@@ -183,7 +183,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const currentState = swapState[swapDirection];
 
   const maxBalance = () => {
-    setTokenAmountIn(formatEther(currentState.balance as bigint));
+    currentState.balance &&
+      setTokenAmountIn(formatEther(currentState.balance as bigint));
   };
 
   const { openModal } = useModalContext();
