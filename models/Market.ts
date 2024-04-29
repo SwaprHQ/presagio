@@ -23,12 +23,4 @@ export class MarketModel {
   isLoser(outcomeIndex: number) {
     return this.answer && this.answer != outcomeIndex - 1;
   }
-
-  outcomeAmountString(outcomeIndex: number): string {
-    return this.answer
-      ? this.isWinner(outcomeIndex)
-        ? "You won"
-        : "You lost"
-      : "Potential win";
-  }
 }
