@@ -32,11 +32,11 @@ export default function MyBetsPage() {
   const userPositions = data?.userPositions ?? [];
   const emptyData = data && data.userPositions.length == 0;
 
-  const filterActiveBets = userPositions?.filter(
+  const filterActiveBets = userPositions.filter(
     position => position.position.conditions[0].resolved === false
   );
 
-  const filterClompleteBets = userPositions?.filter(
+  const filterClompleteBets = userPositions.filter(
     position => position.position.conditions[0].resolved
   );
 

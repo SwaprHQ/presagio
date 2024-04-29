@@ -4,15 +4,15 @@ import { fromHex } from "viem";
 export class MarketModel {
   data: FixedProductMarketMaker;
   closingDate: Date;
-  answer: number;
+  answer: number | null;
   isClosed: boolean;
 
   constructor(market: FixedProductMarketMaker) {
     this.data = market;
     this.closingDate = new Date(+market.openingTimestamp * 1000);
-    this.answer =
-      market?.question?.currentAnswer &&
-      fromHex(market.question.currentAnswer, "number");
+    this.answer = market?.question?.currentAnswer
+      ? fromHex(market.question.currentAnswer, "number")
+      : null;
     this.isClosed = !!this.answer;
   }
 
