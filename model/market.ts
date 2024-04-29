@@ -30,3 +30,17 @@ export const useReadCalcBuyAmount = (
     query: { enabled: !!tokenInAmount },
   });
 };
+
+export const useReadCalcSellAmount = (
+  address: Address,
+  tokenOutAmount: string,
+  outcomeIndex: number
+) => {
+  const amountWei = parseEther(tokenOutAmount);
+  return useReadMarketContract({
+    address,
+    functionName: "calcSellAmount",
+    args: [amountWei, outcomeIndex],
+    query: { enabled: !!tokenOutAmount },
+  });
+};

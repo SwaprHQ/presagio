@@ -66,7 +66,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           </div>
         </div>
         <div className="p-2">
-          <Swapbox id={id} />
+          <Swapbox market={market} />
         </div>
       </div>
     </div>
