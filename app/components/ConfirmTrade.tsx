@@ -21,7 +21,7 @@ import { addFraction, removeFraction } from "@/utils/price";
 import { useConfig } from "wagmi";
 import { Address, erc20Abi, formatEther, parseEther } from "viem";
 import { useReadCalcSellAmount } from "@/model/market";
-import { WXADI } from "@/constants";
+import { WXDAI } from "@/constants";
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -81,7 +81,7 @@ export const ConfirmTrade = ({
     try {
       const txHash = await writeContract(config, {
         abi: erc20Abi,
-        address: WXADI.address,
+        address: WXDAI.address,
         functionName: "approve",
         args: [marketId, amountWei],
       });
@@ -122,7 +122,7 @@ export const ConfirmTrade = ({
     }
   };
 
-  const submitBet = async () => {
+  const submitBuyBet = async () => {
     setIsTxLoading(true);
     try {
       const txHash = await writeContract(config, {
@@ -175,7 +175,7 @@ export const ConfirmTrade = ({
   };
 
   const confirmState = {
-    [SwapDirection.BUY]: { submit: submitBet, approve: approveToken },
+    [SwapDirection.BUY]: { submit: submitBuyBet, approve: approveToken },
     [SwapDirection.SELL]: { submit: submitSellBet, approve: approveNFT },
   };
 
