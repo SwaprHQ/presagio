@@ -7,7 +7,7 @@ import { erc20Abi, formatEther, parseEther, Address } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from ".";
 import { useReadCalcBuyAmount } from "@/model/market";
-import { Outcome } from "@/entities";
+import { Outcome, Token } from "@/entities";
 import { FixedProductMarketMaker } from "@/queries/omen";
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
@@ -32,10 +32,10 @@ export enum SwapDirection {
 }
 
 export type SwapState = {
-  inToken: string;
-  outToken: string;
-  changeInToken: () => void;
-  changeOutToken: () => void;
+  inToken: Token | Outcome;
+  outToken: Token | Outcome;
+  changeInToken: (outcome?: Outcome) => void;
+  changeOutToken: (outcome?: Outcome) => void;
   tokenPrice: string;
   isLoading: boolean;
   balance: bigint;
@@ -47,10 +47,11 @@ export type SwapState = {
 
 export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const id = market.id as Address;
-  const outcome0 = new Outcome(0, market.outcomes?.[0] || "Option 1");
-  const outcome1 = new Outcome(1, market.outcomes?.[1] || "Option 2");
+  const outcome0 = new Outcome(0, market.outcomes?.[0] || "Option 1", id);
+  const outcome1 = new Outcome(1, market.outcomes?.[1] || "Option 2", id);
 
   const { address, isDisconnected } = useAccount();
+  const { openModal } = useModalContext();
 
   const [tokenAmountIn, setTokenAmountIn] = useState("");
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
@@ -59,8 +60,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     SwapDirection.BUY
   );
 
-  const changeOutcome = () => {
-    outcome.index === 0 ? setOutcome(outcome1) : setOutcome(outcome0);
+  const changeOutcome = (outcome?: Outcome) => {
+    outcome && setOutcome(outcome);
   };
 
   const amountWei = parseEther(tokenAmountIn);
@@ -153,8 +154,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const swapState: Record<SwapDirection, SwapState> = {
     [SwapDirection.BUY]: {
-      inToken: WXDAI.symbol || "-",
-      outToken: outcome.name,
+      inToken: WXDAI,
+      outToken: outcome,
       changeInToken: () => {},
       changeOutToken: changeOutcome,
       tokenPrice: formatTokenPrice(oneShareBuyPrice as bigint),
@@ -166,8 +167,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
       refetchAllowence: refetchCollateralAllowence,
     },
     [SwapDirection.SELL]: {
-      inToken: outcome.name,
-      outToken: WXDAI.symbol || "-",
+      inToken: outcome,
+      outToken: WXDAI,
       changeInToken: changeOutcome,
       changeOutToken: () => {},
       tokenPrice: formatTokenPrice(oneShareSellPrice as bigint),
@@ -187,11 +188,11 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
       setTokenAmountIn(formatEther(currentState.balance as bigint));
   };
 
-  const { openModal } = useModalContext();
-
   const openBetModal = () => {
     openModal(ModalId.CONFIRM_SWAP);
   };
+
+  const outcomeList = [outcome0, outcome1];
 
   return (
     <>
@@ -204,6 +205,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
           }}
           onClick={currentState.changeInToken}
           selectedToken={currentState.inToken}
+          tokenList={outcomeList}
         >
           <div className="flex text-sm items-center justify-end space-x-1.5">
             <p className="text-text-low-em">
@@ -234,16 +236,25 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
           value={twoDecimalsTokenOutAmount}
           selectedToken={currentState.outToken}
           onClick={currentState.changeOutToken}
+          tokenList={outcomeList}
         />
         <div className="space-y-4">
           <div className="px-3 py-1">
             <div className="flex items-center justify-between">
               <p className=" text-text-low-em">Price</p>
               <div className="flex items-center space-x-1">
-                <p>1 {currentState.inToken}</p>
+                <p>1 {currentState.inToken.symbol}</p>
                 <p>=</p>
-                <p className="text-text-success-em">
-                  {currentState.tokenPrice} {currentState.outToken}
+                <p
+                  className={
+                    currentState.outToken instanceof Outcome
+                      ? currentState.outToken.index === 0
+                        ? "text-text-success-main"
+                        : "text-text-danger-main"
+                      : ""
+                  }
+                >
+                  {currentState.tokenPrice} {currentState.outToken.symbol}
                 </p>
                 <p className=" text-text-low-em">(≈ $1)</p>
               </div>
@@ -267,7 +278,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
             </Button>
           ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
             <Button width="full" variant="pastel" size="lg" disabled>
-              Insufficient {currentState.inToken} balance
+              Insufficient {currentState.inToken.symbol} balance
             </Button>
           ) : (
             <Button

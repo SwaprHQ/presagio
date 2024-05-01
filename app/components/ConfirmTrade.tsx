@@ -203,7 +203,9 @@ export const ConfirmTrade = ({
                 <p className="text-xs text-text-low-em uppercase">You sell</p>
                 <div className="text-2xl uppercase">
                   <span>{twoDecimalsTokenAmountIn}</span>{" "}
-                  <span className="text-text-low-em">{swapState.inToken}</span>
+                  <span className="text-text-low-em">
+                    {swapState.inToken.symbol}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-center rounded-100 bg-surface-surface-3 h-[40px] w-[56px] absolute top-[calc(50%_-_20px)] left-[calc(50%_-_28px)]">
@@ -213,7 +215,9 @@ export const ConfirmTrade = ({
                 <p className="text-xs text-text-low-em uppercase">You buy</p>
                 <div className="text-2xl uppercase">
                   <span>{twoDecimalsTokenAmountOut}</span>{" "}
-                  <span className="text-text-low-em">{swapState.outToken}</span>
+                  <span className="text-text-low-em">
+                    {swapState.outToken.symbol}
+                  </span>
                 </div>
               </div>
             </div>
@@ -222,10 +226,10 @@ export const ConfirmTrade = ({
                 <div className="flex items-center justify-between">
                   <p className=" text-text-low-em">Price</p>
                   <div className="flex items-center space-x-1">
-                    <p>1 {swapState.inToken}</p>
+                    <p>1 {swapState.inToken.symbol}</p>
                     <p>=</p>
                     <p className="text-text-success-em">
-                      {swapState.tokenPrice} {swapState.outToken}
+                      {swapState.tokenPrice} {swapState.outToken.symbol}
                     </p>
                     <p className=" text-text-low-em">(≈ $1)</p>
                   </div>
