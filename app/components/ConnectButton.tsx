@@ -42,15 +42,17 @@ const CustomConnectButton = ({
   const formattedBalance = (balanceData: NonNullable<typeof balance>) => {
     const balanceValue = formatEther(balanceData.value);
 
-    // Regex to show only 3 digits after the decimal point
-    return `${balanceValue.replace(/(\.\d{3})\d*/, "$1")} ${
+    // Regex to show only 2 digits after the decimal point
+    return `${balanceValue.replace(/(\.\d{2})\d*/, "$1")} ${
       balanceData.symbol
     }`;
   };
 
   return (
-    <div className="flex bg-surface-surface-2 rounded-20 p-0.5 pl-4 justify-center items-center space-x-3 text-nowrap">
-      {balance && <p>{formattedBalance(balance)}</p>}
+    <div className="flex bg-surface-surface-2 rounded-20 p-0.5 md:pl-4 justify-center items-center md:space-x-3 text-nowrap">
+      {balance && (
+        <p className="hidden md:block">{formattedBalance(balance)}</p>
+      )}
       <Button
         onClick={onClick}
         size={size}
@@ -66,10 +68,7 @@ const CustomConnectButton = ({
             className="rounded-100"
           />
         )}
-        <p>
-          <span className="md:hidden">{truncatedAddress(2)}</span>
-          <span className="hidden md:block">{truncatedAddress(4)}</span>
-        </p>
+        <p className="text-text-high-em">{truncatedAddress(4)}</p>
       </Button>
     </div>
   );
