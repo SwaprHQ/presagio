@@ -29,7 +29,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
           className={cx(
             "flex items-center h-3 px-2 rounded-s-8",
             outcome0.percentage
-              ? "bg-surface-success-accent-1 text-text-success-em"
+              ? "bg-surface-success-accent-2"
               : "bg-outline-low-em"
           )}
           style={{
@@ -40,21 +40,21 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
           className={cx(
             "flex items-center h-3 px-2 rounded-e-8",
             outcome1.percentage
-              ? "bg-surface-danger-accent-1 text-text-danger-em"
+              ? "bg-surface-danger-accent-2"
               : "bg-outline-low-em"
           )}
           style={{
             width: outcome1.percentage ? `${outcome1.percentage}%` : "50%",
           }}
-        />{" "}
+        />
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between text-sm font-semibold">
         <p className="w-full uppercase text-text-success-main">
-          {`${outcome0.symbol} - ${outcome0.percentage}%`}
+          {`${outcome0.symbol} ${outcome0.percentage || "-"}%`}
         </p>
         <p className="w-full text-right uppercase text-text-danger-main">
-          {`${outcome1.symbol} - ${outcome1.percentage}%`}
+          {`${outcome1.symbol} ${outcome1.percentage || "-"}%`}
         </p>
       </div>
     </div>

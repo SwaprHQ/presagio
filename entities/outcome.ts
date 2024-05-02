@@ -1,3 +1,5 @@
+const CHARACTERS_LIMIT = 15;
+
 export class Outcome {
   /**
    * The index of the outcome
@@ -37,7 +39,10 @@ export class Outcome {
   ) {
     this.index = index;
     this.name = name;
-    this.symbol = name.length > 10 ? name.substring(0, 10) + "..." : name;
+    this.symbol =
+      name.length > CHARACTERS_LIMIT
+        ? name.substring(0, CHARACTERS_LIMIT) + "..."
+        : name;
     this.marketId = marketId;
     this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
   }
