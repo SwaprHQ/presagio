@@ -86,6 +86,7 @@ const getMarketsQuery = gql`
       skip: $skip
       orderBy: $orderBy
       orderDirection: $orderDirection
+      where: { outcomeSlotCount: 2 }
     ) {
       ...marketData
       __typename
