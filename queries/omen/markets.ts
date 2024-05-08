@@ -1,10 +1,12 @@
 import { gql, request } from "graphql-request";
 import {
+  FpmmTrade_Filter,
   Query,
   QueryAccountArgs,
   QueryConditionArgs,
   QueryFixedProductMarketMakerArgs,
   QueryFixedProductMarketMakersArgs,
+  QueryFpmmTradesArgs,
 } from "./types";
 import { OMEN_SUBGRAPH_URL } from "@/constants";
 
@@ -262,6 +264,39 @@ const getConditionMarketQuery = gql`
   }
 `;
 
+const getMarketUserTradesQuery = gql`
+  query GetMarketUserTrades(
+    $creator: ID!
+    $fpmm: ID!
+    $outcomeIndex_in: [BigInt!]
+  ) {
+    fpmmTrades(
+      where: {
+        fpmm: $fpmm
+        creator: $creator
+        outcomeIndex_in: $outcomeIndex_in
+      }
+    ) {
+      creator {
+        id
+      }
+      title
+      outcomeIndex
+      id
+      feeAmount
+      collateralAmount
+      collateralAmountUSD
+      collateralToken
+      outcomeTokenMarginalPrice
+      outcomeTokensTraded
+      oldOutcomeTokenMarginalPrice
+      transactionHash
+      creationTimestamp
+      type
+    }
+  }
+`;
+
 const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
   request<Pick<Query, "fixedProductMarketMaker">>(
     OMEN_SUBGRAPH_URL,
@@ -292,4 +327,19 @@ const getConditionMarket = async (params: QueryConditionArgs) =>
     params
   );
 
-export { getMarket, getMarkets, getAccountMarkets, getConditionMarket };
+const getMarketUserTrades = async (
+  params: QueryFpmmTradesArgs & FpmmTrade_Filter
+) =>
+  request<Pick<Query, "fpmmTrades">>(
+    OMEN_SUBGRAPH_URL,
+    getMarketUserTradesQuery,
+    params
+  );
+
+export {
+  getMarket,
+  getMarkets,
+  getAccountMarkets,
+  getConditionMarket,
+  getMarketUserTrades,
+};

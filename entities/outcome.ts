@@ -1,3 +1,5 @@
+import { fromHex } from "viem";
+
 const CHARACTERS_LIMIT = 15;
 
 export class Outcome {
@@ -35,7 +37,8 @@ export class Outcome {
     index: number,
     name: string,
     marketId: string,
-    percentage?: string
+    percentage?: string,
+    answer?: `0x${string}`
   ) {
     this.index = index;
     this.name = name;
@@ -44,7 +47,12 @@ export class Outcome {
         ? name.substring(0, CHARACTERS_LIMIT) + "..."
         : name;
     this.marketId = marketId;
-    this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
+    if (answer) {
+      const answerNumber = fromHex(answer, "number");
+      this.percentage = answerNumber === index ? "100" : "0";
+    } else {
+      this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
+    }
   }
 
   /**
