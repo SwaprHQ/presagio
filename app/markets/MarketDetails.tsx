@@ -84,7 +84,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           size="sm"
         />
         <Button
-          className="text-text-low-em font-normal"
+          className="font-normal text-text-low-em"
           variant="ghost"
           size="sm"
         >
@@ -93,9 +93,9 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
       </Link>
       <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
         <div className="p-5 space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <Tag
-              className="w-fit capitalize"
+              className="capitalize w-fit"
               size="sm"
               colorScheme="quaternary"
             >
@@ -103,14 +103,14 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             </Tag>
             {marketModel.isClosed ? (
               <Tag
-                className="w-fit capitalize"
+                className="capitalize w-fit"
                 size="sm"
                 colorScheme="quaternary"
               >
                 Market Closed
               </Tag>
             ) : (
-              <p className="text-text-med-em text-sm">
+              <p className="text-sm text-text-med-em">
                 {remainingTime(closingDate)}
               </p>
             )}
@@ -124,10 +124,10 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           </div>
         </div>
         {marketModel.isClosed ? (
-          <div className="p-4 flex space-x-4">
+          <div className="flex p-4 space-x-4">
             {winnerOutcome && (
               <>
-                <p className="text-text-low-em text-sm font-semibold">
+                <p className="text-sm font-semibold text-text-low-em">
                   🥇Winner:{" "}
                   <span
                     className={cx(
@@ -168,33 +168,33 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
 };
 
 const LoadingMarketDetails = () => (
-  <div className="w-full flex flex-col items-center space-y-4">
+  <div className="flex flex-col items-center w-full space-y-4">
     <div className="flex space-x-1.5 items-start w-full max-w-[464px]">
       <div className="size-8 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="w-14 h-8 rounded-8 bg-outline-low-em animate-pulse"></div>
+      <div className="h-8 w-14 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>
     <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
       <div className="p-5 space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div className="w-20 h-7 rounded-8 bg-outline-low-em animate-pulse" />
-          <div className="w-28 h-4 rounded-8 bg-outline-low-em animate-pulse" />
+          <div className="h-4 w-28 rounded-8 bg-outline-low-em animate-pulse" />
         </div>
         <div className="flex space-x-4">
-          <div className="size-20 rounded-8 flex-shrink-0 bg-outline-low-em animate-pulse" />
+          <div className="flex-shrink-0 size-20 rounded-8 bg-outline-low-em animate-pulse" />
           <div className="w-full h-28 rounded-8 bg-outline-low-em animate-pulse" />
         </div>
         <div className="!mt-7 w-full h-10 rounded-8 bg-outline-low-em animate-pulse" />
       </div>
-      <div className="p-2 w-full h-28">
+      <div className="w-full p-2 h-28">
         <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
       </div>
-      <div className="p-2 w-full h-28">
+      <div className="w-full p-2 h-28">
         <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
       </div>
-      <div className="p-2 w-full h-14">
+      <div className="w-full p-2 h-14">
         <div className="w-full h-full" />
       </div>
-      <div className="p-2 w-full h-16">
+      <div className="w-full h-16 p-2">
         <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
       </div>
     </div>
