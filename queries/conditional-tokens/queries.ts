@@ -49,6 +49,53 @@ const getUserPositionsQuery = gql`
   }
 `;
 
+const getMarketUserPositionsQuery = gql`
+  query GetUserPositionsQuery($id: ID!, $conditionIdsStr: String) {
+    userPositions(
+      where: {
+        user_: { id: $id }
+        position_: { conditionIdsStr: $conditionIdsStr }
+      }
+    ) {
+      id
+      balance
+      totalBalance
+      wrappedBalance
+      user {
+        firstParticipation
+        lastActive
+      }
+      position {
+        activeValue
+        conditionIdsStr
+        indexSets
+        multiplicities
+        wrappedTokenAddress
+        collateralTokenAddress
+        collateralToken {
+          activeAmount
+          mergedAmount
+          redeemedAmount
+          splitAmount
+        }
+        conditions {
+          id
+          oracle
+          outcomes
+          outcomeSlotCount
+          payouts
+          payoutNumerators
+          payoutDenominator
+          questionId
+          resolved
+          resolveTimestamp
+          resolveTransaction
+        }
+      }
+    }
+  }
+`;
+
 const getUserPositions = async (
   params: QueryUserPositionArgs & QueryUserPositionsArgs
 ) =>
@@ -58,4 +105,13 @@ const getUserPositions = async (
     params
   );
 
-export { getUserPositions };
+const getMarketUserPositions = async (
+  params: QueryUserPositionArgs & Pick<Position, "conditionIdsStr">
+) =>
+  request<Pick<Query, "userPositions">>(
+    CONDITIONAL_TOKENS_SUBGRAPH_URL,
+    getMarketUserPositionsQuery,
+    params
+  );
+
+export { getUserPositions, getMarketUserPositions };
