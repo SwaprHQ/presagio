@@ -3,15 +3,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
+import { useAccount } from "wagmi";
+import { formatEther } from "viem";
 
 import { Button, Logo, Tag } from "swapr-ui";
 import { Card } from "@/app/components/ui";
 
 import { UserPosition } from "@/queries/conditional-tokens/types";
-import { getConditionMarket } from "@/queries/omen";
-
+import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
 import { remainingTime } from "@/utils/dates";
 import { MarketModel, PositionModel } from "@/models";
+import { tradeTypeMathOperation } from "@/model/market";
+import { WXDAI } from "@/constants";
+import { useReadBalance } from "@/model/conditionalTokens";
 
 interface BetProps {
   userPosition: UserPosition;
@@ -19,6 +23,8 @@ interface BetProps {
 
 export const CardBet = ({ userPosition }: BetProps) => {
   const position = new PositionModel(userPosition.position);
+
+  const { address } = useAccount();
 
   const { data, isLoading } = useQuery({
     queryKey: ["getConditionMarket", position.conditionId],
@@ -29,17 +35,52 @@ export const CardBet = ({ userPosition }: BetProps) => {
     enabled: !!position.conditionId,
   });
 
-  if (isLoading) return <LoadingCardBet />;
-
   const market =
     data?.conditions[0] &&
     new MarketModel(data?.conditions[0]?.fixedProductMarketMakers[0]);
 
+  const outcomeIndex = position.outcomeIndex - 1;
+
+  const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
+    queryKey: ["getMarketUserTrades", address, market?.data.id, outcomeIndex],
+    queryFn: async () => {
+      if (!!address && !!market)
+        return getMarketUserTrades({
+          creator: address.toLowerCase(),
+          fpmm: market.data.id,
+          outcomeIndex_in: [outcomeIndex],
+        });
+    },
+    enabled: !!address,
+  });
+
+  const collateralAmountUSDSpent =
+    userTrades?.fpmmTrades.reduce((acc, trade) => {
+      const type = trade.type;
+      const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
+      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+    }, 0) ?? 0;
+
+  const { data: outcomeBalance, isLoading: isOutcomeBalanceLoading } =
+    useReadBalance(
+      address,
+      market?.data?.collateralToken,
+      market?.data?.condition?.id,
+      position.outcomeIndex
+    );
+
+  const balance = outcomeBalance
+    ? parseFloat(formatEther(outcomeBalance as bigint)).toFixed(2)
+    : "-";
+
+  if (isLoading || isUserTradesLoading || isOutcomeBalanceLoading)
+    return <LoadingCardBet />;
+
   // emptyState
   if (!market) return;
 
-  const isWinner = market.isWinner(position.outcomeIndex);
-  const isLoser = market.isLoser(position.outcomeIndex);
+  const isWinner = market.isWinner(outcomeIndex);
+  const isLoser = market.isLoser(outcomeIndex);
 
   const outcomeAmountString = market.isClosed
     ? isWinner
@@ -63,7 +104,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
         className="block"
       >
         <section className="p-4 h-[144px] flex flex-col justify-between space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div className="flex space-x-2">
               <Tag colorScheme="quaternary" size="sm" className="capitalize">
                 {market.data.category}
@@ -92,7 +133,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
                 Bet amount:
               </p>
               <p className="text-sm font-semibold text-text-high-em">
-                200 <span>SDAI</span>
+                {collateralAmountUSDSpent?.toFixed(2)} {WXDAI.symbol}
               </p>
               <Logo
                 src="https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/100/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo-128.png"
@@ -105,7 +146,10 @@ export const CardBet = ({ userPosition }: BetProps) => {
                 {outcomeAmountString}:
               </p>
               <p className="text-sm font-semibold text-text-high-em">
-                300 <span>SDAI</span>
+                {!market.isClosed || isWinner
+                  ? balance
+                  : collateralAmountUSDSpent?.toFixed(2)}{" "}
+                {WXDAI.symbol}
               </p>
               <Logo
                 src="https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/100/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo-128.png"
