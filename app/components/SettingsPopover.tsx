@@ -1,3 +1,5 @@
+"use client";
+
 import { useTheme } from "next-themes";
 import {
   Icon,
@@ -8,9 +10,15 @@ import {
   ToggleGroup,
   ToogleGroupOption,
 } from "swapr-ui";
+import { useShowClientUI } from "@/hooks/useShowClientUI";
 
 export const SettingsPopover = () => {
   const { setTheme, theme } = useTheme();
+  const showClientUI = useShowClientUI();
+
+  if (!showClientUI) {
+    return null;
+  }
 
   return (
     <Popover>

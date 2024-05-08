@@ -1,3 +1,5 @@
+const CHARACTERS_LIMIT = 15;
+
 export class Outcome {
   /**
    * The index of the outcome
@@ -10,7 +12,7 @@ export class Outcome {
   public readonly name: string;
 
   /**
-   * The name alias
+   * The truncated name
    */
   public readonly symbol: string;
 
@@ -20,15 +22,29 @@ export class Outcome {
   public readonly marketId: string;
 
   /**
+   * The minted percentage on this outcome
+   */
+  public readonly percentage: string | null;
+
+  /**
    * Constructs an instance of Outcome.
    * @param index of the outcome
    * @param name of the outcome
    */
-  public constructor(index: number, name: string, marketId: string) {
+  public constructor(
+    index: number,
+    name: string,
+    marketId: string,
+    percentage?: string
+  ) {
     this.index = index;
     this.name = name;
-    this.symbol = name;
+    this.symbol =
+      name.length > CHARACTERS_LIMIT
+        ? name.substring(0, CHARACTERS_LIMIT) + "..."
+        : name;
     this.marketId = marketId;
+    this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
   }
 
   /**

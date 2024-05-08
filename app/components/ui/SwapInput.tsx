@@ -69,7 +69,7 @@ export const SwapInput = ({
               <Button className="flex-shrink-0" variant="pastel">
                 <p
                   className={cx(
-                    "font-semibold",
+                    "font-semibold text-nowrap",
                     selectedToken.index === 0
                       ? "text-text-success-main"
                       : "text-text-danger-main"
