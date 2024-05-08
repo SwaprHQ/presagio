@@ -1,9 +1,10 @@
 import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from "@/constants";
 import {
+  Position,
   Query,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
-} from "@/queries/conditional-tokens/types";
+} from "./types";
 import { gql, request } from "graphql-request";
 
 const getUserPositionsQuery = gql`
