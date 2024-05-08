@@ -197,7 +197,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   return (
     <>
-      <div className="space-y-2 relative">
+      <div className="relative space-y-2">
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
