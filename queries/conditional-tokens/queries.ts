@@ -1,14 +1,62 @@
 import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from "@/constants";
 import {
+  Position,
   Query,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
-} from "@/queries/conditional-tokens/types";
+} from "./types";
 import { gql, request } from "graphql-request";
 
 const getUserPositionsQuery = gql`
   query OmenGetMyMarkets($id: ID!) {
     userPositions(where: { user_: { id: $id } }) {
+      id
+      balance
+      totalBalance
+      wrappedBalance
+      user {
+        firstParticipation
+        lastActive
+      }
+      position {
+        activeValue
+        conditionIdsStr
+        indexSets
+        multiplicities
+        wrappedTokenAddress
+        collateralTokenAddress
+        collateralToken {
+          activeAmount
+          mergedAmount
+          redeemedAmount
+          splitAmount
+        }
+        conditions {
+          id
+          oracle
+          outcomes
+          outcomeSlotCount
+          payouts
+          payoutNumerators
+          payoutDenominator
+          questionId
+          resolved
+          resolveTimestamp
+          resolveTransaction
+        }
+      }
+    }
+  }
+`;
+
+const getMarketUserPositionsQuery = gql`
+  query GetUserPositionsQuery($id: ID!, $conditionIdsStr: String) {
+    userPositions(
+      where: {
+        user_: { id: $id }
+        position_: { conditionIdsStr: $conditionIdsStr }
+      }
+    ) {
       id
       balance
       totalBalance
@@ -57,4 +105,13 @@ const getUserPositions = async (
     params
   );
 
-export { getUserPositions };
+const getMarketUserPositions = async (
+  params: QueryUserPositionArgs & Pick<Position, "conditionIdsStr">
+) =>
+  request<Pick<Query, "userPositions">>(
+    CONDITIONAL_TOKENS_SUBGRAPH_URL,
+    getMarketUserPositionsQuery,
+    params
+  );
+
+export { getUserPositions, getMarketUserPositions };

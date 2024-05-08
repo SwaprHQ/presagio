@@ -22,6 +22,7 @@ import {
 import { ConfirmTrade } from "./ConfirmTrade";
 import { ModalId, useModalContext } from "@/context/ModalContext";
 import { WXDAI } from "@/constants";
+import { MarketModel } from "../../models";
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = "1";
@@ -196,7 +197,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   return (
     <>
-      <div className="space-y-2 relative">
+      <div className="relative space-y-2">
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
