@@ -8,9 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   Icon,
-  IconBadge,
 } from "swapr-ui";
-import Image from "next/image";
 import { SLIPPAGE, SwapDirection, SwapState } from ".";
 import { useState } from "react";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
@@ -22,6 +20,7 @@ import { useConfig } from "wagmi";
 import { Address, erc20Abi, formatEther, parseEther } from "viem";
 import { useReadCalcSellAmount } from "@/model/market";
 import { WXDAI } from "@/constants";
+import { TransactionModal } from "./TransactionModal";
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -60,9 +59,6 @@ export const ConfirmTrade = ({
     closeModal(ModalId.CONFIRM_SWAP);
   };
 
-  const closeTxModal = () => {
-    closeModal(ModalId.WAITING_TRANSACTION);
-  };
   const openTxModal = () => {
     openModal(ModalId.WAITING_TRANSACTION);
   };
@@ -183,7 +179,6 @@ export const ConfirmTrade = ({
 
   return (
     <>
-      <div></div>
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_SWAP)}
         onOpenChange={closeBetModal}
@@ -198,9 +193,9 @@ export const ConfirmTrade = ({
             Confirm Swap
           </DialogHeader>
           <DialogBody className="px-2 space-y-2">
-            <div className="bg-surface-surface-1 rounded-16 relative">
+            <div className="relative bg-surface-surface-1 rounded-16">
               <div className="border-b-[1px] border-b-outline-base-em w-full flex flex-col items-center pt-3 pb-8 space-y-1">
-                <p className="text-xs text-text-low-em uppercase">You sell</p>
+                <p className="text-xs uppercase text-text-low-em">You sell</p>
                 <div className="text-2xl uppercase">
                   <span>{twoDecimalsTokenAmountIn}</span>{" "}
                   <span className="text-text-low-em">
@@ -211,8 +206,8 @@ export const ConfirmTrade = ({
               <div className="flex items-center justify-center rounded-100 bg-surface-surface-3 h-[40px] w-[56px] absolute top-[calc(50%_-_20px)] left-[calc(50%_-_28px)]">
                 <Icon name="arrow-down" />
               </div>
-              <div className="w-full flex flex-col items-center pt-8 pb-3 space-y-1">
-                <p className="text-xs text-text-low-em uppercase">You buy</p>
+              <div className="flex flex-col items-center w-full pt-8 pb-3 space-y-1">
+                <p className="text-xs uppercase text-text-low-em">You buy</p>
                 <div className="text-2xl uppercase">
                   <span>{twoDecimalsTokenAmountOut}</span>{" "}
                   <span className="text-text-low-em">
@@ -266,66 +261,7 @@ export const ConfirmTrade = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Dialog
-        open={isModalOpen(ModalId.WAITING_TRANSACTION)}
-        onOpenChange={closeTxModal}
-      >
-        <DialogContent className="">
-          <DialogHeader />
-          <DialogBody className="max-w-[496px] w-[496px] px-2 space-y-2 mt-8 mb-8">
-            <div className="flex flex-col items-center w-full space-y-20">
-              {isTxLoading ? (
-                <>
-                  <Image
-                    src="/spinner.svg"
-                    alt="spinner"
-                    width={56}
-                    height={56}
-                    className="animate-spin"
-                  />
-                  <div className="flex flex-col items-center space-y-2">
-                    <p className="text-text-high-em text-2xl font-semibold">
-                      Transaction submitted
-                    </p>
-                    <p className="text-text-low-em text-md font-semibold text-center max-w-80">
-                      The transaction has been submitted. <br />
-                      It takes a couple of minutes to complete.
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <IconBadge name="tick" colorScheme="success" />
-                  <div className="flex flex-col items-center space-y-2">
-                    <p className="text-text-high-em text-2xl font-semibold">
-                      Transaction successful!
-                    </p>
-                    <p className="text-text-low-em text-md font-semibold text-center max-w-80">
-                      The transaction has been completed. <br />
-                      You can close this window now.
-                    </p>
-                  </div>
-                </>
-              )}
-            </div>
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              width="full"
-              colorScheme={isTxLoading ? "primary" : "success"}
-              variant="pastel"
-              onClick={() =>
-                window.open(`https://gnosisscan.io/tx/${txHash}`, "_blank")
-              }
-              size="lg"
-            >
-              <>
-                View in explorer <Icon name="arrow-top-right" />
-              </>
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TransactionModal isLoading={isTxLoading} txHash={txHash} />
     </>
   );
 };
