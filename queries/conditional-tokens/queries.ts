@@ -2,6 +2,7 @@ import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from "@/constants";
 import {
   Position,
   Query,
+  QueryConditionArgs,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
 } from "./types";
@@ -96,6 +97,29 @@ const getMarketUserPositionsQuery = gql`
   }
 `;
 
+const getConditionQuery = gql`
+  query GetCondition($id: ID!) {
+    condition(id: $id) {
+      conditionId
+      createTimestamp
+      createTransaction
+      creator
+      id
+      oracle
+      outcomeSlotCount
+      outcomes
+      payoutDenominator
+      payoutNumerators
+      payouts
+      resolved
+      title
+      resolveTimestamp
+      resolveTransaction
+      resolveBlockNumber
+    }
+  }
+`;
+
 const getUserPositions = async (
   params: QueryUserPositionArgs & QueryUserPositionsArgs
 ) =>
@@ -114,4 +138,11 @@ const getMarketUserPositions = async (
     params
   );
 
-export { getUserPositions, getMarketUserPositions };
+const getCondition = async (params: QueryConditionArgs) =>
+  request<Pick<Query, "condition">>(
+    CONDITIONAL_TOKENS_SUBGRAPH_URL,
+    getConditionQuery,
+    params
+  );
+
+export { getUserPositions, getMarketUserPositions, getCondition };

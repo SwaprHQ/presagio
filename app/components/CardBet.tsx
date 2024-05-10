@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
-import { useAccount } from "wagmi";
+import { useAccount, useConfig } from "wagmi";
 import { formatEther } from "viem";
 
 import { Button, Logo, Tag } from "swapr-ui";
@@ -15,7 +15,11 @@ import { remainingTime } from "@/utils/dates";
 import { MarketModel, PositionModel } from "@/models";
 import { tradeTypeMathOperation } from "@/model/market";
 import { WXDAI } from "@/constants";
-import { useReadBalance } from "@/model/conditionalTokens";
+import { redeemPositions } from "@/model/conditionalTokens";
+import { waitForTransactionReceipt } from "wagmi/actions";
+import { useState } from "react";
+import { ModalId, useModalContext } from "@/context/ModalContext";
+import { TransactionModal } from "./TransactionModal";
 
 interface BetProps {
   userPosition: UserPosition;
@@ -24,7 +28,11 @@ interface BetProps {
 export const CardBet = ({ userPosition }: BetProps) => {
   const position = new PositionModel(userPosition.position);
 
+  const config = useConfig();
   const { address } = useAccount();
+  const [txHash, setTxHash] = useState("");
+  const [isTxLoading, setIsTxLoading] = useState(false);
+  const { openModal } = useModalContext();
 
   const { data, isLoading } = useQuery({
     queryKey: ["getConditionMarket", position.conditionId],
@@ -61,20 +69,18 @@ export const CardBet = ({ userPosition }: BetProps) => {
       return tradeTypeMathOperation[type](acc, collateralAmountUSD);
     }, 0) ?? 0;
 
-  const { data: outcomeBalance, isLoading: isOutcomeBalanceLoading } =
-    useReadBalance(
-      address,
-      market?.data?.collateralToken,
-      market?.data?.condition?.id,
-      position.outcomeIndex
-    );
+  const outcomeBalance =
+    userTrades?.fpmmTrades.reduce((acc, trade) => {
+      const type = trade.type;
+      const collateralAmountUSD = parseFloat(
+        formatEther(trade.outcomeTokensTraded as bigint)
+      );
+      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+    }, 0) ?? 0;
 
-  const balance = outcomeBalance
-    ? parseFloat(formatEther(outcomeBalance as bigint)).toFixed(2)
-    : "-";
+  const balance = outcomeBalance ? outcomeBalance.toFixed(2) : "-";
 
-  if (isLoading || isUserTradesLoading || isOutcomeBalanceLoading)
-    return <LoadingCardBet />;
+  if (isLoading || isUserTradesLoading) return <LoadingCardBet />;
 
   // emptyState
   if (!market) return;
@@ -87,6 +93,35 @@ export const CardBet = ({ userPosition }: BetProps) => {
       ? "You won"
       : "You lost"
     : "Potential win";
+
+  const condition = userPosition.position.conditions[0];
+
+  const isResolved = condition.resolved;
+  const isClaimed = !outcomeBalance;
+  const hasPayoutDenominator = +condition.payoutDenominator > 0;
+
+  const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+
+  const redeem = async () => {
+    setIsTxLoading(true);
+
+    try {
+      const txHash = await redeemPositions({
+        conditionId: condition.id,
+        outcomeIndex: position.outcomeIndex,
+      });
+      setTxHash(txHash);
+      openModal(ModalId.WAITING_TRANSACTION);
+
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsTxLoading(false);
+    }
+  };
 
   return (
     <Card
@@ -158,10 +193,18 @@ export const CardBet = ({ userPosition }: BetProps) => {
               />
             </div>
           </div>
-          {isWinner && (
-            <Button size="sm" colorScheme="success" variant="pastel">
-              Reedem
-            </Button>
+          {canClaim && (
+            <>
+              <Button
+                size="sm"
+                colorScheme="success"
+                variant="pastel"
+                onClick={redeem}
+              >
+                Reedem
+              </Button>
+              <TransactionModal isLoading={isTxLoading} txHash={txHash} />
+            </>
           )}
         </div>
       </section>
