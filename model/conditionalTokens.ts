@@ -1,6 +1,9 @@
 import { UseReadContractParameters, useReadContract } from "wagmi";
 import ConditionalTokensABI from "@/abi/conditionalTokens.json";
 import { Abi, Address, zeroHash } from "viem";
+import { writeContract } from "wagmi/actions";
+import { config } from "@/providers/config";
+import { WXDAI } from "@/constants";
 
 export const CONDITIONAL_TOKEN_CONTRACT_ADDRESS =
   "0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce";
@@ -65,4 +68,25 @@ export const useReadBalance = (
   );
 
   return useReadBalanceOf(owner, positionId as number);
+};
+
+interface RedeemPositionsArgs {
+  collateralToken?: string;
+  parentCollectionId?: string;
+  conditionId: string;
+  outcomeIndex: number;
+}
+
+export const redeemPositions = async ({
+  collateralToken = WXDAI.address,
+  parentCollectionId = zeroHash,
+  conditionId,
+  outcomeIndex,
+}: RedeemPositionsArgs) => {
+  return await writeContract(config, {
+    abi: ConditionalTokensABI,
+    address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
+    functionName: "redeemPositions",
+    args: [collateralToken, parentCollectionId, conditionId, [outcomeIndex]],
+  });
 };
