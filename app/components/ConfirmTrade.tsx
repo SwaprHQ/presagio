@@ -13,12 +13,14 @@ import { SLIPPAGE, SwapDirection, SwapState } from ".";
 import { useState } from "react";
 import { waitForTransactionReceipt, writeContract } from "wagmi/actions";
 import MarketABI from "@/abi/market.json";
-import { CONDITIONAL_TOKEN_CONTRACT_ADDRESS } from "@/model/conditionalTokens";
+import {
+  CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
+  useReadCalcSellAmount,
+} from "@/contracts";
 import ConditionalTokensABI from "@/abi/conditionalTokens.json";
 import { addFraction, removeFraction } from "@/utils/price";
 import { useConfig } from "wagmi";
 import { Address, erc20Abi, formatEther, parseEther } from "viem";
-import { useReadCalcSellAmount } from "@/model/market";
 import { WXDAI } from "@/constants";
 import { TransactionModal } from "./TransactionModal";
 
