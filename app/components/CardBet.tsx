@@ -12,8 +12,8 @@ import { Card } from "@/app/components/ui";
 import { UserPosition } from "@/queries/conditional-tokens/types";
 import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
 import { remainingTime } from "@/utils/dates";
-import { Market, Position } from "@/entities";
-import { tradeTypeMathOperation, redeemPositions } from "@/contracts";
+import { Market, Position, valueByTrade } from "@/entities";
+import { redeemPositions } from "@/hooks/contracts";
 import { WXDAI } from "@/constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useState } from "react";
@@ -65,7 +65,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
     userTrades?.fpmmTrades.reduce((acc, trade) => {
       const type = trade.type;
       const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     }, 0) ?? 0;
 
   const outcomeBalance =
@@ -74,7 +74,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
       const collateralAmountUSD = parseFloat(
         formatEther(trade.outcomeTokensTraded as bigint)
       );
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     }, 0) ?? 0;
 
   const balance = outcomeBalance ? outcomeBalance.toFixed(2) : "-";

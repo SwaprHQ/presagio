@@ -16,7 +16,7 @@ import MarketABI from "@/abi/market.json";
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   useReadCalcSellAmount,
-} from "@/contracts";
+} from "@/hooks/contracts";
 import ConditionalTokensABI from "@/abi/conditionalTokens.json";
 import { addFraction, removeFraction } from "@/utils/price";
 import { useConfig } from "wagmi";

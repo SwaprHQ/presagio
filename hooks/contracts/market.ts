@@ -1,7 +1,6 @@
 import MarketABI from "@/abi/market.json";
 import { Abi, Address, parseEther } from "viem";
 import { UseReadContractParameters, useReadContract } from "wagmi";
-import { TradeType } from "@/queries/omen";
 
 export const useReadMarketContract = ({
   address,
@@ -44,11 +43,4 @@ export const useReadCalcSellAmount = (
     args: [amountWei, outcomeIndex],
     query: { enabled: !!tokenOutAmount },
   });
-};
-
-export const tradeTypeMathOperation = {
-  [TradeType.Buy]: (previousValue: number, newValue: number) =>
-    previousValue + newValue,
-  [TradeType.Sell]: (previousValue: number, newValue: number) =>
-    previousValue - newValue,
 };

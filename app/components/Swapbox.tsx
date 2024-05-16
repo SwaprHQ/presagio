@@ -12,7 +12,7 @@ import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   useReadBalance,
   useReadCalcBuyAmount,
-} from "@/contracts";
+} from "@/hooks/contracts";
 import ConditionalTokensABI from "@/abi/conditionalTokens.json";
 import {
   calcSellAmountInCollateral,
