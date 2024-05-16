@@ -16,8 +16,8 @@ export const CardMarket = ({ market }: CardMarketProps) => {
   const closingDate = new Date(+market.openingTimestamp * 1000);
 
   return (
-    <Card className="sm:w-[344px]">
-      <section className="p-4 h-[160px] flex flex-col justify-between">
+    <Card>
+      <div className="p-4 h-[160px] flex flex-col justify-between">
         <div className="flex space-x-4 ">
           <div className="size-[40px] bg-text-low-em rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
           <ScrollArea className="flex-1 font-semibold text-text-high-em h-[98px]">
@@ -25,8 +25,8 @@ export const CardMarket = ({ market }: CardMarketProps) => {
           </ScrollArea>
         </div>
         <OutcomeBar market={market} />
-      </section>
-      <section className="flex items-center h-[40px] px-4 border-t border-outline-base-em">
+      </div>
+      <div className="flex items-center h-[40px] px-4 border-t border-outline-base-em">
         <div className="flex items-center justify-between w-full space-x-4">
           <div className="flex items-center space-x-2">
             <Logo
@@ -43,14 +43,14 @@ export const CardMarket = ({ market }: CardMarketProps) => {
             {remainingTime(closingDate)}
           </p>
         </div>
-      </section>
+      </div>
     </Card>
   );
 };
 
 export const LoadingCardMarket = () => (
-  <Card className="sm:w-[344px] h-[202px]">
-    <div className="space-y-3 p-4">
+  <Card className="h-[202px] w-full">
+    <div className="p-4 space-y-3">
       <div className="h-[80px] rounded-8 bg-outline-low-em animate-pulse"></div>
       <div className="h-9 rounded-8 bg-outline-low-em animate-pulse"></div>
     </div>

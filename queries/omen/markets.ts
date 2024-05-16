@@ -1,5 +1,6 @@
 import { gql, request } from "graphql-request";
 import {
+  FixedProductMarketMaker_Filter,
   FpmmTrade_Filter,
   Query,
   QueryAccountArgs,
@@ -82,13 +83,17 @@ const getMarketsQuery = gql`
     $skip: Int!
     $orderBy: String
     $orderDirection: String
+    $title_contains_nocase: String
   ) {
     fixedProductMarketMakers(
       first: $first
       skip: $skip
       orderBy: $orderBy
       orderDirection: $orderDirection
-      where: { outcomeSlotCount: 2 }
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+      }
     ) {
       ...marketData
       __typename
@@ -304,7 +309,9 @@ const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
     params
   );
 
-const getMarkets = async (params: QueryFixedProductMarketMakersArgs) =>
+const getMarkets = async (
+  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
+) =>
   request<Pick<Query, "fixedProductMarketMakers">>(
     OMEN_SUBGRAPH_URL,
     getMarketsQuery,
