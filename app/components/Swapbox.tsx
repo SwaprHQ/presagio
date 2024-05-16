@@ -6,13 +6,13 @@ import { useEffect, useState } from "react";
 import { erc20Abi, formatEther, parseEther, Address } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from ".";
-import { useReadCalcBuyAmount } from "@/model/market";
 import { Outcome, Token } from "@/entities";
 import { FixedProductMarketMaker } from "@/queries/omen";
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   useReadBalance,
-} from "@/model/conditionalTokens";
+  useReadCalcBuyAmount,
+} from "@/hooks/contracts";
 import ConditionalTokensABI from "@/abi/conditionalTokens.json";
 import {
   calcSellAmountInCollateral,
@@ -22,7 +22,6 @@ import {
 import { ConfirmTrade } from "./ConfirmTrade";
 import { ModalId, useModalContext } from "@/context/ModalContext";
 import { WXDAI } from "@/constants";
-import { MarketModel } from "../../models";
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = "1";
@@ -201,7 +200,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
-          onChange={(event) => {
+          onChange={event => {
             setTokenAmountIn(event.target.value);
           }}
           onClick={currentState.changeInToken}

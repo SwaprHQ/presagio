@@ -1,11 +1,11 @@
-import { Position } from "@/queries/conditional-tokens/types";
+import { Position as ConditionalTokenPosition } from "@/queries/conditional-tokens/types";
 
-export class PositionModel {
+export class Position {
   conditionId: string;
   outcomeIndex: number;
   outcomes?: string[] | null;
 
-  constructor(position: Position) {
+  constructor(position: ConditionalTokenPosition) {
     this.conditionId = position.conditionIdsStr;
     this.outcomeIndex = position.indexSets[0];
     this.outcomes = position.conditions?.[0]?.outcomes;

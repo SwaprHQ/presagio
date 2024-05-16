@@ -12,10 +12,9 @@ import { Card } from "@/app/components/ui";
 import { UserPosition } from "@/queries/conditional-tokens/types";
 import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
 import { remainingTime } from "@/utils/dates";
-import { MarketModel, PositionModel } from "@/models";
-import { tradeTypeMathOperation } from "@/model/market";
+import { Market, Position, valueByTrade } from "@/entities";
+import { redeemPositions } from "@/hooks/contracts";
 import { WXDAI } from "@/constants";
-import { redeemPositions } from "@/model/conditionalTokens";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useState } from "react";
 import { ModalId, useModalContext } from "@/context/ModalContext";
@@ -26,7 +25,7 @@ interface BetProps {
 }
 
 export const CardBet = ({ userPosition }: BetProps) => {
-  const position = new PositionModel(userPosition.position);
+  const position = new Position(userPosition.position);
 
   const config = useConfig();
   const { address } = useAccount();
@@ -45,7 +44,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
 
   const market =
     data?.conditions[0] &&
-    new MarketModel(data?.conditions[0]?.fixedProductMarketMakers[0]);
+    new Market(data?.conditions[0]?.fixedProductMarketMakers[0]);
 
   const outcomeIndex = position.outcomeIndex - 1;
 
@@ -66,7 +65,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
     userTrades?.fpmmTrades.reduce((acc, trade) => {
       const type = trade.type;
       const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     }, 0) ?? 0;
 
   const outcomeBalance =
@@ -75,7 +74,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
       const collateralAmountUSD = parseFloat(
         formatEther(trade.outcomeTokensTraded as bigint)
       );
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     }, 0) ?? 0;
 
   const balance = outcomeBalance ? outcomeBalance.toFixed(2) : "-";

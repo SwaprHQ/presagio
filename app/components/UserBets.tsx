@@ -3,15 +3,14 @@ import { useAccount } from "wagmi";
 import { formatEther } from "viem";
 import { cx } from "class-variance-authority";
 import { waitForTransactionReceipt } from "wagmi/actions";
-import { MarketModel } from "@/models";
+import { Market, valueByTrade } from "@/entities";
 import { useState } from "react";
 import { Button, Icon, Logo, Tag } from "swapr-ui";
 import { WXDAI } from "@/constants";
 import { TransactionModal } from ".";
 import { ModalId, useModalContext } from "@/context/ModalContext";
 import { config } from "@/providers/config";
-import { redeemPositions, useReadBalance } from "@/model/conditionalTokens";
-import { tradeTypeMathOperation } from "@/model/market";
+import { redeemPositions, useReadBalance } from "@/hooks/contracts";
 import { getCondition } from "@/queries/conditional-tokens";
 import { FixedProductMarketMaker, getMarketUserTrades } from "@/queries/omen";
 
@@ -53,15 +52,15 @@ export const UserBets = ({ market }: UserBets) => {
   });
 
   const [outcome0UserTrades, outcome1UserTrades] = [
-    userTrades?.fpmmTrades.filter((trade) => trade.outcomeIndex === "0") || [],
-    userTrades?.fpmmTrades.filter((trade) => trade.outcomeIndex === "1") || [],
+    userTrades?.fpmmTrades.filter(trade => trade.outcomeIndex === "0") || [],
+    userTrades?.fpmmTrades.filter(trade => trade.outcomeIndex === "1") || [],
   ];
 
   const outcome0CollateralAmountUSDSpent = outcome0UserTrades.reduce(
     (acc, trade) => {
       const type = trade.type;
       const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     },
     0
   );
@@ -70,7 +69,7 @@ export const UserBets = ({ market }: UserBets) => {
     (acc, trade) => {
       const type = trade.type;
       const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+      return valueByTrade[type](acc, collateralAmountUSD);
     },
     0
   );
@@ -85,7 +84,7 @@ export const UserBets = ({ market }: UserBets) => {
     const collateralAmountUSD = parseFloat(
       formatEther(trade.outcomeTokensTraded as bigint)
     );
-    return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+    return valueByTrade[type](acc, collateralAmountUSD);
   }, 0);
 
   const outcome1TradedBalance = outcome1UserTrades.reduce((acc, trade) => {
@@ -93,7 +92,7 @@ export const UserBets = ({ market }: UserBets) => {
     const collateralAmountUSD = parseFloat(
       formatEther(trade.outcomeTokensTraded as bigint)
     );
-    return tradeTypeMathOperation[type](acc, collateralAmountUSD);
+    return valueByTrade[type](acc, collateralAmountUSD);
   }, 0);
 
   const outcomesTradedBalance = [outcome0TradedBalance, outcome1TradedBalance];
@@ -119,7 +118,7 @@ export const UserBets = ({ market }: UserBets) => {
   )
     return null;
 
-  const marketModel = new MarketModel(market);
+  const marketModel = new Market(market);
 
   const { condition } = conditionData;
   const isResolved = condition.resolved;

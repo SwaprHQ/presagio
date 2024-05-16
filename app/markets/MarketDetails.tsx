@@ -7,7 +7,7 @@ import { Button, IconButton, Tag } from "swapr-ui";
 import { remainingTime } from "@/utils/dates";
 import Link from "next/link";
 import { Address } from "viem";
-import { MarketModel } from "@/models";
+import { Market } from "@/entities";
 import { UserBets } from "../components/UserBets";
 
 interface MarketDetailsProps {
@@ -25,7 +25,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
     return <LoadingMarketDetails />;
 
   const market = data.fixedProductMarketMaker;
-  const marketModel = new MarketModel(market);
+  const marketModel = new Market(market);
 
   const closingDate = new Date(+market.openingTimestamp * 1000);
 

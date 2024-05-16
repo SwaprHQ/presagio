@@ -2,7 +2,7 @@ import { FixedProductMarketMaker } from "@/queries/omen";
 import { fromHex } from "viem";
 import { Outcome } from "@/entities";
 
-export class MarketModel {
+export class Market {
   data: FixedProductMarketMaker;
   closingDate: Date;
   answer: number | null;
