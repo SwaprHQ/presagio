@@ -49,7 +49,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
 };
 
 export const LoadingCardMarket = () => (
-  <Card className="h-[202px] w-full">
+  <Card className="h-[202px]">
     <div className="p-4 space-y-3">
       <div className="h-[80px] rounded-8 bg-outline-low-em animate-pulse"></div>
       <div className="h-9 rounded-8 bg-outline-low-em animate-pulse"></div>
