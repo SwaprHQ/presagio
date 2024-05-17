@@ -69,7 +69,7 @@ export default function HomePage() {
             className="w-full md:w-72"
             placeholder="Search market"
             leftIcon="search"
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={event => setSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -81,7 +81,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map((option) => {
+                {filterOptions.map(option => {
                   return (
                     <div
                       key={option.name}
@@ -113,13 +113,13 @@ export default function HomePage() {
       </div>
       {isLoading ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {[...Array(ITEMS_PER_PAGE)].map((index) => (
-            <LoadingCardMarket key={index} />
+          {Array.from(Array(ITEMS_PER_PAGE).keys()).map(index => (
+            <LoadingCardMarket key={Number(index)} />
           ))}
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map((market) => (
+          {markets.map(market => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>
