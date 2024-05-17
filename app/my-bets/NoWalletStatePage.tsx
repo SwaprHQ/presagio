@@ -1,14 +1,15 @@
 import { ConnectButton } from "@/app/components";
 import Image from "next/image";
 
-export default function NoWalletState() {
+export default function NoWalletStatePage() {
   return (
-    <div className="w-full px-6 mt-12 space-y-8 md:items-center md:flex md:flex-col">
+    <div className="w-full px-6 mt-12 space-y-8 items-center md:flex md:flex-col">
       <Image
         src="/assets/images/connect-wallet.svg"
         width={112}
         height={112}
         alt={"connect wallet"}
+        className="mx-auto"
       />
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold text-text-high-em">
