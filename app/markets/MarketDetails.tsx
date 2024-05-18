@@ -31,21 +31,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   return (
     <div className="w-full">
       <div className="max-w-[464px] mx-auto space-y-4">
-        <Link className="flex space-x-1.5 items-center w-fit group" href="/">
-          <IconButton
-            className="text-text-med-em"
-            name="arrow-left"
-            variant="pastel"
-            size="sm"
-          />
-          <Button
-            className="font-normal text-text-low-em"
-            variant="ghost"
-            size="sm"
-          >
-            Go back
-          </Button>
-        </Link>
+        <BackButton />
         <div className="w-full border bg-surface-surface-0 rounded-16 border-outline-base-em">
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
@@ -92,9 +78,8 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
 
 const LoadingMarketDetails = () => (
   <div className="flex flex-col items-center w-full space-y-4">
-    <div className="flex space-x-1.5 items-start w-full max-w-[464px]">
-      <div className="size-8 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="h-8 w-14 rounded-8 bg-outline-low-em animate-pulse"></div>
+    <div className="flex  items-start w-full max-w-[464px]">
+      <div className="w-20 h-8 rounded-12 bg-outline-low-em animate-pulse"></div>
     </div>
     <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
       <div className="p-5 space-y-4">
@@ -122,4 +107,21 @@ const LoadingMarketDetails = () => (
       </div>
     </div>
   </div>
+);
+
+const BackButton = () => (
+  <Link
+    className="flex items-center w-fit rounded-12 hover:bg-surface-surface-2"
+    href="/"
+  >
+    <IconButton
+      className="text-text-med-em hover:bg-surface-surface-2"
+      name="arrow-left"
+      variant="pastel"
+      size="sm"
+    />
+    <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
+      Go back
+    </Button>
+  </Link>
 );

@@ -63,7 +63,6 @@ export default function HomePage() {
     <div className="justify-center px-6 mt-12 space-y-12 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
       <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
         <h1 className="text-2xl font-semibold text-white">🔮 All markets</h1>
-
         <div className="flex items-center space-x-2">
           <Input
             className="w-full md:w-72"
