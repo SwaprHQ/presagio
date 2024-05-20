@@ -26,74 +26,60 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
 
   const market = data.fixedProductMarketMaker;
   const marketModel = new Market(market);
-
   const closingDate = new Date(+market.openingTimestamp * 1000);
 
   return (
-    <div className="space-y-4">
-      <Link className="flex space-x-1.5 items-center w-fit group" href="/">
-        <IconButton
-          className="text-text-med-em"
-          name="arrow-left"
-          variant="pastel"
-          size="sm"
-        />
-        <Button
-          className="font-normal text-text-low-em"
-          variant="ghost"
-          size="sm"
-        >
-          Go back
-        </Button>
-      </Link>
-      <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <Tag
-              className="capitalize w-fit"
-              size="sm"
-              colorScheme="quaternary"
-            >
-              {market.category}
-            </Tag>
-            {marketModel.isClosed ? (
+    <div className="w-full">
+      <div className="max-w-[464px] mx-auto space-y-4">
+        <BackButton />
+        <div className="w-full border bg-surface-surface-0 rounded-16 border-outline-base-em">
+          <div className="p-5 space-y-4">
+            <div className="flex items-center justify-between">
               <Tag
                 className="capitalize w-fit"
                 size="sm"
                 colorScheme="quaternary"
               >
-                Market Closed
+                {market.category}
               </Tag>
-            ) : (
-              <p className="text-sm text-text-med-em">
-                {remainingTime(closingDate)}
-              </p>
-            )}
+              {marketModel.isClosed ? (
+                <Tag
+                  className="capitalize w-fit"
+                  size="sm"
+                  colorScheme="quaternary"
+                >
+                  Market Closed
+                </Tag>
+              ) : (
+                <p className="text-sm text-text-med-em">
+                  {remainingTime(closingDate)}
+                </p>
+              )}
+            </div>
+            <div className="flex space-x-4">
+              <div className="size-20 rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6] flex-shrink-0" />
+              <h1 className="text-xl font-semibold">{market.title}</h1>
+            </div>
+            <div className="!mt-7">
+              <OutcomeBar market={market} />
+            </div>
           </div>
-          <div className="flex space-x-4">
-            <div className="size-20 rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6] flex-shrink-0" />
-            <h1 className="text-xl font-semibold">{market.title}</h1>
-          </div>
-          <div className="!mt-7">
-            <OutcomeBar market={market} />
-          </div>
+          {!marketModel.isClosed && (
+            <div className="p-2">
+              <Swapbox market={market} />
+            </div>
+          )}
         </div>
-        {!marketModel.isClosed && (
-          <div className="p-2">
-            <Swapbox market={market} />
-          </div>
-        )}
+        <UserBets market={market} />
       </div>
-      <UserBets market={market} />
     </div>
   );
 };
 
 const LoadingMarketDetails = () => (
   <div className="flex flex-col items-center w-full space-y-4">
-    <div className="flex space-x-1.5 items-start w-full max-w-[464px]">
-      <div className="size-8 rounded-8 bg-outline-low-em animate-pulse"></div>
-      <div className="h-8 w-14 rounded-8 bg-outline-low-em animate-pulse"></div>
+    <div className="flex  items-start w-full max-w-[464px]">
+      <div className="w-20 h-8 rounded-12 bg-outline-low-em animate-pulse"></div>
     </div>
     <div className="bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em">
       <div className="p-5 space-y-4">
@@ -121,4 +107,21 @@ const LoadingMarketDetails = () => (
       </div>
     </div>
   </div>
+);
+
+const BackButton = () => (
+  <Link
+    className="flex items-center w-fit rounded-12 hover:bg-surface-surface-2"
+    href="/"
+  >
+    <IconButton
+      className="text-text-med-em hover:bg-surface-surface-2"
+      name="arrow-left"
+      variant="pastel"
+      size="sm"
+    />
+    <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
+      Go back
+    </Button>
+  </Link>
 );

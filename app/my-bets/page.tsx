@@ -1,20 +1,15 @@
 "use client";
 
 import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
-import NoWalletState from "@/app/my-bets/NoWalletState";
+import NoBetsStatePage from "@/app/my-bets/NoBetsStatePage";
+import NoWalletStatePage from "@/app/my-bets/NoWalletStatePage";
+
 import { getUserPositions } from "@/queries/conditional-tokens";
 import { UserPosition } from "@/queries/conditional-tokens/types";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { PropsWithChildren } from "react";
-import {
-  Button,
-  TabBody,
-  TabGroup,
-  TabHeader,
-  TabPanel,
-  TabStyled,
-} from "swapr-ui";
+
+import { PropsWithChildren, ReactNode } from "react";
+import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
 import { useAccount } from "wagmi";
 
 export default function MyBetsPage() {
@@ -30,17 +25,16 @@ export default function MyBetsPage() {
   });
 
   const userPositions = data?.userPositions ?? [];
-  const emptyData = data && data.userPositions.length == 0;
 
   const filterActiveBets = userPositions.filter(
     position => position.position.conditions[0].resolved === false
   );
-
   const filterClompleteBets = userPositions.filter(
     position => position.position.conditions[0].resolved
   );
 
-  if (!address) return <NoWalletState />;
+  if (!address) return <NoWalletStatePage />;
+  if (data && data.userPositions.length == 0) return <NoBetsStatePage />;
 
   return (
     <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
@@ -53,69 +47,28 @@ export default function MyBetsPage() {
             }
           >
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <TabStyled>
-                All bets
-                <TabBetCounter>{userPositions?.length ?? "-"}</TabBetCounter>
-              </TabStyled>
-              <TabStyled>
-                Active
-                <TabBetCounter>{filterActiveBets.length ?? "-"}</TabBetCounter>
-              </TabStyled>
-              <TabStyled>
-                Unredeemed
-                <TabBetCounter>0</TabBetCounter>
-              </TabStyled>
-              <TabStyled>
-                Complete
-                <TabBetCounter>
-                  {filterClompleteBets.length ?? "-"}
-                </TabBetCounter>
-              </TabStyled>
+              <BetsListTab bets={userPositions}>All Bets</BetsListTab>
+              <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
+              <BetsListTab bets={filterClompleteBets}>Unredeemed</BetsListTab>
+              <BetsListTab bets={filterClompleteBets}>Complete</BetsListTab>
             </TabHeader>
-
             <TabBody className="mt-8">
-              <TabPanel className="space-y-4">
-                {isLoading ? (
-                  <LoadingBets />
-                ) : emptyData ? (
-                  <EmptyState />
-                ) : (
-                  userPositions.map((position: UserPosition) => (
-                    <CardBet userPosition={position} key={position.id} />
-                  ))
-                )}
-              </TabPanel>
-              <TabPanel>
-                {isLoading ? (
-                  <LoadingBets />
-                ) : filterActiveBets.length === 0 ? (
-                  <div className="bg-surface-surface-1 p-6 rounded-12 space-y-4">
-                    <p>No active bets</p>
-                  </div>
-                ) : (
-                  filterActiveBets.map((position: UserPosition) => (
-                    <CardBet userPosition={position} key={position.id} />
-                  ))
-                )}
-              </TabPanel>
-              <TabPanel>
-                <div className="bg-surface-surface-1 p-6 rounded-12 space-y-4">
-                  <p>No redeemable bets</p>
-                </div>
-              </TabPanel>
-              <TabPanel className="space-y-4">
-                {isLoading ? (
-                  <LoadingBets />
-                ) : filterClompleteBets.length === 0 ? (
-                  <div className="bg-surface-surface-1 p-6 rounded-12 space-y-4">
-                    <p>No complete bets</p>
-                  </div>
-                ) : (
-                  filterClompleteBets.map((position: UserPosition) => (
-                    <CardBet userPosition={position} key={position.id} />
-                  ))
-                )}
-              </TabPanel>
+              <BetsListPanel bets={userPositions} isLoading={isLoading} />
+              <BetsListPanel
+                emptyText="No active bets"
+                bets={filterActiveBets}
+                isLoading={isLoading}
+              />
+              <BetsListPanel
+                emptyText="No redeemable bets"
+                bets={filterClompleteBets}
+                isLoading={isLoading}
+              />
+              <BetsListPanel
+                emptyText="No complete bets"
+                bets={filterClompleteBets}
+                isLoading={isLoading}
+              />
             </TabBody>
           </TabGroup>
         </div>
@@ -124,7 +77,7 @@ export default function MyBetsPage() {
   );
 }
 
-const TabBetCounter = ({ children }: PropsWithChildren) => (
+const BetsListTabCounter = ({ children }: PropsWithChildren) => (
   <div className="bg-surface-surface-0 text-2xs border border-outline-low-em rounded-6 p-1 px-1.5 ml-2">
     {children}
   </div>
@@ -133,11 +86,45 @@ const TabBetCounter = ({ children }: PropsWithChildren) => (
 const LoadingBets = () =>
   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => <LoadingCardBet key={index} />);
 
-const EmptyState = () => (
-  <div className="bg-surface-primary-accent-1 p-6 rounded-12 space-y-4">
-    <p>You didn&apos;t do any bet yet. Checkout the markets and place a bet.</p>
-    <Link href="/" className="block">
-      <Button>Check markets</Button>
-    </Link>
-  </div>
-);
+interface BetsListPanelProps {
+  emptyText?: string;
+  bets: UserPosition[];
+  isLoading: boolean;
+}
+
+interface BetsListTabProps {
+  children: ReactNode;
+  bets: UserPosition[];
+}
+
+const BetsListTab = ({ children, bets }: BetsListTabProps) => {
+  const counter = bets?.length ?? "-";
+  return (
+    <TabStyled>
+      {children}
+      <BetsListTabCounter>{counter}</BetsListTabCounter>
+    </TabStyled>
+  );
+};
+
+const BetsListPanel = ({
+  emptyText = "",
+  bets,
+  isLoading,
+}: BetsListPanelProps) => {
+  return (
+    <TabPanel className="space-y-4">
+      {isLoading && <LoadingBets />}
+      {!isLoading &&
+        bets.length &&
+        bets.map((position: UserPosition) => (
+          <CardBet userPosition={position} key={position.id} />
+        ))}
+      {!isLoading && !bets.length && (
+        <div className="p-6 space-y-4 bg-surface-surface-1 rounded-12">
+          <p>{emptyText}</p>
+        </div>
+      )}
+    </TabPanel>
+  );
+};

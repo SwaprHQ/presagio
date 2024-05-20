@@ -63,13 +63,12 @@ export default function HomePage() {
     <div className="justify-center px-6 mt-12 space-y-12 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
       <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
         <h1 className="text-2xl font-semibold text-white">🔮 All markets</h1>
-
         <div className="flex items-center space-x-2">
           <Input
             className="w-full md:w-72"
             placeholder="Search market"
             leftIcon="search"
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={event => setSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -81,7 +80,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map((option) => {
+                {filterOptions.map(option => {
                   return (
                     <div
                       key={option.name}
@@ -113,13 +112,13 @@ export default function HomePage() {
       </div>
       {isLoading ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {[...Array(ITEMS_PER_PAGE)].map((index) => (
-            <LoadingCardMarket key={index} />
+          {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+            <LoadingCardMarket key={Number(index)} />
           ))}
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map((market) => (
+          {markets.map(market => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>
