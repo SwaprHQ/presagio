@@ -112,7 +112,7 @@ export default function HomePage() {
       </div>
       {isLoading ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {Array.from(Array(ITEMS_PER_PAGE).keys()).map(index => (
+          {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
             <LoadingCardMarket key={Number(index)} />
           ))}
         </div>
