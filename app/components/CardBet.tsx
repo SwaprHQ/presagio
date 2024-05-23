@@ -26,6 +26,7 @@ interface BetProps {
 
 export const CardBet = ({ userPosition }: BetProps) => {
   const position = new Position(userPosition.position);
+  const outcomeIndex = position.outcomeIndex - 1;
 
   const config = useConfig();
   const { address } = useAccount();
@@ -46,8 +47,6 @@ export const CardBet = ({ userPosition }: BetProps) => {
     data?.conditions[0] &&
     new Market(data?.conditions[0]?.fixedProductMarketMakers[0]);
 
-  const outcomeIndex = position.outcomeIndex - 1;
-
   const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
     queryKey: ["getMarketUserTrades", address, market?.data.id, outcomeIndex],
     queryFn: async () => {
@@ -58,7 +57,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
           outcomeIndex_in: [outcomeIndex],
         });
     },
-    enabled: !!address,
+    enabled: !!market?.data?.id,
   });
 
   const collateralAmountUSDSpent =
@@ -95,8 +94,8 @@ export const CardBet = ({ userPosition }: BetProps) => {
 
   const condition = userPosition.position.conditions[0];
 
-  const isResolved = condition.resolved;
   const isClaimed = !outcomeBalance;
+  const isResolved = condition.resolved;
   const hasPayoutDenominator = +condition.payoutDenominator > 0;
 
   const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
