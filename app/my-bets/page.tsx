@@ -3,24 +3,31 @@
 import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
 import NoBetsStatePage from "@/app/my-bets/NoBetsStatePage";
 import NoWalletStatePage from "@/app/my-bets/NoWalletStatePage";
+import { Market, Position, tradesOutcomeBalance } from "@/entities";
 
 import { getUserPositions } from "@/queries/conditional-tokens";
 import { UserPosition } from "@/queries/conditional-tokens/types";
-import { useQuery } from "@tanstack/react-query";
+import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { PropsWithChildren, ReactNode } from "react";
+import {
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
 import { useAccount } from "wagmi";
 
 export default function MyBetsPage() {
   const { address } = useAccount();
+  const [unredeemedBets, setUnredeemedBets] = useState<UserPosition[]>([]);
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getUserPositions"],
-    queryFn: async () =>
-      getUserPositions({
-        id: address?.toLowerCase() as string,
-      }),
+    queryKey: ["getUserPositions", address],
+    queryFn: () => getUserPositions({ id: address?.toLowerCase() as string }),
     enabled: !!address,
   });
 
@@ -29,12 +36,81 @@ export default function MyBetsPage() {
   const filterActiveBets = userPositions.filter(
     position => position.position.conditions[0].resolved === false
   );
-  const filterClompleteBets = userPositions.filter(
+  const filterCompleteBets = userPositions.filter(
     position => position.position.conditions[0].resolved
   );
 
+  const fetchUnredeemedBets = useCallback(async () => {
+    const results = await Promise.all(
+      filterCompleteBets.map(async userPosition => {
+        const position = new Position(userPosition.position);
+        const outcomeIndex = position.outcomeIndex - 1;
+
+        try {
+          const conditionData = await queryClient.fetchQuery({
+            queryKey: ["getConditionMarket", position.conditionId],
+            queryFn: () => getConditionMarket({ id: position.conditionId }),
+          });
+          const condition = conditionData?.conditions[0];
+          const market =
+            condition && new Market(condition?.fixedProductMarketMakers[0]);
+
+          const userTrades = await queryClient.fetchQuery({
+            queryKey: [
+              "getMarketUserTrades",
+              address,
+              market?.data.id,
+              outcomeIndex,
+            ],
+            queryFn: () => {
+              if (!!address && !!market)
+                return getMarketUserTrades({
+                  creator: address.toLowerCase(),
+                  fpmm: market.data.id,
+                  outcomeIndex_in: [outcomeIndex],
+                });
+            },
+          });
+
+          const outcomeBalance = tradesOutcomeBalance({
+            fpmmTrades: userTrades?.fpmmTrades,
+          });
+
+          const userPositionCondition = userPosition.position.conditions[0];
+
+          const isClaimed = !outcomeBalance;
+          const isWinner = market.isWinner(outcomeIndex);
+
+          const isResolved = userPositionCondition.resolved;
+          const hasPayoutDenominator =
+            +userPositionCondition.payoutDenominator > 0;
+
+          const canClaim =
+            isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+
+          if (canClaim) return userPosition;
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    );
+
+    const filteredResults: UserPosition[] = results.filter(
+      (result): result is UserPosition => result !== undefined
+    );
+    setUnredeemedBets(filteredResults);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userPositions]);
+
+  useEffect(() => {
+    if (!address || !filterCompleteBets.length) return;
+
+    fetchUnredeemedBets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userPositions]);
+
   if (!address) return <NoWalletStatePage />;
-  if (data && data.userPositions.length == 0) return <NoBetsStatePage />;
+  if (data && data.userPositions.length === 0) return <NoBetsStatePage />;
 
   return (
     <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
@@ -49,8 +125,8 @@ export default function MyBetsPage() {
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
               <BetsListTab bets={userPositions}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
-              <BetsListTab bets={filterClompleteBets}>Unredeemed</BetsListTab>
-              <BetsListTab bets={filterClompleteBets}>Complete</BetsListTab>
+              <BetsListTab bets={unredeemedBets}>Unredeemed</BetsListTab>
+              <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
               <BetsListPanel bets={userPositions} isLoading={isLoading} />
@@ -60,13 +136,13 @@ export default function MyBetsPage() {
                 isLoading={isLoading}
               />
               <BetsListPanel
-                emptyText="No redeemable bets"
-                bets={filterClompleteBets}
+                emptyText="No unredeemed bets"
+                bets={unredeemedBets}
                 isLoading={isLoading}
               />
               <BetsListPanel
                 emptyText="No complete bets"
-                bets={filterClompleteBets}
+                bets={filterCompleteBets}
                 isLoading={isLoading}
               />
             </TabBody>
@@ -90,6 +166,7 @@ interface BetsListPanelProps {
   emptyText?: string;
   bets: UserPosition[];
   isLoading: boolean;
+  unredeemed?: boolean;
 }
 
 interface BetsListTabProps {
@@ -116,7 +193,7 @@ const BetsListPanel = ({
     <TabPanel className="space-y-4">
       {isLoading && <LoadingBets />}
       {!isLoading &&
-        bets.length &&
+        bets.length > 0 &&
         bets.map((position: UserPosition) => (
           <CardBet userPosition={position} key={position.id} />
         ))}

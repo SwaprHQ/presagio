@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { cx } from "class-variance-authority";
 import Link from "next/link";
 import { useAccount, useConfig } from "wagmi";
-import { formatEther } from "viem";
 
 import { Button, Logo, Tag } from "swapr-ui";
 import { Card } from "@/app/components/ui";
@@ -12,7 +11,12 @@ import { Card } from "@/app/components/ui";
 import { UserPosition } from "@/queries/conditional-tokens/types";
 import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
 import { remainingTime } from "@/utils/dates";
-import { Market, Position, valueByTrade } from "@/entities";
+import {
+  Market,
+  Position,
+  tradesCollateralAmountUSDSpent,
+  tradesOutcomeBalance,
+} from "@/entities";
 import { redeemPositions } from "@/hooks/contracts";
 import { WXDAI } from "@/constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
@@ -26,6 +30,7 @@ interface BetProps {
 
 export const CardBet = ({ userPosition }: BetProps) => {
   const position = new Position(userPosition.position);
+  const outcomeIndex = position.outcomeIndex - 1;
 
   const config = useConfig();
   const { address } = useAccount();
@@ -46,8 +51,6 @@ export const CardBet = ({ userPosition }: BetProps) => {
     data?.conditions[0] &&
     new Market(data?.conditions[0]?.fixedProductMarketMakers[0]);
 
-  const outcomeIndex = position.outcomeIndex - 1;
-
   const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
     queryKey: ["getMarketUserTrades", address, market?.data.id, outcomeIndex],
     queryFn: async () => {
@@ -58,24 +61,16 @@ export const CardBet = ({ userPosition }: BetProps) => {
           outcomeIndex_in: [outcomeIndex],
         });
     },
-    enabled: !!address,
+    enabled: !!market?.data?.id,
   });
 
-  const collateralAmountUSDSpent =
-    userTrades?.fpmmTrades.reduce((acc, trade) => {
-      const type = trade.type;
-      const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return valueByTrade[type](acc, collateralAmountUSD);
-    }, 0) ?? 0;
+  const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+    fpmmTrades: userTrades?.fpmmTrades,
+  });
 
-  const outcomeBalance =
-    userTrades?.fpmmTrades.reduce((acc, trade) => {
-      const type = trade.type;
-      const collateralAmountUSD = parseFloat(
-        formatEther(trade.outcomeTokensTraded as bigint)
-      );
-      return valueByTrade[type](acc, collateralAmountUSD);
-    }, 0) ?? 0;
+  const outcomeBalance = tradesOutcomeBalance({
+    fpmmTrades: userTrades?.fpmmTrades,
+  });
 
   const balance = outcomeBalance ? outcomeBalance.toFixed(2) : "-";
 
@@ -95,8 +90,8 @@ export const CardBet = ({ userPosition }: BetProps) => {
 
   const condition = userPosition.position.conditions[0];
 
-  const isResolved = condition.resolved;
   const isClaimed = !outcomeBalance;
+  const isResolved = condition.resolved;
   const hasPayoutDenominator = +condition.payoutDenominator > 0;
 
   const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
