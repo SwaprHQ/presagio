@@ -198,7 +198,7 @@ const BetsListPanel = ({
           <CardBet userPosition={position} key={position.id} />
         ))}
       {!isLoading && !bets.length && (
-        <div className="p-6 space-y-4 bg-surface-surface-1 rounded-12">
+        <div className="p-6 space-y-4 bg-surface-surface-2 rounded-12">
           <p>{emptyText}</p>
         </div>
       )}
