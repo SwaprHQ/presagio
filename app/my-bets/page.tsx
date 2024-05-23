@@ -3,7 +3,7 @@
 import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
 import NoBetsStatePage from "@/app/my-bets/NoBetsStatePage";
 import NoWalletStatePage from "@/app/my-bets/NoWalletStatePage";
-import { Market, Position, valueByTrade } from "@/entities";
+import { Market, Position, tradesOutcomeBalance } from "@/entities";
 
 import { getUserPositions } from "@/queries/conditional-tokens";
 import { UserPosition } from "@/queries/conditional-tokens/types";
@@ -18,7 +18,6 @@ import {
   useState,
 } from "react";
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
-import { formatEther } from "viem";
 import { useAccount } from "wagmi";
 
 export default function MyBetsPage() {
@@ -73,21 +72,18 @@ export default function MyBetsPage() {
             },
           });
 
-          const outcomeBalance =
-            userTrades?.fpmmTrades.reduce((acc, trade) => {
-              const type = trade.type;
-              const collateralAmountUSD = parseFloat(
-                formatEther(trade.outcomeTokensTraded as bigint)
-              );
-              return valueByTrade[type](acc, collateralAmountUSD);
-            }, 0) ?? 0;
+          const outcomeBalance = tradesOutcomeBalance({
+            fpmmTrades: userTrades?.fpmmTrades,
+          });
 
           const userPositionCondition = userPosition.position.conditions[0];
+
+          const isClaimed = !outcomeBalance;
           const isWinner = market.isWinner(outcomeIndex);
+
           const isResolved = userPositionCondition.resolved;
           const hasPayoutDenominator =
             +userPositionCondition.payoutDenominator > 0;
-          const isClaimed = !outcomeBalance;
 
           const canClaim =
             isWinner && isResolved && !isClaimed && hasPayoutDenominator;
