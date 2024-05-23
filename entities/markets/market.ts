@@ -40,7 +40,7 @@ export class Market {
   }
 
   isLoser(index: number) {
-    return this.answer && this.answer !== index;
+    return this.answer !== null && this.answer !== index;
   }
 
   getWinnerOutcome() {
