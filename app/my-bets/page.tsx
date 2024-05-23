@@ -102,7 +102,6 @@ export default function MyBetsPage() {
     const filteredResults: UserPosition[] = results.filter(
       (result): result is UserPosition => result !== undefined
     );
-    console.log("filteredResults:", filteredResults);
     setUnredeemedBets(filteredResults);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPositions]);
