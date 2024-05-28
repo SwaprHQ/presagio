@@ -19,6 +19,7 @@ import {
 import { useState } from "react";
 import { useShowClientUI, useDebounce } from "@/hooks";
 import { cx } from "class-variance-authority";
+import { useRouter } from "next/navigation";
 
 type FilterOption = {
   name: string;
@@ -37,13 +38,34 @@ const filterOptions: FilterOption[] = [
 ];
 
 const ITEMS_PER_PAGE = 12;
+const SEARCH_DEBOUNCE_DELAY = 600;
+const DEFAULT_FILTER_OPTION = filterOptions[0];
 
 export default function HomePage() {
+  const router = useRouter();
   const showClientUI = useShowClientUI();
-  const [selectedOption, setSelectedOption] = useState(filterOptions[0]);
-  const [search, setSearch] = useState("");
   const [isPopoverOpen, setPopoverOpen] = useState(false);
-  const debouncedSearch = useDebounce(search, 600);
+
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams("/");
+
+  const [search, setSearch] = useState(searchParams.get("s") || "");
+  const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
+
+  const initialFilter = () => {
+    const filterValueFromSearchParams = searchParams.get("f");
+    if (!filterValueFromSearchParams) return DEFAULT_FILTER_OPTION;
+
+    return (
+      filterOptions.find(
+        option => option.orderBy === filterValueFromSearchParams
+      ) || DEFAULT_FILTER_OPTION
+    );
+  };
+
+  const [selectedOption, setSelectedOption] = useState(initialFilter());
 
   const { data, isLoading } = useQuery({
     queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy],
@@ -57,6 +79,20 @@ export default function HomePage() {
       }),
   });
 
+  const handleSearch = (query: string) => {
+    query ? searchParams.set("s", query) : searchParams.delete("s");
+    setSearch(query);
+    router.replace(`?${searchParams.toString()}`);
+  };
+
+  const selectFilter = (option: FilterOption) => {
+    setSelectedOption(option);
+    setPopoverOpen(false);
+
+    searchParams.set("f", option.orderBy);
+    router.replace(`?${searchParams.toString()}`);
+  };
+
   const markets = data?.fixedProductMarketMakers;
 
   return (
@@ -68,7 +104,7 @@ export default function HomePage() {
             className="w-full md:w-72"
             placeholder="Search market"
             leftIcon="search"
-            onChange={event => setSearch(event.target.value)}
+            onChange={event => handleSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -84,10 +120,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={option.name}
-                      onClick={() => {
-                        setSelectedOption(option);
-                        setPopoverOpen(false);
-                      }}
+                      onClick={() => selectFilter(option)}
                       className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
                     >
                       <Icon
