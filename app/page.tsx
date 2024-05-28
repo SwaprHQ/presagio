@@ -45,7 +45,14 @@ export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
-  const searchParams = new URLSearchParams(window.location.search);
+
+  const searchParams =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams("/");
+
+  const [search, setSearch] = useState(searchParams.get("s") || "");
+  const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
 
   const initialFilter = () => {
     const filterValueFromSearchParams = searchParams.get("f");
@@ -59,14 +66,6 @@ export default function HomePage() {
   };
 
   const [selectedOption, setSelectedOption] = useState(initialFilter());
-
-  const initialSearch = () => {
-    const searchValueFromSearchParams = searchParams.get("s");
-    return searchValueFromSearchParams ? searchValueFromSearchParams : "";
-  };
-
-  const [search, setSearch] = useState(initialSearch());
-  const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
 
   const { data, isLoading } = useQuery({
     queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy],
