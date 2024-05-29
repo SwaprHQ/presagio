@@ -1,8 +1,8 @@
 "use client";
 
 import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
-import NoBetsStatePage from "@/app/my-bets/NoBetsStatePage";
-import NoWalletStatePage from "@/app/my-bets/NoWalletStatePage";
+import NoBetsPage from "@/app/my-bets/NoBetsPage";
+import NoWalletConnectedPage from "@/app/my-bets/NoWalletConnectedPage";
 import { Market, Position, tradesOutcomeBalance } from "@/entities";
 
 import { getUserPositions } from "@/queries/conditional-tokens";
@@ -109,8 +109,8 @@ export default function MyBetsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPositions]);
 
-  if (!address) return <NoWalletStatePage />;
-  if (data && data.userPositions.length === 0) return <NoBetsStatePage />;
+  if (!address) return <NoWalletConnectedPage />;
+  if (data && data.userPositions.length === 0) return <NoBetsPage />;
 
   return (
     <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
