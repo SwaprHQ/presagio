@@ -1,7 +1,7 @@
 import { ConnectButton } from "@/app/components";
 import { ConnectWalletImage } from "@/app/components/ui";
 
-export default function NoWalletStatePage() {
+export default function NoWalletConnectedPage() {
   return (
     <div className="w-full px-6 mt-12 space-y-8 items-center md:flex md:flex-col">
       <ConnectWalletImage className="mx-auto" />
