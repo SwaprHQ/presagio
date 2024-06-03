@@ -34,15 +34,15 @@ export default function MyBetsPage() {
   const userPositions = data?.userPositions ?? [];
 
   const filterActiveBets = userPositions.filter(
-    position => position.position.conditions[0].resolved === false
+    (position) => position.position.conditions[0].resolved === false
   );
   const filterCompleteBets = userPositions.filter(
-    position => position.position.conditions[0].resolved
+    (position) => position.position.conditions[0].resolved
   );
 
   const fetchUnredeemedBets = useCallback(async () => {
     const results = await Promise.all(
-      filterCompleteBets.map(async userPosition => {
+      filterCompleteBets.map(async (userPosition) => {
         const position = new Position(userPosition.position);
         const outcomeIndex = position.outcomeIndex - 1;
 
@@ -160,7 +160,9 @@ const BetsListTabCounter = ({ children }: PropsWithChildren) => (
 );
 
 const LoadingBets = () =>
-  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(index => <LoadingCardBet key={index} />);
+  [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((index) => (
+    <LoadingCardBet key={index} />
+  ));
 
 interface BetsListPanelProps {
   emptyText?: string;
