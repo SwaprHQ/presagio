@@ -200,10 +200,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
-          onChange={event => {
+          onChange={(event) => {
             setTokenAmountIn(event.target.value);
           }}
-          onClick={currentState.changeInToken}
+          onTokenClick={currentState.changeInToken}
           selectedToken={currentState.inToken}
           tokenList={outcomeList}
         >
@@ -235,8 +235,9 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
           title="To Receive"
           value={twoDecimalsTokenOutAmount}
           selectedToken={currentState.outToken}
-          onClick={currentState.changeOutToken}
+          onTokenClick={currentState.changeOutToken}
           tokenList={outcomeList}
+          readOnly
         />
         <div className="space-y-4">
           <div className="px-3 py-1">

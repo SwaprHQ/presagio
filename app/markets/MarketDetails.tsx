@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Address } from "viem";
 import { Market } from "@/entities";
 import { UserBets } from "../components/UserBets";
+import { useRouter } from "next/navigation";
 
 interface MarketDetailsProps {
   id: Address;
@@ -109,19 +110,27 @@ const LoadingMarketDetails = () => (
   </div>
 );
 
-const BackButton = () => (
-  <Link
-    className="flex items-center w-fit rounded-12 hover:bg-surface-surface-2"
-    href="/"
-  >
-    <IconButton
-      className="text-text-med-em hover:bg-surface-surface-2"
-      name="arrow-left"
-      variant="pastel"
-      size="sm"
-    />
-    <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
-      Go back
-    </Button>
-  </Link>
-);
+const BackButton = () => {
+  const { back } = useRouter();
+
+  return (
+    <div
+      className="flex items-center w-fit rounded-12 hover:bg-surface-surface-2"
+      onClick={back}
+    >
+      <IconButton
+        className="text-text-med-em hover:bg-surface-surface-2"
+        name="arrow-left"
+        variant="pastel"
+        size="sm"
+      />
+      <Button
+        className="font-normal text-text-low-em"
+        variant="ghost"
+        size="sm"
+      >
+        Go back
+      </Button>
+    </div>
+  );
+};

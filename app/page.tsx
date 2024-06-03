@@ -11,6 +11,7 @@ import { CardMarket, LoadingCardMarket } from "@/app/components";
 import {
   Button,
   Icon,
+  IconButton,
   Input,
   Popover,
   PopoverContent,
@@ -68,12 +69,21 @@ export default function HomePage() {
 
   const [selectedOption, setSelectedOption] = useState(initialFilter());
 
+  const initialPage = () => {
+    const page = searchParams.get("p");
+    if (!page || isNaN(Number(page))) return 1;
+
+    return Number(page);
+  };
+
+  const [page, setPage] = useState(initialPage());
+
   const { data, isLoading } = useQuery({
-    queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy],
+    queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy, page],
     queryFn: async () =>
       getMarkets({
         first: ITEMS_PER_PAGE,
-        skip: 0,
+        skip: (page - 1) * ITEMS_PER_PAGE,
         orderBy: selectedOption.orderBy,
         orderDirection: OrderDirection.Desc,
         title_contains_nocase: debouncedSearch,
@@ -83,19 +93,55 @@ export default function HomePage() {
 
   const handleSearch = (query: string) => {
     query ? searchParams.set("s", query) : searchParams.delete("s");
+    searchParams.delete("p");
+
     setSearch(query);
+    setPage(1);
+
     router.replace(`?${searchParams.toString()}`);
   };
 
   const selectFilter = (option: FilterOption) => {
     setSelectedOption(option);
     setPopoverOpen(false);
+    setPage(1);
 
+    searchParams.delete("p");
     searchParams.set("f", option.orderBy);
     router.replace(`?${searchParams.toString()}`);
   };
 
+  const handleNextPage = (page: number) => {
+    if (page <= 0) return;
+
+    if (page > 1) searchParams.set("p", page.toString());
+    else searchParams.delete("p");
+
+    setPage(page);
+    router.replace(`?${searchParams.toString()}`);
+  };
+
+  const nextPage = page * ITEMS_PER_PAGE;
+
+  const { data: marketsNextPage } = useQuery({
+    queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy, nextPage],
+    queryFn: async () =>
+      getMarkets({
+        first: ITEMS_PER_PAGE,
+        skip: nextPage,
+        orderBy: selectedOption.orderBy,
+        orderDirection: OrderDirection.Desc,
+        title_contains_nocase: debouncedSearch,
+        creator_in: AI_AGENTS_ALLOWLIST,
+      }),
+  });
+
+  const hasMoreMarkets =
+    marketsNextPage && marketsNextPage.fixedProductMarketMakers.length !== 0;
+
   const markets = data?.fixedProductMarketMakers;
+
+  const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
     <div className="justify-center px-6 mt-12 space-y-12 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
@@ -161,7 +207,44 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="w-full px-6 py-10 space-y-4 text-center text-md bg-surface-surface-1 rounded-12 text-bold">
-          <p>No market found for &quot;{debouncedSearch}&quot;</p>
+          <p>No market found for current search</p>
+        </div>
+      )}
+      {showClientUI && showPaginationButtons && (
+        <div className="flex w-full space-x-4 justify-end">
+          <IconButton
+            name="chevron-left"
+            variant="pastel"
+            onClick={() => handleNextPage(page - 1)}
+            disabled={page === 1}
+          />
+          <div className="flex space-x-2">
+            {page > 1 && (
+              <Button
+                className="p-3 w-[42px] h-[42px]"
+                variant="ghost"
+                onClick={() => handleNextPage(page - 1)}
+              >
+                {page - 1}
+              </Button>
+            )}
+            <Button className="p-3 w-[42px] h-[42px]">{page}</Button>
+            {hasMoreMarkets && (
+              <Button
+                className="p-3 w-[42px] h-[42px]"
+                variant="ghost"
+                onClick={() => handleNextPage(page + 1)}
+              >
+                {page + 1}
+              </Button>
+            )}
+          </div>
+          <IconButton
+            name="chevron-right"
+            variant="pastel"
+            onClick={() => handleNextPage(page + 1)}
+            disabled={!hasMoreMarkets}
+          />
         </div>
       )}
     </div>
