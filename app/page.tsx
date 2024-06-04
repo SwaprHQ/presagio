@@ -20,6 +20,7 @@ import { useState } from "react";
 import { useShowClientUI, useDebounce } from "@/hooks";
 import { cx } from "class-variance-authority";
 import { useRouter } from "next/navigation";
+import { AI_AGENTS_ALLOWLIST } from "@/constants";
 
 type FilterOption = {
   name: string;
@@ -40,10 +41,6 @@ const filterOptions: FilterOption[] = [
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_FILTER_OPTION = filterOptions[0];
-const AI_AGENTS_ALLOWLIST = [
-  "0x89c5cc945dd550bcffb72fe42bff002429f46fec",
-  "0x993dfce14768e4de4c366654be57c21d9ba54748",
-];
 
 export default function HomePage() {
   const router = useRouter();
