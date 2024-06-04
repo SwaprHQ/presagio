@@ -1,5 +1,10 @@
 import { Token } from "@/entities";
 
+export const AI_AGENTS_ALLOWLIST = [
+  "0x89c5cc945dd550bcffb72fe42bff002429f46fec",
+  "0x993dfce14768e4de4c366654be57c21d9ba54748",
+];
+
 export const ChainId = {
   ETHEREUM: 1,
   GNOSIS: 100,

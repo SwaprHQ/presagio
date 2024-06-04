@@ -84,6 +84,7 @@ const getMarketsQuery = gql`
     $orderBy: String
     $orderDirection: String
     $title_contains_nocase: String
+    $creator_in: [String]
   ) {
     fixedProductMarketMakers(
       first: $first
@@ -93,6 +94,7 @@ const getMarketsQuery = gql`
       where: {
         outcomeSlotCount: 2
         title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
       }
     ) {
       ...marketData
