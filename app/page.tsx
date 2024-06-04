@@ -40,6 +40,10 @@ const filterOptions: FilterOption[] = [
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_FILTER_OPTION = filterOptions[0];
+const AI_AGENTS_ALLOWLIST = [
+  "0x89c5cc945dd550bcffb72fe42bff002429f46fec",
+  "0x993dfce14768e4de4c366654be57c21d9ba54748",
+];
 
 export default function HomePage() {
   const router = useRouter();
@@ -60,7 +64,7 @@ export default function HomePage() {
 
     return (
       filterOptions.find(
-        option => option.orderBy === filterValueFromSearchParams
+        (option) => option.orderBy === filterValueFromSearchParams
       ) || DEFAULT_FILTER_OPTION
     );
   };
@@ -76,6 +80,7 @@ export default function HomePage() {
         orderBy: selectedOption.orderBy,
         orderDirection: OrderDirection.Desc,
         title_contains_nocase: debouncedSearch,
+        creator_in: AI_AGENTS_ALLOWLIST,
       }),
   });
 
@@ -104,7 +109,7 @@ export default function HomePage() {
             className="w-full md:w-72"
             placeholder="Search market"
             leftIcon="search"
-            onChange={event => handleSearch(event.target.value)}
+            onChange={(event) => handleSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -116,7 +121,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map(option => {
+                {filterOptions.map((option) => {
                   return (
                     <div
                       key={option.name}
@@ -151,7 +156,7 @@ export default function HomePage() {
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map(market => (
+          {markets.map((market) => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>
