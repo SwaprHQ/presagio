@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Button, Icon, Logo, Tag } from "swapr-ui";
 import { WXDAI } from "@/constants";
 import { TransactionModal } from ".";
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import { config } from "@/providers/config";
 import { redeemPositions, useReadBalance } from "@/hooks/contracts";
 import { getCondition } from "@/queries/conditional-tokens";
@@ -22,7 +22,7 @@ export const UserBets = ({ market }: UserBets) => {
   const conditionId = market.condition?.id;
 
   const { address } = useAccount();
-  const { openModal } = useModalContext();
+  const { openModal } = useModal();
 
   const [txHash, setTxHash] = useState("");
   const [isTxLoading, setIsTxLoading] = useState(false);

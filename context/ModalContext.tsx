@@ -30,7 +30,7 @@ export const ModalContext = createContext<ModalContextProps>({
   isModalOpen: (id: ModalId) => false,
 });
 
-export interface ModalContextProviderProps {
+export interface ModalProviderProps {
   children: ReactNode;
 }
 
@@ -51,9 +51,7 @@ function ModalReducer(openModals: ModalId[], action: Action) {
   }
 }
 
-export const ModalContextProvider = ({
-  children,
-}: ModalContextProviderProps) => {
+export const ModalProvider = ({ children }: ModalProviderProps) => {
   const [openModals, dispatch] = useReducer(ModalReducer, []);
 
   const openModal = (modalId: ModalId) => {
@@ -87,4 +85,4 @@ export const ModalContextProvider = ({
   );
 };
 
-export const useModalContext = () => useContext(ModalContext);
+export const useModal = () => useContext(ModalContext);

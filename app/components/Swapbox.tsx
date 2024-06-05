@@ -20,7 +20,7 @@ import {
   removeFraction,
 } from "@/utils/price";
 import { ConfirmTrade } from "./ConfirmTrade";
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import { WXDAI } from "@/constants";
 
 export const SLIPPAGE = 0.01;
@@ -51,7 +51,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const outcome1 = new Outcome(1, market.outcomes?.[1] || "Option 2", id);
 
   const { address, isDisconnected } = useAccount();
-  const { openModal } = useModalContext();
+  const { openModal } = useModal();
 
   const [tokenAmountIn, setTokenAmountIn] = useState("");
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
