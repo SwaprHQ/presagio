@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { config } from "./config";
 import { ConnectKitProvider } from "connectkit";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { TxProvider, ModalContextProvider } from "@/context";
+import { TxProvider, ModalProvider } from "@/context";
 
 const queryClient = new QueryClient();
 
@@ -20,11 +20,11 @@ export const Providers = ({ children }: PropsWithChildren) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider options={connectKitOptions}>
-          <ModalContextProvider>
-            <TxProvider>
+          <TxProvider>
+            <ModalProvider>
               <NextThemesProvider>{children}</NextThemesProvider>
-            </TxProvider>
-          </ModalContextProvider>
+            </ModalProvider>
+          </TxProvider>
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

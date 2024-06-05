@@ -21,7 +21,7 @@ import { redeemPositions } from "@/hooks/contracts";
 import { WXDAI } from "@/constants";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { useState } from "react";
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import { TransactionModal } from "./TransactionModal";
 
 interface BetProps {
@@ -36,7 +36,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
   const { address } = useAccount();
   const [txHash, setTxHash] = useState("");
   const [isTxLoading, setIsTxLoading] = useState(false);
-  const { openModal } = useModalContext();
+  const { openModal } = useModal();
 
   const { data, isLoading } = useQuery({
     queryKey: ["getConditionMarket", position.conditionId],

@@ -1,6 +1,6 @@
 "use client";
 
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { waitForTransactionReceipt } from "@wagmi/core";
 import { type WriteContractParameters, type Config } from "@wagmi/core";
@@ -22,7 +22,7 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
   const [isTxLoading, setIsTxLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const { openModal } = useModalContext();
+  const { openModal } = useModal();
 
   const submitTx = async (args: WriteContractParameters): Promise<void> => {
     setIsTxLoading(true);

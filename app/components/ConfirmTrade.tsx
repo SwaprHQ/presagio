@@ -1,4 +1,4 @@
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import {
   Button,
   Dialog,
@@ -44,7 +44,7 @@ export const ConfirmTrade = ({
   tokenAmountIn,
   tokenAmountOut,
 }: ConfirmTradeProps) => {
-  const { isModalOpen, closeModal } = useModalContext();
+  const { isModalOpen, closeModal } = useModal();
   const { submitTx } = useTx();
 
   const { data: sellAmount } = useReadCalcSellAmount(

@@ -8,7 +8,7 @@ import {
   Icon,
   IconBadge,
 } from "swapr-ui";
-import { ModalId, useModalContext } from "@/context/ModalContext";
+import { ModalId, useModal } from "@/context/ModalContext";
 import Image from "next/image";
 
 interface TransactionModalProps {
@@ -22,7 +22,7 @@ export const TransactionModal = ({
   txHash,
   isError,
 }: TransactionModalProps) => {
-  const { isModalOpen, closeModal } = useModalContext();
+  const { isModalOpen, closeModal } = useModal();
 
   const close = () => {
     closeModal(ModalId.WAITING_TRANSACTION);
