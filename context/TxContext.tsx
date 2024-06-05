@@ -41,7 +41,6 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
     } catch (error) {
       setIsError(true);
       console.error(error);
-      throw error;
     } finally {
       setIsTxLoading(false);
     }
