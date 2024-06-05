@@ -20,11 +20,11 @@ export const Providers = ({ children }: PropsWithChildren) => {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider options={connectKitOptions}>
-          <TxProvider>
-            <ModalProvider>
+          <ModalProvider>
+            <TxProvider>
               <NextThemesProvider>{children}</NextThemesProvider>
-            </ModalProvider>
-          </TxProvider>
+            </TxProvider>
+          </ModalProvider>
         </ConnectKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
