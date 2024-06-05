@@ -56,30 +56,35 @@ export const TransactionModal = ({
                   </p>
                 </div>
               </>
-            ) : isError ? (
-              <>
-                <IconBadge name="exclamation" colorScheme="error" />
-                <div className="flex flex-col items-center space-y-2">
-                  <p className="text-2xl font-semibold text-text-high-em">
-                    There was an error.
-                  </p>
-                  <p className="font-semibold text-center text-text-low-em text-md max-w-80">
-                    Unfortunately the transaction was not completed.
-                  </p>
-                </div>
-              </>
             ) : (
               <>
-                <IconBadge name="tick" colorScheme="success" />
-                <div className="flex flex-col items-center space-y-2">
-                  <p className="text-2xl font-semibold text-text-high-em">
-                    Transaction successful!
-                  </p>
-                  <p className="font-semibold text-center text-text-low-em text-md max-w-80">
-                    The transaction has been completed. <br />
-                    You can close this window now.
-                  </p>
-                </div>
+                {!isError && (
+                  <>
+                    <IconBadge name="tick" colorScheme="success" />
+                    <div className="flex flex-col items-center space-y-2">
+                      <p className="text-2xl font-semibold text-text-high-em">
+                        Transaction successful!
+                      </p>
+                      <p className="font-semibold text-center text-text-low-em text-md max-w-80">
+                        The transaction has been completed. <br />
+                        You can close this window now.
+                      </p>
+                    </div>
+                  </>
+                )}
+                {isError && (
+                  <>
+                    <IconBadge name="exclamation" colorScheme="error" />
+                    <div className="flex flex-col items-center space-y-2">
+                      <p className="text-2xl font-semibold text-text-high-em">
+                        There was an error.
+                      </p>
+                      <p className="font-semibold text-center text-text-low-em text-md max-w-80">
+                        Unfortunately the transaction was not completed.
+                      </p>
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -90,6 +95,7 @@ export const TransactionModal = ({
               href={`https://gnosisscan.io/tx/${txHash}`}
               target="_blank"
               className="w-full"
+              rel="noopener noreferrer"
             >
               <Button
                 width="full"
