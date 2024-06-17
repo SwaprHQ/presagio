@@ -85,6 +85,7 @@ const getMarketsQuery = gql`
     $orderDirection: String
     $title_contains_nocase: String
     $creator_in: [String]
+    $category_contains: String
   ) {
     fixedProductMarketMakers(
       first: $first
@@ -95,6 +96,7 @@ const getMarketsQuery = gql`
         outcomeSlotCount: 2
         title_contains_nocase: $title_contains_nocase
         creator_in: $creator_in
+        category_contains: $category_contains
       }
     ) {
       ...marketData
