@@ -16,6 +16,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  ToggleGroup,
+  ToogleGroupOption,
 } from "swapr-ui";
 import { useState } from "react";
 import { useShowClientUI, useDebounce } from "@/hooks";
@@ -43,10 +45,24 @@ const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_FILTER_OPTION = filterOptions[0];
 
+enum Categories {
+  BUSINESS = "business",
+  CRYPTO = "crypto",
+  ECONOMY = "economy",
+  ENTERTAINMENT = "entertainment",
+  INTERNATIONAL = "international",
+  POLITICS = "politics",
+  SPORTS = "sports",
+  TECHNOLOGY = "technology",
+}
+
+type CategoryOptions = Categories | "";
+
 export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
+  const [category, setCategory] = useState<CategoryOptions>("");
 
   const searchParams =
     typeof window !== "undefined"
@@ -62,7 +78,7 @@ export default function HomePage() {
 
     return (
       filterOptions.find(
-        (option) => option.orderBy === filterValueFromSearchParams
+        option => option.orderBy === filterValueFromSearchParams
       ) || DEFAULT_FILTER_OPTION
     );
   };
@@ -79,7 +95,13 @@ export default function HomePage() {
   const [page, setPage] = useState(initialPage());
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy, page],
+    queryKey: [
+      "getMarkets",
+      debouncedSearch,
+      selectedOption.orderBy,
+      page,
+      category,
+    ],
     queryFn: async () =>
       getMarkets({
         first: ITEMS_PER_PAGE,
@@ -88,6 +110,7 @@ export default function HomePage() {
         orderDirection: OrderDirection.Desc,
         title_contains_nocase: debouncedSearch,
         creator_in: AI_AGENTS_ALLOWLIST,
+        category_contains: category,
       }),
   });
 
@@ -124,7 +147,13 @@ export default function HomePage() {
   const nextPage = page * ITEMS_PER_PAGE;
 
   const { data: marketsNextPage } = useQuery({
-    queryKey: ["getMarkets", debouncedSearch, selectedOption.orderBy, nextPage],
+    queryKey: [
+      "getMarkets",
+      debouncedSearch,
+      selectedOption.orderBy,
+      nextPage,
+      category,
+    ],
     queryFn: async () =>
       getMarkets({
         first: ITEMS_PER_PAGE,
@@ -133,6 +162,7 @@ export default function HomePage() {
         orderDirection: OrderDirection.Desc,
         title_contains_nocase: debouncedSearch,
         creator_in: AI_AGENTS_ALLOWLIST,
+        category_contains: category,
       }),
   });
 
@@ -144,15 +174,35 @@ export default function HomePage() {
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
-    <div className="justify-center px-6 mt-12 space-y-12 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
+    <div className="justify-center px-6 mt-12 space-y-8 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold text-white capitalize">
+          🔮 {category ? category : "All"}
+        </h1>
+      </div>
       <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
-        <h1 className="text-2xl font-semibold text-white">🔮 All markets</h1>
+        <ToggleGroup
+          value={category}
+          onChange={setCategory}
+          // className="overflow-x-scroll"
+        >
+          <ToogleGroupOption value={""}>All</ToogleGroupOption>
+          {Object.values(Categories).map(category => (
+            <ToogleGroupOption
+              key={category}
+              value={category}
+              className="capitalize font-bold"
+            >
+              {category}
+            </ToogleGroupOption>
+          ))}
+        </ToggleGroup>
         <div className="flex items-center space-x-2">
           <Input
             className="w-full md:w-72"
             placeholder="Search market"
             leftIcon="search"
-            onChange={(event) => handleSearch(event.target.value)}
+            onChange={event => handleSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -164,7 +214,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map((option) => {
+                {filterOptions.map(option => {
                   return (
                     <div
                       key={option.name}
@@ -199,7 +249,7 @@ export default function HomePage() {
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map((market) => (
+          {markets.map(market => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>
@@ -211,7 +261,7 @@ export default function HomePage() {
         </div>
       )}
       {showClientUI && showPaginationButtons && (
-        <div className="flex w-full space-x-4 justify-end">
+        <div className="flex justify-end w-full space-x-4">
           <IconButton
             name="chevron-left"
             variant="pastel"
