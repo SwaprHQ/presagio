@@ -46,14 +46,14 @@ const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_FILTER_OPTION = filterOptions[0];
 
 enum Categories {
-  BUSINESS = "business",
-  CRYPTO = "crypto",
-  ECONOMY = "economy",
-  ENTERTAINMENT = "entertainment",
-  INTERNATIONAL = "international",
-  POLITICS = "politics",
-  SPORTS = "sports",
   TECHNOLOGY = "technology",
+  CRYPTO = "crypto",
+  BUSINESS = "business",
+  POLITICS = "politics",
+  ECONOMY = "economy",
+  INTERNATIONAL = "international",
+  SPORTS = "sports",
+  ENTERTAINMENT = "entertainment",
 }
 
 type CategoryOptions = Categories | "";
@@ -62,12 +62,13 @@ export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
-  const [category, setCategory] = useState<CategoryOptions>("");
 
   const searchParams =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search)
       : new URLSearchParams("/");
+
+  const [category, setCategory] = useState(searchParams.get("c") || "");
 
   const [search, setSearch] = useState(searchParams.get("s") || "");
   const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
@@ -121,6 +122,14 @@ export default function HomePage() {
     setSearch(query);
     setPage(1);
 
+    router.replace(`?${searchParams.toString()}`);
+  };
+
+  const handleCategory = (category: CategoryOptions) => {
+    setCategory(category);
+
+    searchParams.delete("p");
+    category ? searchParams.set("c", category) : searchParams.delete("c");
     router.replace(`?${searchParams.toString()}`);
   };
 
@@ -183,7 +192,7 @@ export default function HomePage() {
       <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
         <ToggleGroup
           value={category}
-          onChange={setCategory}
+          onChange={handleCategory}
           className="overflow-x-scroll md:overflow-x-auto"
         >
           <ToggleGroupOption size="md" value={""} className="font-semibold">
