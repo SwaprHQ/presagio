@@ -8,7 +8,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   ToggleGroup,
-  ToogleGroupOption,
+  ToggleGroupOption,
 } from "swapr-ui";
 import { useShowClientUI } from "@/hooks";
 
@@ -31,15 +31,15 @@ export const SettingsPopover = () => {
             <p className="text-xs font-bold">Theme</p>
           </div>
           <ToggleGroup value={theme} onChange={setTheme}>
-            <ToogleGroupOption value="system">Auto</ToogleGroupOption>
-            <ToogleGroupOption value="light">
+            <ToggleGroupOption value="system">Auto</ToggleGroupOption>
+            <ToggleGroupOption value="light">
               <Icon name="day" size={14} />
               <p className="ml-1 capitalize">light</p>
-            </ToogleGroupOption>
-            <ToogleGroupOption value="dark">
+            </ToggleGroupOption>
+            <ToggleGroupOption value="dark">
               <Icon name="night" size={14} />
               <p className="ml-1 capitalize">dark</p>
-            </ToogleGroupOption>
+            </ToggleGroupOption>
           </ToggleGroup>
         </div>
       </PopoverContent>
