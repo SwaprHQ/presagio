@@ -3,9 +3,14 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import {
+  FixedProductMarketMaker_Filter,
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
   getMarkets,
+  getMarketsClosedQuery,
+  getMarketsDisputeQuery,
+  getMarketsOpenQuery,
+  getMarketsPendingQuery,
 } from "@/queries/omen";
 import { CardMarket, LoadingCardMarket } from "@/app/components";
 import {
@@ -41,9 +46,59 @@ const filterOptions: FilterOption[] = [
   },
 ];
 
+const nowTimestamp = Math.floor(Date.now() / 1000);
+
+type StateFilterOption = {
+  name: string;
+  key: string;
+  query: string;
+  state: FixedProductMarketMaker_Filter;
+};
+
+const stateFilterOptions: StateFilterOption[] = [
+  {
+    name: "Open",
+    key: "open",
+    state: {
+      openingTimestamp_gt: nowTimestamp,
+    },
+    query: getMarketsOpenQuery,
+  },
+  {
+    name: "Pending",
+    key: "pending",
+
+    state: {
+      openingTimestamp_lt: nowTimestamp,
+      isPendingArbitration: false,
+      currentAnswer: null,
+    },
+    query: getMarketsPendingQuery,
+  },
+  {
+    name: "Closed",
+    key: "closed",
+
+    state: {
+      answerFinalizedTimestamp_lt: nowTimestamp,
+    },
+    query: getMarketsClosedQuery,
+  },
+  {
+    name: "In Dispute",
+    key: "dispute",
+
+    state: {
+      isPendingArbitration: true,
+    },
+    query: getMarketsDisputeQuery,
+  },
+];
+
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_FILTER_OPTION = filterOptions[0];
+const DEFAULT_STATE_FILTER_OPTION = stateFilterOptions[0];
 
 enum Categories {
   TECHNOLOGY = "technology",
@@ -62,6 +117,7 @@ export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
   const [isPopoverOpen, setPopoverOpen] = useState(false);
+  const [isStatePopoverOpen, setStatePopoverOpen] = useState(false);
 
   const searchParams =
     typeof window !== "undefined"
@@ -79,12 +135,27 @@ export default function HomePage() {
 
     return (
       filterOptions.find(
-        option => option.orderBy === filterValueFromSearchParams
+        (option) => option.orderBy === filterValueFromSearchParams
       ) || DEFAULT_FILTER_OPTION
     );
   };
 
   const [selectedOption, setSelectedOption] = useState(initialFilter());
+
+  const initialStateFilter = () => {
+    const filterValueFromSearchParams = searchParams.get("sf");
+    if (!filterValueFromSearchParams) return DEFAULT_STATE_FILTER_OPTION;
+
+    return (
+      stateFilterOptions.find(
+        (option) => option.key === filterValueFromSearchParams
+      ) || DEFAULT_STATE_FILTER_OPTION
+    );
+  };
+
+  const [selectedStateOption, setSelectedStateOption] = useState(
+    initialStateFilter()
+  );
 
   const initialPage = () => {
     const page = searchParams.get("p");
@@ -102,17 +173,22 @@ export default function HomePage() {
       selectedOption.orderBy,
       page,
       category,
+      selectedStateOption.key,
     ],
     queryFn: async () =>
-      getMarkets({
-        first: ITEMS_PER_PAGE,
-        skip: (page - 1) * ITEMS_PER_PAGE,
-        orderBy: selectedOption.orderBy,
-        orderDirection: OrderDirection.Desc,
-        title_contains_nocase: debouncedSearch,
-        creator_in: AI_AGENTS_ALLOWLIST,
-        category_contains: category,
-      }),
+      getMarkets(
+        {
+          first: ITEMS_PER_PAGE,
+          skip: (page - 1) * ITEMS_PER_PAGE,
+          orderBy: selectedOption.orderBy,
+          orderDirection: OrderDirection.Desc,
+          title_contains_nocase: debouncedSearch,
+          creator_in: AI_AGENTS_ALLOWLIST,
+          category_contains: category,
+          ...selectedStateOption.state,
+        },
+        selectedStateOption.query
+      ),
   });
 
   const handleSearch = (query: string) => {
@@ -143,6 +219,16 @@ export default function HomePage() {
     router.replace(`?${searchParams.toString()}`);
   };
 
+  const selectStateFilter = (option: StateFilterOption) => {
+    setSelectedStateOption(option);
+    setStatePopoverOpen(false);
+    setPage(1);
+
+    searchParams.delete("p");
+    searchParams.set("sf", option.key);
+    router.replace(`?${searchParams.toString()}`);
+  };
+
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
 
@@ -162,17 +248,22 @@ export default function HomePage() {
       selectedOption.orderBy,
       nextPage,
       category,
+      selectedStateOption.key,
     ],
     queryFn: async () =>
-      getMarkets({
-        first: ITEMS_PER_PAGE,
-        skip: nextPage,
-        orderBy: selectedOption.orderBy,
-        orderDirection: OrderDirection.Desc,
-        title_contains_nocase: debouncedSearch,
-        creator_in: AI_AGENTS_ALLOWLIST,
-        category_contains: category,
-      }),
+      getMarkets(
+        {
+          first: ITEMS_PER_PAGE,
+          skip: nextPage,
+          orderBy: selectedOption.orderBy,
+          orderDirection: OrderDirection.Desc,
+          title_contains_nocase: debouncedSearch,
+          creator_in: AI_AGENTS_ALLOWLIST,
+          category_contains: category,
+          ...selectedStateOption.state,
+        },
+        selectedStateOption.query
+      ),
   });
 
   const hasMoreMarkets =
@@ -198,7 +289,7 @@ export default function HomePage() {
           <ToggleGroupOption size="md" value={""} className="font-semibold">
             All
           </ToggleGroupOption>
-          {Object.values(Categories).map(category => (
+          {Object.values(Categories).map((category) => (
             <ToggleGroupOption
               key={category}
               value={category}
@@ -211,10 +302,10 @@ export default function HomePage() {
         </ToggleGroup>
         <div className="flex items-center space-x-2">
           <Input
-            className="w-full md:w-72"
+            className="w-full"
             placeholder="Search market"
             leftIcon="search"
-            onChange={event => handleSearch(event.target.value)}
+            onChange={(event) => handleSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -226,7 +317,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map(option => {
+                {filterOptions.map((option) => {
                   return (
                     <div
                       key={option.name}
@@ -251,6 +342,44 @@ export default function HomePage() {
               <Icon name="chevron-down" />
             </Button>
           )}
+
+          {showClientUI ? (
+            <Popover
+              open={isStatePopoverOpen}
+              onOpenChange={setStatePopoverOpen}
+            >
+              <PopoverTrigger>
+                <Button variant="pastel" className="space-x-2 text-nowrap">
+                  <p>{selectedStateOption.name}</p>
+                  <Icon name="chevron-down" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="px-1 py-2">
+                {stateFilterOptions.map((option) => {
+                  return (
+                    <div
+                      key={option.key}
+                      onClick={() => selectStateFilter(option)}
+                      className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
+                    >
+                      <Icon
+                        className={cx({
+                          invisible: selectedStateOption.key !== option.key,
+                        })}
+                        name="tick-fill"
+                      />
+                      <p>{option.name}</p>
+                    </div>
+                  );
+                })}
+              </PopoverContent>
+            </Popover>
+          ) : (
+            <Button variant="pastel" className="space-x-2 text-nowrap">
+              <p>{selectedStateOption.name}</p>
+              <Icon name="chevron-down" />
+            </Button>
+          )}
         </div>
       </div>
       {isLoading ? (
@@ -261,7 +390,7 @@ export default function HomePage() {
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map(market => (
+          {markets.map((market) => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>

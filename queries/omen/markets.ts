@@ -77,6 +77,52 @@ const getMarketQuery = gql`
   }
 `;
 
+const marketDataFragment = gql`
+  fragment marketData on FixedProductMarketMaker {
+    id
+    collateralVolume
+    collateralToken
+    creationTimestamp
+    lastActiveDay
+    outcomeTokenAmounts
+    runningDailyVolumeByHour
+    scaledLiquidityParameter
+    title
+    outcomes
+    openingTimestamp
+    arbitrator
+    category
+    templateId
+    scaledLiquidityParameter
+    curatedByDxDao
+    klerosTCRregistered
+    outcomeTokenMarginalPrices
+    condition {
+      id
+      oracle
+      scalarLow
+      scalarHigh
+      __typename
+    }
+    question {
+      id
+      data
+      currentAnswer
+      outcomes
+      answers {
+        answer
+        bondAggregate
+        __typename
+      }
+      __typename
+    }
+    outcomes
+    outcomeTokenMarginalPrices
+    usdVolume
+    __typename
+  }
+`;
+
 const getMarketsQuery = gql`
   query GetMarkets(
     $first: Int!
@@ -104,49 +150,139 @@ const getMarketsQuery = gql`
     }
   }
 
-  fragment marketData on FixedProductMarketMaker {
-    id
-    collateralVolume
-    collateralToken
-    creationTimestamp
-    lastActiveDay
-    outcomeTokenAmounts
-    runningDailyVolumeByHour
-    scaledLiquidityParameter
-    title
-    outcomes
-    openingTimestamp
-    arbitrator
-    category
-    templateId
-    scaledLiquidityParameter
-    curatedByDxDao
-    klerosTCRregistered
-    outcomeTokenMarginalPrices
-    condition {
-      id
-      oracle
-      scalarLow
-      scalarHigh
-      __typename
-    }
-    question {
-      id
-      data
-      currentAnswer
-      outcomes
-      answers {
-        answer
-        bondAggregate
-        __typename
+  ${marketDataFragment}
+`;
+
+export const getMarketsOpenQuery = gql`
+  query GetMarkets(
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+    $title_contains_nocase: String
+    $creator_in: [String]
+    $category_contains: String
+    $openingTimestamp_gt: Int
+  ) {
+    fixedProductMarketMakers(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
+        category_contains: $category_contains
+        openingTimestamp_gt: $openingTimestamp_gt
       }
+    ) {
+      ...marketData
       __typename
     }
-    outcomes
-    outcomeTokenMarginalPrices
-    usdVolume
-    __typename
   }
+
+  ${marketDataFragment}
+`;
+
+export const getMarketsPendingQuery = gql`
+  query GetMarkets(
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+    $title_contains_nocase: String
+    $creator_in: [String]
+    $category_contains: String
+    $openingTimestamp_lt: Int
+    $isPendingArbitration: Boolean
+    $currentAnswer: Bytes
+  ) {
+    fixedProductMarketMakers(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
+        category_contains: $category_contains
+        openingTimestamp_lt: $openingTimestamp_lt
+        isPendingArbitration: $isPendingArbitration
+        currentAnswer: $currentAnswer
+      }
+    ) {
+      ...marketData
+      __typename
+    }
+  }
+
+  ${marketDataFragment}
+`;
+
+export const getMarketsClosedQuery = gql`
+  query GetMarkets(
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+    $title_contains_nocase: String
+    $creator_in: [String]
+    $category_contains: String
+    $answerFinalizedTimestamp_lt: Int
+  ) {
+    fixedProductMarketMakers(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
+        category_contains: $category_contains
+        answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt
+      }
+    ) {
+      ...marketData
+      __typename
+    }
+  }
+
+  ${marketDataFragment}
+`;
+
+export const getMarketsDisputeQuery = gql`
+  query GetMarkets(
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+    $title_contains_nocase: String
+    $creator_in: [String]
+    $category_contains: String
+    $isPendingArbitration: Boolean
+  ) {
+    fixedProductMarketMakers(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
+        category_contains: $category_contains
+        isPendingArbitration: $isPendingArbitration
+      }
+    ) {
+      ...marketData
+      __typename
+    }
+  }
+
+  ${marketDataFragment}
 `;
 
 const getAccountMarketsQuery = gql`
@@ -174,49 +310,7 @@ const getAccountMarketsQuery = gql`
     }
   }
 
-  fragment marketData on FixedProductMarketMaker {
-    id
-    collateralVolume
-    collateralToken
-    creationTimestamp
-    lastActiveDay
-    outcomeTokenAmounts
-    runningDailyVolumeByHour
-    scaledLiquidityParameter
-    title
-    outcomes
-    openingTimestamp
-    arbitrator
-    category
-    templateId
-    scaledLiquidityParameter
-    curatedByDxDao
-    klerosTCRregistered
-    outcomeTokenMarginalPrices
-    condition {
-      id
-      oracle
-      scalarLow
-      scalarHigh
-      __typename
-    }
-    question {
-      id
-      data
-      currentAnswer
-      outcomes
-      answers {
-        answer
-        bondAggregate
-        __typename
-      }
-      __typename
-    }
-    outcomes
-    outcomeTokenMarginalPrices
-    usdVolume
-    __typename
-  }
+  ${marketDataFragment}
 `;
 
 const getConditionMarketQuery = gql`
@@ -228,49 +322,7 @@ const getConditionMarketQuery = gql`
     }
   }
 
-  fragment marketData on FixedProductMarketMaker {
-    id
-    collateralVolume
-    collateralToken
-    creationTimestamp
-    lastActiveDay
-    outcomeTokenAmounts
-    runningDailyVolumeByHour
-    scaledLiquidityParameter
-    title
-    outcomes
-    openingTimestamp
-    arbitrator
-    category
-    templateId
-    scaledLiquidityParameter
-    curatedByDxDao
-    klerosTCRregistered
-    outcomeTokenMarginalPrices
-    condition {
-      id
-      oracle
-      scalarLow
-      scalarHigh
-      __typename
-    }
-    question {
-      id
-      data
-      currentAnswer
-      outcomes
-      answers {
-        answer
-        bondAggregate
-        __typename
-      }
-      __typename
-    }
-    outcomes
-    outcomeTokenMarginalPrices
-    usdVolume
-    __typename
-  }
+  ${marketDataFragment}
 `;
 
 const getMarketUserTradesQuery = gql`
@@ -314,11 +366,12 @@ const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
   );
 
 const getMarkets = async (
-  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
+  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter,
+  query: string = getMarketsQuery
 ) =>
   request<Pick<Query, "fixedProductMarketMakers">>(
     OMEN_SUBGRAPH_URL,
-    getMarketsQuery,
+    query,
     params
   );
 
