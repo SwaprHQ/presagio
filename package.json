@@ -23,7 +23,7 @@
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-dom": "^18",
-    "swapr-ui": "0.0.53",
+    "swapr-ui": "0.0.59",
     "viem": "2.x",
     "wagmi": "^2.5.7"
   },

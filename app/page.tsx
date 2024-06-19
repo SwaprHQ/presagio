@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   ToggleGroup,
-  ToogleGroupOption,
+  ToggleGroupOption,
 } from "swapr-ui";
 import { useState } from "react";
 import { useShowClientUI, useDebounce } from "@/hooks";
@@ -184,17 +184,20 @@ export default function HomePage() {
         <ToggleGroup
           value={category}
           onChange={setCategory}
-          // className="overflow-x-scroll"
+          className="overflow-x-scroll md:overflow-x-auto"
         >
-          <ToogleGroupOption value={""}>All</ToogleGroupOption>
+          <ToggleGroupOption size="md" value={""} className="font-semibold">
+            All
+          </ToggleGroupOption>
           {Object.values(Categories).map(category => (
-            <ToogleGroupOption
+            <ToggleGroupOption
               key={category}
               value={category}
-              className="capitalize font-bold"
+              className="capitalize font-semibold"
+              size="md"
             >
               {category}
-            </ToogleGroupOption>
+            </ToggleGroupOption>
           ))}
         </ToggleGroup>
         <div className="flex items-center space-x-2">
