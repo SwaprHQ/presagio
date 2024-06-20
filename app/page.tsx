@@ -2,16 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import {
-  FixedProductMarketMaker_Filter,
-  FixedProductMarketMaker_OrderBy,
-  OrderDirection,
-  getMarkets,
-  getMarketsClosedQuery,
-  getMarketsDisputeQuery,
-  getMarketsOpenQuery,
-  getMarketsPendingQuery,
-} from "@/queries/omen";
+import { getMarkets } from "@/queries/omen";
 import { CardMarket, LoadingCardMarket } from "@/app/components";
 import {
   Button,
@@ -29,76 +20,17 @@ import { useShowClientUI, useDebounce } from "@/hooks";
 import { cx } from "class-variance-authority";
 import { useRouter } from "next/navigation";
 import { AI_AGENTS_ALLOWLIST } from "@/constants";
-
-type FilterOption = {
-  name: string;
-  orderBy: FixedProductMarketMaker_OrderBy;
-};
-
-const filterOptions: FilterOption[] = [
-  {
-    name: "Newest",
-    orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
-  },
-  {
-    name: "Highest volume",
-    orderBy: FixedProductMarketMaker_OrderBy.CollateralVolume,
-  },
-];
-
-const nowTimestamp = Math.floor(Date.now() / 1000);
-
-type StateFilterOption = {
-  name: string;
-  key: string;
-  query: string;
-  state: FixedProductMarketMaker_Filter;
-};
-
-const stateFilterOptions: StateFilterOption[] = [
-  {
-    name: "Open",
-    key: "open",
-    state: {
-      openingTimestamp_gt: nowTimestamp,
-    },
-    query: getMarketsOpenQuery,
-  },
-  {
-    name: "Pending",
-    key: "pending",
-
-    state: {
-      openingTimestamp_lt: nowTimestamp,
-      isPendingArbitration: false,
-      currentAnswer: null,
-    },
-    query: getMarketsPendingQuery,
-  },
-  {
-    name: "Closed",
-    key: "closed",
-
-    state: {
-      answerFinalizedTimestamp_lt: nowTimestamp,
-    },
-    query: getMarketsClosedQuery,
-  },
-  {
-    name: "In Dispute",
-    key: "dispute",
-
-    state: {
-      isPendingArbitration: true,
-    },
-    query: getMarketsDisputeQuery,
-  },
-];
+import {
+  OrderFilter,
+  StateFilter,
+  orderFilters,
+  stateFilters,
+} from "./filters";
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
-const DEFAULT_FILTER_OPTION = filterOptions[0];
-const DEFAULT_STATE_FILTER_OPTION = stateFilterOptions[0];
+const DEFAULT_ORDER_OPTION = orderFilters[0];
+const DEFAULT_STATE_OPTION = stateFilters[0];
 
 enum Categories {
   TECHNOLOGY = "technology",
@@ -116,8 +48,8 @@ type CategoryOptions = Categories | "";
 export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
-  const [isPopoverOpen, setPopoverOpen] = useState(false);
-  const [isStatePopoverOpen, setStatePopoverOpen] = useState(false);
+  const [isOrderFilterPopoverOpen, setOrderFilterPopoverOpen] = useState(false);
+  const [isStateFilterPopoverOpen, setStateFilterPopoverOpen] = useState(false);
 
   const searchParams =
     typeof window !== "undefined"
@@ -131,25 +63,27 @@ export default function HomePage() {
 
   const initialFilter = () => {
     const filterValueFromSearchParams = searchParams.get("f");
-    if (!filterValueFromSearchParams) return DEFAULT_FILTER_OPTION;
+    if (!filterValueFromSearchParams) return DEFAULT_ORDER_OPTION;
 
     return (
-      filterOptions.find(
-        (option) => option.orderBy === filterValueFromSearchParams
-      ) || DEFAULT_FILTER_OPTION
+      orderFilters.find(
+        (option) => option.key === filterValueFromSearchParams
+      ) || DEFAULT_ORDER_OPTION
     );
   };
 
-  const [selectedOption, setSelectedOption] = useState(initialFilter());
+  const [selectedOrderOption, setSelectedOrderOption] = useState(
+    initialFilter()
+  );
 
   const initialStateFilter = () => {
     const filterValueFromSearchParams = searchParams.get("sf");
-    if (!filterValueFromSearchParams) return DEFAULT_STATE_FILTER_OPTION;
+    if (!filterValueFromSearchParams) return DEFAULT_STATE_OPTION;
 
     return (
-      stateFilterOptions.find(
+      stateFilters.find(
         (option) => option.key === filterValueFromSearchParams
-      ) || DEFAULT_STATE_FILTER_OPTION
+      ) || DEFAULT_STATE_OPTION
     );
   };
 
@@ -170,7 +104,8 @@ export default function HomePage() {
     queryKey: [
       "getMarkets",
       debouncedSearch,
-      selectedOption.orderBy,
+      selectedOrderOption.orderBy,
+      selectedOrderOption.orderDirection,
       page,
       category,
       selectedStateOption.key,
@@ -180,8 +115,8 @@ export default function HomePage() {
         {
           first: ITEMS_PER_PAGE,
           skip: (page - 1) * ITEMS_PER_PAGE,
-          orderBy: selectedOption.orderBy,
-          orderDirection: OrderDirection.Desc,
+          orderBy: selectedOrderOption.orderBy,
+          orderDirection: selectedOrderOption.orderDirection,
           title_contains_nocase: debouncedSearch,
           creator_in: AI_AGENTS_ALLOWLIST,
           category_contains: category,
@@ -209,19 +144,19 @@ export default function HomePage() {
     router.replace(`?${searchParams.toString()}`);
   };
 
-  const selectFilter = (option: FilterOption) => {
-    setSelectedOption(option);
-    setPopoverOpen(false);
+  const selectOrderFilter = (option: OrderFilter) => {
+    setSelectedOrderOption(option);
+    setOrderFilterPopoverOpen(false);
     setPage(1);
 
     searchParams.delete("p");
-    searchParams.set("f", option.orderBy);
+    searchParams.set("f", option.key);
     router.replace(`?${searchParams.toString()}`);
   };
 
-  const selectStateFilter = (option: StateFilterOption) => {
+  const selectStateFilter = (option: StateFilter) => {
     setSelectedStateOption(option);
-    setStatePopoverOpen(false);
+    setStateFilterPopoverOpen(false);
     setPage(1);
 
     searchParams.delete("p");
@@ -245,7 +180,8 @@ export default function HomePage() {
     queryKey: [
       "getMarkets",
       debouncedSearch,
-      selectedOption.orderBy,
+      selectedOrderOption.orderBy,
+      selectedOrderOption.orderDirection,
       nextPage,
       category,
       selectedStateOption.key,
@@ -255,8 +191,8 @@ export default function HomePage() {
         {
           first: ITEMS_PER_PAGE,
           skip: nextPage,
-          orderBy: selectedOption.orderBy,
-          orderDirection: OrderDirection.Desc,
+          orderBy: selectedOrderOption.orderBy,
+          orderDirection: selectedOrderOption.orderDirection,
           title_contains_nocase: debouncedSearch,
           creator_in: AI_AGENTS_ALLOWLIST,
           category_contains: category,
@@ -309,44 +245,45 @@ export default function HomePage() {
             value={search}
           />
           {showClientUI ? (
-            <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
+            <Popover
+              open={isOrderFilterPopoverOpen}
+              onOpenChange={setOrderFilterPopoverOpen}
+            >
               <PopoverTrigger>
                 <Button variant="pastel" className="space-x-2 text-nowrap">
-                  <p>{selectedOption.name}</p>
+                  <p>{selectedOrderOption.name}</p>
                   <Icon name="chevron-down" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {filterOptions.map((option) => {
-                  return (
-                    <div
-                      key={option.name}
-                      onClick={() => selectFilter(option)}
-                      className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
-                    >
-                      <Icon
-                        className={cx({
-                          invisible: selectedOption.name !== option.name,
-                        })}
-                        name="tick-fill"
-                      />
-                      <p>{option.name}</p>
-                    </div>
-                  );
-                })}
+                {orderFilters.map((option) => (
+                  <div
+                    key={option.key}
+                    onClick={() => selectOrderFilter(option)}
+                    className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
+                  >
+                    <Icon
+                      className={cx({
+                        invisible: selectedOrderOption.key !== option.key,
+                      })}
+                      name="tick-fill"
+                    />
+                    <p>{option.name}</p>
+                  </div>
+                ))}
               </PopoverContent>
             </Popover>
           ) : (
             <Button variant="pastel" className="space-x-2 text-nowrap">
-              <p>{selectedOption.name}</p>
+              <p>{selectedOrderOption.name}</p>
               <Icon name="chevron-down" />
             </Button>
           )}
 
           {showClientUI ? (
             <Popover
-              open={isStatePopoverOpen}
-              onOpenChange={setStatePopoverOpen}
+              open={isStateFilterPopoverOpen}
+              onOpenChange={setStateFilterPopoverOpen}
             >
               <PopoverTrigger>
                 <Button variant="pastel" className="space-x-2 text-nowrap">
@@ -355,23 +292,21 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {stateFilterOptions.map((option) => {
-                  return (
-                    <div
-                      key={option.key}
-                      onClick={() => selectStateFilter(option)}
-                      className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
-                    >
-                      <Icon
-                        className={cx({
-                          invisible: selectedStateOption.key !== option.key,
-                        })}
-                        name="tick-fill"
-                      />
-                      <p>{option.name}</p>
-                    </div>
-                  );
-                })}
+                {stateFilters.map((option) => (
+                  <div
+                    key={option.key}
+                    onClick={() => selectStateFilter(option)}
+                    className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
+                  >
+                    <Icon
+                      className={cx({
+                        invisible: selectedStateOption.key !== option.key,
+                      })}
+                      name="tick-fill"
+                    />
+                    <p>{option.name}</p>
+                  </div>
+                ))}
               </PopoverContent>
             </Popover>
           ) : (
