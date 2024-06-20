@@ -16,6 +16,7 @@ import { Market } from "@/entities";
 import { UserBets } from "../components/UserBets";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { HistorySection } from "@/app/markets/HistorySection";
 
 interface MarketDetailsProps {
   id: Address;
@@ -105,11 +106,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               )}
             </div>
           )}
-          {tab === "history" && (
-            <div className="p-2">
-              <div className="p-4 text-center">No history yet</div>
-            </div>
-          )}
+          {tab === "history" && <HistorySection />}
         </div>
         <UserBets market={market} />
       </div>
