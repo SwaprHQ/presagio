@@ -285,6 +285,40 @@ export const getMarketsDisputeQuery = gql`
   ${marketDataFragment}
 `;
 
+export const getMarketsClosingQuery = gql`
+  query GetMarkets(
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+    $title_contains_nocase: String
+    $creator_in: [String]
+    $category_contains: String
+    $openingTimestamp_gt: Int
+    $openingTimestamp_lte: Int
+  ) {
+    fixedProductMarketMakers(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: {
+        outcomeSlotCount: 2
+        title_contains_nocase: $title_contains_nocase
+        creator_in: $creator_in
+        category_contains: $category_contains
+        openingTimestamp_gt: $openingTimestamp_gt
+        openingTimestamp_lte: $openingTimestamp_lte
+      }
+    ) {
+      ...marketData
+      __typename
+    }
+  }
+
+  ${marketDataFragment}
+`;
+
 const getAccountMarketsQuery = gql`
   query GetMyMarkets(
     $id: String!
