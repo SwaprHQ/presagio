@@ -3,19 +3,31 @@
 import { OutcomeBar, Swapbox } from "@/app/components";
 import { useQuery } from "@tanstack/react-query";
 import { getMarket } from "@/queries/omen";
-import { Button, IconButton, Tag } from "swapr-ui";
+import {
+  Button,
+  IconButton,
+  Tag,
+  ToggleGroup,
+  ToggleGroupOption,
+} from "swapr-ui";
 import { remainingTime } from "@/utils/dates";
-import Link from "next/link";
 import { Address } from "viem";
 import { Market } from "@/entities";
 import { UserBets } from "../components/UserBets";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface MarketDetailsProps {
   id: Address;
 }
 
+enum Tabs {
+  BET = "bet",
+  HISTORY = "history",
+}
+
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
+  const [tab, setTab] = useState<Tabs>(Tabs.BET);
   const { data, error, isLoading } = useQuery({
     queryKey: ["getMarket", id],
     queryFn: async () => getMarket({ id }),
@@ -65,9 +77,37 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               <OutcomeBar market={market} />
             </div>
           </div>
-          {!marketModel.isClosed && (
+          <div className="px-4 pb-2">
+            <ToggleGroup
+              value={tab}
+              onChange={setTab}
+              className="w-full md:w-full justify-around"
+            >
+              {Object.values(Tabs).map(tab => (
+                <div className="w-full" key={tab}>
+                  <ToggleGroupOption
+                    size="md"
+                    value={tab}
+                    className="capitalize font-semibold flex justify-center"
+                  >
+                    {tab}
+                  </ToggleGroupOption>
+                </div>
+              ))}
+            </ToggleGroup>
+          </div>
+          {tab === "bet" && (
             <div className="p-2">
-              <Swapbox market={market} />
+              {!marketModel.isClosed ? (
+                <Swapbox market={market} />
+              ) : (
+                <div className="p-4 text-center">Market closed</div>
+              )}
+            </div>
+          )}
+          {tab === "history" && (
+            <div className="p-2">
+              <div className="p-4 text-center">No history yet</div>
             </div>
           )}
         </div>
@@ -92,9 +132,12 @@ const LoadingMarketDetails = () => (
           <div className="flex-shrink-0 size-20 rounded-8 bg-outline-low-em animate-pulse" />
           <div className="w-full h-28 rounded-8 bg-outline-low-em animate-pulse" />
         </div>
-        <div className="!mt-7 w-full h-10 rounded-8 bg-outline-low-em animate-pulse" />
+        <div className="!mt-4 w-full h-6 rounded-8 bg-outline-low-em animate-pulse" />
       </div>
-      <div className="w-full p-2 h-28">
+      <div className="w-full px-4 pb-2">
+        <div className="w-full h-12 rounded-8 bg-outline-low-em animate-pulse" />
+      </div>
+      <div className="w-full p-2 h-32">
         <div className="w-full h-full rounded-8 bg-outline-low-em animate-pulse" />
       </div>
       <div className="w-full p-2 h-28">
