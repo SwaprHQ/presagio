@@ -4,7 +4,7 @@ import { Button } from 'swapr-ui';
 
 export default function NoBetsPage() {
   return (
-    <div className="w-full px-6 mt-12 space-y-8 items-center md:flex md:flex-col">
+    <div className="mt-12 w-full items-center space-y-8 px-6 md:flex md:flex-col">
       <NoBetsImage className="mx-auto" />
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold text-text-high-em">

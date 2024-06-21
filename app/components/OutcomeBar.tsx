@@ -30,7 +30,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         {outcome0.percentage !== '0' && (
           <div
             className={cx(
-              'flex items-center h-3 px-2 rounded-s-8',
+              'flex h-3 items-center rounded-s-8 px-2',
               outcome0.percentage ? 'bg-surface-success-accent-2' : 'bg-outline-low-em',
               outcome1.percentage === '0' && 'rounded-e-8'
             )}
@@ -42,7 +42,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         {outcome1.percentage !== '0' && (
           <div
             className={cx(
-              'flex items-center h-3 px-2 rounded-e-8',
+              'flex h-3 items-center rounded-e-8 px-2',
               outcome1.percentage ? 'bg-surface-danger-accent-2' : 'bg-outline-low-em',
               outcome0.percentage === '0' && 'rounded-s-8'
             )}

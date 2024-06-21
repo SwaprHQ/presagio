@@ -1,5 +1,5 @@
 export const RowCard = () => {
   return (
-    <div className="h-[184px] md:max-w-[760px] bg-[#131313] rounded-2xl border border-white/10 cursor-pointer"></div>
+    <div className="rounded-2xl border-white/10 h-[184px] cursor-pointer border bg-[#131313] md:max-w-[760px]"></div>
   );
 };

@@ -134,19 +134,19 @@ export const ConfirmTrade = ({
           </DialogClose>
           Confirm Swap
         </DialogHeader>
-        <DialogBody className="px-2 space-y-2">
-          <div className="relative bg-surface-surface-1 rounded-16">
-            <div className="border-b-[1px] border-b-outline-base-em w-full flex flex-col items-center pt-3 pb-8 space-y-1">
+        <DialogBody className="space-y-2 px-2">
+          <div className="relative rounded-16 bg-surface-surface-1">
+            <div className="flex w-full flex-col items-center space-y-1 border-b-[1px] border-b-outline-base-em pb-8 pt-3">
               <p className="text-xs uppercase text-text-low-em">You sell</p>
               <div className="text-2xl uppercase">
                 <span>{twoDecimalsTokenAmountIn}</span>{' '}
                 <span className="text-text-low-em">{swapState.inToken.symbol}</span>
               </div>
             </div>
-            <div className="flex items-center justify-center rounded-100 bg-surface-surface-3 h-[40px] w-[56px] absolute top-[calc(50%_-_20px)] left-[calc(50%_-_28px)]">
+            <div className="absolute left-[calc(50%_-_28px)] top-[calc(50%_-_20px)] flex h-[40px] w-[56px] items-center justify-center rounded-100 bg-surface-surface-3">
               <Icon name="arrow-down" />
             </div>
-            <div className="flex flex-col items-center w-full pt-8 pb-3 space-y-1">
+            <div className="flex w-full flex-col items-center space-y-1 pb-3 pt-8">
               <p className="text-xs uppercase text-text-low-em">You buy</p>
               <div className="text-2xl uppercase">
                 <span>{twoDecimalsTokenAmountOut}</span>{' '}
@@ -154,21 +154,21 @@ export const ConfirmTrade = ({
               </div>
             </div>
           </div>
-          <div className="border border-outline-base-em rounded-12">
+          <div className="rounded-12 border border-outline-base-em">
             <div className="px-3 py-1">
               <div className="flex items-center justify-between">
-                <p className=" text-text-low-em">Price</p>
+                <p className="text-text-low-em">Price</p>
                 <div className="flex items-center space-x-1">
                   <p>1 {swapState.inToken.symbol}</p>
                   <p>=</p>
                   <p className="text-text-success-em">
                     {swapState.tokenPrice} {swapState.outToken.symbol}
                   </p>
-                  <p className=" text-text-low-em">(≈ $1)</p>
+                  <p className="text-text-low-em">(≈ $1)</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <p className=" text-text-low-em">Slippage</p>
+                <p className="text-text-low-em">Slippage</p>
                 <p>{SLIPPAGE * 100}%</p>
               </div>
             </div>

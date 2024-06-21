@@ -99,9 +99,9 @@ export default function MyBetsPage() {
   if (data && data.userPositions.length === 0) return <NoBetsPage />;
 
   return (
-    <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
+    <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
-        <h1 className="mb-8 text-2xl font-semibold text-white">My bets</h1>
+        <h1 className="text-white mb-8 text-2xl font-semibold">My bets</h1>
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
@@ -136,7 +136,7 @@ export default function MyBetsPage() {
 }
 
 const BetsListTabCounter = ({ children }: PropsWithChildren) => (
-  <div className="bg-surface-surface-0 text-2xs border border-outline-low-em rounded-6 p-1 px-1.5 ml-2">
+  <div className="ml-2 rounded-6 border border-outline-low-em bg-surface-surface-0 p-1 px-1.5 text-2xs">
     {children}
   </div>
 );
@@ -176,7 +176,7 @@ const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) 
           <CardBet userPosition={position} key={position.id} />
         ))}
       {!isLoading && !bets.length && (
-        <div className="p-6 space-y-4 bg-surface-surface-2 rounded-12">
+        <div className="space-y-4 rounded-12 bg-surface-surface-2 p-6">
           <p>{emptyText}</p>
         </div>
       )}

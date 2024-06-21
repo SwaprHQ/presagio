@@ -199,13 +199,13 @@ export default function HomePage() {
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
-    <div className="justify-center px-6 mt-12 space-y-8 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
+    <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold text-white capitalize">
+        <h1 className="text-white text-2xl font-semibold capitalize">
           🔮 {category ? category : 'All'}
         </h1>
       </div>
-      <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
+      <div className="flex w-full flex-col justify-between gap-5 md:flex-row">
         <ToggleGroup
           value={category}
           onChange={handleCategory}
@@ -218,7 +218,7 @@ export default function HomePage() {
             <ToggleGroupOption
               key={category}
               value={category}
-              className="capitalize font-semibold"
+              className="font-semibold capitalize"
               size="md"
             >
               {category}
@@ -249,7 +249,7 @@ export default function HomePage() {
                   <div
                     key={option.key}
                     onClick={() => selectOrderFilter(option)}
-                    className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
+                    className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                   >
                     <Icon
                       className={cx({
@@ -285,7 +285,7 @@ export default function HomePage() {
                   <div
                     key={option.key}
                     onClick={() => selectStateFilter(option)}
-                    className="flex items-center justify-start px-3 py-2 space-x-2 font-semibold cursor-pointer"
+                    className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                   >
                     <Icon
                       className={cx({
@@ -321,12 +321,12 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="w-full px-6 py-10 space-y-4 text-center text-md bg-surface-surface-1 rounded-12 text-bold">
+        <div className="text-bold w-full space-y-4 rounded-12 bg-surface-surface-1 px-6 py-10 text-center text-md">
           <p>No market found for current search</p>
         </div>
       )}
       {showClientUI && showPaginationButtons && (
-        <div className="flex justify-end w-full space-x-4">
+        <div className="flex w-full justify-end space-x-4">
           <IconButton
             name="chevron-left"
             variant="pastel"
@@ -336,17 +336,17 @@ export default function HomePage() {
           <div className="flex space-x-2">
             {page > 1 && (
               <Button
-                className="p-3 w-[42px] h-[42px]"
+                className="h-[42px] w-[42px] p-3"
                 variant="ghost"
                 onClick={() => handleNextPage(page - 1)}
               >
                 {page - 1}
               </Button>
             )}
-            <Button className="p-3 w-[42px] h-[42px]">{page}</Button>
+            <Button className="h-[42px] w-[42px] p-3">{page}</Button>
             {hasMoreMarkets && (
               <Button
-                className="p-3 w-[42px] h-[42px]"
+                className="h-[42px] w-[42px] p-3"
                 variant="ghost"
                 onClick={() => handleNextPage(page + 1)}
               >

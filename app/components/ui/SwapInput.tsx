@@ -21,8 +21,8 @@ export const SwapInput = ({
   ...props
 }: SwapInputProps) => {
   return (
-    <div className="p-4 space-y-1 bg-surface-surface-1 rounded-16">
-      <div className="text-xs uppercase text-text-low-em font-semibold">{title}</div>
+    <div className="space-y-1 rounded-16 bg-surface-surface-1 p-4">
+      <div className="text-xs font-semibold uppercase text-text-low-em">{title}</div>
       <div className="flex w-full space-x-2">
         <input
           min={0}
@@ -33,7 +33,7 @@ export const SwapInput = ({
           onKeyDown={evt =>
             ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()
           }
-          className="bg-transparent overflow-hidden overscroll-none outline-none caret-text-primary-main text-3xl placeholder:text-text-disabled"
+          className="overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
           {...props}
         />
         {selectedToken instanceof Token ? (
@@ -52,7 +52,7 @@ export const SwapInput = ({
               <Button className="flex-shrink-0" variant="pastel">
                 <p
                   className={cx(
-                    'font-semibold text-nowrap',
+                    'text-nowrap font-semibold',
                     selectedToken.index === 0
                       ? 'text-text-success-main'
                       : 'text-text-danger-main'
@@ -63,14 +63,14 @@ export const SwapInput = ({
                 <Icon name="chevron-down" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="min-w-fit px-0 py-0 divide-y-2 divide-outline-base-em">
+            <PopoverContent className="min-w-fit divide-y-2 divide-outline-base-em px-0 py-0">
               {tokenList.map(outcome => {
                 return (
                   <div
                     key={outcome.index}
                     onClick={() => onTokenClick && onTokenClick(outcome)}
                     className={cx(
-                      'flex justify-end items-center space-x-2 py-2 px-3 cursor-pointer font-semibold',
+                      'flex cursor-pointer items-center justify-end space-x-2 px-3 py-2 font-semibold',
                       outcome.index === 0
                         ? 'text-text-success-main'
                         : 'text-text-danger-main'

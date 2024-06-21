@@ -175,22 +175,22 @@ export const UserBets = ({ market }: UserBets) => {
             <div className="flex space-x-4" key={index}>
               <div
                 className={cx(
-                  'bg-surface-surface-0 w-full max-w-[464px] rounded-16 border border-outline-base-em space-y-4 text-center py-4 divide-y-2 divide-outline-base-em',
+                  'w-full max-w-[464px] space-y-4 divide-y-2 divide-outline-base-em rounded-16 border border-outline-base-em bg-surface-surface-0 py-4 text-center',
                   isWinner &&
                     (index === 0
                       ? 'bg-gradient-to-b from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]'
                       : 'bg-gradient-to-b from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]')
                 )}
               >
-                <div className="flex px-4 space-x-2 divide-x-2 divide-outline-base-em">
+                <div className="flex space-x-2 divide-x-2 divide-outline-base-em px-4">
                   <Tag
-                    className="uppercase w-fit"
+                    className="w-fit uppercase"
                     size="sm"
                     colorScheme={index === 0 ? 'success' : 'danger'}
                   >
                     {outcome.symbol}
                   </Tag>
-                  <div className="flex items-center justify-between w-full h-8 pl-2">
+                  <div className="flex h-8 w-full items-center justify-between pl-2">
                     <p className="font-semibold">
                       <span className="text-text-low-em">Bet amount: </span>
                       <span>
@@ -217,7 +217,7 @@ export const UserBets = ({ market }: UserBets) => {
                 </div>
                 {canClaim && !alreadyClaimed && (
                   <>
-                    <div className="px-4 pt-4 space-y-4">
+                    <div className="space-y-4 px-4 pt-4">
                       <p className="px-6 font-semibold text-text-low-em">
                         Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
                         {WXDAI.symbol} from your {collateralSpent} shares of the winning

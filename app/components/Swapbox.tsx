@@ -210,7 +210,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
           selectedToken={currentState.inToken}
           tokenList={outcomeList}
         >
-          <div className="flex text-sm items-center justify-end space-x-1.5">
+          <div className="flex items-center justify-end space-x-1.5 text-sm">
             <p className="text-text-low-em">
               Balance:
               {currentState.balance
@@ -231,7 +231,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         <IconButton
           name="swap-vertical"
           variant="outline"
-          className="absolute top-[100px] left-[calc(50%_-_20px)]"
+          className="absolute left-[calc(50%_-_20px)] top-[100px]"
           onClick={currentState.onSwitchButtonClick}
         />
         <SwapInput
@@ -245,7 +245,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         <div className="space-y-4">
           <div className="px-3 py-1">
             <div className="flex items-center justify-between">
-              <p className=" text-text-low-em">Price</p>
+              <p className="text-text-low-em">Price</p>
               <div className="flex items-center space-x-1">
                 <p>1 {currentState.inToken.symbol}</p>
                 <p>=</p>
@@ -260,11 +260,11 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
                 >
                   {currentState.tokenPrice} {currentState.outToken.symbol}
                 </p>
-                <p className=" text-text-low-em">(≈ $1)</p>
+                <p className="text-text-low-em">(≈ $1)</p>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <p className=" text-text-low-em">Slippage</p>
+              <p className="text-text-low-em">Slippage</p>
               <p>{SLIPPAGE * 100}%</p>
             </div>
           </div>

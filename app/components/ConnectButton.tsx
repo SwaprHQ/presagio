@@ -44,13 +44,13 @@ const CustomConnectButton = ({
   };
 
   return (
-    <div className="flex bg-surface-surface-2 rounded-20 p-0.5 md:pl-4 justify-center items-center md:space-x-3 text-nowrap">
+    <div className="flex items-center justify-center text-nowrap rounded-20 bg-surface-surface-2 p-0.5 md:space-x-3 md:pl-4">
       {balance && <p className="hidden md:block">{formattedBalance(balance)}</p>}
       <Button
         onClick={onClick}
         size={size}
         width={width}
-        className="!bg-surface-surface-0 rounded-20 shadow-3 !ring-0"
+        className="rounded-20 !bg-surface-surface-0 shadow-3 !ring-0"
       >
         {avatar && (
           <Image

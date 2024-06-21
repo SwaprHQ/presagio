@@ -69,7 +69,7 @@ export const ActivityTable = () => {
               <Tag
                 size="xs"
                 colorScheme={activity.action === 'Yes' ? 'success' : 'danger'}
-                className="uppercase w-fit"
+                className="w-fit uppercase"
               >
                 {activity.action}
               </Tag>

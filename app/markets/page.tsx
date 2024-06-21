@@ -14,7 +14,7 @@ const Market = () => {
   if (!id || !isAddress(id)) return null;
 
   return (
-    <main className="flex flex-col items-center w-full px-6 mt-12">
+    <main className="mt-12 flex w-full flex-col items-center px-6">
       <MarketDetails id={id} />
     </main>
   );

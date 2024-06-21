@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="w-full px-6 mt-12 flex flex-col items-center space-y-4">
+    <main className="mt-12 flex w-full flex-col items-center space-y-4 px-6">
       <h2 className="text-xl font-bold">Sorry, something went wrong!</h2>
       <div className="flex space-x-4">
         <Button variant="pastel" onClick={() => reset()}>
