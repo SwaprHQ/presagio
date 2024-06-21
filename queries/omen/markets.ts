@@ -1,4 +1,4 @@
-import { gql, request } from "graphql-request";
+import { gql, request } from 'graphql-request';
 import {
   FixedProductMarketMaker_Filter,
   FpmmTrade_Filter,
@@ -8,8 +8,8 @@ import {
   QueryFixedProductMarketMakerArgs,
   QueryFixedProductMarketMakersArgs,
   QueryFpmmTradesArgs,
-} from "./types";
-import { OMEN_SUBGRAPH_URL } from "@/constants";
+} from './types';
+import { OMEN_SUBGRAPH_URL } from '@/constants';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -360,17 +360,9 @@ const getConditionMarketQuery = gql`
 `;
 
 const getMarketUserTradesQuery = gql`
-  query GetMarketUserTrades(
-    $creator: ID!
-    $fpmm: ID!
-    $outcomeIndex_in: [BigInt!]
-  ) {
+  query GetMarketUserTrades($creator: ID!, $fpmm: ID!, $outcomeIndex_in: [BigInt!]) {
     fpmmTrades(
-      where: {
-        fpmm: $fpmm
-        creator: $creator
-        outcomeIndex_in: $outcomeIndex_in
-      }
+      where: { fpmm: $fpmm, creator: $creator, outcomeIndex_in: $outcomeIndex_in }
     ) {
       creator {
         id
@@ -393,7 +385,7 @@ const getMarketUserTradesQuery = gql`
 `;
 
 const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
-  request<Pick<Query, "fixedProductMarketMaker">>(
+  request<Pick<Query, 'fixedProductMarketMaker'>>(
     OMEN_SUBGRAPH_URL,
     getMarketQuery,
     params
@@ -402,37 +394,17 @@ const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
 const getMarkets = async (
   params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter,
   query: string = getMarketsQuery
-) =>
-  request<Pick<Query, "fixedProductMarketMakers">>(
-    OMEN_SUBGRAPH_URL,
-    query,
-    params
-  );
+) => request<Pick<Query, 'fixedProductMarketMakers'>>(OMEN_SUBGRAPH_URL, query, params);
 
 const getAccountMarkets = async (
   params: QueryAccountArgs & QueryFixedProductMarketMakersArgs
-) =>
-  request<Pick<Query, "account">>(
-    OMEN_SUBGRAPH_URL,
-    getAccountMarketsQuery,
-    params
-  );
+) => request<Pick<Query, 'account'>>(OMEN_SUBGRAPH_URL, getAccountMarketsQuery, params);
 
 const getConditionMarket = async (params: QueryConditionArgs) =>
-  request<Pick<Query, "conditions">>(
-    OMEN_SUBGRAPH_URL,
-    getConditionMarketQuery,
-    params
-  );
+  request<Pick<Query, 'conditions'>>(OMEN_SUBGRAPH_URL, getConditionMarketQuery, params);
 
-const getMarketUserTrades = async (
-  params: QueryFpmmTradesArgs & FpmmTrade_Filter
-) =>
-  request<Pick<Query, "fpmmTrades">>(
-    OMEN_SUBGRAPH_URL,
-    getMarketUserTradesQuery,
-    params
-  );
+const getMarketUserTrades = async (params: QueryFpmmTradesArgs & FpmmTrade_Filter) =>
+  request<Pick<Query, 'fpmmTrades'>>(OMEN_SUBGRAPH_URL, getMarketUserTradesQuery, params);
 
 export {
   getMarket,

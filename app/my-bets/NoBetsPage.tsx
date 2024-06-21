@@ -1,6 +1,6 @@
-import { NoBetsImage } from "@/app/components/ui";
-import Link from "next/link";
-import { Button } from "swapr-ui";
+import { NoBetsImage } from '@/app/components/ui';
+import Link from 'next/link';
+import { Button } from 'swapr-ui';
 
 export default function NoBetsPage() {
   return (
@@ -8,19 +8,12 @@ export default function NoBetsPage() {
       <NoBetsImage className="mx-auto" />
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold text-text-high-em">
-          You haven&apos;t placed any bets yet.{" "}
+          You haven&apos;t placed any bets yet.{' '}
         </h1>
-        <p className="text-text-low-em">
-          Check out the markets and place a bet.
-        </p>
+        <p className="text-text-low-em">Check out the markets and place a bet.</p>
       </div>
       <Link href="/">
-        <Button
-          size="lg"
-          className="mx-auto px-24"
-          variant="solid"
-          colorScheme="primary"
-        >
+        <Button size="lg" className="mx-auto px-24" variant="solid" colorScheme="primary">
           Check markets
         </Button>
       </Link>

@@ -1,42 +1,35 @@
-"use client";
+'use client';
 
-import { OutcomeBar, Swapbox } from "@/app/components";
-import { useQuery } from "@tanstack/react-query";
-import { getMarket } from "@/queries/omen";
-import {
-  Button,
-  IconButton,
-  Tag,
-  ToggleGroup,
-  ToggleGroupOption,
-} from "swapr-ui";
-import { remainingTime } from "@/utils/dates";
-import { Address } from "viem";
-import { Market } from "@/entities";
-import { UserBets } from "../components/UserBets";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { HistorySection } from "@/app/markets/HistorySection";
+import { OutcomeBar, Swapbox } from '@/app/components';
+import { useQuery } from '@tanstack/react-query';
+import { getMarket } from '@/queries/omen';
+import { Button, IconButton, Tag, ToggleGroup, ToggleGroupOption } from 'swapr-ui';
+import { remainingTime } from '@/utils/dates';
+import { Address } from 'viem';
+import { Market } from '@/entities';
+import { UserBets } from '../components/UserBets';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { HistorySection } from '@/app/markets/HistorySection';
 
 interface MarketDetailsProps {
   id: Address;
 }
 
 enum Tabs {
-  BET = "bet",
-  HISTORY = "history",
+  BET = 'bet',
+  HISTORY = 'history',
 }
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.BET);
   const { data, error, isLoading } = useQuery({
-    queryKey: ["getMarket", id],
+    queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
   });
 
   if (error) throw error;
-  if (isLoading || !data?.fixedProductMarketMaker)
-    return <LoadingMarketDetails />;
+  if (isLoading || !data?.fixedProductMarketMaker) return <LoadingMarketDetails />;
 
   const market = data.fixedProductMarketMaker;
   const marketModel = new Market(market);
@@ -49,25 +42,15 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
         <div className="w-full border bg-surface-surface-0 rounded-16 border-outline-base-em">
           <div className="p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <Tag
-                className="capitalize w-fit"
-                size="sm"
-                colorScheme="quaternary"
-              >
+              <Tag className="capitalize w-fit" size="sm" colorScheme="quaternary">
                 {market.category}
               </Tag>
               {marketModel.isClosed ? (
-                <Tag
-                  className="capitalize w-fit"
-                  size="sm"
-                  colorScheme="quaternary"
-                >
+                <Tag className="capitalize w-fit" size="sm" colorScheme="quaternary">
                   Market Closed
                 </Tag>
               ) : (
-                <p className="text-sm text-text-med-em">
-                  {remainingTime(closingDate)}
-                </p>
+                <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
               )}
             </div>
             <div className="flex space-x-4">
@@ -97,7 +80,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               ))}
             </ToggleGroup>
           </div>
-          {tab === "bet" && (
+          {tab === 'bet' && (
             <div className="p-2">
               {!marketModel.isClosed ? (
                 <Swapbox market={market} />
@@ -106,7 +89,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               )}
             </div>
           )}
-          {tab === "history" && <HistorySection />}
+          {tab === 'history' && <HistorySection />}
         </div>
         <UserBets market={market} />
       </div>
@@ -164,11 +147,7 @@ const BackButton = () => {
         variant="pastel"
         size="sm"
       />
-      <Button
-        className="font-normal text-text-low-em"
-        variant="ghost"
-        size="sm"
-      >
+      <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
         Go back
       </Button>
     </div>

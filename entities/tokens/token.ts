@@ -1,6 +1,6 @@
-import { Address, isAddress } from "viem";
-import { BaseCurrency } from "./baseCurrency";
-import { Currency } from "./currency";
+import { Address, isAddress } from 'viem';
+import { BaseCurrency } from './baseCurrency';
+import { Currency } from './currency';
 
 /**
  * Represents an ERC20 token with a unique address and some metadata.
@@ -35,7 +35,7 @@ export class Token extends BaseCurrency {
     super(chainId, decimals, symbol, name);
 
     if (isAddress(address)) this.address = address;
-    else throw new Error("Token address not valid");
+    else throw new Error('Token address not valid');
   }
 
   /**
@@ -58,10 +58,10 @@ export class Token extends BaseCurrency {
    */
   public sortsBefore(other: Token): boolean {
     if (this.chainId !== other.chainId) {
-      throw new Error("Tokens have different chain IDs");
+      throw new Error('Tokens have different chain IDs');
     }
     if (this.address.toLowerCase() === other.address.toLowerCase()) {
-      throw new Error("Tokens are equal");
+      throw new Error('Tokens are equal');
     }
 
     return this.address.toLowerCase() < other.address.toLowerCase();

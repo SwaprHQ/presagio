@@ -1,4 +1,4 @@
-import { ModalId, useModal } from "@/context/ModalContext";
+import { ModalId, useModal } from '@/context/ModalContext';
 import {
   Button,
   Dialog,
@@ -8,18 +8,18 @@ import {
   DialogFooter,
   DialogHeader,
   Icon,
-} from "swapr-ui";
-import { SLIPPAGE, SwapDirection, SwapState } from ".";
-import MarketABI from "@/abi/market.json";
+} from 'swapr-ui';
+import { SLIPPAGE, SwapDirection, SwapState } from '.';
+import MarketABI from '@/abi/market.json';
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   useReadCalcSellAmount,
-} from "@/hooks/contracts";
-import ConditionalTokensABI from "@/abi/conditionalTokens.json";
-import { addFraction, removeFraction } from "@/utils/price";
-import { Abi, Address, erc20Abi, formatEther, parseEther } from "viem";
-import { WXDAI } from "@/constants";
-import { useTx } from "@/context";
+} from '@/hooks/contracts';
+import ConditionalTokensABI from '@/abi/conditionalTokens.json';
+import { addFraction, removeFraction } from '@/utils/price';
+import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
+import { WXDAI } from '@/constants';
+import { useTx } from '@/context';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -60,16 +60,16 @@ export const ConfirmTrade = ({
   const amountWei = parseEther(tokenAmountIn);
   const twoDecimalsTokenAmountIn = tokenAmountIn
     ? parseFloat(tokenAmountIn).toFixed(2)
-    : "";
+    : '';
   const twoDecimalsTokenAmountOut = tokenAmountOut
     ? parseFloat(formatEther(tokenAmountOut)).toFixed(2)
-    : "";
+    : '';
 
   const approveToken = async () => {
     submitTx({
       abi: erc20Abi,
       address: WXDAI.address,
-      functionName: "approve",
+      functionName: 'approve',
       args: [marketId, amountWei],
     }).then(() => {
       onApprove();
@@ -80,7 +80,7 @@ export const ConfirmTrade = ({
     submitTx({
       abi: ConditionalTokensABI as Abi,
       address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-      functionName: "setApprovalForAll",
+      functionName: 'setApprovalForAll',
       args: [marketId, true],
     }).then(() => {
       onApprove();
@@ -91,7 +91,7 @@ export const ConfirmTrade = ({
     submitTx({
       abi: MarketABI as Abi,
       address: marketId,
-      functionName: "buy",
+      functionName: 'buy',
       args: [amountWei, outcomeIndex, tokenAmountOut],
     }).then(() => {
       closeBetModal();
@@ -108,7 +108,7 @@ export const ConfirmTrade = ({
     submitTx({
       abi: MarketABI as Abi,
       address: marketId,
-      functionName: "sell",
+      functionName: 'sell',
       args: [roundedAmountOut, outcomeIndex, maxSellAmount],
     }).then(() => {
       closeBetModal();
@@ -124,10 +124,7 @@ export const ConfirmTrade = ({
   const currentConfirmState = confirmState[swapDirection];
 
   return (
-    <Dialog
-      open={isModalOpen(ModalId.CONFIRM_SWAP)}
-      onOpenChange={closeBetModal}
-    >
+    <Dialog open={isModalOpen(ModalId.CONFIRM_SWAP)} onOpenChange={closeBetModal}>
       <DialogContent>
         <DialogHeader size="xl" className="text-center">
           <DialogClose position="left" size="xl">
@@ -142,10 +139,8 @@ export const ConfirmTrade = ({
             <div className="border-b-[1px] border-b-outline-base-em w-full flex flex-col items-center pt-3 pb-8 space-y-1">
               <p className="text-xs uppercase text-text-low-em">You sell</p>
               <div className="text-2xl uppercase">
-                <span>{twoDecimalsTokenAmountIn}</span>{" "}
-                <span className="text-text-low-em">
-                  {swapState.inToken.symbol}
-                </span>
+                <span>{twoDecimalsTokenAmountIn}</span>{' '}
+                <span className="text-text-low-em">{swapState.inToken.symbol}</span>
               </div>
             </div>
             <div className="flex items-center justify-center rounded-100 bg-surface-surface-3 h-[40px] w-[56px] absolute top-[calc(50%_-_20px)] left-[calc(50%_-_28px)]">
@@ -154,10 +149,8 @@ export const ConfirmTrade = ({
             <div className="flex flex-col items-center w-full pt-8 pb-3 space-y-1">
               <p className="text-xs uppercase text-text-low-em">You buy</p>
               <div className="text-2xl uppercase">
-                <span>{twoDecimalsTokenAmountOut}</span>{" "}
-                <span className="text-text-low-em">
-                  {swapState.outToken.symbol}
-                </span>
+                <span>{twoDecimalsTokenAmountOut}</span>{' '}
+                <span className="text-text-low-em">{swapState.outToken.symbol}</span>
               </div>
             </div>
           </div>

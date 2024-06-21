@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
+import { useTheme } from 'next-themes';
 import {
   Icon,
   IconButton,
@@ -9,8 +9,8 @@ import {
   PopoverTrigger,
   ToggleGroup,
   ToggleGroupOption,
-} from "swapr-ui";
-import { useShowClientUI } from "@/hooks";
+} from 'swapr-ui';
+import { useShowClientUI } from '@/hooks';
 
 export const SettingsPopover = () => {
   const { setTheme, theme } = useTheme();

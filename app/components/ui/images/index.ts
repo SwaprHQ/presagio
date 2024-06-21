@@ -1,2 +1,2 @@
-export * from "./ConnectWalletImage";
-export * from "./NoBetsImage";
+export * from './ConnectWalletImage';
+export * from './NoBetsImage';

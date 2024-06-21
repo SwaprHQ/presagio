@@ -1,24 +1,18 @@
-"use client";
+'use client';
 
-import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
-import NoBetsPage from "@/app/my-bets/NoBetsPage";
-import NoWalletConnectedPage from "@/app/my-bets/NoWalletConnectedPage";
-import { Market, Position, tradesOutcomeBalance } from "@/entities";
+import { CardBet, LoadingCardBet } from '@/app/components/CardBet';
+import NoBetsPage from '@/app/my-bets/NoBetsPage';
+import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
+import { Market, Position, tradesOutcomeBalance } from '@/entities';
 
-import { getUserPositions } from "@/queries/conditional-tokens";
-import { UserPosition } from "@/queries/conditional-tokens/types";
-import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUserPositions } from '@/queries/conditional-tokens';
+import { UserPosition } from '@/queries/conditional-tokens/types';
+import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  PropsWithChildren,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
-import { useAccount } from "wagmi";
+import { PropsWithChildren, ReactNode, useCallback, useEffect, useState } from 'react';
+import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from 'swapr-ui';
+import { useAccount } from 'wagmi';
 
 export default function MyBetsPage() {
   const { address } = useAccount();
@@ -26,7 +20,7 @@ export default function MyBetsPage() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getUserPositions", address],
+    queryKey: ['getUserPositions', address],
     queryFn: () => getUserPositions({ id: address?.toLowerCase() as string }),
     enabled: !!address,
   });
@@ -48,20 +42,14 @@ export default function MyBetsPage() {
 
         try {
           const conditionData = await queryClient.fetchQuery({
-            queryKey: ["getConditionMarket", position.conditionId],
+            queryKey: ['getConditionMarket', position.conditionId],
             queryFn: () => getConditionMarket({ id: position.conditionId }),
           });
           const condition = conditionData?.conditions[0];
-          const market =
-            condition && new Market(condition?.fixedProductMarketMakers[0]);
+          const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
 
           const userTrades = await queryClient.fetchQuery({
-            queryKey: [
-              "getMarketUserTrades",
-              address,
-              market?.data.id,
-              outcomeIndex,
-            ],
+            queryKey: ['getMarketUserTrades', address, market?.data.id, outcomeIndex],
             queryFn: () => {
               if (!!address && !!market)
                 return getMarketUserTrades({
@@ -82,11 +70,9 @@ export default function MyBetsPage() {
           const isWinner = market.isWinner(outcomeIndex);
 
           const isResolved = userPositionCondition.resolved;
-          const hasPayoutDenominator =
-            +userPositionCondition.payoutDenominator > 0;
+          const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
 
-          const canClaim =
-            isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+          const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
 
           if (canClaim) return userPosition;
         } catch (error) {
@@ -171,7 +157,7 @@ interface BetsListTabProps {
 }
 
 const BetsListTab = ({ children, bets }: BetsListTabProps) => {
-  const counter = bets?.length ?? "-";
+  const counter = bets?.length ?? '-';
   return (
     <TabStyled>
       {children}
@@ -180,11 +166,7 @@ const BetsListTab = ({ children, bets }: BetsListTabProps) => {
   );
 };
 
-const BetsListPanel = ({
-  emptyText = "",
-  bets,
-  isLoading,
-}: BetsListPanelProps) => {
+const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) => {
   return (
     <TabPanel className="space-y-4">
       {isLoading && <LoadingBets />}

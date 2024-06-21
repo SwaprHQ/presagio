@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect } from "react";
-import { Button } from "swapr-ui";
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { Button } from 'swapr-ui';
 
 export default function Error({
   error,

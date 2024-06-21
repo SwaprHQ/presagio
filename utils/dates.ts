@@ -1,4 +1,4 @@
-import { formatDistance, isPast, fromUnixTime, format } from "date-fns";
+import { formatDistance, isPast, fromUnixTime, format } from 'date-fns';
 
 export const remainingTime = (date: Date): string => {
   const now: Date = new Date();
@@ -12,6 +12,6 @@ export const remainingTime = (date: Date): string => {
 
 export const formatDateTime = (timestamp: number) => {
   const date = fromUnixTime(timestamp);
-  const formattedDate = format(date, "d MMM- HH:mm");
+  const formattedDate = format(date, 'd MMM- HH:mm');
   return formattedDate;
 };

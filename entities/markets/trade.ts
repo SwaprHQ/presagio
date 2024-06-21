@@ -1,11 +1,9 @@
-import { FpmmTrade, TradeType } from "@/queries/omen/types";
-import { formatEther } from "viem";
+import { FpmmTrade, TradeType } from '@/queries/omen/types';
+import { formatEther } from 'viem';
 
 export const valueByTrade = {
-  [TradeType.Buy]: (previousValue: number, newValue: number) =>
-    previousValue + newValue,
-  [TradeType.Sell]: (previousValue: number, newValue: number) =>
-    previousValue - newValue,
+  [TradeType.Buy]: (previousValue: number, newValue: number) => previousValue + newValue,
+  [TradeType.Sell]: (previousValue: number, newValue: number) => previousValue - newValue,
 };
 
 interface tradesProps {

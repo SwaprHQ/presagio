@@ -7,9 +7,9 @@ import {
   DialogHeader,
   Icon,
   IconBadge,
-} from "swapr-ui";
-import { ModalId, useModal } from "@/context/ModalContext";
-import Image from "next/image";
+} from 'swapr-ui';
+import { ModalId, useModal } from '@/context/ModalContext';
+import Image from 'next/image';
 
 interface TransactionModalProps {
   isLoading: boolean;
@@ -29,10 +29,7 @@ export const TransactionModal = ({
   };
 
   return (
-    <Dialog
-      open={isModalOpen(ModalId.WAITING_TRANSACTION)}
-      onOpenChange={close}
-    >
+    <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader />
         <DialogBody className="max-w-[496px] w-[496px] px-2 space-y-2 mt-8 mb-8">
@@ -99,9 +96,7 @@ export const TransactionModal = ({
             >
               <Button
                 width="full"
-                colorScheme={
-                  isLoading ? "primary" : isError ? "error" : "success"
-                }
+                colorScheme={isLoading ? 'primary' : isError ? 'error' : 'success'}
                 variant="pastel"
                 size="lg"
               >

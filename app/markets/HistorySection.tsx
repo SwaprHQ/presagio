@@ -1,12 +1,5 @@
-import { ActivityTable } from "@/app/markets/ActivityTable";
-import {
-  Icon,
-  TabBody,
-  TabGroup,
-  TabHeader,
-  TabPanel,
-  TabStyled,
-} from "swapr-ui";
+import { ActivityTable } from '@/app/markets/ActivityTable';
+import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from 'swapr-ui';
 
 export const HistorySection = () => {
   return (

@@ -1,5 +1,5 @@
-import { ConnectButton } from "@/app/components";
-import { ConnectWalletImage } from "@/app/components/ui";
+import { ConnectButton } from '@/app/components';
+import { ConnectWalletImage } from '@/app/components/ui';
 
 export default function NoWalletConnectedPage() {
   return (
@@ -10,8 +10,8 @@ export default function NoWalletConnectedPage() {
           Connect wallet to check your bets
         </h1>
         <p className="text-text-low-em">
-          Click the button below to connect your wallet and check your bets or
-          create new ones.
+          Click the button below to connect your wallet and check your bets or create new
+          ones.
         </p>
       </div>
       <ConnectButton

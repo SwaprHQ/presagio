@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
-import { getMarkets } from "@/queries/omen";
-import { CardMarket, LoadingCardMarket } from "@/app/components";
+import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { getMarkets } from '@/queries/omen';
+import { CardMarket, LoadingCardMarket } from '@/app/components';
 import {
   Button,
   Icon,
@@ -14,18 +14,13 @@ import {
   PopoverTrigger,
   ToggleGroup,
   ToggleGroupOption,
-} from "swapr-ui";
-import { useState } from "react";
-import { useShowClientUI, useDebounce } from "@/hooks";
-import { cx } from "class-variance-authority";
-import { useRouter } from "next/navigation";
-import { AI_AGENTS_ALLOWLIST } from "@/constants";
-import {
-  OrderFilter,
-  StateFilter,
-  orderFilters,
-  stateFilters,
-} from "./filters";
+} from 'swapr-ui';
+import { useState } from 'react';
+import { useShowClientUI, useDebounce } from '@/hooks';
+import { cx } from 'class-variance-authority';
+import { useRouter } from 'next/navigation';
+import { AI_AGENTS_ALLOWLIST } from '@/constants';
+import { OrderFilter, StateFilter, orderFilters, stateFilters } from './filters';
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
@@ -33,17 +28,17 @@ const DEFAULT_ORDER_OPTION = orderFilters[0];
 const DEFAULT_STATE_OPTION = stateFilters[0];
 
 enum Categories {
-  TECHNOLOGY = "technology",
-  CRYPTO = "crypto",
-  BUSINESS = "business",
-  POLITICS = "politics",
-  ECONOMY = "economy",
-  INTERNATIONAL = "international",
-  SPORTS = "sports",
-  ENTERTAINMENT = "entertainment",
+  TECHNOLOGY = 'technology',
+  CRYPTO = 'crypto',
+  BUSINESS = 'business',
+  POLITICS = 'politics',
+  ECONOMY = 'economy',
+  INTERNATIONAL = 'international',
+  SPORTS = 'sports',
+  ENTERTAINMENT = 'entertainment',
 }
 
-type CategoryOptions = Categories | "";
+type CategoryOptions = Categories | '';
 
 export default function HomePage() {
   const router = useRouter();
@@ -52,47 +47,41 @@ export default function HomePage() {
   const [isStateFilterPopoverOpen, setStateFilterPopoverOpen] = useState(false);
 
   const searchParams =
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search)
-      : new URLSearchParams("/");
+      : new URLSearchParams('/');
 
-  const [category, setCategory] = useState(searchParams.get("c") || "");
+  const [category, setCategory] = useState(searchParams.get('c') || '');
 
-  const [search, setSearch] = useState(searchParams.get("s") || "");
+  const [search, setSearch] = useState(searchParams.get('s') || '');
   const debouncedSearch = useDebounce(search, SEARCH_DEBOUNCE_DELAY);
 
   const initialFilter = () => {
-    const filterValueFromSearchParams = searchParams.get("f");
+    const filterValueFromSearchParams = searchParams.get('f');
     if (!filterValueFromSearchParams) return DEFAULT_ORDER_OPTION;
 
     return (
-      orderFilters.find(
-        (option) => option.key === filterValueFromSearchParams
-      ) || DEFAULT_ORDER_OPTION
+      orderFilters.find(option => option.key === filterValueFromSearchParams) ||
+      DEFAULT_ORDER_OPTION
     );
   };
 
-  const [selectedOrderOption, setSelectedOrderOption] = useState(
-    initialFilter()
-  );
+  const [selectedOrderOption, setSelectedOrderOption] = useState(initialFilter());
 
   const initialStateFilter = () => {
-    const filterValueFromSearchParams = searchParams.get("sf");
+    const filterValueFromSearchParams = searchParams.get('sf');
     if (!filterValueFromSearchParams) return DEFAULT_STATE_OPTION;
 
     return (
-      stateFilters.find(
-        (option) => option.key === filterValueFromSearchParams
-      ) || DEFAULT_STATE_OPTION
+      stateFilters.find(option => option.key === filterValueFromSearchParams) ||
+      DEFAULT_STATE_OPTION
     );
   };
 
-  const [selectedStateOption, setSelectedStateOption] = useState(
-    initialStateFilter()
-  );
+  const [selectedStateOption, setSelectedStateOption] = useState(initialStateFilter());
 
   const initialPage = () => {
-    const page = searchParams.get("p");
+    const page = searchParams.get('p');
     if (!page || isNaN(Number(page))) return 1;
 
     return Number(page);
@@ -102,7 +91,7 @@ export default function HomePage() {
 
   const { data, isLoading } = useQuery({
     queryKey: [
-      "getMarkets",
+      'getMarkets',
       debouncedSearch,
       selectedOrderOption.orderBy,
       selectedOrderOption.orderDirection,
@@ -127,8 +116,8 @@ export default function HomePage() {
   });
 
   const handleSearch = (query: string) => {
-    query ? searchParams.set("s", query) : searchParams.delete("s");
-    searchParams.delete("p");
+    query ? searchParams.set('s', query) : searchParams.delete('s');
+    searchParams.delete('p');
 
     setSearch(query);
     setPage(1);
@@ -139,8 +128,8 @@ export default function HomePage() {
   const handleCategory = (category: CategoryOptions) => {
     setCategory(category);
 
-    searchParams.delete("p");
-    category ? searchParams.set("c", category) : searchParams.delete("c");
+    searchParams.delete('p');
+    category ? searchParams.set('c', category) : searchParams.delete('c');
     router.replace(`?${searchParams.toString()}`);
   };
 
@@ -149,8 +138,8 @@ export default function HomePage() {
     setOrderFilterPopoverOpen(false);
     setPage(1);
 
-    searchParams.delete("p");
-    searchParams.set("f", option.key);
+    searchParams.delete('p');
+    searchParams.set('f', option.key);
     router.replace(`?${searchParams.toString()}`);
   };
 
@@ -159,16 +148,16 @@ export default function HomePage() {
     setStateFilterPopoverOpen(false);
     setPage(1);
 
-    searchParams.delete("p");
-    searchParams.set("sf", option.key);
+    searchParams.delete('p');
+    searchParams.set('sf', option.key);
     router.replace(`?${searchParams.toString()}`);
   };
 
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
 
-    if (page > 1) searchParams.set("p", page.toString());
-    else searchParams.delete("p");
+    if (page > 1) searchParams.set('p', page.toString());
+    else searchParams.delete('p');
 
     setPage(page);
     router.replace(`?${searchParams.toString()}`);
@@ -178,7 +167,7 @@ export default function HomePage() {
 
   const { data: marketsNextPage } = useQuery({
     queryKey: [
-      "getMarkets",
+      'getMarkets',
       debouncedSearch,
       selectedOrderOption.orderBy,
       selectedOrderOption.orderDirection,
@@ -213,7 +202,7 @@ export default function HomePage() {
     <div className="justify-center px-6 mt-12 space-y-8 md:px-10 lg:px-20 xl:px-40 md:flex md:flex-col md:items-center">
       <div className="w-full">
         <h1 className="text-2xl font-semibold text-white capitalize">
-          🔮 {category ? category : "All"}
+          🔮 {category ? category : 'All'}
         </h1>
       </div>
       <div className="flex flex-col justify-between w-full gap-5 md:flex-row">
@@ -222,10 +211,10 @@ export default function HomePage() {
           onChange={handleCategory}
           className="overflow-x-scroll md:overflow-x-auto"
         >
-          <ToggleGroupOption size="md" value={""} className="font-semibold">
+          <ToggleGroupOption size="md" value={''} className="font-semibold">
             All
           </ToggleGroupOption>
-          {Object.values(Categories).map((category) => (
+          {Object.values(Categories).map(category => (
             <ToggleGroupOption
               key={category}
               value={category}
@@ -241,7 +230,7 @@ export default function HomePage() {
             className="w-full"
             placeholder="Search market"
             leftIcon="search"
-            onChange={(event) => handleSearch(event.target.value)}
+            onChange={event => handleSearch(event.target.value)}
             value={search}
           />
           {showClientUI ? (
@@ -256,7 +245,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {orderFilters.map((option) => (
+                {orderFilters.map(option => (
                   <div
                     key={option.key}
                     onClick={() => selectOrderFilter(option)}
@@ -292,7 +281,7 @@ export default function HomePage() {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="px-1 py-2">
-                {stateFilters.map((option) => (
+                {stateFilters.map(option => (
                   <div
                     key={option.key}
                     onClick={() => selectStateFilter(option)}
@@ -325,7 +314,7 @@ export default function HomePage() {
         </div>
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-          {markets.map((market) => (
+          {markets.map(market => (
             <Link key={market.id} href={`markets?id=${market.id}`}>
               <CardMarket market={market} />
             </Link>

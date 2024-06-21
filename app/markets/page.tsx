@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Address, isAddress } from "viem";
-import { MarketDetails } from "./MarketDetails";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Address, isAddress } from 'viem';
+import { MarketDetails } from './MarketDetails';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const Market = () => {
   const searchParams = useSearchParams();
 
-  const id = searchParams.get("id") as Address;
+  const id = searchParams.get('id') as Address;
 
   // Empty State
   if (!id || !isAddress(id)) return null;

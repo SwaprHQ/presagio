@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
+import Link from 'next/link';
 
-import { Button } from "swapr-ui";
-import { ConnectButton } from "@/app/components/ConnectButton";
-import Image from "next/image";
-import { SettingsPopover } from "@/app/components/SettingsPopover";
+import { Button } from 'swapr-ui';
+import { ConnectButton } from '@/app/components/ConnectButton';
+import Image from 'next/image';
+import { SettingsPopover } from '@/app/components/SettingsPopover';
 
 export const Navbar = () => {
   return (

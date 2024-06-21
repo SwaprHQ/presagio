@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { Button, IconButton } from "swapr-ui";
-import { SwapInput } from "./ui/SwapInput";
-import { useEffect, useState } from "react";
-import { erc20Abi, formatEther, parseEther, Address } from "viem";
-import { useAccount, useReadContract } from "wagmi";
-import { ConnectButton } from ".";
-import { Outcome, Token } from "@/entities";
-import { FixedProductMarketMaker } from "@/queries/omen";
+import { Button, IconButton } from 'swapr-ui';
+import { SwapInput } from './ui/SwapInput';
+import { useEffect, useState } from 'react';
+import { erc20Abi, formatEther, parseEther, Address } from 'viem';
+import { useAccount, useReadContract } from 'wagmi';
+import { ConnectButton } from '.';
+import { Outcome, Token } from '@/entities';
+import { FixedProductMarketMaker } from '@/queries/omen';
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   useReadBalance,
   useReadCalcBuyAmount,
-} from "@/hooks/contracts";
-import ConditionalTokensABI from "@/abi/conditionalTokens.json";
+} from '@/hooks/contracts';
+import ConditionalTokensABI from '@/abi/conditionalTokens.json';
 import {
   calcSellAmountInCollateral,
   formatTokenPrice,
   removeFraction,
-} from "@/utils/price";
-import { ConfirmTrade } from "./ConfirmTrade";
-import { ModalId, useModal } from "@/context/ModalContext";
-import { WXDAI } from "@/constants";
+} from '@/utils/price';
+import { ConfirmTrade } from './ConfirmTrade';
+import { ModalId, useModal } from '@/context/ModalContext';
+import { WXDAI } from '@/constants';
 
 export const SLIPPAGE = 0.01;
-const ONE_UNIT = "1";
+const ONE_UNIT = '1';
 
 export enum SwapDirection {
-  BUY = "BUY",
-  SELL = "SELL",
+  BUY = 'BUY',
+  SELL = 'SELL',
 }
 
 export type SwapState = {
@@ -47,18 +47,16 @@ export type SwapState = {
 
 export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const id = market.id as Address;
-  const outcome0 = new Outcome(0, market.outcomes?.[0] || "Option 1", id);
-  const outcome1 = new Outcome(1, market.outcomes?.[1] || "Option 2", id);
+  const outcome0 = new Outcome(0, market.outcomes?.[0] || 'Option 1', id);
+  const outcome1 = new Outcome(1, market.outcomes?.[1] || 'Option 2', id);
 
   const { address, isDisconnected } = useAccount();
   const { openModal } = useModal();
 
-  const [tokenAmountIn, setTokenAmountIn] = useState("");
+  const [tokenAmountIn, setTokenAmountIn] = useState('');
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
   const [outcome, setOutcome] = useState<Outcome>(outcome0);
-  const [swapDirection, setSwapDirection] = useState<SwapDirection>(
-    SwapDirection.BUY
-  );
+  const [swapDirection, setSwapDirection] = useState<SwapDirection>(SwapDirection.BUY);
 
   const changeOutcome = (outcome?: Outcome) => {
     outcome && setOutcome(outcome);
@@ -67,24 +65,26 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const amountWei = parseEther(tokenAmountIn);
   const twoDecimalsTokenOutAmount = tokenAmountOut
     ? parseFloat(formatEther(tokenAmountOut)).toFixed(2)
-    : "";
+    : '';
 
-  const { data: buyAmount, isLoading: isLoadingBuyAmount } =
-    useReadCalcBuyAmount(id, tokenAmountIn, outcome.index);
+  const { data: buyAmount, isLoading: isLoadingBuyAmount } = useReadCalcBuyAmount(
+    id,
+    tokenAmountIn,
+    outcome.index
+  );
 
-  const { data: allowance, refetch: refetchCollateralAllowence } =
-    useReadContract({
-      abi: erc20Abi,
-      address: WXDAI.address,
-      functionName: "allowance",
-      args: [address as Address, id],
-      query: { enabled: !!address },
-    });
+  const { data: allowance, refetch: refetchCollateralAllowence } = useReadContract({
+    abi: erc20Abi,
+    address: WXDAI.address,
+    functionName: 'allowance',
+    args: [address as Address, id],
+    query: { enabled: !!address },
+  });
 
   const { data: isNFTAllowed, refetch: refetchNFTAllowence } = useReadContract({
     abi: ConditionalTokensABI,
     address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-    functionName: "isApprovedForAll",
+    functionName: 'isApprovedForAll',
     args: [address as Address, id],
     query: { enabled: !!address },
   });
@@ -92,16 +92,24 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const { data: balance, refetch: refetchCollateralBalance } = useReadContract({
     abi: erc20Abi,
     address: WXDAI.address,
-    functionName: "balanceOf",
+    functionName: 'balanceOf',
     args: [address as Address],
     query: { enabled: !!address },
   });
 
-  const { data: outcome0Balance, refetch: refetchOutcome0Balance } =
-    useReadBalance(address, market.collateralToken, market.condition?.id, 1);
+  const { data: outcome0Balance, refetch: refetchOutcome0Balance } = useReadBalance(
+    address,
+    market.collateralToken,
+    market.condition?.id,
+    1
+  );
 
-  const { data: outcome1Balance, refetch: refetchOutcome1Balance } =
-    useReadBalance(address, market.collateralToken, market.condition?.id, 2);
+  const { data: outcome1Balance, refetch: refetchOutcome1Balance } = useReadBalance(
+    address,
+    market.collateralToken,
+    market.condition?.id,
+    2
+  );
 
   useEffect(() => {
     if (swapDirection === SwapDirection.BUY) {
@@ -134,14 +142,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   ]);
 
   useEffect(() => {
-    if (tokenAmountIn === "") setTokenAmountOut(undefined);
+    if (tokenAmountIn === '') setTokenAmountOut(undefined);
   }, [tokenAmountIn]);
 
-  const { data: oneShareBuyPrice } = useReadCalcBuyAmount(
-    id,
-    ONE_UNIT,
-    outcome.index
-  );
+  const { data: oneShareBuyPrice } = useReadCalcBuyAmount(id, ONE_UNIT, outcome.index);
 
   const oneShareSellPrice = calcSellAmountInCollateral(
     parseEther(ONE_UNIT).toString(),
@@ -162,7 +166,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
       isLoading: isLoadingBuyAmount,
       balance: balance as bigint,
       isAllowed: !!allowance && !!amountWei && allowance >= amountWei,
-      buttonText: "Bet",
+      buttonText: 'Bet',
       onSwitchButtonClick: () => setSwapDirection(SwapDirection.SELL),
       refetchAllowence: refetchCollateralAllowence,
     },
@@ -175,7 +179,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
       isLoading: false,
       balance: outcomeBalances[outcome.index] as bigint,
       isAllowed: !!isNFTAllowed,
-      buttonText: "Sell bet",
+      buttonText: 'Sell bet',
       onSwitchButtonClick: () => setSwapDirection(SwapDirection.BUY),
       refetchAllowence: refetchNFTAllowence,
     },
@@ -184,8 +188,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const currentState = swapState[swapDirection];
 
   const maxBalance = () => {
-    currentState.balance &&
-      setTokenAmountIn(formatEther(currentState.balance as bigint));
+    currentState.balance && setTokenAmountIn(formatEther(currentState.balance as bigint));
   };
 
   const openBetModal = () => {
@@ -200,7 +203,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
-          onChange={(event) => {
+          onChange={event => {
             setTokenAmountIn(event.target.value);
           }}
           onTokenClick={currentState.changeInToken}
@@ -212,7 +215,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
               Balance:
               {currentState.balance
                 ? parseFloat(formatEther(currentState.balance)).toFixed(2)
-                : "0"}
+                : '0'}
             </p>
             {!!currentState.balance && (
               <Button
@@ -250,9 +253,9 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
                   className={
                     currentState.outToken instanceof Outcome
                       ? currentState.outToken.index === 0
-                        ? "text-text-success-main"
-                        : "text-text-danger-main"
-                      : ""
+                        ? 'text-text-success-main'
+                        : 'text-text-danger-main'
+                      : ''
                   }
                 >
                   {currentState.tokenPrice} {currentState.outToken.symbol}
@@ -282,12 +285,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
               Insufficient {currentState.inToken.symbol} balance
             </Button>
           ) : (
-            <Button
-              width="full"
-              variant="pastel"
-              size="lg"
-              onClick={openBetModal}
-            >
+            <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
               {currentState.buttonText}
             </Button>
           )}

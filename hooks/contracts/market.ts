@@ -1,6 +1,6 @@
-import MarketABI from "@/abi/market.json";
-import { Abi, Address, parseEther } from "viem";
-import { UseReadContractParameters, useReadContract } from "wagmi";
+import MarketABI from '@/abi/market.json';
+import { Abi, Address, parseEther } from 'viem';
+import { UseReadContractParameters, useReadContract } from 'wagmi';
 
 export const useReadMarketContract = ({
   address,
@@ -25,7 +25,7 @@ export const useReadCalcBuyAmount = (
   const amountWei = parseEther(tokenInAmount);
   return useReadMarketContract({
     address,
-    functionName: "calcBuyAmount",
+    functionName: 'calcBuyAmount',
     args: [amountWei, outcomeIndex],
     query: { enabled: !!tokenInAmount },
   });
@@ -39,7 +39,7 @@ export const useReadCalcSellAmount = (
   const amountWei = parseEther(tokenOutAmount);
   return useReadMarketContract({
     address,
-    functionName: "calcSellAmount",
+    functionName: 'calcSellAmount',
     args: [amountWei, outcomeIndex],
     query: { enabled: !!tokenOutAmount },
   });
