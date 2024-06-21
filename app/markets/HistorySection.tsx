@@ -1,3 +1,4 @@
+import { ActivityTable } from "@/app/markets/ActivityTable";
 import {
   Icon,
   TabBody,
@@ -10,11 +11,7 @@ import {
 export const HistorySection = () => {
   return (
     <div className="p-2">
-      <TabGroup
-        onChange={(index: number) =>
-          console.log("Changed selected tab to:", index)
-        }
-      >
+      <TabGroup>
         <TabHeader className="overflow-x-auto md:overflow-x-visible">
           <TabStyled className="space-x-2">
             <Icon size={18} name="activity"></Icon>
@@ -27,14 +24,7 @@ export const HistorySection = () => {
         </TabHeader>
         <TabBody className="my-4">
           <TabPanel>
-            <div className="bg-surface-surface-2 h-44 rounded-8">
-              <div className="flex items-center justify-center h-full">
-                <div className="flex flex-col items-center space-y-2">
-                  <Icon name="filter" size={24} />
-                  <p>Activity coming soon</p>
-                </div>
-              </div>
-            </div>
+            <ActivityTable />
           </TabPanel>
           <TabPanel>
             <div className="bg-surface-surface-2 h-44 rounded-8">
