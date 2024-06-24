@@ -14,3 +14,7 @@
     /* Firefox */
   }
 }
+
+.border-radius-svg svg {
+  border-radius: 8px;
+}
