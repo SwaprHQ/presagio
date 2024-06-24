@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "code:check": "npx prettier . --check",
-    "code:format": "npx prettier . --write",
     "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
