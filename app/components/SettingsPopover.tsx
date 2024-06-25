@@ -9,7 +9,7 @@ import {
   PopoverTrigger,
   ToggleGroup,
   ToggleGroupOption,
-} from 'swapr-ui';
+} from '@swapr/ui';
 import { useShowClientUI } from '@/hooks';
 
 export const SettingsPopover = () => {
@@ -27,7 +27,7 @@ export const SettingsPopover = () => {
       </PopoverTrigger>
       <PopoverContent className="max-w-lg px-4">
         <div className="space-y-2">
-          <div className="flex items-center text-text-low-em">
+          <div className="text-text-low-em flex items-center">
             <p className="text-xs font-bold">Theme</p>
           </div>
           <ToggleGroup value={theme} onChange={setTheme}>

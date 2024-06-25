@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@/app/components/ui/Table';
 import { formatDateTime, shortenAddress } from '@/utils';
-import { Tag } from 'swapr-ui';
+import { Tag } from '@swapr/ui';
 
 const activities = [
   {
@@ -56,7 +56,7 @@ export const ActivityTable = () => {
           <TableHead className="text-text-low-em">Users</TableHead>
           <TableHead className="text-text-low-em">Action</TableHead>
           <TableHead className="text-text-low-em">Shares</TableHead>
-          <TableHead className="text-right text-text-low-em">Date</TableHead>
+          <TableHead className="text-text-low-em text-right">Date</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody className="text-base font-semibold">
@@ -75,7 +75,7 @@ export const ActivityTable = () => {
               </Tag>
             </TableCell>
             <TableCell className="text-text-high-em">{activity.shares}</TableCell>
-            <TableCell className="text-right text-text-low-em">
+            <TableCell className="text-text-low-em text-right">
               {formatDateTime(activity.date)}
             </TableCell>
           </TableRow>

@@ -5,7 +5,7 @@ import { cx } from 'class-variance-authority';
 import Link from 'next/link';
 import { useAccount, useConfig } from 'wagmi';
 
-import { Button, Logo, Tag } from 'swapr-ui';
+import { Button, Logo, Tag } from '@swapr/ui';
 import { Card } from '@/app/components/ui';
 
 import { UserPosition } from '@/queries/conditional-tokens/types';
@@ -135,24 +135,24 @@ export const CardBet = ({ userPosition }: BetProps) => {
                 You chose {position.getOutcome()}
               </Tag>
             </div>
-            <p className="text-sm text-text-low-em">
+            <p className="text-text-low-em text-sm">
               {remainingTime(market.closingDate)}
             </p>
           </div>
           <div className="flex space-x-4">
-            <div className="size-[40px] rounded-8 bg-text-low-em bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
-            <div className="text-normal h-[80px] flex-1 overflow-y-auto font-semibold text-text-high-em md:text-xl">
+            <div className="rounded-8 bg-text-low-em size-[40px] bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
+            <div className="text-normal text-text-high-em h-[80px] flex-1 overflow-y-auto font-semibold md:text-xl">
               {market.data.title}
             </div>
           </div>
         </section>
       </Link>
-      <section className="flex h-[56px] items-center border-t border-outline-base-em px-4 md:h-[48px]">
+      <section className="border-outline-base-em flex h-[56px] items-center border-t px-4 md:h-[48px]">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex flex-col items-start space-y-0.5 md:flex-row md:items-center md:space-x-2">
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">Bet amount:</p>
-              <p className="text-sm font-semibold text-text-high-em">
+              <p className="text-text-med-em text-sm font-semibold">Bet amount:</p>
+              <p className="text-text-high-em text-sm font-semibold">
                 {collateralAmountUSDSpent?.toFixed(2)} {WXDAI.symbol}
               </p>
               <Logo
@@ -162,10 +162,10 @@ export const CardBet = ({ userPosition }: BetProps) => {
               />
             </div>
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">
+              <p className="text-text-med-em text-sm font-semibold">
                 {outcomeAmountString}:
               </p>
-              <p className="text-sm font-semibold text-text-high-em">
+              <p className="text-text-high-em text-sm font-semibold">
                 {!market.isClosed || isWinner
                   ? balance
                   : collateralAmountUSDSpent?.toFixed(2)}{' '}
@@ -196,14 +196,14 @@ export const LoadingCardBet = () => (
   <Card className="flex h-[194px] flex-col justify-between p-4 md:w-[760px]">
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="h-8 w-48 animate-pulse rounded-8 bg-outline-low-em"></div>
-        <div className="h-8 w-32 animate-pulse rounded-8 bg-outline-low-em"></div>
+        <div className="rounded-8 bg-outline-low-em h-8 w-48 animate-pulse"></div>
+        <div className="rounded-8 bg-outline-low-em h-8 w-32 animate-pulse"></div>
       </div>{' '}
-      <div className="h-20 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <div className="rounded-8 bg-outline-low-em h-20 animate-pulse"></div>
     </div>
     <div className="flex items-center justify-between">
-      <div className="h-6 w-48 animate-pulse rounded-8 bg-outline-low-em"></div>
-      <div className="h-6 w-20 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <div className="rounded-8 bg-outline-low-em h-6 w-48 animate-pulse"></div>
+      <div className="rounded-8 bg-outline-low-em h-6 w-20 animate-pulse"></div>
     </div>
   </Card>
 );

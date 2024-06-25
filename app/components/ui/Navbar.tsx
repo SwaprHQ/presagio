@@ -2,18 +2,18 @@
 
 import Link from 'next/link';
 
-import { Button } from 'swapr-ui';
+import { Button } from '@swapr/ui';
 import { ConnectButton } from '@/app/components/ConnectButton';
 import Image from 'next/image';
 import { SettingsPopover } from '@/app/components/SettingsPopover';
 
 export const Navbar = () => {
   return (
-    <nav className="h-20 bg-surface-surface-0 px-6 py-5">
+    <nav className="bg-surface-surface-0 h-20 px-6 py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/">
-            <div className="text-white flex items-center text-[24px] font-black md:space-x-2">
+            <div className="flex items-center text-[24px] font-black text-white md:space-x-2">
               <p>👁️</p>
               <p className="hidden md:block">Presagio </p>
             </div>
@@ -27,7 +27,7 @@ export const Navbar = () => {
 
           <ConnectButton />
           <div className="flex items-center space-x-2">
-            <div className="hidden select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-2 p-3 md:flex">
+            <div className="rounded-12 bg-surface-surface-2 hidden select-none items-center justify-center space-x-2 p-3 md:flex">
               <Image
                 src="assets/gnosis-avatar.svg"
                 width={18}

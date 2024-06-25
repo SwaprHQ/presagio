@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   Icon,
-} from 'swapr-ui';
+} from '@swapr/ui';
 import { SLIPPAGE, SwapDirection, SwapState } from '.';
 import MarketABI from '@/abi/market.json';
 import {
@@ -135,26 +135,26 @@ export const ConfirmTrade = ({
           Confirm Swap
         </DialogHeader>
         <DialogBody className="space-y-2 px-2">
-          <div className="relative rounded-16 bg-surface-surface-1">
-            <div className="flex w-full flex-col items-center space-y-1 border-b-[1px] border-b-outline-base-em pb-8 pt-3">
-              <p className="text-xs uppercase text-text-low-em">You sell</p>
+          <div className="rounded-16 bg-surface-surface-1 relative">
+            <div className="border-b-outline-base-em flex w-full flex-col items-center space-y-1 border-b-[1px] pb-8 pt-3">
+              <p className="text-text-low-em text-xs uppercase">You sell</p>
               <div className="text-2xl uppercase">
                 <span>{twoDecimalsTokenAmountIn}</span>{' '}
                 <span className="text-text-low-em">{swapState.inToken.symbol}</span>
               </div>
             </div>
-            <div className="absolute left-[calc(50%_-_28px)] top-[calc(50%_-_20px)] flex h-[40px] w-[56px] items-center justify-center rounded-100 bg-surface-surface-3">
+            <div className="rounded-100 bg-surface-surface-3 absolute left-[calc(50%_-_28px)] top-[calc(50%_-_20px)] flex h-[40px] w-[56px] items-center justify-center">
               <Icon name="arrow-down" />
             </div>
             <div className="flex w-full flex-col items-center space-y-1 pb-3 pt-8">
-              <p className="text-xs uppercase text-text-low-em">You buy</p>
+              <p className="text-text-low-em text-xs uppercase">You buy</p>
               <div className="text-2xl uppercase">
                 <span>{twoDecimalsTokenAmountOut}</span>{' '}
                 <span className="text-text-low-em">{swapState.outToken.symbol}</span>
               </div>
             </div>
           </div>
-          <div className="rounded-12 border border-outline-base-em">
+          <div className="rounded-12 border-outline-base-em border">
             <div className="px-3 py-1">
               <div className="flex items-center justify-between">
                 <p className="text-text-low-em">Price</p>

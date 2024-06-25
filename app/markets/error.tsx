@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { Button } from 'swapr-ui';
+import { Button } from '@swapr/ui';
 
 export default function Error({
   error,
