@@ -11,7 +11,7 @@ import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { PropsWithChildren, ReactNode, useCallback, useEffect, useState } from 'react';
-import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from 'swapr-ui';
+import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
 export default function MyBetsPage() {
@@ -101,7 +101,7 @@ export default function MyBetsPage() {
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
-        <h1 className="text-white mb-8 text-2xl font-semibold">My bets</h1>
+        <h1 className="mb-8 text-2xl font-semibold text-white">My bets</h1>
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
@@ -136,7 +136,7 @@ export default function MyBetsPage() {
 }
 
 const BetsListTabCounter = ({ children }: PropsWithChildren) => (
-  <div className="ml-2 rounded-6 border border-outline-low-em bg-surface-surface-0 p-1 px-1.5 text-2xs">
+  <div className="rounded-6 border-outline-low-em bg-surface-surface-0 text-2xs ml-2 border p-1 px-1.5">
     {children}
   </div>
 );
@@ -176,7 +176,7 @@ const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) 
           <CardBet userPosition={position} key={position.id} />
         ))}
       {!isLoading && !bets.length && (
-        <div className="space-y-4 rounded-12 bg-surface-surface-2 p-6">
+        <div className="rounded-12 bg-surface-surface-2 space-y-4 p-6">
           <p>{emptyText}</p>
         </div>
       )}

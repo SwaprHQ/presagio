@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, IconButton } from 'swapr-ui';
+import { Button, IconButton } from '@swapr/ui';
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { erc20Abi, formatEther, parseEther, Address } from 'viem';
@@ -220,7 +220,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
             {!!currentState.balance && (
               <Button
                 variant="ghost"
-                className="text-sm font-semibold text-text-primary-main"
+                className="text-text-primary-main text-sm font-semibold"
                 onClick={maxBalance}
               >
                 Use MAX

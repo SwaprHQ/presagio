@@ -1,6 +1,6 @@
 'use client';
 
-import { Logo } from 'swapr-ui';
+import { Logo } from '@swapr/ui';
 
 import { OutcomeBar } from '@/app/components';
 import { Card, ScrollArea } from '@/app/components/ui';
@@ -19,14 +19,14 @@ export const CardMarket = ({ market }: CardMarketProps) => {
     <Card>
       <div className="flex h-[160px] flex-col justify-between p-4">
         <div className="flex space-x-4">
-          <div className="size-[40px] rounded-8 bg-text-low-em bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
-          <ScrollArea className="h-[98px] flex-1 font-semibold text-text-high-em">
+          <div className="rounded-8 bg-text-low-em size-[40px] bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
+          <ScrollArea className="text-text-high-em h-[98px] flex-1 font-semibold">
             {market.title}
           </ScrollArea>
         </div>
         <OutcomeBar market={market} />
       </div>
-      <div className="flex h-[40px] items-center border-t border-outline-base-em px-4">
+      <div className="border-outline-base-em flex h-[40px] items-center border-t px-4">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex items-center space-x-2">
             <Logo
@@ -34,11 +34,11 @@ export const CardMarket = ({ market }: CardMarketProps) => {
               alt="token logo"
               size="xs"
             />
-            <p className="text-sm font-semibold text-text-med-em">
+            <p className="text-text-med-em text-sm font-semibold">
               {formattedNumberDollars(+market.usdVolume) || '-'} <span>Vol</span>
             </p>
           </div>
-          <p className="text-sm text-text-low-em">{remainingTime(closingDate)}</p>
+          <p className="text-text-low-em text-sm">{remainingTime(closingDate)}</p>
         </div>
       </div>
     </Card>
@@ -48,12 +48,12 @@ export const CardMarket = ({ market }: CardMarketProps) => {
 export const LoadingCardMarket = () => (
   <Card className="h-[202px]">
     <div className="space-y-3 p-4">
-      <div className="h-[80px] animate-pulse rounded-8 bg-outline-low-em"></div>
-      <div className="h-9 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <div className="rounded-8 bg-outline-low-em h-[80px] animate-pulse"></div>
+      <div className="rounded-8 bg-outline-low-em h-9 animate-pulse"></div>
     </div>
     <div className="flex items-center justify-between px-4">
-      <div className="h-8 w-20 animate-pulse rounded-8 bg-outline-low-em"></div>
-      <div className="h-8 w-20 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <div className="rounded-8 bg-outline-low-em h-8 w-20 animate-pulse"></div>
+      <div className="rounded-8 bg-outline-low-em h-8 w-20 animate-pulse"></div>
     </div>
   </Card>
 );

@@ -5,7 +5,7 @@ import { cx } from 'class-variance-authority';
 import { waitForTransactionReceipt } from 'wagmi/actions';
 import { Market, valueByTrade } from '@/entities';
 import { useState } from 'react';
-import { Button, Icon, Logo, Tag } from 'swapr-ui';
+import { Button, Icon, Logo, Tag } from '@swapr/ui';
 import { WXDAI } from '@/constants';
 import { TransactionModal } from '.';
 import { ModalId, useModal } from '@/context/ModalContext';
@@ -175,14 +175,14 @@ export const UserBets = ({ market }: UserBets) => {
             <div className="flex space-x-4" key={index}>
               <div
                 className={cx(
-                  'w-full max-w-[464px] space-y-4 divide-y-2 divide-outline-base-em rounded-16 border border-outline-base-em bg-surface-surface-0 py-4 text-center',
+                  'divide-outline-base-em rounded-16 border-outline-base-em bg-surface-surface-0 w-full max-w-[464px] space-y-4 divide-y-2 border py-4 text-center',
                   isWinner &&
                     (index === 0
                       ? 'bg-gradient-to-b from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]'
                       : 'bg-gradient-to-b from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]')
                 )}
               >
-                <div className="flex space-x-2 divide-x-2 divide-outline-base-em px-4">
+                <div className="divide-outline-base-em flex space-x-2 divide-x-2 px-4">
                   <Tag
                     className="w-fit uppercase"
                     size="sm"
@@ -218,7 +218,7 @@ export const UserBets = ({ market }: UserBets) => {
                 {canClaim && !alreadyClaimed && (
                   <>
                     <div className="space-y-4 px-4 pt-4">
-                      <p className="px-6 font-semibold text-text-low-em">
+                      <p className="text-text-low-em px-6 font-semibold">
                         Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
                         {WXDAI.symbol} from your {collateralSpent} shares of the winning
                         outcome.
