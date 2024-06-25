@@ -1,10 +1,10 @@
-import { useTheme } from "next-themes";
+import { useTheme } from 'next-themes';
 
 export const ConnectWalletImage = ({ ...props }) => {
   const { resolvedTheme } = useTheme();
 
-  const color1 = "#7755FF";
-  const color2 = resolvedTheme === "light" ? "#F4F3FF" : "#251255";
+  const color1 = '#7755FF';
+  const color2 = resolvedTheme === 'light' ? '#F4F3FF' : '#251255';
 
   return (
     <svg

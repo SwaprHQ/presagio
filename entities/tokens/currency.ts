@@ -1,5 +1,5 @@
-import { NativeCurrency } from "./nativeCurrency";
-import { Token } from "./token";
+import { NativeCurrency } from './nativeCurrency';
+import { Token } from './token';
 
 /**
  * Based on Uniswap/sdk-core.

@@ -1,12 +1,12 @@
-import { UseReadContractParameters, useReadContract } from "wagmi";
-import ConditionalTokensABI from "@/abi/conditionalTokens.json";
-import { Abi, Address, zeroHash } from "viem";
-import { writeContract } from "wagmi/actions";
-import { config } from "@/providers/config";
-import { WXDAI } from "@/constants";
+import { UseReadContractParameters, useReadContract } from 'wagmi';
+import ConditionalTokensABI from '@/abi/conditionalTokens.json';
+import { Abi, Address, zeroHash } from 'viem';
+import { writeContract } from 'wagmi/actions';
+import { config } from '@/providers/config';
+import { WXDAI } from '@/constants';
 
 export const CONDITIONAL_TOKEN_CONTRACT_ADDRESS =
-  "0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce";
+  '0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce';
 
 export const useReadConditionalTokensContract = <T>({
   functionName,
@@ -22,23 +22,17 @@ export const useReadConditionalTokensContract = <T>({
   });
 };
 
-export const useReadBalanceOf = (
-  owner: Address | undefined,
-  positionId: number
-) => {
+export const useReadBalanceOf = (owner: Address | undefined, positionId: number) => {
   return useReadConditionalTokensContract({
-    functionName: "balanceOf",
+    functionName: 'balanceOf',
     args: [owner, positionId],
     query: { enabled: !!owner },
   });
 };
 
-export const useReadGetPositionId = (
-  colleteralToken: Address,
-  collectionId: string
-) => {
+export const useReadGetPositionId = (colleteralToken: Address, collectionId: string) => {
   return useReadConditionalTokensContract({
-    functionName: "getPositionId",
+    functionName: 'getPositionId',
     args: [colleteralToken, collectionId],
     query: { enabled: !!collectionId },
   });
@@ -49,7 +43,7 @@ export const useReadGetCollectionId = (
   indexSet: number
 ) => {
   return useReadConditionalTokensContract({
-    functionName: "getCollectionId",
+    functionName: 'getCollectionId',
     args: [zeroHash, conditionId, indexSet],
     query: { enabled: !!conditionId },
   });
@@ -86,7 +80,7 @@ export const redeemPositions = async ({
   return await writeContract(config, {
     abi: ConditionalTokensABI,
     address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-    functionName: "redeemPositions",
+    functionName: 'redeemPositions',
     args: [collateralToken, parentCollectionId, conditionId, [outcomeIndex]],
   });
 };

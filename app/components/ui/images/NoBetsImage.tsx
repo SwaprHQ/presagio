@@ -1,9 +1,9 @@
-import { useTheme } from "next-themes";
+import { useTheme } from 'next-themes';
 
 export const NoBetsImage = ({ ...props }) => {
   const { resolvedTheme } = useTheme();
 
-  return resolvedTheme === "light" ? (
+  return resolvedTheme === 'light' ? (
     <BetsImageLight {...props} />
   ) : (
     <BetsImageDark {...props} />
@@ -164,10 +164,7 @@ const BetsImageDark = ({ ...props }) => (
         <feOffset dy="4" />
         <feGaussianBlur stdDeviation="1" />
         <feComposite in2="hardAlpha" operator="out" />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0" />
         <feBlend
           mode="normal"
           in2="BackgroundImageFix"
@@ -179,10 +176,7 @@ const BetsImageDark = ({ ...props }) => (
           in2="effect1_dropShadow_6631_6295"
           result="shape"
         />
-        <feGaussianBlur
-          stdDeviation="4"
-          result="effect2_foregroundBlur_6631_6295"
-        />
+        <feGaussianBlur stdDeviation="4" result="effect2_foregroundBlur_6631_6295" />
       </filter>
       <linearGradient
         id="paint0_linear_6631_6295"

@@ -1,5 +1,5 @@
-import { Currency } from "./currency";
-import { Token } from "./token";
+import { Currency } from './currency';
+import { Token } from './token';
 
 /**
  * A currency is any fungible financial instrument, including Ether, all ERC20 tokens, and other chain-native currencies
@@ -50,7 +50,7 @@ export abstract class BaseCurrency {
       throw new Error("Chain ID isn't a safe integer.");
     }
     if (decimals < 0 || decimals >= 255 || !Number.isInteger(decimals)) {
-      throw new Error("Decimals value not valid.");
+      throw new Error('Decimals value not valid.');
     }
 
     this.chainId = chainId;

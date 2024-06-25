@@ -1,12 +1,5 @@
-import { ActivityTable } from "@/app/markets/ActivityTable";
-import {
-  Icon,
-  TabBody,
-  TabGroup,
-  TabHeader,
-  TabPanel,
-  TabStyled,
-} from "swapr-ui";
+import { ActivityTable } from '@/app/markets/ActivityTable';
+import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from 'swapr-ui';
 
 export const HistorySection = () => {
   return (
@@ -27,8 +20,8 @@ export const HistorySection = () => {
             <ActivityTable />
           </TabPanel>
           <TabPanel>
-            <div className="bg-surface-surface-2 h-44 rounded-8">
-              <div className="flex items-center justify-center h-full">
+            <div className="h-44 rounded-8 bg-surface-surface-2">
+              <div className="flex h-full items-center justify-center">
                 <div className="flex flex-col items-center space-y-2">
                   <Icon name="bar-graph" size={24} />
                   <p>Charts coming soon.</p>

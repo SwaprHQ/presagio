@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { ModalId, useModal } from "@/context/ModalContext";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
-import { waitForTransactionReceipt } from "@wagmi/core";
-import { type WriteContractParameters, type Config } from "@wagmi/core";
+import { ModalId, useModal } from '@/context/ModalContext';
+import { PropsWithChildren, createContext, useContext, useState } from 'react';
+import { waitForTransactionReceipt } from '@wagmi/core';
+import { type WriteContractParameters, type Config } from '@wagmi/core';
 
-import { writeContract } from "wagmi/actions";
-import { TransactionModal } from "@/app/components";
-import { config } from "@/providers/config";
+import { writeContract } from 'wagmi/actions';
+import { TransactionModal } from '@/app/components';
+import { config } from '@/providers/config';
 
 export interface TxContextProps {
   submitTx: (args: WriteContractParameters) => Promise<void>;
@@ -18,7 +18,7 @@ export const TxContext = createContext<TxContextProps>({
 });
 
 export const TxProvider = ({ children }: PropsWithChildren) => {
-  const [txHash, setTxHash] = useState<string>("");
+  const [txHash, setTxHash] = useState<string>('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -27,7 +27,7 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
   const submitTx = async (args: WriteContractParameters): Promise<void> => {
     setIsTxLoading(true);
     setIsError(false);
-    setTxHash("");
+    setTxHash('');
 
     try {
       const txHash = await writeContract(config, args);
@@ -53,11 +53,7 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
   return (
     <TxContext.Provider value={txContext}>
       {children}
-      <TransactionModal
-        isLoading={isTxLoading}
-        txHash={txHash}
-        isError={isError}
-      />
+      <TransactionModal isLoading={isTxLoading} txHash={txHash} isError={isError} />
     </TxContext.Provider>
   );
 };

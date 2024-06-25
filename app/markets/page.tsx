@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { Address, isAddress } from "viem";
-import { MarketDetails } from "./MarketDetails";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Address, isAddress } from 'viem';
+import { MarketDetails } from './MarketDetails';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const Market = () => {
   const searchParams = useSearchParams();
 
-  const id = searchParams.get("id") as Address;
+  const id = searchParams.get('id') as Address;
 
   // Empty State
   if (!id || !isAddress(id)) return null;
 
   return (
-    <main className="flex flex-col items-center w-full px-6 mt-12">
+    <main className="mt-12 flex w-full flex-col items-center px-6">
       <MarketDetails id={id} />
     </main>
   );

@@ -1,6 +1,6 @@
-import { FixedProductMarketMaker } from "@/queries/omen";
-import { fromHex } from "viem";
-import { Outcome } from "@/entities";
+import { FixedProductMarketMaker } from '@/queries/omen';
+import { fromHex } from 'viem';
+import { Outcome } from '@/entities';
 
 export class Market {
   data: FixedProductMarketMaker;
@@ -13,21 +13,21 @@ export class Market {
     this.data = market;
     this.closingDate = new Date(+market.openingTimestamp * 1000);
     this.answer = market?.question?.currentAnswer
-      ? fromHex(market.question.currentAnswer, "number")
+      ? fromHex(market.question.currentAnswer, 'number')
       : null;
     this.isClosed = this.answer !== null;
 
     this.outcomes = [
       new Outcome(
         0,
-        market.outcomes?.[0] || "Option 1",
+        market.outcomes?.[0] || 'Option 1',
         market.id,
         market.outcomeTokenMarginalPrices?.[0],
         market.question?.currentAnswer
       ),
       new Outcome(
         1,
-        market.outcomes?.[1] || "Option 2",
+        market.outcomes?.[1] || 'Option 2',
         market.id,
         market.outcomeTokenMarginalPrices?.[1],
         market.question?.currentAnswer
@@ -44,8 +44,6 @@ export class Market {
   }
 
   getWinnerOutcome() {
-    return this.isClosed && this.answer !== null
-      ? this.outcomes[this.answer]
-      : null;
+    return this.isClosed && this.answer !== null ? this.outcomes[this.answer] : null;
   }
 }

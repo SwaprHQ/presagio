@@ -1,6 +1,6 @@
-import Big from "big.js";
-import { newtonRaphson } from "@fvictorio/newton-raphson-method";
-import { formatEther } from "viem";
+import Big from 'big.js';
+import { newtonRaphson } from '@fvictorio/newton-raphson-method';
+import { formatEther } from 'viem';
 
 /**
  * Computes the amount of collateral that needs to be sold to get `shares` amount of shares. Returns null if the amount
@@ -19,12 +19,10 @@ export const calcSellAmountInCollateral = (
 ): bigint | null => {
   Big.DP = 90;
 
-  const marketSellingSharesAmounts = new Big(
-    marketSharesAmounts[sellingOutcomeIndex]
-  );
+  const marketSellingSharesAmounts = new Big(marketSharesAmounts[sellingOutcomeIndex]);
   const marketNonSellingSharesAmounts = marketSharesAmounts
     .filter((_, index) => index !== sellingOutcomeIndex)
-    .map((marketShares) => new Big(marketShares));
+    .map(marketShares => new Big(marketShares));
   const sharesToSell = new Big(sharesToSellAmount);
 
   const f = (r: Big) => {
@@ -41,7 +39,7 @@ export const calcSellAmountInCollateral = (
 
     // ((y - R) * (z - R))
     const firstTerm = marketNonSellingSharesAmounts
-      .map((h) => h.minus(R))
+      .map(h => h.minus(R))
       .reduce((a, b) => a.mul(b));
 
     // (x  + a - R)
@@ -93,5 +91,5 @@ export const addFraction = (amount: bigint, fraction: number): bigint => {
 };
 
 export const formatTokenPrice = (price?: bigint) => {
-  return price ? parseFloat(formatEther(price as bigint)).toFixed(2) : "-";
+  return price ? parseFloat(formatEther(price as bigint)).toFixed(2) : '-';
 };

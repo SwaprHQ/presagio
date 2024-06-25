@@ -1,21 +1,15 @@
-"use client";
+'use client';
 
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useMemo,
-  useReducer,
-} from "react";
+import { createContext, useContext, ReactNode, useMemo, useReducer } from 'react';
 
 export enum ModalId {
-  WAITING_TRANSACTION = "waiting_transaction",
-  CONFIRM_SWAP = "confirm_swap",
+  WAITING_TRANSACTION = 'waiting_transaction',
+  CONFIRM_SWAP = 'confirm_swap',
 }
 
 enum ActionType {
-  ADD = "add",
-  REMOVE = "remove",
+  ADD = 'add',
+  REMOVE = 'remove',
 }
 
 export interface ModalContextProps {
@@ -45,7 +39,7 @@ function ModalReducer(openModals: ModalId[], action: Action) {
       return openModals.filter((modal: string) => modal !== action.id);
     }
     default: {
-      console.error("Unknown modal action: " + action.type);
+      console.error('Unknown modal action: ' + action.type);
       return openModals;
     }
   }
@@ -78,11 +72,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
     };
   }, [openModals]);
 
-  return (
-    <ModalContext.Provider value={modalContext}>
-      {children}
-    </ModalContext.Provider>
-  );
+  return <ModalContext.Provider value={modalContext}>{children}</ModalContext.Provider>;
 };
 
 export const useModal = () => useContext(ModalContext);

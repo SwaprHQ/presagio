@@ -7,7 +7,7 @@ import {
   getMarketsDisputeQuery,
   getMarketsOpenQuery,
   getMarketsPendingQuery,
-} from "@/queries/omen";
+} from '@/queries/omen';
 
 export type OrderFilter = {
   name: string;
@@ -18,26 +18,26 @@ export type OrderFilter = {
 
 export const orderFilters: OrderFilter[] = [
   {
-    name: "New",
-    key: "new",
+    name: 'New',
+    key: 'new',
     orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
     orderDirection: OrderDirection.Desc,
   },
   {
-    name: "Most active",
-    key: "active",
+    name: 'Most active',
+    key: 'active',
     orderBy: FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume,
     orderDirection: OrderDirection.Desc,
   },
   {
-    name: "High volume",
-    key: "high",
+    name: 'High volume',
+    key: 'high',
     orderBy: FixedProductMarketMaker_OrderBy.UsdVolume,
     orderDirection: OrderDirection.Desc,
   },
   {
-    name: "Low volume",
-    key: "low",
+    name: 'Low volume',
+    key: 'low',
     orderBy: FixedProductMarketMaker_OrderBy.UsdVolume,
     orderDirection: OrderDirection.Asc,
   },
@@ -57,16 +57,16 @@ export type StateFilter = {
 
 export const stateFilters: StateFilter[] = [
   {
-    name: "Open",
-    key: "open",
+    name: 'Open',
+    key: 'open',
     state: {
       openingTimestamp_gt: nowTimestamp,
     },
     query: getMarketsOpenQuery,
   },
   {
-    name: "Closing soon",
-    key: "closing",
+    name: 'Closing soon',
+    key: 'closing',
     state: {
       openingTimestamp_lte: in24HoursTimestamp,
       openingTimestamp_gt: nowTimestamp,
@@ -74,16 +74,16 @@ export const stateFilters: StateFilter[] = [
     query: getMarketsClosingQuery,
   },
   {
-    name: "Closed",
-    key: "closed",
+    name: 'Closed',
+    key: 'closed',
     state: {
       answerFinalizedTimestamp_lt: nowTimestamp,
     },
     query: getMarketsClosedQuery,
   },
   {
-    name: "Pending",
-    key: "pending",
+    name: 'Pending',
+    key: 'pending',
     state: {
       openingTimestamp_lt: nowTimestamp,
       isPendingArbitration: false,
@@ -92,8 +92,8 @@ export const stateFilters: StateFilter[] = [
     query: getMarketsPendingQuery,
   },
   {
-    name: "In Dispute",
-    key: "dispute",
+    name: 'In Dispute',
+    key: 'dispute',
     state: {
       isPendingArbitration: true,
     },

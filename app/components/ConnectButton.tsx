@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import { ConnectKitButton } from "connectkit";
-import Image from "next/image";
-import { useBalance, useEnsAvatar } from "wagmi";
+import { ConnectKitButton } from 'connectkit';
+import Image from 'next/image';
+import { useBalance, useEnsAvatar } from 'wagmi';
 
-import { ChainId } from "@/constants";
-import { Address, formatEther } from "viem";
-import { Button, ButtonProps, ButtonSizeProp } from "swapr-ui";
-import { PropsWithChildren } from "react";
+import { ChainId } from '@/constants';
+import { Address, formatEther } from 'viem';
+import { Button, ButtonProps, ButtonSizeProp } from 'swapr-ui';
+import { PropsWithChildren } from 'react';
 
 interface CustomConnectButtonProps {
   address: Address;
   onClick: () => void;
   ensName?: string;
   size?: ButtonSizeProp;
-  width?: ButtonProps["width"];
+  width?: ButtonProps['width'];
 }
 
 const CustomConnectButton = ({
@@ -34,30 +34,23 @@ const CustomConnectButton = ({
   });
 
   const truncatedAddress = (size: number) =>
-    `${address.slice(0, size)}...${address.slice(
-      address.length - size,
-      address.length
-    )}`;
+    `${address.slice(0, size)}...${address.slice(address.length - size, address.length)}`;
 
   const formattedBalance = (balanceData: NonNullable<typeof balance>) => {
     const balanceValue = formatEther(balanceData.value);
 
     // Regex to show only 2 digits after the decimal point
-    return `${balanceValue.replace(/(\.\d{2})\d*/, "$1")} ${
-      balanceData.symbol
-    }`;
+    return `${balanceValue.replace(/(\.\d{2})\d*/, '$1')} ${balanceData.symbol}`;
   };
 
   return (
-    <div className="flex bg-surface-surface-2 rounded-20 p-0.5 md:pl-4 justify-center items-center md:space-x-3 text-nowrap">
-      {balance && (
-        <p className="hidden md:block">{formattedBalance(balance)}</p>
-      )}
+    <div className="flex items-center justify-center text-nowrap rounded-20 bg-surface-surface-2 p-0.5 md:space-x-3 md:pl-4">
+      {balance && <p className="hidden md:block">{formattedBalance(balance)}</p>}
       <Button
         onClick={onClick}
         size={size}
         width={width}
-        className="!bg-surface-surface-0 rounded-20 shadow-3 !ring-0"
+        className="rounded-20 !bg-surface-surface-0 shadow-3 !ring-0"
       >
         {avatar && (
           <Image
@@ -76,10 +69,10 @@ const CustomConnectButton = ({
 
 interface ConnectButtonProps extends PropsWithChildren {
   size?: ButtonSizeProp;
-  width?: ButtonProps["width"];
+  width?: ButtonProps['width'];
   className?: string;
-  variant?: ButtonProps["variant"];
-  colorScheme?: ButtonProps["colorScheme"];
+  variant?: ButtonProps['variant'];
+  colorScheme?: ButtonProps['colorScheme'];
 }
 
 export const ConnectButton = ({
@@ -87,7 +80,7 @@ export const ConnectButton = ({
   size,
   width,
   children,
-  variant = "pastel",
+  variant = 'pastel',
   colorScheme,
 }: ConnectButtonProps) => {
   return (
@@ -105,7 +98,7 @@ export const ConnectButton = ({
               variant={variant}
               colorScheme={colorScheme}
             >
-              {children ? children : "Connect"}
+              {children ? children : 'Connect'}
             </Button>
           );
 

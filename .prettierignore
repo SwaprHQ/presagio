@@ -1,0 +1,6 @@
+# Ignore generated folders
+./dist
+./node_modules
+
+# Ignore build and types files
+.next-env.d.ts

@@ -1,12 +1,12 @@
-import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from "@/constants";
+import { CONDITIONAL_TOKENS_SUBGRAPH_URL } from '@/constants';
 import {
   Position,
   Query,
   QueryConditionArgs,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
-} from "./types";
-import { gql, request } from "graphql-request";
+} from './types';
+import { gql, request } from 'graphql-request';
 
 const getUserPositionsQuery = gql`
   query OmenGetMyMarkets($id: ID!) {
@@ -53,10 +53,7 @@ const getUserPositionsQuery = gql`
 const getMarketUserPositionsQuery = gql`
   query GetUserPositionsQuery($id: ID!, $conditionIdsStr: String) {
     userPositions(
-      where: {
-        user_: { id: $id }
-        position_: { conditionIdsStr: $conditionIdsStr }
-      }
+      where: { user_: { id: $id }, position_: { conditionIdsStr: $conditionIdsStr } }
     ) {
       id
       balance
@@ -120,26 +117,24 @@ const getConditionQuery = gql`
   }
 `;
 
-const getUserPositions = async (
-  params: QueryUserPositionArgs & QueryUserPositionsArgs
-) =>
-  request<Pick<Query, "userPositions">>(
+const getUserPositions = async (params: QueryUserPositionArgs & QueryUserPositionsArgs) =>
+  request<Pick<Query, 'userPositions'>>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
     getUserPositionsQuery,
     params
   );
 
 const getMarketUserPositions = async (
-  params: QueryUserPositionArgs & Pick<Position, "conditionIdsStr">
+  params: QueryUserPositionArgs & Pick<Position, 'conditionIdsStr'>
 ) =>
-  request<Pick<Query, "userPositions">>(
+  request<Pick<Query, 'userPositions'>>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
     getMarketUserPositionsQuery,
     params
   );
 
 const getCondition = async (params: QueryConditionArgs) =>
-  request<Pick<Query, "condition">>(
+  request<Pick<Query, 'condition'>>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
     getConditionQuery,
     params

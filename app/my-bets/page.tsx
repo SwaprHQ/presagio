@@ -1,24 +1,18 @@
-"use client";
+'use client';
 
-import { CardBet, LoadingCardBet } from "@/app/components/CardBet";
-import NoBetsPage from "@/app/my-bets/NoBetsPage";
-import NoWalletConnectedPage from "@/app/my-bets/NoWalletConnectedPage";
-import { Market, Position, tradesOutcomeBalance } from "@/entities";
+import { CardBet, LoadingCardBet } from '@/app/components/CardBet';
+import NoBetsPage from '@/app/my-bets/NoBetsPage';
+import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
+import { Market, Position, tradesOutcomeBalance } from '@/entities';
 
-import { getUserPositions } from "@/queries/conditional-tokens";
-import { UserPosition } from "@/queries/conditional-tokens/types";
-import { getConditionMarket, getMarketUserTrades } from "@/queries/omen";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getUserPositions } from '@/queries/conditional-tokens';
+import { UserPosition } from '@/queries/conditional-tokens/types';
+import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import {
-  PropsWithChildren,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
-import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from "swapr-ui";
-import { useAccount } from "wagmi";
+import { PropsWithChildren, ReactNode, useCallback, useEffect, useState } from 'react';
+import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from 'swapr-ui';
+import { useAccount } from 'wagmi';
 
 export default function MyBetsPage() {
   const { address } = useAccount();
@@ -26,7 +20,7 @@ export default function MyBetsPage() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["getUserPositions", address],
+    queryKey: ['getUserPositions', address],
     queryFn: () => getUserPositions({ id: address?.toLowerCase() as string }),
     enabled: !!address,
   });
@@ -48,20 +42,14 @@ export default function MyBetsPage() {
 
         try {
           const conditionData = await queryClient.fetchQuery({
-            queryKey: ["getConditionMarket", position.conditionId],
+            queryKey: ['getConditionMarket', position.conditionId],
             queryFn: () => getConditionMarket({ id: position.conditionId }),
           });
           const condition = conditionData?.conditions[0];
-          const market =
-            condition && new Market(condition?.fixedProductMarketMakers[0]);
+          const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
 
           const userTrades = await queryClient.fetchQuery({
-            queryKey: [
-              "getMarketUserTrades",
-              address,
-              market?.data.id,
-              outcomeIndex,
-            ],
+            queryKey: ['getMarketUserTrades', address, market?.data.id, outcomeIndex],
             queryFn: () => {
               if (!!address && !!market)
                 return getMarketUserTrades({
@@ -82,11 +70,9 @@ export default function MyBetsPage() {
           const isWinner = market.isWinner(outcomeIndex);
 
           const isResolved = userPositionCondition.resolved;
-          const hasPayoutDenominator =
-            +userPositionCondition.payoutDenominator > 0;
+          const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
 
-          const canClaim =
-            isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+          const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
 
           if (canClaim) return userPosition;
         } catch (error) {
@@ -113,9 +99,9 @@ export default function MyBetsPage() {
   if (data && data.userPositions.length === 0) return <NoBetsPage />;
 
   return (
-    <div className="w-full px-6 mt-12 space-y-12 md:items-center md:flex md:flex-col">
+    <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
-        <h1 className="mb-8 text-2xl font-semibold text-white">My bets</h1>
+        <h1 className="text-white mb-8 text-2xl font-semibold">My bets</h1>
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
@@ -150,7 +136,7 @@ export default function MyBetsPage() {
 }
 
 const BetsListTabCounter = ({ children }: PropsWithChildren) => (
-  <div className="bg-surface-surface-0 text-2xs border border-outline-low-em rounded-6 p-1 px-1.5 ml-2">
+  <div className="ml-2 rounded-6 border border-outline-low-em bg-surface-surface-0 p-1 px-1.5 text-2xs">
     {children}
   </div>
 );
@@ -171,7 +157,7 @@ interface BetsListTabProps {
 }
 
 const BetsListTab = ({ children, bets }: BetsListTabProps) => {
-  const counter = bets?.length ?? "-";
+  const counter = bets?.length ?? '-';
   return (
     <TabStyled>
       {children}
@@ -180,11 +166,7 @@ const BetsListTab = ({ children, bets }: BetsListTabProps) => {
   );
 };
 
-const BetsListPanel = ({
-  emptyText = "",
-  bets,
-  isLoading,
-}: BetsListPanelProps) => {
+const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) => {
   return (
     <TabPanel className="space-y-4">
       {isLoading && <LoadingBets />}
@@ -194,7 +176,7 @@ const BetsListPanel = ({
           <CardBet userPosition={position} key={position.id} />
         ))}
       {!isLoading && !bets.length && (
-        <div className="p-6 space-y-4 bg-surface-surface-2 rounded-12">
+        <div className="space-y-4 rounded-12 bg-surface-surface-2 p-6">
           <p>{emptyText}</p>
         </div>
       )}

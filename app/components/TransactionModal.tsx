@@ -7,9 +7,9 @@ import {
   DialogHeader,
   Icon,
   IconBadge,
-} from "swapr-ui";
-import { ModalId, useModal } from "@/context/ModalContext";
-import Image from "next/image";
+} from 'swapr-ui';
+import { ModalId, useModal } from '@/context/ModalContext';
+import Image from 'next/image';
 
 interface TransactionModalProps {
   isLoading: boolean;
@@ -29,14 +29,11 @@ export const TransactionModal = ({
   };
 
   return (
-    <Dialog
-      open={isModalOpen(ModalId.WAITING_TRANSACTION)}
-      onOpenChange={close}
-    >
+    <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader />
-        <DialogBody className="max-w-[496px] w-[496px] px-2 space-y-2 mt-8 mb-8">
-          <div className="flex flex-col items-center w-full space-y-20">
+        <DialogBody className="mb-8 mt-8 w-[496px] max-w-[496px] space-y-2 px-2">
+          <div className="flex w-full flex-col items-center space-y-20">
             {isLoading ? (
               <>
                 <Image
@@ -50,7 +47,7 @@ export const TransactionModal = ({
                   <p className="text-2xl font-semibold text-text-high-em">
                     Transaction submitted
                   </p>
-                  <p className="font-semibold text-center text-text-low-em text-md max-w-80">
+                  <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                     The transaction has been submitted. <br />
                     It takes a couple of minutes to complete.
                   </p>
@@ -65,7 +62,7 @@ export const TransactionModal = ({
                       <p className="text-2xl font-semibold text-text-high-em">
                         Transaction successful!
                       </p>
-                      <p className="font-semibold text-center text-text-low-em text-md max-w-80">
+                      <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                         The transaction has been completed. <br />
                         You can close this window now.
                       </p>
@@ -79,7 +76,7 @@ export const TransactionModal = ({
                       <p className="text-2xl font-semibold text-text-high-em">
                         There was an error.
                       </p>
-                      <p className="font-semibold text-center text-text-low-em text-md max-w-80">
+                      <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                         Unfortunately the transaction was not completed.
                       </p>
                     </div>
@@ -99,9 +96,7 @@ export const TransactionModal = ({
             >
               <Button
                 width="full"
-                colorScheme={
-                  isLoading ? "primary" : isError ? "error" : "success"
-                }
+                colorScheme={isLoading ? 'primary' : isError ? 'error' : 'success'}
                 variant="pastel"
                 size="lg"
               >

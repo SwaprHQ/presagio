@@ -1,4 +1,4 @@
-import { Position as ConditionalTokenPosition } from "@/queries/conditional-tokens/types";
+import { Position as ConditionalTokenPosition } from '@/queries/conditional-tokens/types';
 
 export class Position {
   conditionId: string;
@@ -12,6 +12,6 @@ export class Position {
   }
 
   getOutcome(): string {
-    return this.outcomes ? this.outcomes[this.outcomeIndex - 1] : "";
+    return this.outcomes ? this.outcomes[this.outcomeIndex - 1] : '';
   }
 }
