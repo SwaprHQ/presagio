@@ -21,8 +21,8 @@ export const SwapInput = ({
   ...props
 }: SwapInputProps) => {
   return (
-    <div className="rounded-16 bg-surface-surface-1 space-y-1 p-4">
-      <div className="text-text-low-em text-xs font-semibold uppercase">{title}</div>
+    <div className="space-y-1 rounded-16 bg-surface-surface-1 p-4">
+      <div className="text-xs font-semibold uppercase text-text-low-em">{title}</div>
       <div className="flex w-full space-x-2">
         <input
           min={0}
@@ -33,7 +33,7 @@ export const SwapInput = ({
           onKeyDown={evt =>
             ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()
           }
-          className="caret-text-primary-main placeholder:text-text-disabled overflow-hidden overscroll-none bg-transparent text-3xl outline-none"
+          className="overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
           {...props}
         />
         {selectedToken instanceof Token ? (
@@ -48,7 +48,7 @@ export const SwapInput = ({
           </Button>
         ) : (
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
               <Button className="flex-shrink-0" variant="pastel">
                 <p
                   className={cx(
@@ -63,7 +63,7 @@ export const SwapInput = ({
                 <Icon name="chevron-down" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="divide-outline-base-em min-w-fit divide-y-2 px-0 py-0">
+            <PopoverContent className="min-w-fit divide-y-2 divide-outline-base-em px-0 py-0">
               {tokenList.map(outcome => {
                 return (
                   <div

@@ -201,7 +201,7 @@ export default function HomePage() {
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
       <div className="w-full">
-        <h1 className="text-2xl font-semibold capitalize text-white">
+        <h1 className="text-white text-2xl font-semibold capitalize">
           🔮 {category ? category : 'All'}
         </h1>
       </div>
@@ -238,7 +238,7 @@ export default function HomePage() {
               open={isOrderFilterPopoverOpen}
               onOpenChange={setOrderFilterPopoverOpen}
             >
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button variant="pastel" className="space-x-2 text-nowrap">
                   <p>{selectedOrderOption.name}</p>
                   <Icon name="chevron-down" />
@@ -274,7 +274,7 @@ export default function HomePage() {
               open={isStateFilterPopoverOpen}
               onOpenChange={setStateFilterPopoverOpen}
             >
-              <PopoverTrigger>
+              <PopoverTrigger asChild>
                 <Button variant="pastel" className="space-x-2 text-nowrap">
                   <p>{selectedStateOption.name}</p>
                   <Icon name="chevron-down" />
@@ -321,7 +321,7 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="text-bold rounded-12 bg-surface-surface-1 text-md w-full space-y-4 px-6 py-10 text-center">
+        <div className="text-bold w-full space-y-4 rounded-12 bg-surface-surface-1 px-6 py-10 text-center text-md">
           <p>No market found for current search</p>
         </div>
       )}

@@ -22,12 +22,12 @@ export const SettingsPopover = () => {
 
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger asChild>
         <IconButton name="settings-fill" variant="pastel" />
       </PopoverTrigger>
       <PopoverContent className="max-w-lg px-4">
         <div className="space-y-2">
-          <div className="text-text-low-em flex items-center">
+          <div className="flex items-center text-text-low-em">
             <p className="text-xs font-bold">Theme</p>
           </div>
           <ToggleGroup value={theme} onChange={setTheme}>
