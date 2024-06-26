@@ -123,37 +123,9 @@ const marketDataFragment = gql`
   }
 `;
 
-const getMarketsQuery = gql`
-  query GetMarkets(
-    $first: Int!
-    $skip: Int!
-    $orderBy: String
-    $orderDirection: String
-    $title_contains_nocase: String
-    $creator_in: [String]
-    $category_contains: String
-  ) {
-    fixedProductMarketMakers(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: {
-        outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-      }
-    ) {
-      ...marketData
-      __typename
-    }
-  }
-
-  ${marketDataFragment}
-`;
-
-export const getMarketsOpenQuery = gql`
+const getMarketsQuery = (
+  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
+) => gql`
   query GetMarkets(
     $first: Int!
     $skip: Int!
@@ -163,138 +135,10 @@ export const getMarketsOpenQuery = gql`
     $creator_in: [String]
     $category_contains: String
     $openingTimestamp_gt: Int
-  ) {
-    fixedProductMarketMakers(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: {
-        outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-        openingTimestamp_gt: $openingTimestamp_gt
-      }
-    ) {
-      ...marketData
-      __typename
-    }
-  }
-
-  ${marketDataFragment}
-`;
-
-export const getMarketsPendingQuery = gql`
-  query GetMarkets(
-    $first: Int!
-    $skip: Int!
-    $orderBy: String
-    $orderDirection: String
-    $title_contains_nocase: String
-    $creator_in: [String]
-    $category_contains: String
     $openingTimestamp_lt: Int
     $isPendingArbitration: Boolean
     $currentAnswer: Bytes
-  ) {
-    fixedProductMarketMakers(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: {
-        outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-        openingTimestamp_lt: $openingTimestamp_lt
-        isPendingArbitration: $isPendingArbitration
-        currentAnswer: $currentAnswer
-      }
-    ) {
-      ...marketData
-      __typename
-    }
-  }
-
-  ${marketDataFragment}
-`;
-
-export const getMarketsClosedQuery = gql`
-  query GetMarkets(
-    $first: Int!
-    $skip: Int!
-    $orderBy: String
-    $orderDirection: String
-    $title_contains_nocase: String
-    $creator_in: [String]
-    $category_contains: String
     $answerFinalizedTimestamp_lt: Int
-  ) {
-    fixedProductMarketMakers(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: {
-        outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-        answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt
-      }
-    ) {
-      ...marketData
-      __typename
-    }
-  }
-
-  ${marketDataFragment}
-`;
-
-export const getMarketsDisputeQuery = gql`
-  query GetMarkets(
-    $first: Int!
-    $skip: Int!
-    $orderBy: String
-    $orderDirection: String
-    $title_contains_nocase: String
-    $creator_in: [String]
-    $category_contains: String
-    $isPendingArbitration: Boolean
-  ) {
-    fixedProductMarketMakers(
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-      where: {
-        outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-        isPendingArbitration: $isPendingArbitration
-      }
-    ) {
-      ...marketData
-      __typename
-    }
-  }
-
-  ${marketDataFragment}
-`;
-
-export const getMarketsClosingQuery = gql`
-  query GetMarkets(
-    $first: Int!
-    $skip: Int!
-    $orderBy: String
-    $orderDirection: String
-    $title_contains_nocase: String
-    $creator_in: [String]
-    $category_contains: String
-    $openingTimestamp_gt: Int
     $openingTimestamp_lte: Int
   ) {
     fixedProductMarketMakers(
@@ -304,11 +148,15 @@ export const getMarketsClosingQuery = gql`
       orderDirection: $orderDirection
       where: {
         outcomeSlotCount: 2
-        title_contains_nocase: $title_contains_nocase
-        creator_in: $creator_in
-        category_contains: $category_contains
-        openingTimestamp_gt: $openingTimestamp_gt
-        openingTimestamp_lte: $openingTimestamp_lte
+        ${params.title_contains_nocase ? 'title_contains_nocase: $title_contains_nocase' : ''}
+        ${params.creator_in ? 'creator_in: $creator_in' : ''}
+        ${params.category_contains ? 'category_contains: $category_contains' : ''}
+        ${params.openingTimestamp_gt ? 'openingTimestamp_gt: $openingTimestamp_gt' : ''}
+        ${params.openingTimestamp_lt ? 'openingTimestamp_lt: $openingTimestamp_lt' : ''}
+        ${params.isPendingArbitration ? 'isPendingArbitration: $isPendingArbitration' : ''}
+        ${params.currentAnswer ? 'currentAnswer: $currentAnswer' : ''}
+        ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
+        ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
       }
     ) {
       ...marketData
@@ -392,9 +240,13 @@ const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
   );
 
 const getMarkets = async (
-  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter,
-  query: string = getMarketsQuery
-) => request<Pick<Query, 'fixedProductMarketMakers'>>(OMEN_SUBGRAPH_URL, query, params);
+  params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
+) =>
+  request<Pick<Query, 'fixedProductMarketMakers'>>(
+    OMEN_SUBGRAPH_URL,
+    getMarketsQuery(params),
+    params
+  );
 
 const getAccountMarkets = async (
   params: QueryAccountArgs & QueryFixedProductMarketMakersArgs

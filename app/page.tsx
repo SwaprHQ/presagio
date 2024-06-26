@@ -19,13 +19,20 @@ import { useState } from 'react';
 import { useShowClientUI, useDebounce } from '@/hooks';
 import { cx } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
-import { AI_AGENTS_ALLOWLIST } from '@/constants';
-import { OrderFilter, StateFilter, orderFilters, stateFilters } from './filters';
+import {
+  CreatorFilter,
+  OrderFilter,
+  StateFilter,
+  creatorFilters,
+  orderFilters,
+  stateFilters,
+} from './filters';
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_ORDER_OPTION = orderFilters[0];
 const DEFAULT_STATE_OPTION = stateFilters[0];
+const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 
 enum Categories {
   TECHNOLOGY = 'technology',
@@ -43,6 +50,7 @@ type CategoryOptions = Categories | '';
 export default function HomePage() {
   const router = useRouter();
   const showClientUI = useShowClientUI();
+  const [isCreatorFilterPopoverOpen, setCreatorFilterPopoverOpen] = useState(false);
   const [isOrderFilterPopoverOpen, setOrderFilterPopoverOpen] = useState(false);
   const [isStateFilterPopoverOpen, setStateFilterPopoverOpen] = useState(false);
 
@@ -80,6 +88,19 @@ export default function HomePage() {
 
   const [selectedStateOption, setSelectedStateOption] = useState(initialStateFilter());
 
+  const initialCreatorFilter = () => {
+    const filterValueFromSearchParams = searchParams.get('cf');
+    if (!filterValueFromSearchParams) return DEFAULT_CREATOR_OPTION;
+
+    return (
+      creatorFilters.find(option => option.key === filterValueFromSearchParams) ||
+      DEFAULT_CREATOR_OPTION
+    );
+  };
+
+  const [selectedCreatorOption, setSelectedCreatorOption] =
+    useState(initialCreatorFilter());
+
   const initialPage = () => {
     const page = searchParams.get('p');
     if (!page || isNaN(Number(page))) return 1;
@@ -98,21 +119,19 @@ export default function HomePage() {
       page,
       category,
       selectedStateOption.key,
+      selectedCreatorOption.key,
     ],
     queryFn: async () =>
-      getMarkets(
-        {
-          first: ITEMS_PER_PAGE,
-          skip: (page - 1) * ITEMS_PER_PAGE,
-          orderBy: selectedOrderOption.orderBy,
-          orderDirection: selectedOrderOption.orderDirection,
-          title_contains_nocase: debouncedSearch,
-          creator_in: AI_AGENTS_ALLOWLIST,
-          category_contains: category,
-          ...selectedStateOption.state,
-        },
-        selectedStateOption.query
-      ),
+      getMarkets({
+        first: ITEMS_PER_PAGE,
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        orderBy: selectedOrderOption.orderBy,
+        orderDirection: selectedOrderOption.orderDirection,
+        title_contains_nocase: debouncedSearch,
+        category_contains: category,
+        ...selectedCreatorOption.when,
+        ...selectedStateOption.when,
+      }),
   });
 
   const handleSearch = (query: string) => {
@@ -153,6 +172,16 @@ export default function HomePage() {
     router.replace(`?${searchParams.toString()}`);
   };
 
+  const selectCreatorFilter = (option: CreatorFilter) => {
+    setSelectedCreatorOption(option);
+    setCreatorFilterPopoverOpen(false);
+    setPage(1);
+
+    searchParams.delete('p');
+    searchParams.set('cf', option.key);
+    router.replace(`?${searchParams.toString()}`);
+  };
+
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
 
@@ -174,21 +203,19 @@ export default function HomePage() {
       nextPage,
       category,
       selectedStateOption.key,
+      selectedCreatorOption.key,
     ],
     queryFn: async () =>
-      getMarkets(
-        {
-          first: ITEMS_PER_PAGE,
-          skip: nextPage,
-          orderBy: selectedOrderOption.orderBy,
-          orderDirection: selectedOrderOption.orderDirection,
-          title_contains_nocase: debouncedSearch,
-          creator_in: AI_AGENTS_ALLOWLIST,
-          category_contains: category,
-          ...selectedStateOption.state,
-        },
-        selectedStateOption.query
-      ),
+      getMarkets({
+        first: ITEMS_PER_PAGE,
+        skip: nextPage,
+        orderBy: selectedOrderOption.orderBy,
+        orderDirection: selectedOrderOption.orderDirection,
+        title_contains_nocase: debouncedSearch,
+        category_contains: category,
+        ...selectedCreatorOption.when,
+        ...selectedStateOption.when,
+      }),
   });
 
   const hasMoreMarkets =
@@ -201,11 +228,6 @@ export default function HomePage() {
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
       <div className="w-full">
-        <h1 className="text-white text-2xl font-semibold capitalize">
-          🔮 {category ? category : 'All'}
-        </h1>
-      </div>
-      <div className="flex w-full flex-col justify-between gap-5 md:flex-row">
         <ToggleGroup
           value={category}
           onChange={handleCategory}
@@ -225,86 +247,121 @@ export default function HomePage() {
             </ToggleGroupOption>
           ))}
         </ToggleGroup>
-        <div className="flex items-center space-x-2">
-          <Input
-            className="w-full"
-            placeholder="Search market"
-            leftIcon="search"
-            onChange={event => handleSearch(event.target.value)}
-            value={search}
-          />
-          {showClientUI ? (
-            <Popover
-              open={isOrderFilterPopoverOpen}
-              onOpenChange={setOrderFilterPopoverOpen}
-            >
-              <PopoverTrigger asChild>
-                <Button variant="pastel" className="space-x-2 text-nowrap">
-                  <p>{selectedOrderOption.name}</p>
-                  <Icon name="chevron-down" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="px-1 py-2">
-                {orderFilters.map(option => (
-                  <div
-                    key={option.key}
-                    onClick={() => selectOrderFilter(option)}
-                    className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
-                  >
-                    <Icon
-                      className={cx({
-                        invisible: selectedOrderOption.key !== option.key,
-                      })}
-                      name="tick-fill"
-                    />
-                    <p>{option.name}</p>
-                  </div>
-                ))}
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <Button variant="pastel" className="space-x-2 text-nowrap">
-              <p>{selectedOrderOption.name}</p>
-              <Icon name="chevron-down" />
-            </Button>
-          )}
+      </div>
+      <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
+        <Input
+          className="w-full"
+          placeholder="Search market"
+          leftIcon="search"
+          onChange={event => handleSearch(event.target.value)}
+          value={search}
+        />
+        {showClientUI ? (
+          <Popover
+            open={isCreatorFilterPopoverOpen}
+            onOpenChange={setCreatorFilterPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button variant="pastel" className="space-x-2 text-nowrap">
+                <p>{selectedCreatorOption.name}</p>
+                <Icon name="chevron-down" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="px-1 py-2">
+              {creatorFilters.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => selectCreatorFilter(option)}
+                  className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                >
+                  <Icon
+                    className={cx({
+                      invisible: selectedCreatorOption.key !== option.key,
+                    })}
+                    name="tick-fill"
+                  />
+                  <p>{option.name}</p>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button variant="pastel" className="space-x-2 text-nowrap">
+            <p>{selectedCreatorOption.name}</p>
+            <Icon name="chevron-down" />
+          </Button>
+        )}
+        {showClientUI ? (
+          <Popover
+            open={isOrderFilterPopoverOpen}
+            onOpenChange={setOrderFilterPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button variant="pastel" className="space-x-2 text-nowrap">
+                <p>{selectedOrderOption.name}</p>
+                <Icon name="chevron-down" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="px-1 py-2">
+              {orderFilters.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => selectOrderFilter(option)}
+                  className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                >
+                  <Icon
+                    className={cx({
+                      invisible: selectedOrderOption.key !== option.key,
+                    })}
+                    name="tick-fill"
+                  />
+                  <p>{option.name}</p>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button variant="pastel" className="space-x-2 text-nowrap">
+            <p>{selectedOrderOption.name}</p>
+            <Icon name="chevron-down" />
+          </Button>
+        )}
 
-          {showClientUI ? (
-            <Popover
-              open={isStateFilterPopoverOpen}
-              onOpenChange={setStateFilterPopoverOpen}
-            >
-              <PopoverTrigger asChild>
-                <Button variant="pastel" className="space-x-2 text-nowrap">
-                  <p>{selectedStateOption.name}</p>
-                  <Icon name="chevron-down" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="px-1 py-2">
-                {stateFilters.map(option => (
-                  <div
-                    key={option.key}
-                    onClick={() => selectStateFilter(option)}
-                    className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
-                  >
-                    <Icon
-                      className={cx({
-                        invisible: selectedStateOption.key !== option.key,
-                      })}
-                      name="tick-fill"
-                    />
-                    <p>{option.name}</p>
-                  </div>
-                ))}
-              </PopoverContent>
-            </Popover>
-          ) : (
-            <Button variant="pastel" className="space-x-2 text-nowrap">
-              <p>{selectedStateOption.name}</p>
-              <Icon name="chevron-down" />
-            </Button>
-          )}
-        </div>
+        {showClientUI ? (
+          <Popover
+            open={isStateFilterPopoverOpen}
+            onOpenChange={setStateFilterPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button variant="pastel" className="space-x-2 text-nowrap">
+                <p>{selectedStateOption.name}</p>
+                <Icon name="chevron-down" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="px-1 py-2">
+              {stateFilters.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => selectStateFilter(option)}
+                  className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                >
+                  <Icon
+                    className={cx({
+                      invisible: selectedStateOption.key !== option.key,
+                    })}
+                    name="tick-fill"
+                  />
+                  <p>{option.name}</p>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button variant="pastel" className="space-x-2 text-nowrap">
+            <p>{selectedStateOption.name}</p>
+            <Icon name="chevron-down" />
+          </Button>
+        )}
       </div>
       {isLoading ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
