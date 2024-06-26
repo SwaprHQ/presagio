@@ -2,12 +2,8 @@ import {
   FixedProductMarketMaker_Filter,
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
-  getMarketsClosedQuery,
-  getMarketsClosingQuery,
-  getMarketsDisputeQuery,
-  getMarketsOpenQuery,
-  getMarketsPendingQuery,
 } from '@/queries/omen';
+import { AI_AGENTS_ALLOWLIST } from '../constants';
 
 export type OrderFilter = {
   name: string;
@@ -51,52 +47,67 @@ const in24HoursTimestamp = Math.floor(
 export type StateFilter = {
   name: string;
   key: string;
-  query: string;
-  state: FixedProductMarketMaker_Filter;
+  when: FixedProductMarketMaker_Filter;
 };
 
 export const stateFilters: StateFilter[] = [
   {
     name: 'Open',
     key: 'open',
-    state: {
+    when: {
       openingTimestamp_gt: nowTimestamp,
     },
-    query: getMarketsOpenQuery,
   },
   {
     name: 'Closing soon',
     key: 'closing',
-    state: {
+    when: {
       openingTimestamp_lte: in24HoursTimestamp,
       openingTimestamp_gt: nowTimestamp,
     },
-    query: getMarketsClosingQuery,
   },
   {
     name: 'Closed',
     key: 'closed',
-    state: {
+    when: {
       answerFinalizedTimestamp_lt: nowTimestamp,
     },
-    query: getMarketsClosedQuery,
   },
   {
     name: 'Pending',
     key: 'pending',
-    state: {
+    when: {
       openingTimestamp_lt: nowTimestamp,
       isPendingArbitration: false,
       currentAnswer: null,
     },
-    query: getMarketsPendingQuery,
   },
   {
     name: 'In Dispute',
     key: 'dispute',
-    state: {
+    when: {
       isPendingArbitration: true,
     },
-    query: getMarketsDisputeQuery,
+  },
+];
+
+export type CreatorFilter = {
+  name: string;
+  key: string;
+  when: {
+    creator_in?: string[];
+  };
+};
+
+export const creatorFilters: CreatorFilter[] = [
+  {
+    name: 'AI markets',
+    key: 'ai',
+    when: { creator_in: AI_AGENTS_ALLOWLIST },
+  },
+  {
+    name: 'All markets',
+    key: 'all',
+    when: {},
   },
 ];
