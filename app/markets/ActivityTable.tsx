@@ -6,49 +6,43 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import { formatDateTime, shortenAddress } from '@/utils';
-import { Tag } from '@swapr/ui';
+import { TransactionType, getMarketTransactions } from '@/queries/omen';
+import {
+  formatDateTime,
+  formatEtherWithFixedDecimals,
+  getGnosisAddressExplorerLink,
+  shortenAddress,
+} from '@/utils';
+import { Tag, TagColorSchemeProp } from '@swapr/ui';
+import { useQuery } from '@tanstack/react-query';
 
-const activities = [
-  {
-    user: '0x8a05649a4fa186d032376f6d34f6bf40ca0168ae',
-    action: 'Yes',
-    shares: '1.24',
-    date: 1718999911,
-  },
-  {
-    user: '0x1b3bbecdcb76594e1dc5f7550263cd5ea4a6ab6d',
-    action: 'No',
-    shares: '2.3',
-    date: 1718999111,
-  },
-  {
-    user: '0x7532a3ce4d80cc3fb71d69a5329f76f9f375aa27',
-    action: 'Yes',
-    shares: '32.2',
-    date: 1718912111,
-  },
-  {
-    user: '0x2fe3e7422f35ecbb9dca542279fb2ee172faab32',
-    action: 'Yes',
-    shares: 23.1,
-    date: 1718903353,
-  },
-  {
-    user: '0x269e4c1cb7d8586a99baca522db8c2ef72bbf3ac',
-    action: 'No',
-    shares: 12.2,
-    date: 1718901111,
-  },
-  {
-    user: '0xf9d7aeaa523906f59070eee225f16c7893e2b262',
-    action: 'Yes',
-    shares: 0.42,
-    date: 1718801111,
-  },
-];
+const getTagColorScheme = (transactionType: TransactionType): TagColorSchemeProp => {
+  switch (transactionType) {
+    case TransactionType.Buy:
+      return 'success';
+    case TransactionType.Sell:
+      return 'danger';
+    case TransactionType.Add:
+      return 'info';
+    case TransactionType.Remove:
+      return 'quaternary';
+    default:
+      return 'info';
+  }
+};
 
-export const ActivityTable = () => {
+export const ActivityTable = ({ id }: { id: string }) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['getMarketTransactions', id],
+    queryFn: async () =>
+      getMarketTransactions({
+        first: 20,
+        id: id.toLowerCase(),
+      }),
+  });
+
+  const activities = data?.fpmmTransactions ?? [];
+
   return (
     <Table>
       <TableHeader>
@@ -56,31 +50,65 @@ export const ActivityTable = () => {
           <TableHead className="text-text-low-em">Users</TableHead>
           <TableHead className="text-text-low-em">Action</TableHead>
           <TableHead className="text-text-low-em">Shares</TableHead>
-          <TableHead className="text-text-low-em text-right">Date</TableHead>
+          <TableHead className="text-right text-text-low-em">Date</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody className="text-base font-semibold">
-        {activities.map(activity => (
-          <TableRow key={activity.user}>
-            <TableCell className="text-text-high-em">
-              {shortenAddress(activity.user)}
-            </TableCell>
-            <TableCell className="">
-              <Tag
-                size="xs"
-                colorScheme={activity.action === 'Yes' ? 'success' : 'danger'}
-                className="w-fit uppercase"
-              >
-                {activity.action}
-              </Tag>
-            </TableCell>
-            <TableCell className="text-text-high-em">{activity.shares}</TableCell>
-            <TableCell className="text-text-low-em text-right">
-              {formatDateTime(activity.date)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : (
+        <TableBody className="text-base font-semibold">
+          {activities.map(activity => (
+            <TableRow key={activity.transactionHash}>
+              <TableCell className="text-text-high-em">
+                <a
+                  href={getGnosisAddressExplorerLink(activity.user.id)}
+                  className="hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {shortenAddress(activity.user.id)}
+                </a>
+              </TableCell>
+              <TableCell>
+                <Tag
+                  size="xs"
+                  colorScheme={getTagColorScheme(activity.transactionType)}
+                  className="w-fit uppercase"
+                >
+                  {activity.transactionType}
+                </Tag>
+              </TableCell>
+              <TableCell className="truncate text-text-high-em">
+                {formatEtherWithFixedDecimals(activity.sharesOrPoolTokenAmount)}
+              </TableCell>
+              <TableCell className="text-right text-text-low-em">
+                {formatDateTime(activity.creationTimestamp)}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      )}
     </Table>
   );
 };
+
+const LoadingSkeleton = () => (
+  <TableBody className="text-base font-semibold">
+    {[1, 2, 3, 4, 5, 6, 7, 8].map(fakeActivity => (
+      <TableRow key={fakeActivity}>
+        <TableCell className="text-text-high-em">
+          <div className="h-[18px] w-[90px] animate-pulse rounded-8 bg-outline-low-em"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-[24px] w-[33px] animate-pulse rounded-8 bg-outline-low-em"></div>
+        </TableCell>
+        <TableCell className="truncate text-text-high-em">
+          <div className="h-[24px] w-24 animate-pulse rounded-8 bg-outline-low-em"></div>
+        </TableCell>
+        <TableCell className="text-right text-text-low-em">
+          <div className="h-[18px] w-[90px] animate-pulse rounded-8 bg-outline-low-em"></div>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+);
