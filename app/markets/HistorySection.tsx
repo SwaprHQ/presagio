@@ -1,7 +1,7 @@
 import { ActivityTable } from '@/app/markets/ActivityTable';
 import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 
-export const HistorySection = () => {
+export const HistorySection = ({ id }: { id: string }) => {
   return (
     <div className="p-2">
       <TabGroup>
@@ -17,10 +17,10 @@ export const HistorySection = () => {
         </TabHeader>
         <TabBody className="my-4">
           <TabPanel>
-            <ActivityTable />
+            <ActivityTable id={id} />
           </TabPanel>
           <TabPanel>
-            <div className="rounded-8 bg-surface-surface-2 h-44">
+            <div className="h-44 rounded-8 bg-surface-surface-2">
               <div className="flex h-full items-center justify-center">
                 <div className="flex flex-col items-center space-y-2">
                   <Icon name="bar-graph" size={24} />

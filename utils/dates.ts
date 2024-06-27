@@ -12,6 +12,6 @@ export const remainingTime = (date: Date): string => {
 
 export const formatDateTime = (timestamp: number) => {
   const date = fromUnixTime(timestamp);
-  const formattedDate = format(date, 'd MMM- HH:mm');
+  const formattedDate = format(date, 'HH:mm - d MMM');
   return formattedDate;
 };
