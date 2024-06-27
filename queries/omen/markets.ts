@@ -263,6 +263,14 @@ const getMarketTransactionsQuery = gql`
   }
 `;
 
+const getMarketTradesQuery = gql`
+  query GetMarketUserTrades($fpmm: ID!, $orderBy: String) {
+    fpmmTrades(first: 999, orderBy: $orderBy, where: { fpmm: $fpmm }) {
+      creationTimestamp
+    }
+  }
+`;
+
 const getMarketTransactions = async (
   params: QueryFpmmTransactionsArgs & FpmmTransaction_Filter
 ) =>
@@ -298,6 +306,9 @@ const getConditionMarket = async (params: QueryConditionArgs) =>
 const getMarketUserTrades = async (params: QueryFpmmTradesArgs & FpmmTrade_Filter) =>
   request<Pick<Query, 'fpmmTrades'>>(OMEN_SUBGRAPH_URL, getMarketUserTradesQuery, params);
 
+const getMarketTrades = async (params: QueryFpmmTradesArgs & FpmmTrade_Filter) =>
+  request<Pick<Query, 'fpmmTrades'>>(OMEN_SUBGRAPH_URL, getMarketTradesQuery, params);
+
 export {
   getMarket,
   getMarkets,
@@ -305,4 +316,5 @@ export {
   getConditionMarket,
   getMarketUserTrades,
   getMarketTransactions,
+  getMarketTrades,
 };
