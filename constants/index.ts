@@ -24,7 +24,7 @@ export const RPC_LIST: { [chainId: number]: string } = {
   [ChainId.GNOSIS]: process.env.RPC_GNOSIS ?? 'https://rpc.gnosis.gateway.fm',
 };
 
-const SUBGRAPH_API_KEY = process.env.NEXT_PUBLIC_SUBGRAPH_API_KEY || "";
+const SUBGRAPH_API_KEY = process.env.NEXT_PUBLIC_SUBGRAPH_API_KEY || '';
 
 export const CONDITIONAL_TOKENS_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_CONDITIONAL_TOKENS_SUBGRAPH_URL ??
@@ -33,3 +33,7 @@ export const CONDITIONAL_TOKENS_SUBGRAPH_URL =
 export const OMEN_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_OMEN_SUBGRAPH_URL ??
   `https://gateway-arbitrum.network.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/9fUVQpFwzpdWS9bq5WkAnmKbNNcoBwatMR4yZq81pbbz`;
+
+export const XDAI_BLOCKS_SUBGRAPH_URL =
+  process.env.NEXT_PUBLIC_XDAI_BLOCKS_SUBGRAPH_URL ??
+  `https://gateway-arbitrum.network.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/D58aXwnRLfosFtRaVJAbAjjvKZ11bEsbdiDLkJJRdSC9`;

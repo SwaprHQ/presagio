@@ -15,6 +15,7 @@
   }
 }
 
+/* Used to style chart svg */
 .border-radius-svg svg {
   border-radius: 8px;
 }
