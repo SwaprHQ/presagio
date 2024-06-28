@@ -210,7 +210,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
           selectedToken={currentState.inToken}
           tokenList={outcomeList}
         >
-          <div className="flex items-center justify-end space-x-1.5 text-sm">
+          <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
             <p className="text-text-low-em">
               Balance:
               {currentState.balance
@@ -220,7 +220,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
             {!!currentState.balance && (
               <Button
                 variant="ghost"
-                className="text-text-primary-main text-sm font-semibold"
+                className="text-sm font-semibold text-text-primary-main"
                 onClick={maxBalance}
               >
                 Use MAX
