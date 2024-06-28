@@ -4,6 +4,7 @@ import { InputHTMLAttributes } from 'react';
 import { Button, Icon, Logo, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
 import { cx } from 'class-variance-authority';
+import { XDAI_LOGO } from '@/public/assets';
 
 interface SwapInputProps extends InputHTMLAttributes<HTMLInputElement> {
   title: string;
@@ -38,11 +39,7 @@ export const SwapInput = ({
         />
         {selectedToken instanceof Token ? (
           <Button className="flex-shrink-0" variant="pastel">
-            <Logo
-              src="https://raw.githubusercontent.com/SmolDapp/tokenAssets/main/tokens/100/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee/logo-128.png"
-              alt="token logo"
-              size="xs"
-            />
+            <Logo src={XDAI_LOGO.src} alt="token logo" size="xs" />
             <p className="font-semibold">{selectedToken.symbol}</p>
             <Icon name="chevron-down" />
           </Button>
