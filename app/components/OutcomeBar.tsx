@@ -1,14 +1,15 @@
+import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
+import request from 'graphql-request';
+
+import { BlockDataType } from '@/queries/xdai';
 import {
   FixedProductMarketMaker,
   FpmmTrade_OrderBy,
   getMarketTrades,
 } from '@/queries/omen';
-import { cx } from 'class-variance-authority';
-import { Outcome } from '@/entities';
-import request from 'graphql-request';
 import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
-import { BlockDataType } from '@/queries/xdai';
+import { Outcome } from '@/entities';
 
 interface OutcomeBarProps {
   market: FixedProductMarketMaker;

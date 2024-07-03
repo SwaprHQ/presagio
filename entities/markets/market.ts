@@ -22,15 +22,13 @@ export class Market {
         0,
         market.outcomes?.[0] || 'Option 1',
         market.id,
-        market.outcomeTokenMarginalPrices?.[0],
-        market.question?.currentAnswer
+        market.outcomeTokenMarginalPrices?.[0]
       ),
       new Outcome(
         1,
         market.outcomes?.[1] || 'Option 2',
         market.id,
-        market.outcomeTokenMarginalPrices?.[1],
-        market.question?.currentAnswer
+        market.outcomeTokenMarginalPrices?.[1]
       ),
     ];
   }
