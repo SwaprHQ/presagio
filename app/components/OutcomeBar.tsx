@@ -33,7 +33,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       }),
   });
 
-  const { data: lastTradeMarginalPrices, isFetching } = useQuery({
+  const { data: lastTradeMarginalPrices } = useQuery({
     queryKey: ['getLastTradeMarginalPrices', id],
     queryFn: async (): Promise<string[] | undefined> => {
       if (!trades) return;
@@ -84,9 +84,11 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     market.outcomeTokenMarginalPrices?.[1] ?? lastTradeMarginalPrices?.[1]
   );
 
+  const hasPercentages = outcome0.percentage && outcome1.percentage;
+
   return (
     <div className="space-y-1">
-      {isFetching ? (
+      {!hasPercentages ? (
         <ShimmerBar />
       ) : (
         <div className="flex space-x-1">
@@ -117,7 +119,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         </div>
       )}
 
-      {!isFetching && outcome0.percentage && outcome1.percentage && (
+      {hasPercentages && (
         <div className="flex justify-between text-sm font-semibold">
           <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
           <p className="w-full text-right uppercase text-text-danger-main">
