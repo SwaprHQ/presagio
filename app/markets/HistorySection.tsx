@@ -9,9 +9,9 @@ interface HistorySectionProps {
 
 export const HistorySection = ({ id }: HistorySectionProps) => {
   return (
-    <div className="p-2">
+    <div className="pt-4">
       <TabGroup>
-        <TabHeader className="overflow-x-auto md:overflow-x-visible">
+        <TabHeader className="overflow-x-auto px-4 md:overflow-x-visible">
           <TabStyled className="space-x-2">
             <Icon size={18} name="activity"></Icon>
             <p>Activity</p>
@@ -21,11 +21,11 @@ export const HistorySection = ({ id }: HistorySectionProps) => {
             <p>Charts</p>
           </TabStyled>
         </TabHeader>
-        <TabBody className="my-4">
+        <TabBody className="mt-4">
           <TabPanel>
             <ActivityTable id={id} />
           </TabPanel>
-          <TabPanel>
+          <TabPanel className="p-2">
             <div className="h-48 rounded-8 bg-surface-surface-2">
               <ActivityChart id={id} />
             </div>

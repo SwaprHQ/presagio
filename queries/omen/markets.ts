@@ -235,10 +235,11 @@ const getMarketUserTradesQuery = gql`
 `;
 
 const getMarketTransactionsQuery = gql`
-  query getMarketTransactions($id: ID!, $first: Int!) {
+  query getMarketTransactions($id: ID!, $first: Int!, $skip: Int!) {
     fpmmTransactions(
       where: { fpmm: $id }
       first: $first
+      skip: $skip
       orderBy: creationTimestamp
       orderDirection: desc
     ) {
