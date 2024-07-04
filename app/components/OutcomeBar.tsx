@@ -84,11 +84,11 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     market.outcomeTokenMarginalPrices?.[1] ?? lastTradeMarginalPrices?.[1]
   );
 
-  const hasPercentages = outcome0.percentage && outcome1.percentage;
+  const outcomeHasPercentages = outcome0.percentage && outcome1.percentage;
 
   return (
     <div className="space-y-1">
-      {!hasPercentages ? (
+      {!outcomeHasPercentages ? (
         <ShimmerBar />
       ) : (
         <div className="flex space-x-1">
@@ -119,7 +119,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         </div>
       )}
 
-      {hasPercentages && (
+      {outcomeHasPercentages && (
         <div className="flex justify-between text-sm font-semibold">
           <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
           <p className="w-full text-right uppercase text-text-danger-main">
