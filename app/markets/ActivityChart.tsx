@@ -15,6 +15,8 @@ import { format, fromUnixTime } from 'date-fns';
 import { Market } from '@/entities';
 import { useTheme } from 'next-themes';
 
+const MAX_TRADES_AMOUNT = 999;
+
 const getPercent = (value: number, total: number) => {
   const ratio = total > 0 ? value / total : 0;
 
@@ -45,6 +47,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
     queryKey: ['getMarketTrades', id],
     queryFn: async () =>
       getMarketTrades({
+        first: MAX_TRADES_AMOUNT,
         fpmm: id,
         orderBy: FpmmTrade_OrderBy.CreationTimestamp,
       }),

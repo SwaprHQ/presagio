@@ -11,6 +11,8 @@ import {
 import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
 import { Outcome } from '@/entities';
 
+const LAST_TRADE_AMOUNT = 1;
+
 interface OutcomeBarProps {
   market: FixedProductMarketMaker;
 }
@@ -24,10 +26,11 @@ type OutcomeTokenMarginalPricesResponse = {
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
 
-  const { data: trades } = useQuery({
-    queryKey: ['getMarketTrades', id],
+  const { data: trade } = useQuery({
+    queryKey: ['getLastMarketTrade', id],
     queryFn: async () =>
       getMarketTrades({
+        first: LAST_TRADE_AMOUNT,
         fpmm: id,
         orderBy: FpmmTrade_OrderBy.CreationTimestamp,
       }),
@@ -36,10 +39,9 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { data: lastTradeMarginalPrices } = useQuery({
     queryKey: ['getLastTradeMarginalPrices', id],
     queryFn: async (): Promise<string[] | undefined> => {
-      if (!trades) return;
+      if (!trade) return;
 
-      const lastTradeTimestamp =
-        trades.fpmmTrades[trades.fpmmTrades.length - 1]?.creationTimestamp;
+      const lastTradeTimestamp = trade.fpmmTrades[0]?.creationTimestamp;
 
       const blockNumber = await request<BlockDataType>(
         XDAI_BLOCKS_SUBGRAPH_URL,
@@ -68,7 +70,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
 
       return marginalPricesResponse[`_${tradeBlockNumber}`].outcomeTokenMarginalPrices;
     },
-    enabled: !!trades,
+    enabled: !!trade,
   });
 
   const outcome0 = new Outcome(
