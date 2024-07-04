@@ -21,6 +21,28 @@ enum Tabs {
   HISTORY = 'history',
 }
 
+const BackButton = () => {
+  const { back } = useRouter();
+
+  return (
+    <div className="flex w-fit items-center rounded-12" onClick={back}>
+      <IconButton
+        className="!bg-transparent text-text-med-em !ring-0"
+        name="arrow-left"
+        variant="ghost"
+        size="sm"
+      />
+      <Button
+        className="!bg-transparent font-normal text-text-med-em !ring-0"
+        variant="ghost"
+        size="sm"
+      >
+        Go back
+      </Button>
+    </div>
+  );
+};
+
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.BET);
   const { data, error, isLoading } = useQuery({
@@ -132,24 +154,3 @@ const LoadingMarketDetails = () => (
     </div>
   </div>
 );
-
-const BackButton = () => {
-  const { back } = useRouter();
-
-  return (
-    <div
-      className="flex w-fit items-center rounded-12 hover:bg-surface-surface-2"
-      onClick={back}
-    >
-      <IconButton
-        className="text-text-med-em hover:bg-surface-surface-2"
-        name="arrow-left"
-        variant="pastel"
-        size="sm"
-      />
-      <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
-        Go back
-      </Button>
-    </div>
-  );
-};
