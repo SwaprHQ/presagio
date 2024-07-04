@@ -24,6 +24,7 @@ import { useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { XDAI_LOGO } from '@/public/assets';
+import { MarketThumbnail } from './MarketThumbnail';
 
 interface BetProps {
   userPosition: UserPosition;
@@ -141,7 +142,12 @@ export const CardBet = ({ userPosition }: BetProps) => {
             </p>
           </div>
           <div className="flex space-x-4">
-            <div className="size-[40px] rounded-8 bg-text-low-em bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
+            <MarketThumbnail
+              width={40}
+              height={40}
+              className="size-[40px] rounded-8"
+              marketId={market.data.id}
+            />
             <div className="text-normal h-[80px] flex-1 overflow-y-auto font-semibold text-text-high-em md:text-xl">
               {market.data.title}
             </div>

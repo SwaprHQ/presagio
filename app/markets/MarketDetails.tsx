@@ -11,6 +11,7 @@ import { UserBets } from '../components/UserBets';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { HistorySection } from '@/app/markets/HistorySection';
+import { MarketThumbnail } from '../components/MarketThumbnail';
 
 interface MarketDetailsProps {
   id: Address;
@@ -54,7 +55,12 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               )}
             </div>
             <div className="flex space-x-4">
-              <div className="size-20 flex-shrink-0 rounded-8 bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
+              <MarketThumbnail
+                width={20}
+                height={20}
+                className="size-20 flex-shrink-0 rounded-8"
+                marketId={market.id}
+              />
               <h1 className="text-xl font-semibold">{market.title}</h1>
             </div>
             <div className="!mt-7">
