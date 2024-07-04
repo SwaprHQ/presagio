@@ -8,7 +8,6 @@ import {
 import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
 import { FpmmTrade_OrderBy, Query, getMarketTrades } from '@/queries/omen';
-import { BlockDataType } from '@/queries/xdai';
 import request from 'graphql-request';
 import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
 import { format, fromUnixTime } from 'date-fns';
@@ -26,8 +25,8 @@ const getPercent = (value: number, total: number) => {
 interface ActivityChartProps {
   id: string;
 }
-
 type DataType = { time: string; 0: string; 1: string };
+type BlockDataType = Record<string, { number: string }[]>;
 type OutcomesDataType = Record<string, { outcomeTokenAmounts: string[] }>;
 
 const OUTCOME_0 = '0';
