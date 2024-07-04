@@ -7,6 +7,7 @@ import {
   FixedProductMarketMaker,
   FpmmTrade_OrderBy,
   getMarketTrades,
+  OrderDirection,
 } from '@/queries/omen';
 import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
 import { Outcome } from '@/entities';
@@ -33,6 +34,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         first: LAST_TRADE_AMOUNT,
         fpmm: id,
         orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
       }),
   });
 
