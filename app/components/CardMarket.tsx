@@ -8,6 +8,7 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { formattedNumberDollars } from '@/utils/currencies';
 import { remainingTime } from '@/utils/dates';
 import { XDAI_LOGO } from '@/public/assets';
+import { MarketThumbnail } from './MarketThumbnail';
 
 interface CardMarketProps {
   market: FixedProductMarketMaker;
@@ -20,7 +21,12 @@ export const CardMarket = ({ market }: CardMarketProps) => {
     <Card>
       <div className="flex h-[160px] flex-col justify-between p-4">
         <div className="flex space-x-4">
-          <div className="size-[40px] rounded-8 bg-text-low-em bg-gradient-to-r from-[#cb8fc1] to-[#b459c6]" />
+          <MarketThumbnail
+            width={40}
+            height={40}
+            className="size-[40px] rounded-8"
+            marketId={market.id}
+          />
           <ScrollArea className="h-[98px] flex-1 font-semibold text-text-high-em">
             {market.title}
           </ScrollArea>

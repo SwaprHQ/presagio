@@ -15,6 +15,7 @@
     "@swapr/ui": "^0.0.1",
     "@tanstack/react-query": "^5.36.2",
     "big.js": "^6.2.1",
+    "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.0",
     "connectkit": "^1.7.2",
     "date-fns": "^3.6.0",

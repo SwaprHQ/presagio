@@ -5,3 +5,4 @@ export * from './ConnectButton';
 export * from './SettingsPopover';
 export * from './TransactionModal';
 export * from './UserBets';
+export * from './MarketThumbnail';
