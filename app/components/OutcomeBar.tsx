@@ -11,7 +11,7 @@ import {
 import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
 import { Outcome } from '@/entities';
 
-const LAST_TRADE_AMOUNT = 1;
+const MIN_TRADES_AMOUNT = 1;
 const blockNumberQuery = `
   query blockNumberByTimestamp($lastTradeTimestamp: String) {
     blocks(where: {timestamp: $lastTradeTimestamp}, first: 1) {
@@ -31,10 +31,9 @@ interface OutcomeBarProps {
   market: FixedProductMarketMaker;
 }
 
+type BlockNumberResponse = { blocks: { number: string }[] };
 type OutcomeTokenMarginalPricesResponse = {
-  [key: string]: {
-    outcomeTokenMarginalPrices: string[];
-  };
+  fixedProductMarketMaker: { outcomeTokenMarginalPrices: string[] };
 };
 
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
@@ -44,7 +43,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     queryKey: ['getLastMarketTrade', id],
     queryFn: async () =>
       getMarketTrades({
-        first: LAST_TRADE_AMOUNT,
+        first: MIN_TRADES_AMOUNT,
         fpmm: id,
         orderBy: FpmmTrade_OrderBy.CreationTimestamp,
         orderDirection: OrderDirection.Desc,
@@ -58,7 +57,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
 
       const lastTradeTimestamp = trade.fpmmTrades[0]?.creationTimestamp;
 
-      const blockNumber = await request<{ blocks: { number: string }[] }>(
+      const blockNumber = await request<BlockNumberResponse>(
         XDAI_BLOCKS_SUBGRAPH_URL,
         blockNumberQuery,
         { lastTradeTimestamp }
@@ -68,12 +67,14 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
 
       if (!tradeBlockNumber) return;
 
-      const marginalPricesResponse = await request<{
-        fixedProductMarketMaker: { outcomeTokenMarginalPrices: string[] };
-      }>(OMEN_SUBGRAPH_URL, marginalPriceQuery, {
-        id,
-        number: parseInt(tradeBlockNumber),
-      });
+      const marginalPricesResponse = await request<OutcomeTokenMarginalPricesResponse>(
+        OMEN_SUBGRAPH_URL,
+        marginalPriceQuery,
+        {
+          id,
+          number: parseInt(tradeBlockNumber),
+        }
+      );
 
       return marginalPricesResponse.fixedProductMarketMaker.outcomeTokenMarginalPrices;
     },
