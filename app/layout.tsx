@@ -7,6 +7,7 @@ import '@swapr/ui/colors.css';
 
 import { Providers } from '@/providers';
 import { Navbar, Footer } from '@/app/components/ui';
+import { Suspense } from 'react';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
@@ -23,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark" style={{ colorScheme: 'dark' }}>
       <body className={`${manrope.className} bg-surface-surface-0 text-base antialiased`}>
-        <Providers>
-          <Navbar />
-          {children}
-          <Footer />
-        </Providers>
+        <Suspense>
+          <Providers>
+            <Navbar />
+            {children}
+            <Footer />
+          </Providers>
+        </Suspense>
       </body>
     </html>
   );

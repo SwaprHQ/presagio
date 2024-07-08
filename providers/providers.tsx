@@ -8,6 +8,7 @@ import { config } from './config';
 import { ConnectKitProvider } from 'connectkit';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 import { TxProvider, ModalProvider } from '@/context';
+import { useAnalytics } from '@/hooks';
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,8 @@ export const Providers = ({ children }: PropsWithChildren) => {
   const connectKitOptions = useMemo(() => {
     return { initialChainId: 0 };
   }, []);
+
+  useAnalytics();
 
   return (
     <WagmiProvider config={config}>
