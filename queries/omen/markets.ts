@@ -265,8 +265,18 @@ const getMarketTransactionsQuery = gql`
 `;
 
 const getMarketTradesQuery = gql`
-  query GetMarketUserTrades($fpmm: ID!, $orderBy: String) {
-    fpmmTrades(first: 999, orderBy: $orderBy, where: { fpmm: $fpmm }) {
+  query GetMarketUserTrades(
+    $first: Int!
+    $fpmm: ID!
+    $orderBy: String
+    $orderDirection: String
+  ) {
+    fpmmTrades(
+      first: $first
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { fpmm: $fpmm }
+    ) {
       creationTimestamp
     }
   }

@@ -14,6 +14,8 @@ import { format, fromUnixTime } from 'date-fns';
 import { Market } from '@/entities';
 import { useTheme } from 'next-themes';
 
+const MAX_TRADES_AMOUNT = 999;
+
 const getPercent = (value: number, total: number) => {
   const ratio = total > 0 ? value / total : 0;
 
@@ -23,7 +25,6 @@ const getPercent = (value: number, total: number) => {
 interface ActivityChartProps {
   id: string;
 }
-
 type DataType = { time: string; 0: string; 1: string };
 type BlockDataType = Record<string, { number: string }[]>;
 type OutcomesDataType = Record<string, { outcomeTokenAmounts: string[] }>;
@@ -45,6 +46,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
     queryKey: ['getMarketTrades', id],
     queryFn: async () =>
       getMarketTrades({
+        first: MAX_TRADES_AMOUNT,
         fpmm: id,
         orderBy: FpmmTrade_OrderBy.CreationTimestamp,
       }),
@@ -190,7 +192,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
         <text
           x="97%"
           y="90%"
-          text-anchor="end"
+          textAnchor="end"
           className="fill-text-success-em font-semibold uppercase"
         >
           {getPercent(+lastDataPoint[OUTCOME_0], total)} -{' '}
@@ -199,7 +201,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
         <text
           x="97%"
           y="15%"
-          text-anchor="end"
+          textAnchor="end"
           className="fill-text-danger-em font-semibold uppercase"
         >
           {getPercent(+lastDataPoint[OUTCOME_1], total)} -{' '}

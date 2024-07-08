@@ -33,24 +33,13 @@ export class Outcome {
    * @param index of the outcome
    * @param name of the outcome
    */
-  public constructor(
-    index: number,
-    name: string,
-    marketId: string,
-    percentage?: string,
-    answer?: `0x${string}`
-  ) {
+  public constructor(index: number, name: string, marketId: string, percentage?: string) {
     this.index = index;
     this.name = name;
     this.symbol =
       name.length > CHARACTERS_LIMIT ? name.substring(0, CHARACTERS_LIMIT) + '...' : name;
     this.marketId = marketId;
-    if (answer) {
-      const answerNumber = fromHex(answer, 'number');
-      this.percentage = answerNumber === index ? '100' : '0';
-    } else {
-      this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
-    }
+    this.percentage = percentage ? (+percentage * 100).toFixed(2) : null;
   }
 
   /**
