@@ -39,7 +39,7 @@ type OutcomeTokenMarginalPricesResponse = {
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
 
-  const { data: trade } = useQuery({
+  const { data: trade, isLoading: isLastTradeLoading } = useQuery({
     queryKey: ['getLastMarketTrade', id],
     queryFn: async () =>
       getMarketTrades({
@@ -50,7 +50,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       }),
   });
 
-  const { data: lastTradeMarginalPrices } = useQuery({
+  const { data: lastTradeMarginalPrices, isLoading: isMarginalPricesLoading } = useQuery({
     queryKey: ['getLastTradeMarginalPrices', id],
     queryFn: async (): Promise<string[] | undefined> => {
       if (!trade) return;
@@ -95,11 +95,11 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   );
 
   const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
-  const isLoading = !hasOutcomePercentages;
+  const isLoading = isLastTradeLoading || isMarginalPricesLoading;
 
   return (
     <div className="space-y-1">
-      {!isLoading ? (
+      {isLoading ? (
         <LoadingOutcomeBar />
       ) : (
         <div className="flex space-x-1">
