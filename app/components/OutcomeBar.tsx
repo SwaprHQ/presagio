@@ -94,12 +94,13 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     market.outcomeTokenMarginalPrices?.[1] ?? lastTradeMarginalPrices?.[1]
   );
 
-  const outcomeHasPercentages = outcome0.percentage && outcome1.percentage;
+  const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
+  const isLoading = !hasOutcomePercentages;
 
   return (
     <div className="space-y-1">
-      {!outcomeHasPercentages ? (
-        <ShimmerBar />
+      {!isLoading ? (
+        <LoadingOutcomeBar />
       ) : (
         <div className="flex space-x-1">
           {outcome0.percentage !== '0' && (
@@ -129,7 +130,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         </div>
       )}
 
-      {outcomeHasPercentages && (
+      {hasOutcomePercentages && (
         <div className="flex justify-between text-sm font-semibold">
           <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
           <p className="w-full text-right uppercase text-text-danger-main">
@@ -141,6 +142,6 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   );
 };
 
-const ShimmerBar = () => (
+const LoadingOutcomeBar = () => (
   <div className="h-3 animate-pulse rounded-8 bg-outline-low-em"></div>
 );
