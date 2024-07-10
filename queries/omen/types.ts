@@ -2339,6 +2339,7 @@ export type FpmmTransaction = {
   __typename?: 'FpmmTransaction';
   additionalSharesCost?: Maybe<Scalars['BigInt']['output']>;
   collateralTokenAmount: Scalars['BigInt']['output'];
+  outcomes?: Maybe<Array<Scalars['String']['output']>>;
   creationTimestamp: Scalars['BigInt']['output'];
   fpmm: FixedProductMarketMaker;
   fpmmType: FpmmType;
