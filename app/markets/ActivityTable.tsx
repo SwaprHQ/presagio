@@ -1,3 +1,8 @@
+import { useState } from 'react';
+
+import { cx } from 'class-variance-authority';
+import { useQuery } from '@tanstack/react-query';
+
 import {
   Table,
   TableBody,
@@ -7,10 +12,11 @@ import {
   TableRow,
 } from '@/app/components/ui/Table';
 import {
+  FixedProductMarketMaker,
   FpmmTrade_OrderBy,
   OrderDirection,
+  Scalars,
   getMarketTrades,
-  getMarketTransactions,
 } from '@/queries/omen';
 import {
   formatDateTime,
@@ -19,19 +25,14 @@ import {
   shortenAddress,
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
-import { useQuery } from '@tanstack/react-query';
-import { cx } from 'class-variance-authority';
-import { useState } from 'react';
 
-const getTagColorScheme = (outcome: string): TagColorSchemeProp => {
-  switch (outcome) {
-    case 'Yes':
-      return 'success';
-    case 'No':
-      return 'danger';
-    default:
-      return 'info';
-  }
+const getTagColorScheme = (
+  outcome: Scalars['String']['output'],
+  outcomes: NonNullable<FixedProductMarketMaker['outcomes']>
+): TagColorSchemeProp => {
+  if (outcome === outcomes[0]) return 'success';
+  else if (outcome === outcomes[1]) return 'danger';
+  else return 'info';
 };
 
 const ITEMS_PER_PAGE = 10;
@@ -39,17 +40,7 @@ const ITEMS_PER_PAGE = 10;
 export const ActivityTable = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
 
-  const { data: txs, isLoading: isTxsLoading } = useQuery({
-    queryKey: ['getMarketTransactions', id, page - 1],
-    queryFn: async () =>
-      getMarketTransactions({
-        first: ITEMS_PER_PAGE,
-        skip: (page - 1) * ITEMS_PER_PAGE,
-        id: id.toLowerCase(),
-      }),
-  });
-
-  const { data: trades, isLoading: isTradesLoading } = useQuery({
+  const { data: trades, isLoading } = useQuery({
     queryKey: ['getMarketTrades', id, page - 1],
     queryFn: async () =>
       getMarketTrades({
@@ -75,8 +66,7 @@ export const ActivityTable = ({ id }: { id: string }) => {
 
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
-  const tradeActivities = trades?.fpmmTrades;
-  const txsActivities = txs?.fpmmTransactions;
+  const activities = trades?.fpmmTrades;
 
   return (
     <div>
@@ -89,16 +79,13 @@ export const ActivityTable = ({ id }: { id: string }) => {
             <TableHead className="pr-4 text-right text-text-low-em">Date</TableHead>
           </TableRow>
         </TableHeader>
-        {isTxsLoading || isTradesLoading ? (
+        {isLoading ? (
           <LoadingSkeleton />
         ) : (
           <TableBody className="text-base font-semibold">
-            {txsActivities?.map(activity => {
+            {activities?.map(activity => {
               const outcomes = activity.fpmm.outcomes;
-              const tradeActivity = tradeActivities?.find(
-                trade => trade.id === activity.id
-              );
-              const outcomeIndex = tradeActivity?.outcomeIndex;
+              const outcomeIndex = activity.outcomeIndex;
 
               if (!outcomes || !outcomeIndex) return null;
 
@@ -106,25 +93,25 @@ export const ActivityTable = ({ id }: { id: string }) => {
                 <TableRow key={activity.transactionHash}>
                   <TableCell className="pl-4 text-text-high-em">
                     <a
-                      href={getGnosisAddressExplorerLink(activity.user.id)}
+                      href={getGnosisAddressExplorerLink(activity.creator.id)}
                       className="hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {shortenAddress(activity.user.id)}
+                      {shortenAddress(activity.creator.id)}
                     </a>
                   </TableCell>
                   <TableCell>
                     <Tag
                       size="xs"
-                      colorScheme={getTagColorScheme(outcomes[outcomeIndex])}
+                      colorScheme={getTagColorScheme(outcomes[outcomeIndex], outcomes)}
                       className="w-fit uppercase"
                     >
                       {outcomes[outcomeIndex]}
                     </Tag>
                   </TableCell>
                   <TableCell className="truncate text-text-high-em">
-                    {formatEtherWithFixedDecimals(activity.sharesOrPoolTokenAmount)}
+                    {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
                   </TableCell>
                   <TableCell className="text-nowrap pr-4 text-right text-text-low-em">
                     {formatDateTime(activity.creationTimestamp)}
