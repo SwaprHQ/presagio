@@ -283,6 +283,13 @@ const getMarketTradesQuery = gql`
       creationTimestamp
       id
       outcomeIndex
+      outcomeTokensTraded
+      fpmm {
+        outcomes
+      }
+      creator {
+        id
+      }
     }
   }
 `;
