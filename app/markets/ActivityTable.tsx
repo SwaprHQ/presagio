@@ -11,13 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import {
-  FixedProductMarketMaker,
-  FpmmTrade_OrderBy,
-  OrderDirection,
-  Scalars,
-  getMarketTrades,
-} from '@/queries/omen';
+import { FpmmTrade_OrderBy, OrderDirection, getMarketTrades } from '@/queries/omen';
 import {
   formatDateTime,
   formatEtherWithFixedDecimals,
@@ -26,13 +20,9 @@ import {
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 
-const getTagColorScheme = (
-  outcome: Scalars['String']['output'],
-  outcomes: NonNullable<FixedProductMarketMaker['outcomes']>
-): TagColorSchemeProp => {
-  if (outcome === outcomes[0]) return 'success';
-  else if (outcome === outcomes[1]) return 'danger';
-  else return 'info';
+const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
+  0: 'success',
+  1: 'danger',
 };
 
 const ITEMS_PER_PAGE = 10;
@@ -85,7 +75,7 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <TableBody className="text-base font-semibold">
             {activities?.map(activity => {
               const outcomes = activity.fpmm.outcomes;
-              const outcomeIndex = activity.outcomeIndex;
+              const outcomeIndex: 0 | 1 = activity.outcomeIndex;
 
               if (!outcomes || !outcomeIndex) return null;
 
@@ -104,7 +94,7 @@ export const ActivityTable = ({ id }: { id: string }) => {
                   <TableCell>
                     <Tag
                       size="xs"
-                      colorScheme={getTagColorScheme(outcomes[outcomeIndex], outcomes)}
+                      colorScheme={TAG_COLOR_SCHEMES[outcomeIndex]}
                       className="w-fit uppercase"
                     >
                       {outcomes[outcomeIndex]}
