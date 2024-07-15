@@ -20,6 +20,11 @@ import {
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
+import { DuneClient, LatestResultArgs, ParameterType } from '@duneanalytics/client-sdk';
+import Image from 'next/image';
+import { DUNE_API_KEY } from '@/constants';
+
+const duneClient = new DuneClient(DUNE_API_KEY);
 
 const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
   0: 'success',
@@ -55,6 +60,31 @@ export const ActivityTable = ({ id }: { id: string }) => {
       }),
   });
 
+  const { data: aiAgentsList } = useQuery({
+    queryKey: ['getAIAgents'],
+    queryFn: async () => {
+      const DUNE_AGENTS_INFO_QUERY_ID = 3582994;
+
+      const options: LatestResultArgs = {
+        queryId: DUNE_AGENTS_INFO_QUERY_ID,
+        parameters: [{ type: ParameterType.NUMBER, value: '1', name: 'limit' }],
+      };
+
+      const duneResult = await duneClient.getLatestResult(options);
+
+      return duneResult.result?.rows;
+    },
+    staleTime: Infinity,
+  });
+
+  const getIsAIAgent = (address: string) => {
+    if (!aiAgentsList?.length) return false;
+
+    return aiAgentsList.some(
+      aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
+    );
+  };
+
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
   const activities = trades?.fpmmTrades;
@@ -76,18 +106,19 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <TableBody className="text-base font-semibold">
             {activities?.map(activity => {
               const outcomes = activity.fpmm.outcomes;
+              const outcomeIndex = activity.outcomeIndex;
+
+              if (!outcomes || !outcomeIndex) return null;
 
               const outcome = new Outcome(
-                activity.outcomeIndex,
-                outcomes?.[activity.outcomeIndex] ?? 'Option 1',
+                outcomeIndex,
+                outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
                 id
               );
 
-              if (!outcomes || !outcome.index) return null;
-
               return (
                 <TableRow key={activity.transactionHash}>
-                  <TableCell className="pl-4 text-text-high-em">
+                  <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
                     <a
                       href={getGnosisAddressExplorerLink(activity.creator.id)}
                       className="hover:underline"
@@ -96,6 +127,9 @@ export const ActivityTable = ({ id }: { id: string }) => {
                     >
                       {shortenAddress(activity.creator.id)}
                     </a>
+                    {getIsAIAgent(activity.creator.id) && (
+                      <Image src="/ai.svg" alt="ai" width={18} height={18} />
+                    )}
                   </TableCell>
                   <TableCell>
                     <Tag

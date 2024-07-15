@@ -41,3 +41,5 @@ export const XDAI_BLOCKS_SUBGRAPH_URL =
 export const OMEN_THUMBNAIL_MAPPING_SUBGRAPH_URL =
   process.env.NEXT_PUBLIC_OMEN_THUMBNAIL_MAPPING_SUBGRAPH_URL ??
   `https://gateway-arbitrum.network.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/EWN14ciGK53PpUiKSm7kMWQ6G4iz3tDrRLyZ1iXMQEdu`;
+
+export const DUNE_API_KEY = process.env.NEXT_PUBLIC_DUNE_API_KEY || '';
