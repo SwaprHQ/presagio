@@ -19,6 +19,7 @@ import {
   shortenAddress,
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
+import { Outcome } from '@/entities';
 
 const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
   0: 'success',
@@ -75,9 +76,14 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <TableBody className="text-base font-semibold">
             {activities?.map(activity => {
               const outcomes = activity.fpmm.outcomes;
-              const outcomeIndex: 0 | 1 = activity.outcomeIndex;
 
-              if (!outcomes || !outcomeIndex) return null;
+              const outcome = new Outcome(
+                activity.outcomeIndex,
+                outcomes?.[activity.outcomeIndex] ?? 'Option 1',
+                id
+              );
+
+              if (!outcomes || !outcome.index) return null;
 
               return (
                 <TableRow key={activity.transactionHash}>
@@ -94,10 +100,10 @@ export const ActivityTable = ({ id }: { id: string }) => {
                   <TableCell>
                     <Tag
                       size="xs"
-                      colorScheme={TAG_COLOR_SCHEMES[outcomeIndex]}
+                      colorScheme={TAG_COLOR_SCHEMES[outcome.index as 0 | 1]}
                       className="w-fit uppercase"
                     >
-                      {outcomes[outcomeIndex]}
+                      {outcome.symbol}
                     </Tag>
                   </TableCell>
                   <TableCell className="truncate text-text-high-em">
