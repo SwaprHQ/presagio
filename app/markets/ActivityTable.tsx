@@ -1,3 +1,8 @@
+import { useState } from 'react';
+
+import { cx } from 'class-variance-authority';
+import { useQuery } from '@tanstack/react-query';
+
 import {
   Table,
   TableBody,
@@ -6,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import { TransactionType, getMarketTransactions } from '@/queries/omen';
+import { FpmmTrade_OrderBy, OrderDirection, getMarketTrades } from '@/queries/omen';
 import {
   formatDateTime,
   formatEtherWithFixedDecimals,
@@ -14,23 +19,11 @@ import {
   shortenAddress,
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
-import { useQuery } from '@tanstack/react-query';
-import { cx } from 'class-variance-authority';
-import { useState } from 'react';
+import { Outcome } from '@/entities';
 
-const getTagColorScheme = (transactionType: TransactionType): TagColorSchemeProp => {
-  switch (transactionType) {
-    case TransactionType.Buy:
-      return 'success';
-    case TransactionType.Sell:
-      return 'danger';
-    case TransactionType.Add:
-      return 'info';
-    case TransactionType.Remove:
-      return 'quaternary';
-    default:
-      return 'info';
-  }
+const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
+  0: 'success',
+  1: 'danger',
 };
 
 const ITEMS_PER_PAGE = 10;
@@ -38,39 +31,40 @@ const ITEMS_PER_PAGE = 10;
 export const ActivityTable = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['getMarketTransactions', id, page - 1],
+  const { data: trades, isLoading } = useQuery({
+    queryKey: ['getMarketTrades', id, page - 1],
     queryFn: async () =>
-      getMarketTransactions({
+      getMarketTrades({
         first: ITEMS_PER_PAGE,
         skip: (page - 1) * ITEMS_PER_PAGE,
-        id: id.toLowerCase(),
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
       }),
   });
 
-  const { data: transactionsNextPage } = useQuery({
-    queryKey: ['getMarketTransactions', id, page],
+  const { data: tradesNextPage } = useQuery({
+    queryKey: ['getMarketTrades', id, page],
     queryFn: async () =>
-      getMarketTransactions({
+      getMarketTrades({
         first: ITEMS_PER_PAGE,
         skip: page * ITEMS_PER_PAGE,
-        id: id.toLowerCase(),
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
       }),
   });
 
-  const hasMoreMarkets =
-    transactionsNextPage && transactionsNextPage.fpmmTransactions.length !== 0;
-
+  const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
-
-  const activities = data?.fpmmTransactions ?? [];
+  const activities = trades?.fpmmTrades;
 
   return (
     <div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="pl-4 text-text-low-em">Users</TableHead>
+            <TableHead className="pl-4 text-text-low-em">User</TableHead>
             <TableHead className="text-text-low-em">Action</TableHead>
             <TableHead className="text-text-low-em">Shares</TableHead>
             <TableHead className="pr-4 text-right text-text-low-em">Date</TableHead>
@@ -80,35 +74,47 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <LoadingSkeleton />
         ) : (
           <TableBody className="text-base font-semibold">
-            {activities.map(activity => (
-              <TableRow key={activity.transactionHash}>
-                <TableCell className="pl-4 text-text-high-em">
-                  <a
-                    href={getGnosisAddressExplorerLink(activity.user.id)}
-                    className="hover:underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {shortenAddress(activity.user.id)}
-                  </a>
-                </TableCell>
-                <TableCell>
-                  <Tag
-                    size="xs"
-                    colorScheme={getTagColorScheme(activity.transactionType)}
-                    className="w-fit uppercase"
-                  >
-                    {activity.transactionType}
-                  </Tag>
-                </TableCell>
-                <TableCell className="truncate text-text-high-em">
-                  {formatEtherWithFixedDecimals(activity.sharesOrPoolTokenAmount)}
-                </TableCell>
-                <TableCell className="text-nowrap pr-4 text-right text-text-low-em">
-                  {formatDateTime(activity.creationTimestamp)}
-                </TableCell>
-              </TableRow>
-            ))}
+            {activities?.map(activity => {
+              const outcomes = activity.fpmm.outcomes;
+
+              const outcome = new Outcome(
+                activity.outcomeIndex,
+                outcomes?.[activity.outcomeIndex] ?? 'Option 1',
+                id
+              );
+
+              if (!outcomes || !outcome.index) return null;
+
+              return (
+                <TableRow key={activity.transactionHash}>
+                  <TableCell className="pl-4 text-text-high-em">
+                    <a
+                      href={getGnosisAddressExplorerLink(activity.creator.id)}
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {shortenAddress(activity.creator.id)}
+                    </a>
+                  </TableCell>
+                  <TableCell>
+                    <Tag
+                      size="xs"
+                      colorScheme={TAG_COLOR_SCHEMES[outcome.index as 0 | 1]}
+                      className="w-fit uppercase"
+                    >
+                      {outcome.symbol}
+                    </Tag>
+                  </TableCell>
+                  <TableCell className="truncate text-text-high-em">
+                    {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
+                  </TableCell>
+                  <TableCell className="text-nowrap pr-4 text-right text-text-low-em">
+                    {formatDateTime(activity.creationTimestamp)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         )}
       </Table>

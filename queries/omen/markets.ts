@@ -268,16 +268,28 @@ const getMarketTradesQuery = gql`
   query GetMarketUserTrades(
     $first: Int!
     $fpmm: ID!
+    $skip: Int
     $orderBy: String
     $orderDirection: String
   ) {
     fpmmTrades(
       first: $first
       orderBy: $orderBy
+      skip: $skip
       orderDirection: $orderDirection
       where: { fpmm: $fpmm }
     ) {
       creationTimestamp
+      id
+      outcomeIndex
+      outcomeTokensTraded
+      transactionHash
+      fpmm {
+        outcomes
+      }
+      creator {
+        id
+      }
     }
   }
 `;
