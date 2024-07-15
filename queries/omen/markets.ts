@@ -283,6 +283,7 @@ const getMarketTradesQuery = gql`
       id
       outcomeIndex
       outcomeTokensTraded
+      transactionHash
       fpmm {
         outcomes
       }
