@@ -24,7 +24,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
           <MarketThumbnail
             width={40}
             height={40}
-            className="size-[40px] rounded-8"
+            className="size-[40px] rounded-8 bg-outline-low-em"
             marketId={market.id}
           />
           <ScrollArea className="h-[98px] flex-1 font-semibold text-text-high-em">
