@@ -39,7 +39,7 @@ type OutcomeTokenMarginalPricesResponse = {
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
 
-  const { data: trade, isLoading: isLastTradeLoading } = useQuery({
+  const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
     queryFn: async () =>
       getMarketTrades({
@@ -50,7 +50,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       }),
   });
 
-  const { data: lastTradeMarginalPrices, isLoading: isMarginalPricesLoading } = useQuery({
+  const { data: lastTradeMarginalPrices } = useQuery({
     queryKey: ['getLastTradeMarginalPrices', id],
     queryFn: async (): Promise<string[] | undefined> => {
       if (!trade) return;
@@ -95,41 +95,27 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   );
 
   const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
-  const isLoading = isLastTradeLoading || isMarginalPricesLoading;
 
   return (
     <div className="space-y-1">
-      {isLoading ? (
-        <LoadingOutcomeBar />
-      ) : (
-        <div className="flex space-x-1">
-          {outcome0.percentage !== '0' && (
-            <div
-              className={cx(
-                'flex h-3 items-center rounded-s-8 px-2',
-                outcome0.percentage ? 'bg-surface-success-accent-2' : 'bg-outline-low-em',
-                outcome1.percentage === '0' && 'rounded-e-8'
-              )}
-              style={{
-                width: outcome0.percentage ? `${outcome0.percentage}%` : '50%',
-              }}
-            />
-          )}
-          {outcome1.percentage !== '0' && (
-            <div
-              className={cx(
-                'flex h-3 items-center rounded-e-8 px-2',
-                outcome1.percentage ? 'bg-surface-danger-accent-2' : 'bg-outline-low-em',
-                outcome0.percentage === '0' && 'rounded-s-8'
-              )}
-              style={{
-                width: outcome1.percentage ? `${outcome1.percentage}%` : '50%',
-              }}
-            />
-          )}
-        </div>
-      )}
-
+      <div className="flex space-x-1 transition-all">
+        {outcome0.percentage !== '0' && (
+          <div
+            className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"
+            style={{
+              width: outcome0.percentage ? `${outcome0.percentage}%` : '50%',
+            }}
+          />
+        )}
+        {outcome1.percentage !== '0' && (
+          <div
+            className="flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2"
+            style={{
+              width: outcome1.percentage ? `${outcome1.percentage}%` : '50%',
+            }}
+          />
+        )}
+      </div>
       {hasOutcomePercentages && (
         <div className="flex justify-between text-sm font-semibold">
           <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
@@ -141,7 +127,3 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     </div>
   );
 };
-
-const LoadingOutcomeBar = () => (
-  <div className="h-3 animate-pulse rounded-8 bg-outline-low-em"></div>
-);
