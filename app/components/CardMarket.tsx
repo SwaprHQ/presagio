@@ -1,13 +1,10 @@
 'use client';
 
-import { Logo } from '@swapr/ui';
-
 import { OutcomeBar } from '@/app/components';
-import { Card, ScrollArea } from '@/app/components/ui';
+import { Card, ScrollArea, TokenLogo } from '@/app/components/ui';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { formattedNumberDollars } from '@/utils/currencies';
 import { remainingTime } from '@/utils/dates';
-import { XDAI_LOGO } from '@/public/assets';
 import { MarketThumbnail } from './MarketThumbnail';
 
 interface CardMarketProps {
@@ -36,7 +33,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
       <div className="flex h-[40px] items-center border-t border-outline-base-em px-4">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex items-center space-x-2">
-            <Logo src={XDAI_LOGO.src} alt="token logo" size="xs" />
+            <TokenLogo address={market.collateralToken} size="xs" />
             <p className="text-sm font-semibold text-text-med-em">
               {formattedNumberDollars(+market.usdVolume) || '-'} <span>Vol</span>
             </p>
