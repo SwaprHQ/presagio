@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useAccount, useConfig } from 'wagmi';
 
 import { Button, Tag } from '@swapr/ui';
-import { Card, TokenLogo } from '@/app/components/ui';
+import { Card, TokenLogo } from '@/app/components';
 
 import { UserPosition } from '@/queries/conditional-tokens/types';
 import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';

@@ -1,7 +1,6 @@
 'use client';
 
-import { OutcomeBar } from '@/app/components';
-import { Card, ScrollArea, TokenLogo } from '@/app/components/ui';
+import { OutcomeBar, Card, ScrollArea, TokenLogo } from '@/app/components';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { formattedNumberDollars } from '@/utils/currencies';
 import { remainingTime } from '@/utils/dates';

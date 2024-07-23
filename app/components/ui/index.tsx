@@ -4,4 +4,3 @@ export * from './Navbar';
 export * from './RowCard';
 export * from './ScrollArea';
 export * from './images';
-export * from './TokenLogo';

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useAccount, useClient } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { formatEther } from 'viem';
 import { cx } from 'class-variance-authority';
 import { waitForTransactionReceipt } from 'wagmi/actions';
@@ -14,7 +14,7 @@ import { redeemPositions, useReadBalance } from '@/hooks/contracts';
 import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
 import { useReadToken } from '@/hooks/contracts/erc20';
-import { TokenLogo } from './ui';
+import { TokenLogo } from '.';
 
 interface UserBets {
   market: FixedProductMarketMaker;

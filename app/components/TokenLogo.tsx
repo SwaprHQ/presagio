@@ -1,10 +1,13 @@
 'use client';
 
-import { Logo, LogoSizeProp } from '@swapr/ui';
+import { Logo, LogoSizeProp, logoStyles } from '@swapr/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { WXDAI } from '@/constants';
-import { XDAI_LOGO, DEFAULT_TOKEN_LOGO } from '@/public/assets';
+import { XDAI_LOGO } from '@/public/assets';
+import { cx } from 'class-variance-authority';
+import { useReadToken } from '@/hooks/contracts/erc20';
+import { Address } from 'viem';
 
 const localTokenAssets = [{ address: WXDAI.address, asset: XDAI_LOGO.src }];
 
@@ -12,8 +15,9 @@ const fetchImage = async (url: string) => {
   const result = await fetch(url);
 
   if (result.status === 200) return url;
-  else throw null;
+  else throw 'Image not found';
 };
+
 interface TokenLogoProps {
   address: string;
   size?: LogoSizeProp;
@@ -21,8 +25,12 @@ interface TokenLogoProps {
 }
 
 export const TokenLogo = ({ address, size, className }: TokenLogoProps) => {
-  const [source, setSource] = useState<string>();
+  const [source, setSource] = useState<string | null>();
   const queryClient = useQueryClient();
+
+  const { symbol } = useReadToken({
+    tokenAddress: address as Address,
+  });
 
   useEffect(() => {
     const localTokenAsset = localTokenAssets.find(
@@ -54,11 +62,23 @@ export const TokenLogo = ({ address, size, className }: TokenLogoProps) => {
             staleTime: Infinity,
           })
           .then(source => setSource(source))
-          .catch(() => setSource(DEFAULT_TOKEN_LOGO.src))
+          .catch(() => setSource(null))
       );
   }, [address, queryClient]);
 
-  if (!source) return;
+  if (source === undefined)
+    return (
+      <div className={cx(logoStyles({ size }), 'animate-pulse bg-outline-low-em')} />
+    );
 
-  return <Logo src={source} alt="token logo" size={size} className={className} />;
+  if (source === null)
+    return (
+      <div className={cx(logoStyles({ size }), 'text-[6px] font-bold text-text-black')}>
+        {symbol}
+      </div>
+    );
+
+  return (
+    <Logo src={source} alt={symbol + ' token logo'} size={size} className={className} />
+  );
 };

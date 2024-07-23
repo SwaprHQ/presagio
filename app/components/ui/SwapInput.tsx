@@ -4,7 +4,7 @@ import { InputHTMLAttributes } from 'react';
 import { Button, Icon, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
 import { cx } from 'class-variance-authority';
-import { TokenLogo } from './TokenLogo';
+import { TokenLogo } from '../TokenLogo';
 
 interface SwapInputProps extends InputHTMLAttributes<HTMLInputElement> {
   title: string;
@@ -41,7 +41,6 @@ export const SwapInput = ({
           <Button className="flex-shrink-0" variant="pastel">
             <TokenLogo address={selectedToken.address} size="xs" />
             <p className="font-semibold">{selectedToken.symbol}</p>
-            <Icon name="chevron-down" />
           </Button>
         ) : (
           <Popover>
