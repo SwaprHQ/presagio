@@ -3,17 +3,18 @@ import { useAccount } from 'wagmi';
 import { formatEther } from 'viem';
 import { cx } from 'class-variance-authority';
 import { waitForTransactionReceipt } from 'wagmi/actions';
-import { Market, valueByTrade } from '@/entities';
+import { Market, Token, valueByTrade } from '@/entities';
 import { useState } from 'react';
-import { Button, Icon, Logo, Tag } from '@swapr/ui';
-import { WXDAI } from '@/constants';
+import { Button, Icon, Tag } from '@swapr/ui';
+import { ChainId } from '@/constants';
 import { TransactionModal } from '.';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { config } from '@/providers/config';
 import { redeemPositions, useReadBalance } from '@/hooks/contracts';
 import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
-import { XDAI_LOGO } from '@/public/assets';
+import { useReadToken } from '@/hooks/contracts/erc20';
+import { TokenLogo } from '.';
 
 interface UserBets {
   market: FixedProductMarketMaker;
@@ -108,15 +109,30 @@ export const UserBets = ({ market }: UserBets) => {
 
   const outcomesBalance = [outcome0Balance as bigint, outcome1Balance as bigint];
 
+  const { name, symbol, decimals } = useReadToken({
+    tokenAddress: market.collateralToken,
+  });
+
   if (
     !address ||
     isUserTradesLoading ||
     isOutcome0BalanceLoading ||
     isOutcome1BalanceLoading ||
     isConditionLoading ||
-    !conditionData?.condition
+    !conditionData?.condition ||
+    !name ||
+    !symbol ||
+    !decimals
   )
     return null;
+
+  const collateralToken = new Token(
+    ChainId.GNOSIS,
+    market.collateralToken,
+    decimals,
+    symbol,
+    name
+  );
 
   const marketModel = new Market(market);
 
@@ -195,7 +211,7 @@ export const UserBets = ({ market }: UserBets) => {
                     <p className="font-semibold">
                       <span className="text-text-low-em">Bet amount: </span>
                       <span>
-                        {collateralSpent} {WXDAI.symbol}
+                        {collateralSpent} {collateralToken.symbol}
                       </span>
                     </p>
                     <div className="font-semibold">
@@ -207,7 +223,7 @@ export const UserBets = ({ market }: UserBets) => {
                         )}
                       >
                         <span>
-                          {tradedBalance} {WXDAI.symbol}
+                          {tradedBalance} {collateralToken.symbol}
                         </span>
                         {isResolved && (
                           <Icon name={isWinner ? 'arrow-up' : 'arrow-down'} />
@@ -221,8 +237,8 @@ export const UserBets = ({ market }: UserBets) => {
                     <div className="space-y-4 px-4 pt-4">
                       <p className="px-6 font-semibold text-text-low-em">
                         Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
-                        {WXDAI.symbol} from your {collateralSpent} shares of the winning
-                        outcome.
+                        {collateralToken.symbol} from your {collateralSpent} shares of the
+                        winning outcome.
                       </p>
                       <Button
                         colorScheme={index === 0 ? 'success' : 'error'}
@@ -232,9 +248,9 @@ export const UserBets = ({ market }: UserBets) => {
                         className="space-x-2"
                         onClick={redeem}
                       >
-                        <Logo src={XDAI_LOGO.src} alt="token logo" size="xs" />{' '}
+                        <TokenLogo address={collateralToken.address} size="xs" />
                         <p>
-                          Redeem {tradedBalance} {WXDAI.symbol}
+                          Redeem {tradedBalance} {collateralToken.symbol}
                         </p>
                       </Button>
                     </div>

@@ -5,8 +5,8 @@ import { cx } from 'class-variance-authority';
 import Link from 'next/link';
 import { useAccount, useConfig } from 'wagmi';
 
-import { Button, Logo, Tag } from '@swapr/ui';
-import { Card } from '@/app/components/ui';
+import { Button, Tag } from '@swapr/ui';
+import { Card, TokenLogo } from '@/app/components';
 
 import { UserPosition } from '@/queries/conditional-tokens/types';
 import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
@@ -18,12 +18,10 @@ import {
   tradesOutcomeBalance,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
-import { WXDAI } from '@/constants';
 import { waitForTransactionReceipt } from 'wagmi/actions';
 import { useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
-import { XDAI_LOGO } from '@/public/assets';
 import { MarketThumbnail } from './MarketThumbnail';
 
 interface BetProps {
@@ -77,7 +75,6 @@ export const CardBet = ({ userPosition }: BetProps) => {
 
   if (isLoading || isUserTradesLoading) return <LoadingCardBet />;
 
-  // emptyState
   if (!market) return;
 
   const isWinner = market.isWinner(outcomeIndex);
@@ -160,21 +157,23 @@ export const CardBet = ({ userPosition }: BetProps) => {
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">Bet amount:</p>
               <p className="text-sm font-semibold text-text-high-em">
-                {collateralAmountUSDSpent?.toFixed(2)} {WXDAI.symbol}
+                ${collateralAmountUSDSpent?.toFixed(2)}
               </p>
-              <Logo src={XDAI_LOGO.src} alt="token logo" className="size-3" />
             </div>
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">
                 {outcomeAmountString}:
               </p>
-              <p className="text-sm font-semibold text-text-high-em">
-                {!market.isClosed || isWinner
-                  ? balance
-                  : collateralAmountUSDSpent?.toFixed(2)}{' '}
-                {WXDAI.symbol}
-              </p>
-              <Logo src={XDAI_LOGO.src} alt="token logo" className="size-3" />
+              <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+                {!market.isClosed || isWinner ? (
+                  <>
+                    <p>{balance}</p>
+                    <TokenLogo address={market.data.collateralToken} className="size-3" />
+                  </>
+                ) : (
+                  '$' + collateralAmountUSDSpent?.toFixed(2)
+                )}
+              </div>
             </div>
           </div>
           {canClaim && (

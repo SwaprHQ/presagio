@@ -1,10 +1,10 @@
 'use client';
 
 import { InputHTMLAttributes } from 'react';
-import { Button, Icon, Logo, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
+import { Button, Icon, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
 import { cx } from 'class-variance-authority';
-import { XDAI_LOGO } from '@/public/assets';
+import { TokenLogo } from '../TokenLogo';
 
 interface SwapInputProps extends InputHTMLAttributes<HTMLInputElement> {
   title: string;
@@ -39,9 +39,8 @@ export const SwapInput = ({
         />
         {selectedToken instanceof Token ? (
           <Button className="flex-shrink-0" variant="pastel">
-            <Logo src={XDAI_LOGO.src} alt="token logo" size="xs" />
+            <TokenLogo address={selectedToken.address} size="xs" />
             <p className="font-semibold">{selectedToken.symbol}</p>
-            <Icon name="chevron-down" />
           </Button>
         ) : (
           <Popover>

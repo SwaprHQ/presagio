@@ -3,7 +3,7 @@
 import { Button, IconButton } from '@swapr/ui';
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
-import { erc20Abi, formatEther, parseEther, Address } from 'viem';
+import { formatEther, parseEther, Address } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
 import { ConnectButton } from '.';
 import { Outcome, Token } from '@/entities';
@@ -21,7 +21,12 @@ import {
 } from '@/utils/price';
 import { ConfirmTrade } from './ConfirmTrade';
 import { ModalId, useModal } from '@/context/ModalContext';
-import { WXDAI } from '@/constants';
+import { ChainId } from '@/constants';
+import {
+  useReadAllowance,
+  useReadBalanceOf,
+  useReadToken,
+} from '@/hooks/contracts/erc20';
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = '1';
@@ -73,12 +78,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     outcome.index
   );
 
-  const { data: allowance, refetch: refetchCollateralAllowence } = useReadContract({
-    abi: erc20Abi,
-    address: WXDAI.address,
-    functionName: 'allowance',
-    args: [address as Address, id],
-    query: { enabled: !!address },
+  const { data: allowance, refetch: refetchCollateralAllowence } = useReadAllowance({
+    address,
+    tokenAddress: market.collateralToken,
+    spenderAddress: id,
   });
 
   const { data: isNFTAllowed, refetch: refetchNFTAllowence } = useReadContract({
@@ -89,12 +92,9 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     query: { enabled: !!address },
   });
 
-  const { data: balance, refetch: refetchCollateralBalance } = useReadContract({
-    abi: erc20Abi,
-    address: WXDAI.address,
-    functionName: 'balanceOf',
-    args: [address as Address],
-    query: { enabled: !!address },
+  const { data: balance, refetch: refetchCollateralBalance } = useReadBalanceOf({
+    address,
+    tokenAddress: market.collateralToken,
   });
 
   const { data: outcome0Balance, refetch: refetchOutcome0Balance } = useReadBalance(
@@ -110,6 +110,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     market.condition?.id,
     2
   );
+
+  const { name, symbol, decimals } = useReadToken({
+    tokenAddress: market.collateralToken,
+  });
 
   useEffect(() => {
     if (swapDirection === SwapDirection.BUY) {
@@ -156,23 +160,33 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const outcomeBalances = [outcome0Balance, outcome1Balance];
 
+  if (!name || !symbol || !decimals) return;
+
+  const collateralToken = new Token(
+    ChainId.GNOSIS,
+    market.collateralToken,
+    decimals,
+    symbol,
+    name
+  );
+
   const swapState: Record<SwapDirection, SwapState> = {
     [SwapDirection.BUY]: {
-      inToken: WXDAI,
+      inToken: collateralToken,
       outToken: outcome,
       changeInToken: () => {},
       changeOutToken: changeOutcome,
       tokenPrice: formatTokenPrice(oneShareBuyPrice as bigint),
       isLoading: isLoadingBuyAmount,
       balance: balance as bigint,
-      isAllowed: !!allowance && !!amountWei && allowance >= amountWei,
+      isAllowed: !!allowance && !!amountWei && BigInt(allowance) >= amountWei,
       buttonText: 'Bet',
       onSwitchButtonClick: () => setSwapDirection(SwapDirection.SELL),
       refetchAllowence: refetchCollateralAllowence,
     },
     [SwapDirection.SELL]: {
       inToken: outcome,
-      outToken: WXDAI,
+      outToken: collateralToken,
       changeInToken: changeOutcome,
       changeOutToken: () => {},
       tokenPrice: formatTokenPrice(oneShareSellPrice as bigint),
