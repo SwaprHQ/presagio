@@ -1,7 +1,7 @@
 'use client';
 
 import { OutcomeBar, Swapbox } from '@/app/components';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
 import { Button, IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
 import { remainingTime } from '@/utils/dates';
@@ -9,9 +9,12 @@ import { Address } from 'viem';
 import { Market } from '@/entities';
 import { UserBets } from '../components/UserBets';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { HistorySection } from '@/app/markets/HistorySection';
 import { MarketThumbnail } from '../components/MarketThumbnail';
+import Image from 'next/image';
+import { format, parseISO } from 'date-fns';
+import { News } from './News';
 
 interface MarketDetailsProps {
   id: Address;
@@ -20,6 +23,7 @@ interface MarketDetailsProps {
 enum Tabs {
   BET = 'bet',
   HISTORY = 'history',
+  NEWS = 'news',
 }
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
@@ -96,6 +100,11 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             </div>
           )}
           {tab === 'history' && <HistorySection id={id} />}
+          {tab === 'news' && (
+            <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+              <News id={id} />
+            </div>
+          )}
         </div>
         <UserBets market={market} />
       </div>
