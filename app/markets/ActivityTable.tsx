@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
@@ -102,13 +102,14 @@ export const ActivityTable = ({ id }: { id: string }) => {
     staleTime: Infinity,
   });
 
-  const getIsAIAgent = (address: string) => {
-    if (!aiAgentsList?.length) return false;
-
-    return aiAgentsList.some(
-      aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
-    );
-  };
+  const getIsAIAgent = useMemo(() => {
+    return (address: string) => {
+      if (!aiAgentsList?.length) return false;
+      return aiAgentsList.some(
+        aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
+      );
+    };
+  }, [aiAgentsList]);
 
   const { data: marketTradesTransactions, isLoading } = useQuery({
     queryKey: ['getMarketTradesAndTransactions', id, page - 1],
@@ -140,20 +141,18 @@ export const ActivityTable = ({ id }: { id: string }) => {
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
-  const marketTradesTransactionsMerged: MergedTradeTransaction[] =
-    isMarketTradesTransactions
-      ? mergeMarketTradesAndTransactionsArrays(
-          marketTradesTransactions.fpmmTrades,
-          marketTradesTransactions.fpmmTransactions
-        )
-      : [];
-
-  const sortedActivities = (activities: MergedTradeTransaction[]) =>
-    activities.sort((a, b) => {
-      return parseInt(b.creationTimestamp) - parseInt(a.creationTimestamp);
-    });
-
-  const activities = sortedActivities(marketTradesTransactionsMerged);
+  const activities = useMemo(() => {
+    if (
+      !marketTradesTransactions?.fpmmTrades ||
+      !marketTradesTransactions?.fpmmTransactions
+    ) {
+      return [];
+    }
+    return mergeMarketTradesAndTransactionsArrays(
+      marketTradesTransactions.fpmmTrades,
+      marketTradesTransactions.fpmmTransactions
+    );
+  }, [marketTradesTransactions]);
 
   return (
     <div>
