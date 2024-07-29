@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { HistorySection } from '@/app/markets/HistorySection';
 import { MarketThumbnail } from '../components/MarketThumbnail';
+import { News } from './News';
 
 interface MarketDetailsProps {
   id: Address;
@@ -20,6 +21,7 @@ interface MarketDetailsProps {
 enum Tabs {
   BET = 'bet',
   HISTORY = 'history',
+  NEWS = 'news',
 }
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
@@ -96,6 +98,11 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             </div>
           )}
           {tab === 'history' && <HistorySection id={id} />}
+          {tab === 'news' && (
+            <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+              <News id={id} />
+            </div>
+          )}
         </div>
         <UserBets market={market} />
       </div>
