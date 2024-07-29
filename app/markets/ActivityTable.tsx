@@ -32,6 +32,7 @@ import { Outcome } from '@/entities';
 import { DuneClient, LatestResultArgs, ParameterType } from '@duneanalytics/client-sdk';
 import Image from 'next/image';
 import { DUNE_API_KEY } from '@/constants';
+import { TokenLogo } from '@/app/components';
 
 const duneClient = new DuneClient(DUNE_API_KEY);
 
@@ -240,9 +241,17 @@ export const ActivityTable = ({ id }: { id: string }) => {
                   </TableCell>
 
                   <TableCell className="truncate text-text-high-em">
-                    {activity.collateralTokenAmount
-                      ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
-                      : '-'}
+                    <div className="flex items-center space-x-1">
+                      <p>
+                        {activity.collateralTokenAmount
+                          ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
+                          : '-'}
+                      </p>
+                      <TokenLogo
+                        address={activity.collateralToken}
+                        className="h-[14px] w-[14px]"
+                      />
+                    </div>
                   </TableCell>
                   <TableCell
                     className="text-nowrap pr-4 text-right text-xs text-text-low-em"
