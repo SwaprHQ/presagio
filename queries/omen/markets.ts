@@ -235,13 +235,19 @@ const getMarketUserTradesQuery = gql`
 `;
 
 const getMarketTransactionsQuery = gql`
-  query getMarketTransactions($id: ID!, $first: Int!, $skip: Int!) {
+  query getMarketTransactions(
+    $fpmm: ID!
+    $first: Int!
+    $skip: Int!
+    $orderBy: String
+    $orderDirection: String
+  ) {
     fpmmTransactions(
-      where: { fpmm: $id }
+      where: { fpmm: $fpmm }
       first: $first
       skip: $skip
-      orderBy: creationTimestamp
-      orderDirection: desc
+      orderBy: $orderBy
+      orderDirection: $orderDirection
     ) {
       id
       user {
@@ -273,9 +279,40 @@ const getMarketTradesQuery = gql`
     $orderDirection: String
   ) {
     fpmmTrades(
+      where: { fpmm: $fpmm }
       first: $first
-      orderBy: $orderBy
       skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+    ) {
+      creationTimestamp
+      id
+      outcomeIndex
+      outcomeTokensTraded
+      transactionHash
+      fpmm {
+        outcomes
+      }
+      creator {
+        id
+      }
+    }
+  }
+`;
+
+const getMarketTradesAndTransactionsQuery = gql`
+  query GetMarketUserTradesAndTransactions(
+    $tradesFirst: Int!
+    $transactionsFirst: Int!
+    $fpmm: ID!
+    $skip: Int
+    $orderBy: String
+    $orderDirection: String
+  ) {
+    fpmmTrades(
+      first: $tradesFirst
+      skip: $skip
+      orderBy: $orderBy
       orderDirection: $orderDirection
       where: { fpmm: $fpmm }
     ) {
@@ -290,6 +327,31 @@ const getMarketTradesQuery = gql`
       creator {
         id
       }
+    }
+    fpmmTransactions(
+      first: $transactionsFirst
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { fpmm: $fpmm }
+    ) {
+      id
+      user {
+        id
+        __typename
+      }
+      fpmm {
+        collateralToken
+        __typename
+      }
+      fpmmType
+      transactionType
+      collateralTokenAmount
+      sharesOrPoolTokenAmount
+      creationTimestamp
+      transactionHash
+      additionalSharesCost
+      __typename
     }
   }
 `;
@@ -332,6 +394,25 @@ const getMarketUserTrades = async (params: QueryFpmmTradesArgs & FpmmTrade_Filte
 const getMarketTrades = async (params: QueryFpmmTradesArgs & FpmmTrade_Filter) =>
   request<Pick<Query, 'fpmmTrades'>>(OMEN_SUBGRAPH_URL, getMarketTradesQuery, params);
 
+const getMarketTradesAndTransactions = async (
+  params: (QueryFpmmTradesArgs | QueryFpmmTransactionsArgs) &
+    (FpmmTrade_Filter | FpmmTransaction_Filter)
+) => {
+  const modifiedParams = {
+    ...params,
+    tradesFirst: params.first || 0,
+    // Txs can have more results than trades (liquidity events)
+    // We need to fetch + 2 txs to be able to merge tx and trades
+    transactionsFirst: params.first ? params.first + 2 : 0,
+  };
+
+  return request<Pick<Query, 'fpmmTrades' | 'fpmmTransactions'>>(
+    OMEN_SUBGRAPH_URL,
+    getMarketTradesAndTransactionsQuery,
+    modifiedParams
+  );
+};
+
 export {
   getMarket,
   getMarkets,
@@ -340,4 +421,5 @@ export {
   getMarketUserTrades,
   getMarketTransactions,
   getMarketTrades,
+  getMarketTradesAndTransactions,
 };

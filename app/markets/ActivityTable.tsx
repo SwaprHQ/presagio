@@ -11,9 +11,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import { FpmmTrade_OrderBy, OrderDirection, getMarketTrades } from '@/queries/omen';
+import {
+  FpmmTrade,
+  FpmmTrade_OrderBy,
+  FpmmTransaction,
+  FpmmType,
+  OrderDirection,
+  getMarketTrades,
+  getMarketTradesAndTransactions,
+} from '@/queries/omen';
 import {
   formatDateTime,
+  formatDateTimeWithYear,
   formatEtherWithFixedDecimals,
   getGnosisAddressExplorerLink,
   shortenAddress,
@@ -33,32 +42,48 @@ const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
 
 const ITEMS_PER_PAGE = 10;
 
+type MergedTradeTransaction = Omit<FpmmTrade, '__typename'> &
+  Partial<Omit<FpmmTransaction, '__typename'>> & {
+    __typename?: 'FpmmTrade' | 'FpmmTransaction';
+  };
+
+function mergeMarketTradesAndTransactionsArrays(
+  trades: FpmmTrade[],
+  transactions: FpmmTransaction[]
+): MergedTradeTransaction[] {
+  const tradesAndTransactions = new Map<string, MergedTradeTransaction>();
+
+  trades.forEach(trade => {
+    tradesAndTransactions.set(trade.id, { ...trade, __typename: 'FpmmTrade' });
+  });
+
+  transactions.forEach(transaction => {
+    if (tradesAndTransactions.has(transaction.id)) {
+      const trade = tradesAndTransactions.get(transaction.id)!;
+      tradesAndTransactions.set(transaction.id, {
+        ...trade,
+        ...transaction,
+        fpmm: trade.fpmm,
+        collateralToken: transaction.fpmm?.collateralToken,
+        __typename: 'FpmmTrade',
+      });
+    } else if (transaction.fpmmType === FpmmType.Liquidity) {
+      tradesAndTransactions.set(transaction.id, {
+        ...transaction,
+        collateralToken: transaction.fpmm?.collateralToken,
+        __typename: 'FpmmTransaction',
+      } as MergedTradeTransaction);
+    }
+  });
+
+  // sort tx's and trades
+  return Array.from(tradesAndTransactions.values()).sort((a, b) => {
+    return parseInt(b.creationTimestamp) - parseInt(a.creationTimestamp);
+  });
+}
+
 export const ActivityTable = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
-
-  const { data: trades, isLoading } = useQuery({
-    queryKey: ['getMarketTrades', id, page - 1],
-    queryFn: async () =>
-      getMarketTrades({
-        first: ITEMS_PER_PAGE,
-        skip: (page - 1) * ITEMS_PER_PAGE,
-        fpmm: id,
-        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
-        orderDirection: OrderDirection.Desc,
-      }),
-  });
-
-  const { data: tradesNextPage } = useQuery({
-    queryKey: ['getMarketTrades', id, page],
-    queryFn: async () =>
-      getMarketTrades({
-        first: ITEMS_PER_PAGE,
-        skip: page * ITEMS_PER_PAGE,
-        fpmm: id,
-        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
-        orderDirection: OrderDirection.Desc,
-      }),
-  });
 
   const { data: aiAgentsList } = useQuery({
     queryKey: ['getAIAgents'],
@@ -85,9 +110,50 @@ export const ActivityTable = ({ id }: { id: string }) => {
     );
   };
 
+  const { data: marketTradesTransactions, isLoading } = useQuery({
+    queryKey: ['getMarketTradesAndTransactions', id, page - 1],
+    queryFn: async () =>
+      getMarketTradesAndTransactions({
+        first: ITEMS_PER_PAGE,
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
+      }),
+  });
+
+  const isMarketTradesTransactions =
+    marketTradesTransactions?.fpmmTrades && marketTradesTransactions?.fpmmTransactions;
+
+  const { data: tradesNextPage } = useQuery({
+    queryKey: ['getMarketTrades', id, page],
+    queryFn: async () =>
+      getMarketTrades({
+        first: ITEMS_PER_PAGE,
+        skip: page * ITEMS_PER_PAGE,
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
+      }),
+  });
+
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
-  const activities = trades?.fpmmTrades;
+
+  const marketTradesTransactionsMerged: MergedTradeTransaction[] =
+    isMarketTradesTransactions
+      ? mergeMarketTradesAndTransactionsArrays(
+          marketTradesTransactions.fpmmTrades,
+          marketTradesTransactions.fpmmTransactions
+        )
+      : [];
+
+  const sortedActivities = (activities: MergedTradeTransaction[]) =>
+    activities.sort((a, b) => {
+      return parseInt(b.creationTimestamp) - parseInt(a.creationTimestamp);
+    });
+
+  const activities = sortedActivities(marketTradesTransactionsMerged);
 
   return (
     <div>
@@ -95,8 +161,8 @@ export const ActivityTable = ({ id }: { id: string }) => {
         <TableHeader>
           <TableRow>
             <TableHead className="pl-4 text-text-low-em">User</TableHead>
-            <TableHead className="text-text-low-em">Action</TableHead>
             <TableHead className="text-text-low-em">Shares</TableHead>
+            <TableHead className="text-text-low-em">Collateral</TableHead>
             <TableHead className="pr-4 text-right text-text-low-em">Date</TableHead>
           </TableRow>
         </TableHeader>
@@ -108,42 +174,81 @@ export const ActivityTable = ({ id }: { id: string }) => {
               const outcomes = activity.fpmm.outcomes;
               const outcomeIndex = activity.outcomeIndex;
 
-              if (!outcomes || !outcomeIndex) return null;
+              const hasOutcomes = outcomes && outcomeIndex;
 
-              const outcome = new Outcome(
-                outcomeIndex,
-                outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
-                id
-              );
+              const isLiquidityEvent = activity.fpmmType === FpmmType.Liquidity;
+
+              const outcome = hasOutcomes
+                ? new Outcome(
+                    outcomeIndex,
+                    outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
+                    id
+                  )
+                : null;
+
+              const sharesTokensTraded = activity.outcomeTokensTraded
+                ? activity.outcomeTokensTraded
+                : activity.sharesOrPoolTokenAmount;
+
+              const creatorAddress =
+                activity.creator?.id ?? activity.user?.id ?? 'unknown';
 
               return (
                 <TableRow key={activity.transactionHash}>
                   <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
                     <a
-                      href={getGnosisAddressExplorerLink(activity.creator.id)}
+                      href={getGnosisAddressExplorerLink(creatorAddress)}
                       className="hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {shortenAddress(activity.creator.id)}
+                      {shortenAddress(creatorAddress)}
                     </a>
-                    {getIsAIAgent(activity.creator.id) && (
+                    {getIsAIAgent(creatorAddress) && (
                       <Image src="/ai.svg" alt="ai" width={18} height={18} />
                     )}
                   </TableCell>
-                  <TableCell>
-                    <Tag
-                      size="xs"
-                      colorScheme={TAG_COLOR_SCHEMES[outcome.index as 0 | 1]}
-                      className="w-fit uppercase"
-                    >
-                      {outcome.symbol}
-                    </Tag>
-                  </TableCell>
+
                   <TableCell className="truncate text-text-high-em">
-                    {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
+                    <div className="flex items-center space-x-2">
+                      <p>
+                        {activity.transactionType?.toLowerCase() === 'sell' && (
+                          <span className="mr-0.5 text-md font-bold">-</span>
+                        )}
+                        {activity.transactionType?.toLowerCase() === 'buy' && (
+                          <span className="mr-0.5 text-md font-bold">+</span>
+                        )}
+                        {formatEtherWithFixedDecimals(sharesTokensTraded)}
+                      </p>
+                      <Tag
+                        size="xs"
+                        colorScheme={
+                          isLiquidityEvent
+                            ? 'info'
+                            : outcome
+                              ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1]
+                              : 'quaternary'
+                        }
+                        className="w-fit uppercase"
+                      >
+                        {isLiquidityEvent
+                          ? activity.transactionType
+                          : outcome
+                            ? outcome.symbol
+                            : '-'}
+                      </Tag>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-nowrap pr-4 text-right text-text-low-em">
+
+                  <TableCell className="truncate text-text-high-em">
+                    {activity.collateralTokenAmount
+                      ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
+                      : '-'}
+                  </TableCell>
+                  <TableCell
+                    className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+                    title={formatDateTimeWithYear(activity.creationTimestamp)}
+                  >
                     {formatDateTime(activity.creationTimestamp)}
                   </TableCell>
                 </TableRow>
@@ -179,7 +284,7 @@ export const ActivityTable = ({ id }: { id: string }) => {
 
 const LoadingSkeleton = () => (
   <TableBody className="text-base font-semibold">
-    {[1, 2, 3, 4, 5, 6, 7, 8].map(fakeActivity => (
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fakeActivity => (
       <TableRow key={fakeActivity}>
         <TableCell className="text-text-high-em">
           <div className="h-[18px] w-[115px] animate-pulse rounded-8 bg-outline-low-em"></div>
