@@ -17,6 +17,7 @@ import {
   FpmmTransaction,
   FpmmType,
   OrderDirection,
+  TransactionType,
   getMarketTrades,
   getMarketTradesAndTransactions,
 } from '@/queries/omen';
@@ -47,41 +48,6 @@ type MergedTradeTransaction = Omit<FpmmTrade, '__typename'> &
   Partial<Omit<FpmmTransaction, '__typename'>> & {
     __typename?: 'FpmmTrade' | 'FpmmTransaction';
   };
-
-function mergeMarketTradesAndTransactionsArrays(
-  trades: FpmmTrade[],
-  transactions: FpmmTransaction[]
-): MergedTradeTransaction[] {
-  const tradesAndTransactions = new Map<string, MergedTradeTransaction>();
-
-  trades.forEach(trade => {
-    tradesAndTransactions.set(trade.id, { ...trade, __typename: 'FpmmTrade' });
-  });
-
-  transactions.forEach(transaction => {
-    if (tradesAndTransactions.has(transaction.id)) {
-      const trade = tradesAndTransactions.get(transaction.id)!;
-      tradesAndTransactions.set(transaction.id, {
-        ...trade,
-        ...transaction,
-        fpmm: trade.fpmm,
-        collateralToken: transaction.fpmm?.collateralToken,
-        __typename: 'FpmmTrade',
-      });
-    } else if (transaction.fpmmType === FpmmType.Liquidity) {
-      tradesAndTransactions.set(transaction.id, {
-        ...transaction,
-        collateralToken: transaction.fpmm?.collateralToken,
-        __typename: 'FpmmTransaction',
-      } as MergedTradeTransaction);
-    }
-  });
-
-  // sort tx's and trades
-  return Array.from(tradesAndTransactions.values()).sort((a, b) => {
-    return parseInt(b.creationTimestamp) - parseInt(a.creationTimestamp);
-  });
-}
 
 export const ActivityTable = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
@@ -124,8 +90,8 @@ export const ActivityTable = ({ id }: { id: string }) => {
       }),
   });
 
-  const isMarketTradesTransactions =
-    marketTradesTransactions?.fpmmTrades && marketTradesTransactions?.fpmmTransactions;
+  const marketTransactions = marketTradesTransactions?.fpmmTransactions || [];
+  const marketTrades = marketTradesTransactions?.fpmmTrades || [];
 
   const { data: tradesNextPage } = useQuery({
     queryKey: ['getMarketTrades', id, page],
@@ -142,19 +108,6 @@ export const ActivityTable = ({ id }: { id: string }) => {
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
-  const activities = useMemo(() => {
-    if (
-      !marketTradesTransactions?.fpmmTrades ||
-      !marketTradesTransactions?.fpmmTransactions
-    ) {
-      return [];
-    }
-    return mergeMarketTradesAndTransactionsArrays(
-      marketTradesTransactions.fpmmTrades,
-      marketTradesTransactions.fpmmTransactions
-    );
-  }, [marketTradesTransactions]);
-
   return (
     <div>
       <Table>
@@ -170,97 +123,39 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <LoadingSkeleton />
         ) : (
           <TableBody className="text-base font-semibold">
-            {activities?.map(activity => {
-              const outcomes = activity.fpmm.outcomes;
-              const outcomeIndex = activity.outcomeIndex;
+            {marketTransactions?.map(transaction => {
+              const isAIAgent = getIsAIAgent(transaction.user.id);
+              const isLiquidityEvent = transaction.fpmmType === FpmmType.Liquidity;
 
-              const hasOutcomes = outcomes && outcomeIndex;
-
-              const isLiquidityEvent = activity.fpmmType === FpmmType.Liquidity;
-
-              const outcome = hasOutcomes
-                ? new Outcome(
-                    outcomeIndex,
-                    outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
-                    id
-                  )
-                : null;
-
-              const sharesTokensTraded = activity.outcomeTokensTraded
-                ? activity.outcomeTokensTraded
-                : activity.sharesOrPoolTokenAmount;
-
-              const creatorAddress =
-                activity.creator?.id ?? activity.user?.id ?? 'unknown';
-
-              return (
-                <TableRow key={activity.transactionHash}>
-                  <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
-                    <a
-                      href={getGnosisAddressExplorerLink(creatorAddress)}
-                      className="hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {shortenAddress(creatorAddress)}
-                    </a>
-                    {getIsAIAgent(creatorAddress) && (
-                      <Image src="/ai.svg" alt="ai" width={18} height={18} />
-                    )}
-                  </TableCell>
-
-                  <TableCell className="truncate text-text-high-em">
-                    <div className="flex items-center space-x-2">
-                      <p>
-                        {activity.transactionType?.toLowerCase() === 'sell' && (
-                          <span className="mr-0.5 text-md font-bold">-</span>
-                        )}
-                        {activity.transactionType?.toLowerCase() === 'buy' && (
-                          <span className="mr-0.5 text-md font-bold">+</span>
-                        )}
-                        {formatEtherWithFixedDecimals(sharesTokensTraded)}
-                      </p>
-                      <Tag
-                        size="xs"
-                        colorScheme={
-                          isLiquidityEvent
-                            ? 'info'
-                            : outcome
-                              ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1]
-                              : 'quaternary'
-                        }
-                        className="w-fit uppercase"
-                      >
-                        {isLiquidityEvent
-                          ? activity.transactionType
-                          : outcome
-                            ? outcome.symbol
-                            : '-'}
-                      </Tag>
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="truncate text-text-high-em">
-                    <div className="flex items-center space-x-1">
-                      <p>
-                        {activity.collateralTokenAmount
-                          ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
-                          : '-'}
-                      </p>
-                      <TokenLogo
-                        address={activity.collateralToken}
-                        className="h-[14px] w-[14px]"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell
-                    className="text-nowrap pr-4 text-right text-xs text-text-low-em"
-                    title={formatDateTimeWithYear(activity.creationTimestamp)}
-                  >
-                    {formatDateTime(activity.creationTimestamp)}
-                  </TableCell>
-                </TableRow>
+              if (isLiquidityEvent)
+                return (
+                  <LiquidityEventRow
+                    key={transaction.id}
+                    transaction={transaction}
+                    isAIAgent={isAIAgent}
+                  />
+                );
+              const tradeAssociatedWithTransaction = marketTrades.find(
+                trade => trade.id === transaction.id
               );
+
+              if (tradeAssociatedWithTransaction) {
+                const activity: MergedTradeTransaction = {
+                  ...transaction,
+                  ...tradeAssociatedWithTransaction,
+                  collateralToken: transaction.fpmm?.collateralToken,
+                };
+
+                return (
+                  <TradeRow
+                    key={transaction.id}
+                    activity={activity}
+                    isAIAgent={isAIAgent}
+                  />
+                );
+              }
+
+              return null;
             })}
           </TableBody>
         )}
@@ -287,6 +182,138 @@ export const ActivityTable = ({ id }: { id: string }) => {
         </div>
       )}
     </div>
+  );
+};
+
+interface TradeRowProps {
+  activity: MergedTradeTransaction;
+  isAIAgent: boolean;
+}
+
+const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
+  const creatorAddress = activity?.creator?.id ?? 'unknown';
+  const outcomes = activity.fpmm.outcomes;
+  const outcomeIndex = activity.outcomeIndex;
+
+  if (!outcomes || !outcomeIndex) return null;
+
+  const hasOutcomes = outcomes && outcomeIndex;
+
+  const outcome = hasOutcomes
+    ? new Outcome(
+        outcomeIndex,
+        outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
+        activity.id
+      )
+    : null;
+
+  return (
+    <TableRow>
+      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
+        <a
+          href={getGnosisAddressExplorerLink(creatorAddress)}
+          className="hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {shortenAddress(creatorAddress)}
+        </a>
+        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-2">
+          <p>
+            {activity.transactionType === TransactionType.Sell && (
+              <span className="mr-0.5 text-md font-bold">-</span>
+            )}
+            {activity.transactionType === TransactionType.Buy && (
+              <span className="mr-0.5 text-md font-bold">+</span>
+            )}
+            {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
+          </p>
+          <Tag
+            size="xs"
+            colorScheme={
+              outcome ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1] : 'quaternary'
+            }
+            className="w-fit uppercase"
+          >
+            {outcome ? outcome.symbol : '-'}
+          </Tag>
+        </div>
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-1">
+          <p>
+            {activity.collateralTokenAmount
+              ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
+              : '-'}
+          </p>
+          <TokenLogo address={activity.collateralToken} className="h-[14px] w-[14px]" />
+        </div>
+      </TableCell>
+      <TableCell
+        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+        title={formatDateTimeWithYear(activity.creationTimestamp)}
+      >
+        {formatDateTime(activity.creationTimestamp)}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+interface LiquidityEventRowProps {
+  transaction: FpmmTransaction;
+  isAIAgent: boolean;
+}
+const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) => {
+  const creatorAddress = transaction.user.id;
+
+  return (
+    <TableRow key={transaction.transactionHash}>
+      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
+        <a
+          href={getGnosisAddressExplorerLink(creatorAddress)}
+          className="hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {shortenAddress(creatorAddress)}
+        </a>
+        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-2">
+          <p>{formatEtherWithFixedDecimals(transaction.sharesOrPoolTokenAmount)}</p>
+          <Tag size="xs" colorScheme="info" className="w-fit uppercase">
+            {transaction.transactionType}
+          </Tag>
+        </div>
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-1">
+          <p>
+            {transaction.collateralTokenAmount
+              ? formatEtherWithFixedDecimals(transaction.collateralTokenAmount)
+              : '-'}
+          </p>
+          <TokenLogo
+            address={transaction.fpmm.collateralToken}
+            className="h-[14px] w-[14px]"
+          />
+        </div>
+      </TableCell>
+      <TableCell
+        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+        title={formatDateTimeWithYear(transaction.creationTimestamp)}
+      >
+        {formatDateTime(transaction.creationTimestamp)}
+      </TableCell>
+    </TableRow>
   );
 };
 
