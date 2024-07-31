@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
@@ -11,9 +11,19 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import { FpmmTrade_OrderBy, OrderDirection, getMarketTrades } from '@/queries/omen';
+import {
+  FpmmTrade,
+  FpmmTrade_OrderBy,
+  FpmmTransaction,
+  FpmmType,
+  OrderDirection,
+  TransactionType,
+  getMarketTrades,
+  getMarketTradesAndTransactions,
+} from '@/queries/omen';
 import {
   formatDateTime,
+  formatDateTimeWithYear,
   formatEtherWithFixedDecimals,
   getGnosisAddressExplorerLink,
   shortenAddress,
@@ -23,6 +33,7 @@ import { Outcome } from '@/entities';
 import { DuneClient, LatestResultArgs, ParameterType } from '@duneanalytics/client-sdk';
 import Image from 'next/image';
 import { DUNE_API_KEY } from '@/constants';
+import { TokenLogo } from '@/app/components';
 
 const duneClient = new DuneClient(DUNE_API_KEY);
 
@@ -33,32 +44,13 @@ const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
 
 const ITEMS_PER_PAGE = 10;
 
+type MergedTradeTransaction = Omit<FpmmTrade, '__typename'> &
+  Partial<Omit<FpmmTransaction, '__typename'>> & {
+    __typename?: 'FpmmTrade' | 'FpmmTransaction';
+  };
+
 export const ActivityTable = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
-
-  const { data: trades, isLoading } = useQuery({
-    queryKey: ['getMarketTrades', id, page - 1],
-    queryFn: async () =>
-      getMarketTrades({
-        first: ITEMS_PER_PAGE,
-        skip: (page - 1) * ITEMS_PER_PAGE,
-        fpmm: id,
-        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
-        orderDirection: OrderDirection.Desc,
-      }),
-  });
-
-  const { data: tradesNextPage } = useQuery({
-    queryKey: ['getMarketTrades', id, page],
-    queryFn: async () =>
-      getMarketTrades({
-        first: ITEMS_PER_PAGE,
-        skip: page * ITEMS_PER_PAGE,
-        fpmm: id,
-        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
-        orderDirection: OrderDirection.Desc,
-      }),
-  });
 
   const { data: aiAgentsList } = useQuery({
     queryKey: ['getAIAgents'],
@@ -77,17 +69,44 @@ export const ActivityTable = ({ id }: { id: string }) => {
     staleTime: Infinity,
   });
 
-  const getIsAIAgent = (address: string) => {
-    if (!aiAgentsList?.length) return false;
+  const getIsAIAgent = useMemo(() => {
+    return (address: string) => {
+      if (!aiAgentsList?.length) return false;
+      return aiAgentsList.some(
+        aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
+      );
+    };
+  }, [aiAgentsList]);
 
-    return aiAgentsList.some(
-      aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
-    );
-  };
+  const { data: marketTradesTransactions, isLoading } = useQuery({
+    queryKey: ['getMarketTradesAndTransactions', id, page - 1],
+    queryFn: async () =>
+      getMarketTradesAndTransactions({
+        first: ITEMS_PER_PAGE,
+        skip: (page - 1) * ITEMS_PER_PAGE,
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
+      }),
+  });
+
+  const marketTransactions = marketTradesTransactions?.fpmmTransactions || [];
+  const marketTrades = marketTradesTransactions?.fpmmTrades || [];
+
+  const { data: tradesNextPage } = useQuery({
+    queryKey: ['getMarketTrades', id, page],
+    queryFn: async () =>
+      getMarketTrades({
+        first: ITEMS_PER_PAGE,
+        skip: page * ITEMS_PER_PAGE,
+        fpmm: id,
+        orderBy: FpmmTrade_OrderBy.CreationTimestamp,
+        orderDirection: OrderDirection.Desc,
+      }),
+  });
 
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
-  const activities = trades?.fpmmTrades;
 
   return (
     <div>
@@ -95,8 +114,8 @@ export const ActivityTable = ({ id }: { id: string }) => {
         <TableHeader>
           <TableRow>
             <TableHead className="pl-4 text-text-low-em">User</TableHead>
-            <TableHead className="text-text-low-em">Action</TableHead>
             <TableHead className="text-text-low-em">Shares</TableHead>
+            <TableHead className="text-text-low-em">Collateral</TableHead>
             <TableHead className="pr-4 text-right text-text-low-em">Date</TableHead>
           </TableRow>
         </TableHeader>
@@ -104,50 +123,39 @@ export const ActivityTable = ({ id }: { id: string }) => {
           <LoadingSkeleton />
         ) : (
           <TableBody className="text-base font-semibold">
-            {activities?.map(activity => {
-              const outcomes = activity.fpmm.outcomes;
-              const outcomeIndex = activity.outcomeIndex;
+            {marketTransactions?.map(transaction => {
+              const isAIAgent = getIsAIAgent(transaction.user.id);
+              const isLiquidityEvent = transaction.fpmmType === FpmmType.Liquidity;
 
-              if (!outcomes || !outcomeIndex) return null;
-
-              const outcome = new Outcome(
-                outcomeIndex,
-                outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
-                id
+              if (isLiquidityEvent)
+                return (
+                  <LiquidityEventRow
+                    key={transaction.id}
+                    transaction={transaction}
+                    isAIAgent={isAIAgent}
+                  />
+                );
+              const tradeAssociatedWithTransaction = marketTrades.find(
+                trade => trade.id === transaction.id
               );
 
-              return (
-                <TableRow key={activity.transactionHash}>
-                  <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
-                    <a
-                      href={getGnosisAddressExplorerLink(activity.creator.id)}
-                      className="hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {shortenAddress(activity.creator.id)}
-                    </a>
-                    {getIsAIAgent(activity.creator.id) && (
-                      <Image src="/ai.svg" alt="ai" width={18} height={18} />
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Tag
-                      size="xs"
-                      colorScheme={TAG_COLOR_SCHEMES[outcome.index as 0 | 1]}
-                      className="w-fit uppercase"
-                    >
-                      {outcome.symbol}
-                    </Tag>
-                  </TableCell>
-                  <TableCell className="truncate text-text-high-em">
-                    {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
-                  </TableCell>
-                  <TableCell className="text-nowrap pr-4 text-right text-text-low-em">
-                    {formatDateTime(activity.creationTimestamp)}
-                  </TableCell>
-                </TableRow>
-              );
+              if (tradeAssociatedWithTransaction) {
+                const activity: MergedTradeTransaction = {
+                  ...transaction,
+                  ...tradeAssociatedWithTransaction,
+                  collateralToken: transaction.fpmm?.collateralToken,
+                };
+
+                return (
+                  <TradeRow
+                    key={transaction.id}
+                    activity={activity}
+                    isAIAgent={isAIAgent}
+                  />
+                );
+              }
+
+              return null;
             })}
           </TableBody>
         )}
@@ -177,9 +185,141 @@ export const ActivityTable = ({ id }: { id: string }) => {
   );
 };
 
+interface TradeRowProps {
+  activity: MergedTradeTransaction;
+  isAIAgent: boolean;
+}
+
+const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
+  const creatorAddress = activity?.creator?.id ?? 'unknown';
+  const outcomes = activity.fpmm.outcomes;
+  const outcomeIndex = activity.outcomeIndex;
+
+  if (!outcomes || !outcomeIndex) return null;
+
+  const hasOutcomes = outcomes && outcomeIndex;
+
+  const outcome = hasOutcomes
+    ? new Outcome(
+        outcomeIndex,
+        outcomes[outcomeIndex] ?? 'Option ' + outcomeIndex,
+        activity.id
+      )
+    : null;
+
+  return (
+    <TableRow>
+      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
+        <a
+          href={getGnosisAddressExplorerLink(creatorAddress)}
+          className="hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {shortenAddress(creatorAddress)}
+        </a>
+        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-2">
+          <p>
+            {activity.transactionType === TransactionType.Sell && (
+              <span className="mr-0.5 text-md font-bold">-</span>
+            )}
+            {activity.transactionType === TransactionType.Buy && (
+              <span className="mr-0.5 text-md font-bold">+</span>
+            )}
+            {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
+          </p>
+          <Tag
+            size="xs"
+            colorScheme={
+              outcome ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1] : 'quaternary'
+            }
+            className="w-fit uppercase"
+          >
+            {outcome ? outcome.symbol : '-'}
+          </Tag>
+        </div>
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-1">
+          <p>
+            {activity.collateralTokenAmount
+              ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
+              : '-'}
+          </p>
+          <TokenLogo address={activity.collateralToken} className="h-[14px] w-[14px]" />
+        </div>
+      </TableCell>
+      <TableCell
+        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+        title={formatDateTimeWithYear(activity.creationTimestamp)}
+      >
+        {formatDateTime(activity.creationTimestamp)}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+interface LiquidityEventRowProps {
+  transaction: FpmmTransaction;
+  isAIAgent: boolean;
+}
+const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) => {
+  const creatorAddress = transaction.user.id;
+
+  return (
+    <TableRow key={transaction.transactionHash}>
+      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
+        <a
+          href={getGnosisAddressExplorerLink(creatorAddress)}
+          className="hover:underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {shortenAddress(creatorAddress)}
+        </a>
+        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-2">
+          <p>{formatEtherWithFixedDecimals(transaction.sharesOrPoolTokenAmount)}</p>
+          <Tag size="xs" colorScheme="info" className="w-fit uppercase">
+            {transaction.transactionType}
+          </Tag>
+        </div>
+      </TableCell>
+
+      <TableCell className="truncate text-text-high-em">
+        <div className="flex items-center space-x-1">
+          <p>
+            {transaction.collateralTokenAmount
+              ? formatEtherWithFixedDecimals(transaction.collateralTokenAmount)
+              : '-'}
+          </p>
+          <TokenLogo
+            address={transaction.fpmm.collateralToken}
+            className="h-[14px] w-[14px]"
+          />
+        </div>
+      </TableCell>
+      <TableCell
+        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+        title={formatDateTimeWithYear(transaction.creationTimestamp)}
+      >
+        {formatDateTime(transaction.creationTimestamp)}
+      </TableCell>
+    </TableRow>
+  );
+};
+
 const LoadingSkeleton = () => (
   <TableBody className="text-base font-semibold">
-    {[1, 2, 3, 4, 5, 6, 7, 8].map(fakeActivity => (
+    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fakeActivity => (
       <TableRow key={fakeActivity}>
         <TableCell className="text-text-high-em">
           <div className="h-[18px] w-[115px] animate-pulse rounded-8 bg-outline-low-em"></div>

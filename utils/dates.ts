@@ -10,8 +10,12 @@ export const remainingTime = (date: Date): string => {
   }
 };
 
-export const formatDateTime = (timestamp: number) => {
+export const formatDateTime = (timestamp: number, formatStr = 'HH:mm - d MMM') => {
   const date = fromUnixTime(timestamp);
-  const formattedDate = format(date, 'HH:mm - d MMM');
+  const formattedDate = format(date, formatStr);
   return formattedDate;
+};
+
+export const formatDateTimeWithYear = (timestamp: number) => {
+  return formatDateTime(timestamp, 'HH:mm - d MMM - yyyy');
 };
