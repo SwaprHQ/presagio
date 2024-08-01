@@ -5,6 +5,7 @@ import { createContext, useContext, ReactNode, useMemo, useReducer } from 'react
 export enum ModalId {
   WAITING_TRANSACTION = 'waiting_transaction',
   CONFIRM_SWAP = 'confirm_swap',
+  AGENT_DETAILS = 'agent_details',
 }
 
 enum ActionType {
@@ -12,25 +13,27 @@ enum ActionType {
   REMOVE = 'remove',
 }
 
+type ModalKey = ModalId | string;
+
 export interface ModalContextProps {
-  closeModal: (id: ModalId) => void;
-  openModal: (id: ModalId) => void;
-  isModalOpen: (id: ModalId) => boolean;
+  closeModal: (id: ModalKey) => void;
+  openModal: (id: ModalKey) => void;
+  isModalOpen: (id: ModalKey) => boolean;
 }
 
 export const ModalContext = createContext<ModalContextProps>({
-  closeModal: (id: ModalId) => {},
-  openModal: (id: ModalId) => {},
-  isModalOpen: (id: ModalId) => false,
+  closeModal: (id: ModalKey) => {},
+  openModal: (id: ModalKey) => {},
+  isModalOpen: (id: ModalKey) => false,
 });
 
 export interface ModalProviderProps {
   children: ReactNode;
 }
 
-type Action = { id: ModalId; type: ActionType };
+type Action = { id: ModalKey; type: ActionType };
 
-function ModalReducer(openModals: ModalId[], action: Action) {
+function ModalReducer(openModals: ModalKey[], action: Action) {
   switch (action.type) {
     case ActionType.ADD: {
       return [...openModals, action.id];
@@ -48,14 +51,14 @@ function ModalReducer(openModals: ModalId[], action: Action) {
 export const ModalProvider = ({ children }: ModalProviderProps) => {
   const [openModals, dispatch] = useReducer(ModalReducer, []);
 
-  const openModal = (modalId: ModalId) => {
+  const openModal = (modalId: ModalKey) => {
     dispatch({
       type: ActionType.ADD,
       id: modalId,
     });
   };
 
-  const closeModal = (modalId: ModalId) => {
+  const closeModal = (modalId: ModalKey) => {
     dispatch({
       type: ActionType.REMOVE,
       id: modalId,
@@ -63,7 +66,7 @@ export const ModalProvider = ({ children }: ModalProviderProps) => {
   };
 
   const modalContext = useMemo(() => {
-    const isModalOpen = (modalId: ModalId) => openModals.includes(modalId);
+    const isModalOpen = (modalId: ModalKey) => openModals.includes(modalId);
 
     return {
       closeModal,
