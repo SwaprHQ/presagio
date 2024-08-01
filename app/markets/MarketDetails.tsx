@@ -113,7 +113,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
 const LoadingMarketDetails = () => (
   <div className="flex w-full flex-col items-center space-y-4">
     <div className="flex w-full max-w-[464px] items-start">
-      <div className="h-8 w-20 animate-pulse rounded-12 bg-outline-low-em"></div>
+      <div className="h-8 w-8 animate-pulse rounded-12 bg-outline-low-em"></div>
     </div>
     <div className="w-full max-w-[464px] rounded-16 border border-outline-base-em bg-surface-surface-0">
       <div className="space-y-4 p-5">
@@ -150,19 +150,12 @@ const BackButton = () => {
   const { back } = useRouter();
 
   return (
-    <div
-      className="flex w-fit items-center rounded-12 hover:bg-surface-surface-2"
+    <IconButton
+      className="text-text-med-em hover:bg-surface-surface-4"
+      name="arrow-left"
+      variant="pastel"
+      size="sm"
       onClick={back}
-    >
-      <IconButton
-        className="text-text-med-em hover:bg-surface-surface-2"
-        name="arrow-left"
-        variant="pastel"
-        size="sm"
-      />
-      <Button className="font-normal text-text-low-em" variant="ghost" size="sm">
-        Go back
-      </Button>
-    </div>
+    />
   );
 };
