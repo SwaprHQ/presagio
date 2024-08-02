@@ -1,7 +1,7 @@
 import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 
-import { ActivityTable } from './ActivityTable';
-import { ActivityChart } from './ActivityChart';
+import { MarketActivity } from '@/app/markets/MarketActivity';
+import { ActivityChart } from '@/app/markets/ActivityChart';
 
 interface HistorySectionProps {
   id: string;
@@ -23,7 +23,7 @@ export const HistorySection = ({ id }: HistorySectionProps) => {
         </TabHeader>
         <TabBody className="mt-4">
           <TabPanel>
-            <ActivityTable id={id} />
+            <MarketActivity id={id} />
           </TabPanel>
           <TabPanel className="p-2">
             <div className="h-48 rounded-8 bg-surface-surface-2">

@@ -1,32 +1,25 @@
-import { useMemo, useState } from 'react';
+import { PropsWithChildren, useMemo, useState } from 'react';
 
 import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/app/components/ui/Table';
 import {
   FpmmTrade,
   FpmmTrade_OrderBy,
   FpmmTransaction,
   FpmmType,
   OrderDirection,
+  Scalars,
   TransactionType,
   getMarketTrades,
   getMarketTradesAndTransactions,
 } from '@/queries/omen';
 import {
-  formatDateTime,
   formatDateTimeWithYear,
   formatEtherWithFixedDecimals,
   getGnosisAddressExplorerLink,
   shortenAddress,
+  timeAgo,
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
@@ -42,6 +35,13 @@ const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
   1: 'danger',
 };
 
+const txTypeHumanWords: Record<TransactionType, string[]> = {
+  [TransactionType.Add]: ['added', 'to'],
+  [TransactionType.Remove]: ['removed', 'from'],
+  [TransactionType.Buy]: ['bought'],
+  [TransactionType.Sell]: ['sold'],
+};
+
 const ITEMS_PER_PAGE = 10;
 
 type MergedTradeTransaction = Omit<FpmmTrade, '__typename'> &
@@ -49,7 +49,7 @@ type MergedTradeTransaction = Omit<FpmmTrade, '__typename'> &
     __typename?: 'FpmmTrade' | 'FpmmTransaction';
   };
 
-export const ActivityTable = ({ id }: { id: string }) => {
+export const MarketActivity = ({ id }: { id: string }) => {
   const [page, setPage] = useState(1);
 
   const { data: aiAgentsList } = useQuery({
@@ -110,19 +110,11 @@ export const ActivityTable = ({ id }: { id: string }) => {
 
   return (
     <div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="pl-4 text-text-low-em">User</TableHead>
-            <TableHead className="text-text-low-em">Shares</TableHead>
-            <TableHead className="text-text-low-em">Collateral</TableHead>
-            <TableHead className="pr-4 text-right text-text-low-em">Date</TableHead>
-          </TableRow>
-        </TableHeader>
+      <div>
         {isLoading ? (
           <LoadingSkeleton />
         ) : (
-          <TableBody className="text-base font-semibold">
+          <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-semibold md:overflow-x-auto">
             {marketTransactions?.map(transaction => {
               const isAIAgent = getIsAIAgent(transaction.user.id);
               const isLiquidityEvent = transaction.fpmmType === FpmmType.Liquidity;
@@ -135,6 +127,7 @@ export const ActivityTable = ({ id }: { id: string }) => {
                     isAIAgent={isAIAgent}
                   />
                 );
+
               const tradeAssociatedWithTransaction = marketTrades.find(
                 trade => trade.id === transaction.id
               );
@@ -157,9 +150,9 @@ export const ActivityTable = ({ id }: { id: string }) => {
 
               return null;
             })}
-          </TableBody>
+          </div>
         )}
-      </Table>
+      </div>
       {showPaginationButtons && (
         <div className="flex w-full items-center justify-between bg-surface-surface-1 p-4">
           <Button
@@ -185,6 +178,26 @@ export const ActivityTable = ({ id }: { id: string }) => {
   );
 };
 
+interface CollateralAmountWithLogo {
+  collateralTokenAmount: Scalars['BigInt']['output'];
+  collateralTokenAddress: string;
+}
+
+const CollateralAmountWithLogo = ({
+  collateralTokenAmount,
+  collateralTokenAddress,
+}: CollateralAmountWithLogo) => (
+  <div className="flex items-center space-x-0.5 text-text-high-em">
+    <p>
+      {collateralTokenAmount ? formatEtherWithFixedDecimals(collateralTokenAmount) : '-'}
+    </p>
+    <TokenLogo
+      address={collateralTokenAddress}
+      className="h-[13px] w-[13px] opacity-60 hover:scale-110 hover:opacity-100"
+    />
+  </div>
+);
+
 interface TradeRowProps {
   activity: MergedTradeTransaction;
   isAIAgent: boolean;
@@ -208,132 +221,125 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
     : null;
 
   return (
-    <TableRow>
-      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
-        <a
-          href={getGnosisAddressExplorerLink(creatorAddress)}
-          className="hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
+    <RowWrapper>
+      <div className="flex items-center space-x-1.5">
+        <AILink address={creatorAddress} isAIAgent={isAIAgent} />
+        {activity.transactionType && (
+          <p className="text-text-low-em">
+            {txTypeHumanWords[activity.transactionType][0]}
+          </p>
+        )}
+        <Tag
+          size="xs"
+          colorScheme={outcome ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1] : 'quaternary'}
+          className="w-fit space-x-1 text-sm uppercase"
         >
-          {shortenAddress(creatorAddress)}
-        </a>
-        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
-      </TableCell>
+          <p>{formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}</p>
+          <p>{outcome ? outcome.symbol : '-'}</p>
+        </Tag>
 
-      <TableCell className="truncate text-text-high-em">
-        <div className="flex items-center space-x-2">
-          <p>
-            {activity.transactionType === TransactionType.Sell && (
-              <span className="mr-0.5 text-md font-bold">-</span>
-            )}
-            {activity.transactionType === TransactionType.Buy && (
-              <span className="mr-0.5 text-md font-bold">+</span>
-            )}
-            {formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}
-          </p>
-          <Tag
-            size="xs"
-            colorScheme={
-              outcome ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1] : 'quaternary'
-            }
-            className="w-fit uppercase"
-          >
-            {outcome ? outcome.symbol : '-'}
-          </Tag>
-        </div>
-      </TableCell>
-
-      <TableCell className="truncate text-text-high-em">
-        <div className="flex items-center space-x-1">
-          <p>
-            {activity.collateralTokenAmount
-              ? formatEtherWithFixedDecimals(activity.collateralTokenAmount)
-              : '-'}
-          </p>
-          <TokenLogo address={activity.collateralToken} className="h-[14px] w-[14px]" />
-        </div>
-      </TableCell>
-      <TableCell
-        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+        <span className="text-text-low-em">for</span>
+        <CollateralAmountWithLogo
+          collateralTokenAmount={activity.collateralTokenAmount}
+          collateralTokenAddress={activity.collateralToken}
+        />
+      </div>
+      <div
+        className="text-nowrap text-sm text-text-low-em"
         title={formatDateTimeWithYear(activity.creationTimestamp)}
       >
-        {formatDateTime(activity.creationTimestamp)}
-      </TableCell>
-    </TableRow>
+        {timeAgo(activity.creationTimestamp)}
+      </div>
+    </RowWrapper>
   );
 };
+
+interface AILinkProps {
+  address: string;
+  isAIAgent: boolean;
+}
+
+const AILink = ({ address, isAIAgent }: AILinkProps) => (
+  <div className="flex w-fit flex-shrink-0 items-center space-x-1 text-sm md:text-base">
+    <a
+      href={getGnosisAddressExplorerLink(address)}
+      className={cx(
+        'hover:underline',
+        isAIAgent ? 'text-text-primary-main' : 'text-text-high-em'
+      )}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {shortenAddress(address)}
+    </a>
+    {isAIAgent && <Image src="/ai.svg" alt="ai" width={16} height={16} />}
+  </div>
+);
 
 interface LiquidityEventRowProps {
   transaction: FpmmTransaction;
   isAIAgent: boolean;
 }
+
+const RowWrapper = ({ children }: PropsWithChildren) => (
+  <div className="flex w-full min-w-max items-center justify-between space-x-2 p-4">
+    {children}
+  </div>
+);
+
 const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) => {
   const creatorAddress = transaction.user.id;
 
   return (
-    <TableRow key={transaction.transactionHash}>
-      <TableCell className="flex items-center space-x-2 pl-4 text-text-high-em">
-        <a
-          href={getGnosisAddressExplorerLink(creatorAddress)}
-          className="hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {shortenAddress(creatorAddress)}
-        </a>
-        {isAIAgent && <Image src="/ai.svg" alt="ai" width={18} height={18} />}
-      </TableCell>
-
-      <TableCell className="truncate text-text-high-em">
-        <div className="flex items-center space-x-2">
-          <p>{formatEtherWithFixedDecimals(transaction.sharesOrPoolTokenAmount)}</p>
-          <Tag size="xs" colorScheme="info" className="w-fit uppercase">
-            {transaction.transactionType}
-          </Tag>
-        </div>
-      </TableCell>
-
-      <TableCell className="truncate text-text-high-em">
-        <div className="flex items-center space-x-1">
-          <p>
-            {transaction.collateralTokenAmount
-              ? formatEtherWithFixedDecimals(transaction.collateralTokenAmount)
-              : '-'}
-          </p>
-          <TokenLogo
-            address={transaction.fpmm.collateralToken}
-            className="h-[14px] w-[14px]"
-          />
-        </div>
-      </TableCell>
-      <TableCell
-        className="text-nowrap pr-4 text-right text-xs text-text-low-em"
+    <RowWrapper>
+      <div className="flex items-center space-x-1.5">
+        <AILink address={creatorAddress} isAIAgent={isAIAgent} />
+        <p className="lowercase text-text-low-em">
+          {txTypeHumanWords[transaction.transactionType][0]}
+        </p>
+        <CollateralAmountWithLogo
+          collateralTokenAmount={transaction.collateralTokenAmount}
+          collateralTokenAddress={transaction.fpmm.collateralToken}
+        />
+        <p className="lowercase text-text-low-em">
+          {txTypeHumanWords[transaction.transactionType][1]}
+        </p>
+        <Tag size="xs" colorScheme="info" className="w-fit space-x-1 text-sm uppercase">
+          {transaction.fpmmType}
+        </Tag>
+      </div>
+      <div
+        className="text-nowrap text-sm text-text-low-em"
         title={formatDateTimeWithYear(transaction.creationTimestamp)}
       >
-        {formatDateTime(transaction.creationTimestamp)}
-      </TableCell>
-    </TableRow>
+        {timeAgo(transaction.creationTimestamp)}
+      </div>
+    </RowWrapper>
   );
 };
 
 const LoadingSkeleton = () => (
-  <TableBody className="text-base font-semibold">
+  <div className="text-base font-semibold">
     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fakeActivity => (
-      <TableRow key={fakeActivity}>
-        <TableCell className="text-text-high-em">
-          <div className="h-[18px] w-[115px] animate-pulse rounded-8 bg-outline-low-em"></div>
-        </TableCell>
-        <TableCell>
-          <div className="h-[24px] w-[40px] animate-pulse rounded-8 bg-outline-low-em"></div>
-        </TableCell>
-        <TableCell className="truncate text-text-high-em">
-          <div className="h-[24px] w-12 animate-pulse rounded-8 bg-outline-low-em"></div>
-        </TableCell>
-        <TableCell className="flex justify-end text-text-low-em">
-          <div className="h-[18px] w-[100px] animate-pulse rounded-8 bg-outline-low-em"></div>
-        </TableCell>
-      </TableRow>
+      <RowWrapper key={fakeActivity}>
+        <div className="flex items-center space-x-1.5">
+          <div className="text-text-high-em">
+            <div className="h-[23px] w-[120px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+          </div>
+          <div>
+            <div className="h-[23px] w-[44px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+          </div>
+          <div>
+            <div className="h-[25px] w-[69px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+          </div>
+          <div className="text-text-high-em">
+            <div className="h-[23px] w-[42px] animate-pulse rounded-8 bg-outline-low-em py-2 md:w-[59px]"></div>
+          </div>
+        </div>
+        <div className="hidden justify-end text-text-low-em md:flex">
+          <div className="h-[15px] w-[22px] animate-pulse rounded-6 bg-outline-low-em py-2"></div>
+        </div>
+      </RowWrapper>
     ))}
-  </TableBody>
+  </div>
 );
