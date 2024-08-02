@@ -402,8 +402,8 @@ const getMarketTradesAndTransactions = async (
     ...params,
     tradesFirst: params.first || 0,
     // Txs can have more results than trades (liquidity events)
-    // We need to fetch + 2 txs to be able to merge tx and trades
-    transactionsFirst: params.first ? params.first + 2 : 0,
+    // We need to fetch + 1 tx to be able to merge tx and trades
+    transactionsFirst: params.first ? params.first + 1 : 0,
   };
 
   return request<Pick<Query, 'fpmmTrades' | 'fpmmTransactions'>>(
