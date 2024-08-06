@@ -10,7 +10,11 @@ import { gql, request } from 'graphql-request';
 
 const getUserPositionsQuery = gql`
   query OmenGetMyMarkets($id: ID!) {
-    userPositions(where: { user_: { id: $id } }) {
+    userPositions(
+      where: { user_: { id: $id } }
+      orderBy: position__createTimestamp
+      orderDirection: desc
+    ) {
       id
       balance
       totalBalance
@@ -26,6 +30,7 @@ const getUserPositionsQuery = gql`
         multiplicities
         wrappedTokenAddress
         collateralTokenAddress
+        createTimestamp
         collateralToken {
           activeAmount
           mergedAmount
@@ -44,6 +49,7 @@ const getUserPositionsQuery = gql`
           resolved
           resolveTimestamp
           resolveTransaction
+          createTimestamp
         }
       }
     }
