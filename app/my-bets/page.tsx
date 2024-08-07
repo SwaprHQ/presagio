@@ -14,16 +14,9 @@ import {
   getConditionMarket,
   getMarketUserTrades,
 } from '@/queries/omen';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 
-import {
-  PropsWithChildren,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
@@ -36,62 +29,79 @@ interface UserPositionAll extends UserPosition {
 export default function MyBetsPage() {
   const { address } = useAccount();
   const [userPositionsAllData, setUserPositionsAllData] = useState<UserPositionAll[]>([]);
-  const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data: userPositionsData, isLoading: isUserPositionsLoading } = useQuery({
     queryKey: ['getUserPositions', address],
     queryFn: () => getUserPositions({ id: address?.toLowerCase() as string }),
     enabled: !!address,
   });
 
-  const userPositions = data?.userPositions ?? [];
+  const userPositions = useMemo(
+    () => userPositionsData?.userPositions ?? [],
+    [userPositionsData]
+  );
 
-  const fetchUserPositionsConditionData = useCallback(async (): Promise<
-    UserPositionAll[]
-  > => {
-    const results = await Promise.all(
-      userPositions.map(async userPosition => {
-        const position = new Position(userPosition.position);
-        const outcomeIndex = position.outcomeIndex - 1;
+  const queries = useMemo(() => {
+    return userPositions.flatMap(userPosition => {
+      const position = new Position(userPosition.position);
+      const outcomeIndex = position.outcomeIndex - 1;
 
-        try {
-          const conditionData = await queryClient.fetchQuery({
-            queryKey: ['getConditionMarket', position.conditionId],
-            queryFn: () => getConditionMarket({ id: position.conditionId }),
-          });
-          const condition = conditionData?.conditions[0];
-          const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
+      return [
+        {
+          queryKey: ['getConditionMarket', position.conditionId],
+          queryFn: () => getConditionMarket({ id: position.conditionId }),
+        },
+        {
+          queryKey: ['getMarketUserTrades', address, position.conditionId, outcomeIndex],
+          queryFn: async () => {
+            if (!!address) {
+              const conditionData = await getConditionMarket({
+                id: position.conditionId,
+              });
+              const market = new Market(
+                conditionData.conditions[0]?.fixedProductMarketMakers[0]
+              );
+              return getMarketUserTrades({
+                creator: address.toLowerCase(),
+                fpmm: market.data.id,
+                outcomeIndex_in: [outcomeIndex],
+              });
+            }
+          },
+        },
+      ];
+    });
+  }, [userPositions, address]);
 
-          const fpmmTrades = await queryClient.fetchQuery({
-            queryKey: ['getMarketUserTrades', address, market?.data.id, outcomeIndex],
-            queryFn: () => {
-              if (!!address && !!market)
-                return getMarketUserTrades({
-                  creator: address.toLowerCase(),
-                  fpmm: market.data.id,
-                  outcomeIndex_in: [outcomeIndex],
-                });
-            },
-          });
+  const queriesResults = useQueries({ queries });
 
-          console.log('userTrades:', fpmmTrades);
-          return {
-            ...userPosition,
-            market: market.data,
-            condition,
-            fpmmTrades: fpmmTrades?.fpmmTrades || [],
-          } as UserPositionAll;
-        } catch (error) {
-          console.error(error);
-          return null; // Return null instead of undefined
-        }
-      })
-    );
+  const isLoading =
+    isUserPositionsLoading || queriesResults.some(query => query.isLoading);
+  const isSuccess = queriesResults.every(query => query.isSuccess);
 
-    // Filter out null values and assert the type
-    return results.filter((result): result is UserPositionAll => result !== null);
+  useEffect(() => {
+    if (isSuccess) {
+      const newUserPositionsAllData = userPositions.map((userPosition, index) => {
+        const conditionData = queriesResults[index * 2].data;
+        const tradesData = queriesResults[index * 2 + 1].data;
+
+        // @ts-expect-error
+        const condition = conditionData?.conditions[0];
+        const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
+
+        return {
+          ...userPosition,
+          market: market.data,
+          condition,
+          // @ts-expect-error
+          fpmmTrades: tradesData?.fpmmTrades || [],
+        } as UserPositionAll;
+      });
+
+      setUserPositionsAllData(newUserPositionsAllData);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userPositions]);
+  }, [isSuccess, userPositions]);
 
   const filterActiveBets = userPositionsAllData.filter(
     userPosition => userPosition.position.conditions[0].resolved === false
@@ -125,27 +135,15 @@ export default function MyBetsPage() {
     });
   }, [filterCompleteBets]);
 
-  useEffect(() => {
-    if (!address) return;
-
-    const fetchAndSetUserPositionsAllData = async () => {
-      const userPositionsAllData = await fetchUserPositionsConditionData();
-      setUserPositionsAllData(userPositionsAllData);
-      return userPositionsAllData;
-    };
-
-    fetchAndSetUserPositionsAllData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userPositions]);
-
   if (!address) return <NoWalletConnectedPage />;
-  if (data && data.userPositions.length === 0) return <NoBetsPage />;
+  if (userPositionsData && userPositionsData.userPositions.length === 0)
+    return <NoBetsPage />;
 
   const sortBetsByNewest = (bets: UserPositionAll[]) => {
     return [...bets].sort((a, b) => {
       return (
-        b.fpmmTrades[b.fpmmTrades.length - 1].creationTimestamp -
-        a.fpmmTrades[a.fpmmTrades.length - 1].creationTimestamp
+        b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
+        a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
       );
     });
   };
