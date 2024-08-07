@@ -1,4 +1,5 @@
 import { Address, erc20Abi } from 'viem';
+import { gnosis } from 'viem/chains';
 import { UseReadContractParameters, useReadContract, useReadContracts } from 'wagmi';
 
 export const useReadERC20Contract = ({
@@ -13,6 +14,7 @@ export const useReadERC20Contract = ({
     functionName,
     args,
     query,
+    chainId: gnosis.id,
   });
 };
 
@@ -50,6 +52,7 @@ export const useReadToken = ({ tokenAddress }: { tokenAddress: Address }) => {
   const erc20Contract = {
     address: tokenAddress,
     abi: erc20Abi,
+    chainId: gnosis.id,
   };
 
   const { data } = useReadContracts({
