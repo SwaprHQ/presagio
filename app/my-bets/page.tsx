@@ -7,16 +7,35 @@ import { Market, Position, tradesOutcomeBalance } from '@/entities';
 
 import { getUserPositions } from '@/queries/conditional-tokens';
 import { UserPosition } from '@/queries/conditional-tokens/types';
-import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
+import {
+  Condition,
+  FixedProductMarketMaker,
+  FpmmTrade,
+  getConditionMarket,
+  getMarketUserTrades,
+} from '@/queries/omen';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { PropsWithChildren, ReactNode, useCallback, useEffect, useState } from 'react';
+import {
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
+interface UserPositionAll extends UserPosition {
+  fpmmTrades: FpmmTrade[];
+  market: FixedProductMarketMaker;
+  condition: Condition;
+}
+
 export default function MyBetsPage() {
   const { address } = useAccount();
-  const [unredeemedBets, setUnredeemedBets] = useState<UserPosition[]>([]);
+  const [userPositionsAllData, setUserPositionsAllData] = useState<UserPositionAll[]>([]);
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -27,16 +46,11 @@ export default function MyBetsPage() {
 
   const userPositions = data?.userPositions ?? [];
 
-  const filterActiveBets = userPositions.filter(
-    position => position.position.conditions[0].resolved === false
-  );
-  const filterCompleteBets = userPositions.filter(
-    position => position.position.conditions[0].resolved
-  );
-
-  const fetchUnredeemedBets = useCallback(async () => {
+  const fetchUserPositionsConditionData = useCallback(async (): Promise<
+    UserPositionAll[]
+  > => {
     const results = await Promise.all(
-      filterCompleteBets.map(async userPosition => {
+      userPositions.map(async userPosition => {
         const position = new Position(userPosition.position);
         const outcomeIndex = position.outcomeIndex - 1;
 
@@ -48,7 +62,7 @@ export default function MyBetsPage() {
           const condition = conditionData?.conditions[0];
           const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
 
-          const userTrades = await queryClient.fetchQuery({
+          const fpmmTrades = await queryClient.fetchQuery({
             queryKey: ['getMarketUserTrades', address, market?.data.id, outcomeIndex],
             queryFn: () => {
               if (!!address && !!market)
@@ -60,43 +74,86 @@ export default function MyBetsPage() {
             },
           });
 
-          const outcomeBalance = tradesOutcomeBalance({
-            fpmmTrades: userTrades?.fpmmTrades,
-          });
-
-          const userPositionCondition = userPosition.position.conditions[0];
-
-          const isClaimed = !outcomeBalance;
-          const isWinner = market.isWinner(outcomeIndex);
-
-          const isResolved = userPositionCondition.resolved;
-          const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
-
-          const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
-
-          if (canClaim) return userPosition;
+          console.log('userTrades:', fpmmTrades);
+          return {
+            ...userPosition,
+            market: market.data,
+            condition,
+            fpmmTrades: fpmmTrades?.fpmmTrades || [],
+          } as UserPositionAll;
         } catch (error) {
           console.error(error);
+          return null; // Return null instead of undefined
         }
       })
     );
 
-    const filteredResults: UserPosition[] = results.filter(
-      (result): result is UserPosition => result !== undefined
-    );
-    setUnredeemedBets(filteredResults);
+    // Filter out null values and assert the type
+    return results.filter((result): result is UserPositionAll => result !== null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPositions]);
 
-  useEffect(() => {
-    if (!address || !filterCompleteBets.length) return;
+  const filterActiveBets = userPositionsAllData.filter(
+    userPosition => userPosition.position.conditions[0].resolved === false
+  );
 
-    fetchUnredeemedBets();
+  const filterCompleteBets = userPositionsAllData.filter(
+    userPosition => userPosition.position.conditions[0].resolved
+  );
+
+  const filterUnredeemedBets = useMemo(() => {
+    return filterCompleteBets.filter(userPosition => {
+      const position = new Position(userPosition.position);
+      const outcomeIndex = position.outcomeIndex - 1;
+
+      const condition = userPosition.condition;
+      const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
+      const outcomeBalance = tradesOutcomeBalance({
+        fpmmTrades: userPosition.fpmmTrades,
+      });
+      const userPositionCondition = userPosition.position.conditions[0];
+
+      const isClaimed = !outcomeBalance;
+      const isWinner = market.isWinner(outcomeIndex);
+
+      const isResolved = userPositionCondition.resolved;
+      const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
+
+      const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+
+      return canClaim;
+    });
+  }, [filterCompleteBets]);
+
+  useEffect(() => {
+    if (!address) return;
+
+    const fetchAndSetUserPositionsAllData = async () => {
+      const userPositionsAllData = await fetchUserPositionsConditionData();
+      setUserPositionsAllData(userPositionsAllData);
+      return userPositionsAllData;
+    };
+
+    fetchAndSetUserPositionsAllData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPositions]);
 
   if (!address) return <NoWalletConnectedPage />;
   if (data && data.userPositions.length === 0) return <NoBetsPage />;
+
+  const sortBetsByNewest = (bets: UserPositionAll[]) => {
+    return [...bets].sort((a, b) => {
+      return (
+        b.fpmmTrades[b.fpmmTrades.length - 1].creationTimestamp -
+        a.fpmmTrades[a.fpmmTrades.length - 1].creationTimestamp
+      );
+    });
+  };
+
+  const sortedAllBets = sortBetsByNewest(userPositionsAllData);
+  const sortedCompleteBets = sortBetsByNewest(filterCompleteBets);
+  const sortedActiveBets = sortBetsByNewest(filterActiveBets);
+  const sortedUnredeemedBets = sortBetsByNewest(filterUnredeemedBets);
 
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
@@ -105,26 +162,26 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositions}>All Bets</BetsListTab>
+              <BetsListTab bets={userPositionsAllData}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
-              <BetsListTab bets={unredeemedBets}>Unredeemed</BetsListTab>
+              <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
-              <BetsListPanel bets={userPositions} isLoading={isLoading} />
+              <BetsListPanel bets={sortedAllBets} isLoading={isLoading} />
               <BetsListPanel
                 emptyText="No active bets"
-                bets={filterActiveBets}
+                bets={sortedActiveBets}
                 isLoading={isLoading}
               />
               <BetsListPanel
                 emptyText="No unredeemed bets"
-                bets={unredeemedBets}
+                bets={sortedUnredeemedBets}
                 isLoading={isLoading}
               />
               <BetsListPanel
                 emptyText="No complete bets"
-                bets={filterCompleteBets}
+                bets={sortedCompleteBets}
                 isLoading={isLoading}
               />
             </TabBody>
@@ -176,7 +233,7 @@ const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) 
           <CardBet userPosition={position} key={position.id} />
         ))}
       {!isLoading && !bets.length && (
-        <div className="space-y-4 rounded-12 bg-surface-surface-2 p-6">
+        <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
           <p>{emptyText}</p>
         </div>
       )}
