@@ -3,11 +3,11 @@
 import { ModalId, useModal } from '@/context/ModalContext';
 import { PropsWithChildren, createContext, useContext, useState } from 'react';
 import { waitForTransactionReceipt } from '@wagmi/core';
-import { type WriteContractParameters, type Config } from '@wagmi/core';
+import { type WriteContractParameters } from '@wagmi/core';
 
 import { writeContract } from 'wagmi/actions';
 import { TransactionModal } from '@/app/components';
-import { config } from '@/providers/config';
+import { config } from '@/providers/chain-config';
 
 export interface TxContextProps {
   submitTx: (args: WriteContractParameters) => Promise<void>;

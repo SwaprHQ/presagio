@@ -2,7 +2,7 @@ import { UseReadContractParameters, useReadContract } from 'wagmi';
 import ConditionalTokensABI from '@/abi/conditionalTokens.json';
 import { Abi, Address, zeroHash } from 'viem';
 import { writeContract } from 'wagmi/actions';
-import { config } from '@/providers/config';
+import { config } from '@/providers/chain-config';
 import { WXDAI } from '@/constants';
 import { gnosis } from 'viem/chains';
 

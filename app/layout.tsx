@@ -11,6 +11,7 @@ import { Providers } from '@/providers';
 import { Footer } from '@/app/components/Footer';
 import { Navbar } from '@/app/components/Navbar';
 import { Suspense } from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
@@ -30,7 +31,7 @@ export default function RootLayout({
         <Suspense>
           <Providers>
             <Navbar />
-            {children}
+            <NextThemesProvider>{children}</NextThemesProvider>
             <Footer />
           </Providers>
         </Suspense>
