@@ -20,7 +20,7 @@ import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
-interface UserPositionAll extends UserPosition {
+interface UserPositionComplete extends UserPosition {
   fpmmTrades: FpmmTrade[];
   market: FixedProductMarketMaker;
   condition: Condition;
@@ -57,7 +57,7 @@ export default function MyBetsPage() {
             market: market.data,
             condition,
             fpmmTrades: tradesData?.fpmmTrades || [],
-          } as UserPositionAll;
+          } as UserPositionComplete;
         })
       );
 
@@ -107,7 +107,7 @@ export default function MyBetsPage() {
   if (!address) return <NoWalletConnectedPage />;
   if (userPositionsAllData && userPositionsAllData.length === 0) return <NoBetsPage />;
 
-  const sortBetsByNewest = (bets: UserPositionAll[]) => {
+  const sortBetsByNewest = (bets: UserPositionComplete[]) => {
     return [...bets].sort((a, b) => {
       return (
         b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
