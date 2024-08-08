@@ -14,9 +14,9 @@ import {
   getConditionMarket,
   getMarketUserTrades,
 } from '@/queries/omen';
-import { useQuery, useQueries } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-import { PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
+import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
@@ -28,87 +28,58 @@ interface UserPositionAll extends UserPosition {
 
 export default function MyBetsPage() {
   const { address } = useAccount();
-  const [userPositionsAllData, setUserPositionsAllData] = useState<UserPositionAll[]>([]);
 
-  const { data: userPositionsData, isLoading: isUserPositionsLoading } = useQuery({
-    queryKey: ['getUserPositions', address],
-    queryFn: () => getUserPositions({ id: address?.toLowerCase() as string }),
+  const { data: userPositionsAllData, isLoading } = useQuery({
+    queryKey: ['getUserPositionsAllData', address],
+    queryFn: async () => {
+      if (!address) return [];
+
+      const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
+      const userPositions = userPositionsData?.userPositions ?? [];
+
+      const userPositionsAllData = await Promise.all(
+        userPositions.map(async userPosition => {
+          const position = new Position(userPosition.position);
+          const outcomeIndex = position.outcomeIndex - 1;
+
+          const conditionData = await getConditionMarket({ id: position.conditionId });
+          const condition = conditionData?.conditions[0];
+          const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
+
+          const tradesData = await getMarketUserTrades({
+            creator: address.toLowerCase(),
+            fpmm: market.data.id,
+            outcomeIndex_in: [outcomeIndex],
+          });
+
+          return {
+            ...userPosition,
+            market: market.data,
+            condition,
+            fpmmTrades: tradesData?.fpmmTrades || [],
+          } as UserPositionAll;
+        })
+      );
+
+      return userPositionsAllData;
+    },
     enabled: !!address,
   });
 
-  const userPositions = useMemo(
-    () => userPositionsData?.userPositions ?? [],
-    [userPositionsData]
+  const filterActiveBets = useMemo(
+    () =>
+      userPositionsAllData?.filter(
+        userPosition => !userPosition.position.conditions[0].resolved
+      ) ?? [],
+    [userPositionsAllData]
   );
 
-  const queries = useMemo(() => {
-    return userPositions.flatMap(userPosition => {
-      const position = new Position(userPosition.position);
-      const outcomeIndex = position.outcomeIndex - 1;
-
-      return [
-        {
-          queryKey: ['getConditionMarket', position.conditionId],
-          queryFn: () => getConditionMarket({ id: position.conditionId }),
-        },
-        {
-          queryKey: ['getMarketUserTrades', address, position.conditionId, outcomeIndex],
-          queryFn: async () => {
-            if (!!address) {
-              const conditionData = await getConditionMarket({
-                id: position.conditionId,
-              });
-              const market = new Market(
-                conditionData.conditions[0]?.fixedProductMarketMakers[0]
-              );
-              return getMarketUserTrades({
-                creator: address.toLowerCase(),
-                fpmm: market.data.id,
-                outcomeIndex_in: [outcomeIndex],
-              });
-            }
-          },
-        },
-      ];
-    });
-  }, [userPositions, address]);
-
-  const queriesResults = useQueries({ queries });
-
-  const isLoading =
-    isUserPositionsLoading || queriesResults.some(query => query.isLoading);
-  const isSuccess = queriesResults.every(query => query.isSuccess);
-
-  useEffect(() => {
-    if (isSuccess) {
-      const newUserPositionsAllData = userPositions.map((userPosition, index) => {
-        const conditionData = queriesResults[index * 2].data;
-        const tradesData = queriesResults[index * 2 + 1].data;
-
-        // @ts-expect-error
-        const condition = conditionData?.conditions[0];
-        const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
-
-        return {
-          ...userPosition,
-          market: market.data,
-          condition,
-          // @ts-expect-error
-          fpmmTrades: tradesData?.fpmmTrades || [],
-        } as UserPositionAll;
-      });
-
-      setUserPositionsAllData(newUserPositionsAllData);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, userPositions]);
-
-  const filterActiveBets = userPositionsAllData.filter(
-    userPosition => userPosition.position.conditions[0].resolved === false
-  );
-
-  const filterCompleteBets = userPositionsAllData.filter(
-    userPosition => userPosition.position.conditions[0].resolved
+  const filterCompleteBets = useMemo(
+    () =>
+      userPositionsAllData?.filter(
+        userPosition => userPosition.position.conditions[0].resolved
+      ) ?? [],
+    [userPositionsAllData]
   );
 
   const filterUnredeemedBets = useMemo(() => {
@@ -129,15 +100,12 @@ export default function MyBetsPage() {
       const isResolved = userPositionCondition.resolved;
       const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
 
-      const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
-
-      return canClaim;
+      return isWinner && isResolved && !isClaimed && hasPayoutDenominator;
     });
   }, [filterCompleteBets]);
 
   if (!address) return <NoWalletConnectedPage />;
-  if (userPositionsData && userPositionsData.userPositions.length === 0)
-    return <NoBetsPage />;
+  if (userPositionsAllData && userPositionsAllData.length === 0) return <NoBetsPage />;
 
   const sortBetsByNewest = (bets: UserPositionAll[]) => {
     return [...bets].sort((a, b) => {
@@ -148,7 +116,7 @@ export default function MyBetsPage() {
     });
   };
 
-  const sortedAllBets = sortBetsByNewest(userPositionsAllData);
+  const sortedAllBets = sortBetsByNewest(userPositionsAllData ?? []);
   const sortedCompleteBets = sortBetsByNewest(filterCompleteBets);
   const sortedActiveBets = sortBetsByNewest(filterActiveBets);
   const sortedUnredeemedBets = sortBetsByNewest(filterUnredeemedBets);
@@ -160,7 +128,7 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositionsAllData}>All Bets</BetsListTab>
+              <BetsListTab bets={userPositionsAllData ?? []}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
               <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
@@ -189,7 +157,6 @@ export default function MyBetsPage() {
     </div>
   );
 }
-
 const BetsListTabCounter = ({ children }: PropsWithChildren) => (
   <div className="ml-2 rounded-6 border border-outline-low-em bg-surface-surface-0 p-1 px-1.5 text-2xs">
     {children}
