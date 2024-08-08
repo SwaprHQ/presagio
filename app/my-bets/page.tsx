@@ -20,7 +20,7 @@ import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
-interface UserPositionComplete extends UserPosition {
+export interface UserPositionComplete extends UserPosition {
   fpmmTrades: FpmmTrade[];
   market: FixedProductMarketMaker;
   condition: Condition;
@@ -29,15 +29,15 @@ interface UserPositionComplete extends UserPosition {
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsAllData, isLoading } = useQuery({
-    queryKey: ['getUserPositionsAllData', address],
+  const { data: userPositionsComplete, isLoading } = useQuery({
+    queryKey: ['getUserPositionsComplete', address],
     queryFn: async () => {
       if (!address) return [];
 
       const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
       const userPositions = userPositionsData?.userPositions ?? [];
 
-      const userPositionsAllData = await Promise.all(
+      const userPositionsComplete = await Promise.all(
         userPositions.map(async userPosition => {
           const position = new Position(userPosition.position);
           const outcomeIndex = position.outcomeIndex - 1;
@@ -61,25 +61,25 @@ export default function MyBetsPage() {
         })
       );
 
-      return userPositionsAllData;
+      return userPositionsComplete;
     },
     enabled: !!address,
   });
 
   const filterActiveBets = useMemo(
     () =>
-      userPositionsAllData?.filter(
+      userPositionsComplete?.filter(
         userPosition => !userPosition.position.conditions[0].resolved
       ) ?? [],
-    [userPositionsAllData]
+    [userPositionsComplete]
   );
 
   const filterCompleteBets = useMemo(
     () =>
-      userPositionsAllData?.filter(
+      userPositionsComplete?.filter(
         userPosition => userPosition.position.conditions[0].resolved
       ) ?? [],
-    [userPositionsAllData]
+    [userPositionsComplete]
   );
 
   const filterUnredeemedBets = useMemo(() => {
@@ -105,7 +105,7 @@ export default function MyBetsPage() {
   }, [filterCompleteBets]);
 
   if (!address) return <NoWalletConnectedPage />;
-  if (userPositionsAllData && userPositionsAllData.length === 0) return <NoBetsPage />;
+  if (userPositionsComplete && userPositionsComplete.length === 0) return <NoBetsPage />;
 
   const sortBetsByNewest = (bets: UserPositionComplete[]) => {
     return [...bets].sort((a, b) => {
@@ -116,7 +116,7 @@ export default function MyBetsPage() {
     });
   };
 
-  const sortedAllBets = sortBetsByNewest(userPositionsAllData ?? []);
+  const sortedAllBets = sortBetsByNewest(userPositionsComplete ?? []);
   const sortedCompleteBets = sortBetsByNewest(filterCompleteBets);
   const sortedActiveBets = sortBetsByNewest(filterActiveBets);
   const sortedUnredeemedBets = sortBetsByNewest(filterUnredeemedBets);
@@ -128,7 +128,7 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositionsAllData ?? []}>All Bets</BetsListTab>
+              <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
               <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
@@ -168,7 +168,7 @@ const LoadingBets = () =>
 
 interface BetsListPanelProps {
   emptyText?: string;
-  bets: UserPosition[];
+  bets: UserPositionComplete[];
   isLoading: boolean;
   unredeemed?: boolean;
 }
@@ -194,8 +194,11 @@ const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) 
       {isLoading && <LoadingBets />}
       {!isLoading &&
         bets.length > 0 &&
-        bets.map((position: UserPosition) => (
-          <CardBet userPosition={position} key={position.id} />
+        bets.map((userPositionComplete: UserPositionComplete) => (
+          <CardBet
+            userPositionComplete={userPositionComplete}
+            key={userPositionComplete.id}
+          />
         ))}
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">

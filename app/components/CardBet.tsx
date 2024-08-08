@@ -1,15 +1,12 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import { cx } from 'class-variance-authority';
 import Link from 'next/link';
-import { useAccount, useConfig } from 'wagmi';
+import { useConfig } from 'wagmi';
 
 import { Button, Tag } from '@swapr/ui';
 import { Card, TokenLogo } from '@/app/components';
 
-import { UserPosition } from '@/queries/conditional-tokens/types';
-import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
 import { remainingTime } from '@/utils/dates';
 import {
   Market,
@@ -23,57 +20,33 @@ import { useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { MarketThumbnail } from './MarketThumbnail';
+import { UserPositionComplete } from '@/app/my-bets/page';
 
 interface BetProps {
-  userPosition: UserPosition;
+  userPositionComplete: UserPositionComplete;
 }
 
-export const CardBet = ({ userPosition }: BetProps) => {
-  const position = new Position(userPosition.position);
+export const CardBet = ({ userPositionComplete }: BetProps) => {
+  console.log('userPosition:', userPositionComplete);
+  const position = new Position(userPositionComplete.position);
   const outcomeIndex = position.outcomeIndex - 1;
 
   const config = useConfig();
-  const { address } = useAccount();
   const [txHash, setTxHash] = useState('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { openModal } = useModal();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['getConditionMarket', position.conditionId],
-    queryFn: async () =>
-      getConditionMarket({
-        id: position.conditionId,
-      }),
-    enabled: !!position.conditionId,
-  });
-
-  const market =
-    data?.conditions[0] && new Market(data?.conditions[0]?.fixedProductMarketMakers[0]);
-
-  const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
-    queryKey: ['getMarketUserTrades', address, market?.data.id, outcomeIndex],
-    queryFn: async () => {
-      if (!!address && !!market)
-        return getMarketUserTrades({
-          creator: address.toLowerCase(),
-          fpmm: market.data.id,
-          outcomeIndex_in: [outcomeIndex],
-        });
-    },
-    enabled: !!market?.data?.id,
-  });
+  const market = new Market(userPositionComplete.condition.fixedProductMarketMakers[0]);
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
-    fpmmTrades: userTrades?.fpmmTrades,
+    fpmmTrades: userPositionComplete?.fpmmTrades,
   });
 
   const outcomeBalance = tradesOutcomeBalance({
-    fpmmTrades: userTrades?.fpmmTrades,
+    fpmmTrades: userPositionComplete?.fpmmTrades,
   });
 
   const balance = outcomeBalance ? outcomeBalance.toFixed(2) : '-';
-
-  if (isLoading || isUserTradesLoading) return <LoadingCardBet />;
 
   if (!market) return;
 
@@ -86,7 +59,7 @@ export const CardBet = ({ userPosition }: BetProps) => {
       : 'You lost'
     : 'Potential win';
 
-  const condition = userPosition.position.conditions[0];
+  const condition = userPositionComplete.position.conditions[0];
 
   const isClaimed = !outcomeBalance;
   const isResolved = condition.resolved;
