@@ -8,6 +8,7 @@ import { ChainId } from '@/constants';
 import { Address, formatEther } from 'viem';
 import { Button, ButtonProps, ButtonSizeProp } from '@swapr/ui';
 import { PropsWithChildren } from 'react';
+import { cx } from 'class-variance-authority';
 
 interface CustomConnectButtonProps {
   address: Address;
@@ -44,7 +45,12 @@ const CustomConnectButton = ({
   };
 
   return (
-    <div className="rounded-20 bg-surface-surface-2 flex items-center justify-center text-nowrap p-0.5 md:space-x-3 md:pl-4">
+    <div
+      className={cx(
+        'flex items-center justify-center text-nowrap rounded-20 bg-surface-surface-2 p-0.5 md:space-x-3',
+        balance && 'md:pl-4'
+      )}
+    >
       {balance && <p className="hidden md:block">{formattedBalance(balance)}</p>}
       <Button
         onClick={onClick}

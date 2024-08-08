@@ -1,5 +1,6 @@
 import MarketABI from '@/abi/market.json';
 import { Abi, Address, parseEther } from 'viem';
+import { gnosis } from 'viem/chains';
 import { UseReadContractParameters, useReadContract } from 'wagmi';
 
 export const useReadMarketContract = ({
@@ -14,6 +15,7 @@ export const useReadMarketContract = ({
     functionName,
     args,
     query,
+    chainId: gnosis.id,
   });
 };
 

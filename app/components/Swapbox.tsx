@@ -4,7 +4,7 @@ import { Button, IconButton } from '@swapr/ui';
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { formatEther, parseEther, Address } from 'viem';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useChains, useReadContract } from 'wagmi';
 import { ConnectButton } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
@@ -27,6 +27,7 @@ import {
   useReadBalanceOf,
   useReadToken,
 } from '@/hooks/contracts/erc20';
+import { gnosis } from 'viem/chains';
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = '1';
@@ -55,7 +56,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   const outcome0 = new Outcome(0, market.outcomes?.[0] || 'Option 1', id);
   const outcome1 = new Outcome(1, market.outcomes?.[1] || 'Option 2', id);
 
-  const { address, isDisconnected } = useAccount();
+  const { address, isDisconnected, chainId: connectorChainId } = useAccount();
+  const supportedChains = useChains();
   const { openModal } = useModal();
 
   const [tokenAmountIn, setTokenAmountIn] = useState('');
@@ -90,6 +92,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     functionName: 'isApprovedForAll',
     args: [address as Address, id],
     query: { enabled: !!address },
+    chainId: gnosis.id,
   });
 
   const { data: balance, refetch: refetchCollateralBalance } = useReadBalanceOf({
@@ -211,6 +214,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const outcomeList = [outcome0, outcome1];
 
+  const unsupportedNetwork =
+    !!connectorChainId &&
+    !supportedChains.some(supportedChain => supportedChain.id === connectorChainId);
+
   return (
     <>
       <div className="relative space-y-2">
@@ -286,6 +293,10 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
             <ConnectButton width="full" size="lg">
               Connect
             </ConnectButton>
+          ) : unsupportedNetwork ? (
+            <Button width="full" variant="pastel" size="lg" disabled>
+              Unsupported network
+            </Button>
           ) : !tokenAmountIn || +tokenAmountIn === 0 ? (
             <Button width="full" variant="pastel" size="lg" disabled>
               Enter amount

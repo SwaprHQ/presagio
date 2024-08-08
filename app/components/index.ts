@@ -8,3 +8,5 @@ export * from './UserBets';
 export * from './MarketThumbnail';
 export * from './TokenLogo';
 export * from './ui';
+export * from './Navbar';
+export * from './Footer';

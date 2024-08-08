@@ -6,8 +6,12 @@ import './globals.css';
 import '@swapr/ui/colors.css';
 
 import { Providers } from '@/providers';
-import { Navbar, Footer } from '@/app/components/ui';
+
+// exporting from components directory will create an error
+import { Footer } from '@/app/components/Footer';
+import { Navbar } from '@/app/components/Navbar';
 import { Suspense } from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
@@ -27,7 +31,7 @@ export default function RootLayout({
         <Suspense>
           <Providers>
             <Navbar />
-            {children}
+            <NextThemesProvider>{children}</NextThemesProvider>
             <Footer />
           </Providers>
         </Suspense>
