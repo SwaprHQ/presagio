@@ -11,7 +11,7 @@ import { Button, Icon, Tag } from '@swapr/ui';
 import { ChainId } from '@/constants';
 import { TransactionModal } from '.';
 import { ModalId, useModal } from '@/context/ModalContext';
-import { config } from '@/providers/config';
+import { config } from '@/providers/chain-config';
 import { redeemPositions, useReadBalance } from '@/hooks/contracts';
 import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
