@@ -8,6 +8,7 @@ export class Market {
   answer: number | null;
   isClosed: boolean;
   outcomes: Outcome[];
+  hasLiquidity: boolean;
 
   constructor(market: FixedProductMarketMaker) {
     this.data = market;
@@ -16,6 +17,7 @@ export class Market {
       ? fromHex(market.question.currentAnswer, 'number')
       : null;
     this.isClosed = this.answer !== null;
+    this.hasLiquidity = Number(market.scaledLiquidityParameter) > 0;
 
     this.outcomes = [
       new Outcome(

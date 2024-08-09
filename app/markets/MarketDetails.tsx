@@ -90,7 +90,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           </div>
           {tab === 'bet' && (
             <div className="p-2">
-              {!marketModel.isClosed ? (
+              {!marketModel.isClosed && marketModel.hasLiquidity ? (
                 <Swapbox market={market} />
               ) : (
                 <div className="p-4 text-center">Market closed</div>
