@@ -29,7 +29,7 @@ export interface UserPositionComplete extends UserPosition {
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete, isLoading } = useQuery({
+  const { data: userPositionsComplete, isLoading } = useQuery<UserPositionComplete[]>({
     queryKey: ['getUserPositionsComplete', address],
     queryFn: async () => {
       if (!address) return [];
@@ -57,7 +57,7 @@ export default function MyBetsPage() {
             market: market.data,
             condition,
             fpmmTrades: tradesData?.fpmmTrades || [],
-          } as UserPositionComplete;
+          };
         })
       );
 
@@ -66,20 +66,31 @@ export default function MyBetsPage() {
     enabled: !!address,
   });
 
+  const sortBetsByNewest = (bets: UserPositionComplete[]) => {
+    return [...bets].sort((a, b) => {
+      return (
+        b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
+        a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
+      );
+    });
+  };
+
+  const sortedUserPositionsCompleteBets = sortBetsByNewest(userPositionsComplete ?? []);
+
   const filterActiveBets = useMemo(
     () =>
-      userPositionsComplete?.filter(
+      sortedUserPositionsCompleteBets?.filter(
         userPosition => !userPosition.position.conditions[0].resolved
       ) ?? [],
-    [userPositionsComplete]
+    [sortedUserPositionsCompleteBets]
   );
 
   const filterCompleteBets = useMemo(
     () =>
-      userPositionsComplete?.filter(
+      sortedUserPositionsCompleteBets?.filter(
         userPosition => userPosition.position.conditions[0].resolved
       ) ?? [],
-    [userPositionsComplete]
+    [sortedUserPositionsCompleteBets]
   );
 
   const filterUnredeemedBets = useMemo(() => {
@@ -107,20 +118,6 @@ export default function MyBetsPage() {
   if (!address) return <NoWalletConnectedPage />;
   if (userPositionsComplete && userPositionsComplete.length === 0) return <NoBetsPage />;
 
-  const sortBetsByNewest = (bets: UserPositionComplete[]) => {
-    return [...bets].sort((a, b) => {
-      return (
-        b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
-        a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
-      );
-    });
-  };
-
-  const sortedAllBets = sortBetsByNewest(userPositionsComplete ?? []);
-  const sortedCompleteBets = sortBetsByNewest(filterCompleteBets);
-  const sortedActiveBets = sortBetsByNewest(filterActiveBets);
-  const sortedUnredeemedBets = sortBetsByNewest(filterUnredeemedBets);
-
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
@@ -134,20 +131,23 @@ export default function MyBetsPage() {
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
-              <BetsListPanel bets={sortedAllBets} isLoading={isLoading} />
+              <BetsListPanel
+                bets={sortedUserPositionsCompleteBets}
+                isLoading={isLoading}
+              />
               <BetsListPanel
                 emptyText="No active bets"
-                bets={sortedActiveBets}
+                bets={filterActiveBets}
                 isLoading={isLoading}
               />
               <BetsListPanel
                 emptyText="No unredeemed bets"
-                bets={sortedUnredeemedBets}
+                bets={filterUnredeemedBets}
                 isLoading={isLoading}
               />
               <BetsListPanel
                 emptyText="No complete bets"
-                bets={sortedCompleteBets}
+                bets={filterCompleteBets}
                 isLoading={isLoading}
               />
             </TabBody>
