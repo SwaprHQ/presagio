@@ -27,7 +27,7 @@ export const formatDateTime = (timestamp: number, formatStr = 'HH:mm - d MMM') =
 };
 
 export const formatDateTimeWithYear = (timestamp: number) => {
-  return formatDateTime(timestamp, 'HH:mm - d MMM - yyyy');
+  return formatDateTime(timestamp, 'HH:mm - d MMM yyyy');
 };
 
 export const timeAgo = (timeStamp: number): string => {
