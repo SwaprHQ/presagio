@@ -7,7 +7,7 @@ import { useConfig } from 'wagmi';
 import { Button, Tag } from '@swapr/ui';
 import { Card, TokenLogo } from '@/app/components';
 
-import { formatDateTime, formatDateTimeWithYear, remainingTime } from '@/utils/dates';
+import { formatDateTimeWithYear, remainingTime } from '@/utils/dates';
 import {
   Market,
   Position,
@@ -42,7 +42,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
   });
   const lastTradeTimestamp =
     userPositionComplete?.fpmmTrades[userPositionComplete?.fpmmTrades.length - 1]
-      .creationTimestamp;
+      ?.creationTimestamp;
 
   const outcomeBalance = tradesOutcomeBalance({
     fpmmTrades: userPositionComplete?.fpmmTrades,
@@ -150,12 +150,14 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
                 )}
               </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">Last bet:</p>
-              <p className="text-sm font-semibold text-text-high-em">
-                {formatDateTimeWithYear(lastTradeTimestamp)}
-              </p>
-            </div>
+            {lastTradeTimestamp && (
+              <div className="flex items-center space-x-1">
+                <p className="text-sm font-semibold text-text-med-em">Last bet:</p>
+                <p className="text-sm font-semibold text-text-high-em">
+                  {formatDateTimeWithYear(lastTradeTimestamp)}
+                </p>
+              </div>
+            )}
           </div>
           {canClaim && (
             <>
