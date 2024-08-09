@@ -37,28 +37,46 @@ export default function MyBetsPage() {
       const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
       const userPositions = userPositionsData?.userPositions ?? [];
 
-      const userPositionsComplete = await Promise.all(
-        userPositions.map(async userPosition => {
-          const position = new Position(userPosition.position);
-          const outcomeIndex = position.outcomeIndex - 1;
+      const userPositionsComplete = await Promise.allSettled(
+        userPositions.map(
+          async (userPosition): Promise<UserPositionComplete | undefined> => {
+            try {
+              const position = new Position(userPosition.position);
+              const outcomeIndex = position.outcomeIndex - 1;
 
-          const conditionData = await getConditionMarket({ id: position.conditionId });
-          const condition = conditionData?.conditions[0];
-          const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
+              const conditionData = await getConditionMarket({
+                id: position.conditionId,
+              });
+              const condition = conditionData?.conditions[0];
+              const market =
+                condition && new Market(condition?.fixedProductMarketMakers[0]);
 
-          const tradesData = await getMarketUserTrades({
-            creator: address.toLowerCase(),
-            fpmm: market.data.id,
-            outcomeIndex_in: [outcomeIndex],
-          });
+              if (!market) return undefined;
 
-          return {
-            ...userPosition,
-            market: market.data,
-            condition,
-            fpmmTrades: tradesData?.fpmmTrades || [],
-          };
-        })
+              const tradesData = await getMarketUserTrades({
+                creator: address.toLowerCase(),
+                fpmm: market.data.id,
+                outcomeIndex_in: [outcomeIndex],
+              });
+
+              return {
+                ...userPosition,
+                market: market.data,
+                condition,
+                fpmmTrades: tradesData?.fpmmTrades || [],
+              };
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        )
+      ).then(results =>
+        results
+          .filter(
+            (result): result is PromiseFulfilledResult<UserPositionComplete> =>
+              result.status === 'fulfilled' && result.value !== undefined
+          )
+          .map(result => result.value)
       );
 
       return userPositionsComplete;
@@ -116,7 +134,7 @@ export default function MyBetsPage() {
   }, [filterCompleteBets]);
 
   if (!address) return <NoWalletConnectedPage />;
-  if (userPositionsComplete && userPositionsComplete.length === 0) return <NoBetsPage />;
+  if (!isLoading && sortedUserPositionsCompleteBets.length === 0) return <NoBetsPage />;
 
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
@@ -125,7 +143,7 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
+              <BetsListTab bets={sortedUserPositionsCompleteBets}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
               <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
