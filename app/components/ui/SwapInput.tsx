@@ -34,7 +34,7 @@ export const SwapInput = ({
           onKeyDown={evt =>
             ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()
           }
-          className="overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
+          className="w-full overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
           {...props}
         />
         {selectedToken instanceof Token ? (
