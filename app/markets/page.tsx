@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 const Market = () => {
   const searchParams = useSearchParams();
 
-  const id = searchParams.get('id') as Address;
+  const id = searchParams.get('id')?.toLocaleLowerCase();
 
   // Empty State
   if (!id || !isAddress(id)) return null;
