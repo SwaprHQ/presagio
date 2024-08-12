@@ -26,6 +26,13 @@ export interface UserPositionComplete extends UserPosition {
   condition: Condition;
 }
 
+const sortByNewestBet = (a: UserPositionComplete, b: UserPositionComplete) => {
+  return (
+    b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
+    a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
+  );
+};
+
 export default function MyBetsPage() {
   const { address } = useAccount();
 
@@ -77,6 +84,7 @@ export default function MyBetsPage() {
               result.status === 'fulfilled' && result.value !== undefined
           )
           .map(result => result.value)
+          .sort(sortByNewestBet)
       );
 
       return userPositionsComplete;
@@ -84,31 +92,20 @@ export default function MyBetsPage() {
     enabled: !!address,
   });
 
-  const sortBetsByNewest = (bets: UserPositionComplete[]) => {
-    return [...bets].sort((a, b) => {
-      return (
-        b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
-        a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
-      );
-    });
-  };
-
-  const sortedUserPositionsCompleteBets = sortBetsByNewest(userPositionsComplete ?? []);
-
   const filterActiveBets = useMemo(
     () =>
-      sortedUserPositionsCompleteBets?.filter(
+      userPositionsComplete?.filter(
         userPosition => !userPosition.position.conditions[0].resolved
       ) ?? [],
-    [sortedUserPositionsCompleteBets]
+    [userPositionsComplete]
   );
 
   const filterCompleteBets = useMemo(
     () =>
-      sortedUserPositionsCompleteBets?.filter(
+      userPositionsComplete?.filter(
         userPosition => userPosition.position.conditions[0].resolved
       ) ?? [],
-    [sortedUserPositionsCompleteBets]
+    [userPositionsComplete]
   );
 
   const filterUnredeemedBets = useMemo(() => {
@@ -134,7 +131,7 @@ export default function MyBetsPage() {
   }, [filterCompleteBets]);
 
   if (!address) return <NoWalletConnectedPage />;
-  if (!isLoading && sortedUserPositionsCompleteBets.length === 0) return <NoBetsPage />;
+  if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
 
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
@@ -143,16 +140,13 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={sortedUserPositionsCompleteBets}>All Bets</BetsListTab>
+              <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
               <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
-              <BetsListPanel
-                bets={sortedUserPositionsCompleteBets}
-                isLoading={isLoading}
-              />
+              <BetsListPanel bets={userPositionsComplete ?? []} isLoading={isLoading} />
               <BetsListPanel
                 emptyText="No active bets"
                 bets={filterActiveBets}
