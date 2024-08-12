@@ -1,3 +1,5 @@
+'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import Image, { ImageProps } from 'next/image';
 import { OMEN_THUMBNAIL_MAPPING_SUBGRAPH_URL } from '@/constants';
