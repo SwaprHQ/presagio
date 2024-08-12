@@ -73,8 +73,8 @@ const BetsImageLight = ({ ...props }) => (
         y2="72"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#7755FF" />
-        <stop offset="1" stop-color="#F4F3FF" />
+        <stop stopColor="#7755FF" />
+        <stop offset="1" stopColor="#F4F3FF" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_6631_6392"
@@ -84,8 +84,8 @@ const BetsImageLight = ({ ...props }) => (
         y2="47"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#BDB5FD" />
-        <stop offset="1" stop-color="#907EF9" />
+        <stop stopColor="#BDB5FD" />
+        <stop offset="1" stopColor="#907EF9" />
       </linearGradient>
     </defs>
   </svg>
@@ -186,8 +186,8 @@ const BetsImageDark = ({ ...props }) => (
         y2="72"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#7755FF" />
-        <stop offset="1" stop-color="#251255" />
+        <stop stopColor="#7755FF" />
+        <stop offset="1" stopColor="#251255" />
       </linearGradient>
       <linearGradient
         id="paint1_linear_6631_6295"
@@ -197,9 +197,9 @@ const BetsImageDark = ({ ...props }) => (
         y2="47"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#7755FF" />
-        <stop offset="1" stop-color="#897AFF" />
-        <stop offset="1" stop-color="#907EF9" />
+        <stop stopColor="#7755FF" />
+        <stop offset="1" stopColor="#897AFF" />
+        <stop offset="1" stopColor="#907EF9" />
       </linearGradient>
       <linearGradient
         id="paint2_linear_6631_6295"
@@ -209,8 +209,8 @@ const BetsImageDark = ({ ...props }) => (
         y2="47"
         gradientUnits="userSpaceOnUse"
       >
-        <stop stop-color="#BDB5FD" />
-        <stop offset="1" stop-color="#907EF9" />
+        <stop stopColor="#BDB5FD" />
+        <stop offset="1" stopColor="#907EF9" />
       </linearGradient>
     </defs>
   </svg>
