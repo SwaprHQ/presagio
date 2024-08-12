@@ -1,4 +1,5 @@
-import { cx } from 'class-variance-authority';
+'use client';
+
 import { useQuery } from '@tanstack/react-query';
 import request from 'graphql-request';
 

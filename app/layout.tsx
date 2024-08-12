@@ -7,9 +7,7 @@ import '@swapr/ui/colors.css';
 
 import { Providers } from '@/providers';
 
-// exporting from components directory will create an error
-import { Footer } from '@/app/components/Footer';
-import { Navbar } from '@/app/components/Navbar';
+import { Footer, Navbar } from '@/app/components';
 import { Suspense } from 'react';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
 

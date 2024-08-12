@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Button,
   Dialog,
@@ -44,10 +46,10 @@ export const TransactionModal = ({
                   className="animate-spin"
                 />
                 <div className="flex flex-col items-center space-y-2">
-                  <p className="text-text-high-em text-2xl font-semibold">
+                  <p className="text-2xl font-semibold text-text-high-em">
                     Transaction submitted
                   </p>
-                  <p className="text-md text-text-low-em max-w-80 text-center font-semibold">
+                  <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                     The transaction has been submitted. <br />
                     It takes a couple of minutes to complete.
                   </p>
@@ -59,10 +61,10 @@ export const TransactionModal = ({
                   <>
                     <IconBadge name="tick" colorScheme="success" />
                     <div className="flex flex-col items-center space-y-2">
-                      <p className="text-text-high-em text-2xl font-semibold">
+                      <p className="text-2xl font-semibold text-text-high-em">
                         Transaction successful!
                       </p>
-                      <p className="text-md text-text-low-em max-w-80 text-center font-semibold">
+                      <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                         The transaction has been completed. <br />
                         You can close this window now.
                       </p>
@@ -73,10 +75,10 @@ export const TransactionModal = ({
                   <>
                     <IconBadge name="exclamation" colorScheme="error" />
                     <div className="flex flex-col items-center space-y-2">
-                      <p className="text-text-high-em text-2xl font-semibold">
+                      <p className="text-2xl font-semibold text-text-high-em">
                         There was an error.
                       </p>
-                      <p className="text-md text-text-low-em max-w-80 text-center font-semibold">
+                      <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
                         Unfortunately the transaction was not completed.
                       </p>
                     </div>
