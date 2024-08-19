@@ -1,18 +1,18 @@
 'use client';
 
-import { OutcomeBar, Swapbox } from '@/app/components';
+import { OutcomeBar, UserBets, MarketThumbnail } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
-import { Button, IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
+import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
 import { remainingTime } from '@/utils/dates';
 import { Address } from 'viem';
 import { Market } from '@/entities';
-import { UserBets } from '../components/UserBets';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { HistorySection } from '@/app/markets/HistorySection';
-import { MarketThumbnail } from '../components/MarketThumbnail';
+import { HistorySection } from './HistorySection';
 import { News } from './News';
+import { Info } from './Info';
+import { Bet } from './Bet';
 
 interface MarketDetailsProps {
   id: Address;
@@ -22,6 +22,7 @@ enum Tabs {
   BET = 'bet',
   HISTORY = 'history',
   NEWS = 'news',
+  INFO = 'info',
 }
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
@@ -88,19 +89,20 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               ))}
             </ToggleGroup>
           </div>
-          {tab === 'bet' && (
+          {tab === Tabs.BET && (
             <div className="p-2">
-              {!marketModel.isClosed && marketModel.hasLiquidity ? (
-                <Swapbox market={market} />
-              ) : (
-                <div className="p-4 text-center">Market closed</div>
-              )}
+              <Bet market={market} />
             </div>
           )}
-          {tab === 'history' && <HistorySection id={id} />}
-          {tab === 'news' && (
+          {tab === Tabs.HISTORY && <HistorySection id={id} />}
+          {tab === Tabs.NEWS && (
             <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
               <News id={id} />
+            </div>
+          )}
+          {tab === Tabs.INFO && (
+            <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+              <Info market={market} />
             </div>
           )}
         </div>

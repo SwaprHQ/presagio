@@ -1,6 +1,7 @@
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { fromHex } from 'viem';
 import { Outcome } from '@/entities';
+import { isPast } from 'date-fns';
 
 export class Market {
   data: FixedProductMarketMaker;
@@ -16,7 +17,7 @@ export class Market {
     this.answer = market?.question?.currentAnswer
       ? fromHex(market.question.currentAnswer, 'number')
       : null;
-    this.isClosed = this.answer !== null;
+    this.isClosed = this.answer !== null || isPast(this.closingDate);
     this.hasLiquidity = Number(market.scaledLiquidityParameter) > 0;
 
     this.outcomes = [

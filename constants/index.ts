@@ -43,3 +43,8 @@ export const OMEN_THUMBNAIL_MAPPING_SUBGRAPH_URL =
   `https://gateway-arbitrum.network.thegraph.com/api/${SUBGRAPH_API_KEY}/subgraphs/id/EWN14ciGK53PpUiKSm7kMWQ6G4iz3tDrRLyZ1iXMQEdu`;
 
 export const DUNE_API_KEY = process.env.NEXT_PUBLIC_DUNE_API_KEY || '';
+
+export const GNOSIS_SCAN_URL = 'https://gnosisscan.io';
+export const KLEROS_URL = 'https://kleros.io';
+const REALITY_URL = 'https://reality.eth.limo';
+export const REALITY_QUESTION_URL = `${REALITY_URL}/app/#!/network/100/question/0x79e32ae03fb27b07c89c0c568f80287c01ca2e57-`;
