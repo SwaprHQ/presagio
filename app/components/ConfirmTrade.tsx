@@ -20,6 +20,7 @@ import { addFraction, removeFraction } from '@/utils/price';
 import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
 import { useTx } from '@/context';
 import { Token } from '@/entities';
+import { formatEtherWithFixedDecimals } from '@/utils';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -58,11 +59,9 @@ export const ConfirmTrade = ({
   };
 
   const amountWei = parseEther(tokenAmountIn);
-  const twoDecimalsTokenAmountIn = tokenAmountIn
-    ? parseFloat(tokenAmountIn).toFixed(2)
-    : '';
-  const twoDecimalsTokenAmountOut = tokenAmountOut
-    ? parseFloat(formatEther(tokenAmountOut)).toFixed(2)
+  const formattedTokenAmountIn = tokenAmountIn ? tokenAmountIn : '';
+  const formattedTokenAmountOut = tokenAmountOut
+    ? formatEtherWithFixedDecimals(tokenAmountOut)
     : '';
 
   const approveToken = async () => {
@@ -140,7 +139,7 @@ export const ConfirmTrade = ({
             <div className="flex w-full flex-col items-center space-y-1 border-b-[1px] border-b-outline-base-em pb-8 pt-3">
               <p className="text-xs uppercase text-text-low-em">You sell</p>
               <div className="text-2xl uppercase">
-                <span>{twoDecimalsTokenAmountIn}</span>{' '}
+                <span>{formattedTokenAmountIn}</span>{' '}
                 <span className="text-text-low-em">{swapState.inToken.symbol}</span>
               </div>
             </div>
@@ -150,7 +149,7 @@ export const ConfirmTrade = ({
             <div className="flex w-full flex-col items-center space-y-1 pb-3 pt-8">
               <p className="text-xs uppercase text-text-low-em">You buy</p>
               <div className="text-2xl uppercase">
-                <span>{twoDecimalsTokenAmountOut}</span>{' '}
+                <span>{formattedTokenAmountOut}</span>{' '}
                 <span className="text-text-low-em">{swapState.outToken.symbol}</span>
               </div>
             </div>

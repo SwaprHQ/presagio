@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
-import { formatEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
 import { cx } from 'class-variance-authority';
 import { waitForTransactionReceipt } from 'wagmi/actions';
 import { Market, Token, valueByTrade } from '@/entities';
@@ -17,6 +17,7 @@ import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
 import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
+import { formatValueWithFixedDecimals } from '@/utils';
 
 interface UserBets {
   market: FixedProductMarketMaker;
@@ -179,9 +180,14 @@ export const UserBets = ({ market }: UserBets) => {
 
           const alreadyClaimed = canClaim && outcomesBalance[index] === BigInt(0);
 
-          const collateralSpent = outcomesCollateralAmountUSDSpent[index].toFixed(2);
-          const tradedBalance = outcomesTradedBalance[index].toFixed(2);
-
+          const collateralSpent = formatValueWithFixedDecimals(
+            outcomesCollateralAmountUSDSpent[index],
+            4
+          );
+          const tradedBalance = formatValueWithFixedDecimals(
+            outcomesTradedBalance[index],
+            4
+          );
           const resultString = alreadyClaimed
             ? 'You claimed:'
             : canClaim
@@ -201,7 +207,7 @@ export const UserBets = ({ market }: UserBets) => {
                       : 'bg-gradient-to-b from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]')
                 )}
               >
-                <div className="flex space-x-2 divide-x-2 divide-outline-base-em px-4">
+                <div className="flex items-center space-x-2 divide-x-2 divide-outline-base-em px-4">
                   <Tag
                     className="w-fit uppercase"
                     size="sm"
@@ -209,7 +215,7 @@ export const UserBets = ({ market }: UserBets) => {
                   >
                     {outcome.symbol}
                   </Tag>
-                  <div className="flex h-8 w-full items-center justify-between pl-2">
+                  <div className="flex w-full flex-wrap items-center justify-between py-1 pl-2">
                     <p className="font-semibold">
                       <span className="text-text-low-em">Bet amount: </span>
                       <span>
