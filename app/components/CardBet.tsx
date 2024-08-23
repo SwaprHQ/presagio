@@ -21,6 +21,7 @@ import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { MarketThumbnail } from './MarketThumbnail';
 import { UserPositionComplete } from '@/app/my-bets/page';
+import { formatValueWithFixedDecimals } from '@/utils';
 
 interface BetProps {
   userPositionComplete: UserPositionComplete;
@@ -47,8 +48,6 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
   const outcomeBalance = tradesOutcomeBalance({
     fpmmTrades: userPositionComplete?.fpmmTrades,
   });
-
-  const balance = outcomeBalance ? outcomeBalance.toFixed(2) : '-';
 
   if (!market) return;
 
@@ -132,7 +131,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">Bet amount:</p>
               <p className="text-sm font-semibold text-text-high-em">
-                ${collateralAmountUSDSpent?.toFixed(2)}
+                ${formatValueWithFixedDecimals(collateralAmountUSDSpent, 4)}
               </p>
             </div>
             <div className="flex items-center space-x-1">
@@ -142,11 +141,11 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
               <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
                 {!market.isClosed || isWinner ? (
                   <>
-                    <p>{balance}</p>
+                    <p>{formatValueWithFixedDecimals(outcomeBalance)}</p>
                     <TokenLogo address={market.data.collateralToken} className="size-3" />
                   </>
                 ) : (
-                  '$' + collateralAmountUSDSpent?.toFixed(2)
+                  '$' + formatValueWithFixedDecimals(collateralAmountUSDSpent)
                 )}
               </div>
             </div>

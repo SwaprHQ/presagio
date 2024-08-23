@@ -7,10 +7,22 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 export const formattedNumberDollars = (number: number) => formatter.format(number);
 
-export const formatEtherWithFixedDecimals = (wei: bigint, fixedDecimals: number = 3) => {
-  const sharesFormatted = formatEther(wei);
+export const formatEtherWithFixedDecimals = (wei: bigint, fixedDecimals: number = 5) => {
+  const formattedEther = formatEther(wei);
+  return formatValueWithFixedDecimals(formattedEther, fixedDecimals);
+};
 
-  return Number(sharesFormatted) % 1 === 0
-    ? sharesFormatted
-    : Number(sharesFormatted).toFixed(fixedDecimals);
+export const formatValueWithFixedDecimals = (
+  value: number | string,
+  fixedDecimals: number = 5
+) => {
+  const isAnInteger = Number(value) % 1 === 0;
+  const smallestNumber = 1 / 10 ** fixedDecimals;
+  const smallNumberString = `<${smallestNumber.toFixed(fixedDecimals)}`;
+  const isVerySmallNumber = Number(value) < smallestNumber;
+
+  if (isAnInteger) return value;
+  if (isVerySmallNumber) return smallNumberString;
+
+  return Number(value).toFixed(fixedDecimals);
 };

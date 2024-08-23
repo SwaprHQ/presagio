@@ -3,7 +3,7 @@
 import { Button, IconButton } from '@swapr/ui';
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
-import { formatEther, parseEther, Address } from 'viem';
+import { parseEther, Address, formatEther } from 'viem';
 import { useAccount, useChains, useReadContract } from 'wagmi';
 import { ConnectButton } from '.';
 import { Outcome, Token } from '@/entities';
@@ -28,6 +28,7 @@ import {
   useReadToken,
 } from '@/hooks/contracts/erc20';
 import { gnosis } from 'viem/chains';
+import { formatEtherWithFixedDecimals } from '@/utils';
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = '1';
@@ -70,8 +71,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
   };
 
   const amountWei = parseEther(tokenAmountIn);
-  const twoDecimalsTokenOutAmount = tokenAmountOut
-    ? parseFloat(formatEther(tokenAmountOut)).toFixed(2)
+  const formattedTokenOutAmount = tokenAmountOut
+    ? formatEtherWithFixedDecimals(tokenAmountOut)
     : '';
 
   const { data: buyAmount, isLoading: isLoadingBuyAmount } = useReadCalcBuyAmount(
@@ -235,8 +236,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
             <p className="text-text-low-em">
               Balance:
               {currentState.balance
-                ? parseFloat(formatEther(currentState.balance)).toFixed(2)
-                : '0'}
+                ? formatEtherWithFixedDecimals(currentState.balance)
+                : 0}
             </p>
             {!!currentState.balance && (
               <Button
@@ -257,11 +258,12 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
         />
         <SwapInput
           title="To Receive"
-          value={twoDecimalsTokenOutAmount}
+          value={formattedTokenOutAmount}
           selectedToken={currentState.outToken}
           onTokenClick={currentState.changeOutToken}
           tokenList={outcomeList}
           readOnly
+          type="text"
         />
         <div className="space-y-4">
           <div className="px-3 py-1">
