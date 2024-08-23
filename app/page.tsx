@@ -146,6 +146,7 @@ export default function HomePage() {
 
   const handleCategory = (category: CategoryOptions) => {
     setCategory(category);
+    setPage(1);
 
     searchParams.delete('p');
     category ? searchParams.set('c', category) : searchParams.delete('c');
