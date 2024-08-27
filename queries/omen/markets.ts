@@ -157,7 +157,7 @@ const getMarketsQuery = (
         ${params.openingTimestamp_gt ? 'openingTimestamp_gt: $openingTimestamp_gt' : ''}
         ${params.openingTimestamp_lt ? 'openingTimestamp_lt: $openingTimestamp_lt' : ''}
         ${params.isPendingArbitration !== undefined ? 'isPendingArbitration: $isPendingArbitration' : ''}
-        ${params.currentAnswer ? 'currentAnswer: $currentAnswer' : ''}
+        ${params.currentAnswer !== undefined ? 'currentAnswer: $currentAnswer' : ''}
         ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
         ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
         ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
