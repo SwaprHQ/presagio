@@ -37,12 +37,15 @@ export const orderFilters: OrderFilter[] = [
     orderBy: FixedProductMarketMaker_OrderBy.UsdVolume,
     orderDirection: OrderDirection.Asc,
   },
+  {
+    name: 'Closing soon',
+    key: 'closing',
+    orderBy: FixedProductMarketMaker_OrderBy.OpeningTimestamp,
+    orderDirection: OrderDirection.Asc,
+  },
 ];
 
 const nowTimestamp = Math.floor(Date.now() / 1000);
-const in24HoursTimestamp = Math.floor(
-  new Date().setHours(new Date().getHours() + 24) / 1000
-);
 
 export type StateFilter = {
   name: string;
@@ -56,14 +59,7 @@ export const stateFilters: StateFilter[] = [
     key: 'open',
     when: {
       openingTimestamp_gt: nowTimestamp,
-    },
-  },
-  {
-    name: 'Closing soon',
-    key: 'closing',
-    when: {
-      openingTimestamp_lte: in24HoursTimestamp,
-      openingTimestamp_gt: nowTimestamp,
+      scaledLiquidityParameter_gt: 0,
     },
   },
   {
