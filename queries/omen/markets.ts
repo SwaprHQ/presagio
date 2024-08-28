@@ -142,6 +142,7 @@ const getMarketsQuery = (
     $currentAnswer: Bytes
     $answerFinalizedTimestamp_lt: Int
     $openingTimestamp_lte: Int
+    $scaledLiquidityParameter_gt: Int
   ) {
     fixedProductMarketMakers(
       first: $first
@@ -155,10 +156,11 @@ const getMarketsQuery = (
         ${params.category_contains ? 'category_contains: $category_contains' : ''}
         ${params.openingTimestamp_gt ? 'openingTimestamp_gt: $openingTimestamp_gt' : ''}
         ${params.openingTimestamp_lt ? 'openingTimestamp_lt: $openingTimestamp_lt' : ''}
-        ${params.isPendingArbitration ? 'isPendingArbitration: $isPendingArbitration' : ''}
-        ${params.currentAnswer ? 'currentAnswer: $currentAnswer' : ''}
+        ${params.isPendingArbitration !== undefined ? 'isPendingArbitration: $isPendingArbitration' : ''}
+        ${params.currentAnswer !== undefined ? 'currentAnswer: $currentAnswer' : ''}
         ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
         ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
+        ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
       }
     ) {
       ...marketData
