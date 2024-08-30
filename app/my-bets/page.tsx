@@ -3,12 +3,11 @@
 import { CardBet, LoadingCardBet } from '@/app/components/CardBet';
 import NoBetsPage from '@/app/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
-import { Market, Position, tradesOutcomeBalance } from '@/entities';
+import { Market, Position } from '@/entities';
 
 import { getUserPositions } from '@/queries/conditional-tokens';
-import { UserPosition } from '@/queries/conditional-tokens/types';
+import { UserPosition, Condition } from '@/queries/conditional-tokens/types';
 import {
-  Condition,
   FixedProductMarketMaker,
   FpmmTrade,
   getConditionMarket,
@@ -51,12 +50,11 @@ export default function MyBetsPage() {
               const position = new Position(userPosition.position);
               const outcomeIndex = position.outcomeIndex - 1;
 
-              const conditionData = await getConditionMarket({
+              const omenConditionData = await getConditionMarket({
                 id: position.conditionId,
               });
-              const condition = conditionData?.conditions[0];
-              const market =
-                condition && new Market(condition?.fixedProductMarketMakers[0]);
+              const omenCondition = omenConditionData?.conditions[0];
+              const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
 
               if (!market) return undefined;
 
@@ -69,7 +67,7 @@ export default function MyBetsPage() {
               return {
                 ...userPosition,
                 market: market.data,
-                condition,
+                condition: position.condition as Condition,
                 fpmmTrades: tradesData?.fpmmTrades || [],
               };
             } catch (error) {
@@ -108,27 +106,19 @@ export default function MyBetsPage() {
     [userPositionsComplete]
   );
 
-  const filterUnredeemedBets = useMemo(() => {
-    return filterCompleteBets.filter(userPosition => {
-      const position = new Position(userPosition.position);
-      const outcomeIndex = position.outcomeIndex - 1;
-
-      const condition = userPosition.condition;
-      const market = condition && new Market(condition?.fixedProductMarketMakers[0]);
-      const outcomeBalance = tradesOutcomeBalance({
-        fpmmTrades: userPosition.fpmmTrades,
-      });
-      const userPositionCondition = userPosition.position.conditions[0];
-
-      const isClaimed = !outcomeBalance;
-      const isWinner = market.isWinner(outcomeIndex);
-
-      const isResolved = userPositionCondition.resolved;
-      const hasPayoutDenominator = +userPositionCondition.payoutDenominator > 0;
-
-      return isWinner && isResolved && !isClaimed && hasPayoutDenominator;
-    });
-  }, [filterCompleteBets]);
+  const filterUnredeemedBets = useMemo(
+    () =>
+      userPositionsComplete?.filter(userPosition => {
+        const marketModel = new Market(userPosition.market);
+        const position = new Position(userPosition.position);
+        const outcomeIndex = position.getOutcomeIndex();
+        const canClaim = marketModel.canClaim(outcomeIndex, position.condition);
+        const alreadyClaimed = canClaim && +userPosition.balance === 0;
+        const canRedeem = canClaim && !alreadyClaimed;
+        return canRedeem;
+      }) ?? [],
+    [userPositionsComplete]
+  );
 
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
