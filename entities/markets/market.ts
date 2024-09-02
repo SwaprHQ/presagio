@@ -14,9 +14,10 @@ export class Market {
   constructor(fpmm: FixedProductMarketMaker) {
     this.fpmm = fpmm;
     this.closingDate = new Date(+fpmm.openingTimestamp * 1000);
-    this.answer = fpmm?.question?.currentAnswer
-      ? fromHex(fpmm.question.currentAnswer, 'number')
-      : null;
+    this.answer =
+      fpmm?.question?.currentAnswer && !!fpmm.resolutionTimestamp
+        ? fromHex(fpmm.question.currentAnswer, 'number')
+        : null;
     this.isClosed = this.answer !== null || isPast(this.closingDate);
     this.hasLiquidity = Number(fpmm.scaledLiquidityParameter) > 0;
 

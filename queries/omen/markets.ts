@@ -12,6 +12,9 @@ import {
   QueryFpmmTransactionsArgs,
 } from './types';
 import { OMEN_SUBGRAPH_URL } from '@/constants';
+import { getUserPositions } from '../conditional-tokens';
+import { UserPositionComplete } from '@/app/my-bets/page';
+import { Market, Position } from '@/entities';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -121,6 +124,10 @@ const marketDataFragment = gql`
     outcomes
     outcomeTokenMarginalPrices
     usdVolume
+    resolutionTimestamp
+    currentAnswer
+    currentAnswerTimestamp
+    fee
     __typename
   }
 `;
@@ -417,6 +424,64 @@ const getMarketTradesAndTransactions = async (
   );
 };
 
+const sortByNewestBet = (a: UserPositionComplete, b: UserPositionComplete) => {
+  return (
+    b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
+    a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
+  );
+};
+
+const getUserPositionsComplete = async (address?: string) => {
+  if (!address) return [];
+
+  const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
+  const userPositions = userPositionsData?.userPositions ?? [];
+
+  console.log(userPositions);
+
+  const userPositionsComplete = await Promise.allSettled(
+    userPositions.map(async (userPosition): Promise<UserPositionComplete | undefined> => {
+      try {
+        const position = new Position(userPosition.position);
+        const outcomeIndex = position.outcomeIndex - 1;
+
+        const omenConditionData = await getConditionMarket({
+          id: position.conditionId,
+        });
+        const omenCondition = omenConditionData?.conditions[0];
+        const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
+
+        if (!market) return undefined;
+
+        const tradesData = await getMarketUserTrades({
+          creator: address.toLowerCase(),
+          fpmm: market.fpmm.id,
+          outcomeIndex_in: [outcomeIndex],
+        });
+
+        return {
+          ...userPosition,
+          fpmm: market.fpmm,
+          condition: position.condition,
+          fpmmTrades: tradesData?.fpmmTrades || [],
+        };
+      } catch (error) {
+        console.error(error);
+      }
+    })
+  ).then(results =>
+    results
+      .filter(
+        (result): result is PromiseFulfilledResult<UserPositionComplete> =>
+          result.status === 'fulfilled' && result.value !== undefined
+      )
+      .map(result => result.value)
+      .sort(sortByNewestBet)
+  );
+
+  return userPositionsComplete;
+};
+
 export {
   getMarket,
   getMarkets,
@@ -426,4 +491,5 @@ export {
   getMarketTransactions,
   getMarketTrades,
   getMarketTradesAndTransactions,
+  getUserPositionsComplete,
 };

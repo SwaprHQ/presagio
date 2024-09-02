@@ -10,3 +10,5 @@ export * from './TokenLogo';
 export * from './ui';
 export * from './Navbar';
 export * from './Footer';
+export * from './BetsListPanel';
+export * from './CardBet';

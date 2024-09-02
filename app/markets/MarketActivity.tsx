@@ -17,18 +17,15 @@ import {
 import {
   formatDateTimeWithYear,
   formatEtherWithFixedDecimals,
-  getGnosisAddressExplorerLink,
   shortenAddress,
   timeAgo,
 } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
-import { DuneClient, LatestResultArgs, ParameterType } from '@duneanalytics/client-sdk';
 import Image from 'next/image';
-import { DUNE_API_KEY } from '@/constants';
 import { TokenLogo } from '@/app/components';
-
-const duneClient = new DuneClient(DUNE_API_KEY);
+import Link from 'next/link';
+import { getAIAgents } from '@/queries/dune';
 
 const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
   0: 'success',
@@ -54,18 +51,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
 
   const { data: aiAgentsList } = useQuery({
     queryKey: ['getAIAgents'],
-    queryFn: async () => {
-      const DUNE_AGENTS_INFO_QUERY_ID = 3582994;
-
-      const options: LatestResultArgs = {
-        queryId: DUNE_AGENTS_INFO_QUERY_ID,
-        parameters: [{ type: ParameterType.NUMBER, value: '1', name: 'limit' }],
-      };
-
-      const duneResult = await duneClient.getLatestResult(options);
-
-      return duneResult.result?.rows;
-    },
+    queryFn: getAIAgents,
     staleTime: Infinity,
   });
 
@@ -261,8 +247,8 @@ interface AILinkProps {
 
 const AILink = ({ address, isAIAgent }: AILinkProps) => (
   <div className="flex w-fit flex-shrink-0 items-center space-x-1 text-sm md:text-base">
-    <a
-      href={getGnosisAddressExplorerLink(address)}
+    <Link
+      href={`/profile?address=${address}`}
       className={cx(
         'hover:underline',
         isAIAgent ? 'text-text-primary-main' : 'text-text-high-em'
@@ -271,7 +257,7 @@ const AILink = ({ address, isAIAgent }: AILinkProps) => (
       rel="noopener noreferrer"
     >
       {shortenAddress(address)}
-    </a>
+    </Link>
     {isAIAgent && <Image src="/ai.svg" alt="ai" width={16} height={16} />}
   </div>
 );
