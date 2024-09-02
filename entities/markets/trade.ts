@@ -31,3 +31,8 @@ export const tradesCollateralAmountUSDSpent = ({ fpmmTrades }: tradesProps) => {
     }, 0) ?? 0
   );
 };
+
+export const getOutcomeUserTrades = ({ fpmmTrades }: tradesProps) => [
+  fpmmTrades?.filter(trade => trade.outcomeIndex === '0') || [],
+  fpmmTrades?.filter(trade => trade.outcomeIndex === '1') || [],
+];
