@@ -36,7 +36,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { openModal } = useModal();
 
-  const market = new Market(userPositionComplete.condition.fixedProductMarketMakers[0]);
+  const market = new Market(userPositionComplete.market);
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
     fpmmTrades: userPositionComplete?.fpmmTrades,

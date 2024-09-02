@@ -1,5 +1,3 @@
-import { fromHex } from 'viem';
-
 const CHARACTERS_LIMIT = 15;
 
 export class Outcome {

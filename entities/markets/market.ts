@@ -2,6 +2,7 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { fromHex } from 'viem';
 import { Outcome } from '@/entities';
 import { isPast } from 'date-fns';
+import { Condition } from '@/queries/conditional-tokens/types';
 
 export class Market {
   data: FixedProductMarketMaker;
@@ -46,5 +47,12 @@ export class Market {
 
   getWinnerOutcome() {
     return this.isClosed && this.answer !== null ? this.outcomes[this.answer] : null;
+  }
+
+  canClaim(index: number, condition: Condition) {
+    const isResolved = condition.resolved;
+    const hasPayoutDenominator = +condition.payoutDenominator > 0;
+
+    return this.isWinner(index) && isResolved && hasPayoutDenominator;
   }
 }
