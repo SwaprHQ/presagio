@@ -26,16 +26,16 @@ import { TokenLogo } from '.';
 import { formatValueWithFixedDecimals } from '@/utils';
 
 interface UserBets {
-  market: FixedProductMarketMaker;
+  fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
-export const UserBets = ({ market }: UserBets) => {
+export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const [txHash, setTxHash] = useState('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { address } = useAccount();
   const { openModal } = useModal();
 
-  const conditionId = market.condition?.id;
+  const conditionId = fixedProductMarketMaker.condition?.id;
   const { data: conditionData, isLoading: isConditionLoading } = useQuery({
     queryKey: ['getCondition', conditionId],
     queryFn: async () => {
@@ -48,12 +48,12 @@ export const UserBets = ({ market }: UserBets) => {
   });
 
   const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
-    queryKey: ['getMarketUserTrades', address, market.id, ['0', '1']],
+    queryKey: ['getMarketUserTrades', address, fixedProductMarketMaker.id, ['0', '1']],
     queryFn: async () => {
       if (!!address)
         return getMarketUserTrades({
           creator: address.toLowerCase(),
-          fpmm: market.id,
+          fpmm: fixedProductMarketMaker.id,
           outcomeIndex_in: ['0', '1'],
         });
     },
@@ -81,22 +81,22 @@ export const UserBets = ({ market }: UserBets) => {
 
   const { data: outcome0Balance, isLoading: isOutcome0BalanceLoading } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     1
   );
 
   const { data: outcome1Balance, isLoading: isOutcome1BalanceLoading } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     2
   );
 
   const outcomesBalance = [outcome0Balance as bigint, outcome1Balance as bigint];
 
   const { name, symbol, decimals } = useReadToken({
-    tokenAddress: market.collateralToken,
+    tokenAddress: fixedProductMarketMaker.collateralToken,
   });
 
   if (
@@ -114,13 +114,13 @@ export const UserBets = ({ market }: UserBets) => {
 
   const collateralToken = new Token(
     ChainId.GNOSIS,
-    market.collateralToken,
+    fixedProductMarketMaker.collateralToken,
     decimals,
     symbol,
     name
   );
 
-  const marketModel = new Market(market);
+  const marketModel = new Market(fixedProductMarketMaker);
 
   const { condition } = conditionData;
   const isResolved = condition.resolved;

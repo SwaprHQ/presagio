@@ -52,10 +52,21 @@ export type SwapState = {
   refetchAllowence: () => void;
 };
 
-export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
-  const id = market.id as Address;
-  const outcome0 = new Outcome(0, market.outcomes?.[0] || 'Option 1', id);
-  const outcome1 = new Outcome(1, market.outcomes?.[1] || 'Option 2', id);
+interface SwapboxProps {
+  fixedProductMarketMaker: FixedProductMarketMaker;
+}
+export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
+  const id = fixedProductMarketMaker.id as Address;
+  const outcome0 = new Outcome(
+    0,
+    fixedProductMarketMaker.outcomes?.[0] || 'Option 1',
+    id
+  );
+  const outcome1 = new Outcome(
+    1,
+    fixedProductMarketMaker.outcomes?.[1] || 'Option 2',
+    id
+  );
 
   const { address, isDisconnected, chainId: connectorChainId } = useAccount();
   const supportedChains = useChains();
@@ -83,7 +94,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const { data: allowance, refetch: refetchCollateralAllowence } = useReadAllowance({
     address,
-    tokenAddress: market.collateralToken,
+    tokenAddress: fixedProductMarketMaker.collateralToken,
     spenderAddress: id,
   });
 
@@ -98,25 +109,25 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const { data: balance, refetch: refetchCollateralBalance } = useReadBalanceOf({
     address,
-    tokenAddress: market.collateralToken,
+    tokenAddress: fixedProductMarketMaker.collateralToken,
   });
 
   const { data: outcome0Balance, refetch: refetchOutcome0Balance } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     1
   );
 
   const { data: outcome1Balance, refetch: refetchOutcome1Balance } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     2
   );
 
   const { name, symbol, decimals } = useReadToken({
-    tokenAddress: market.collateralToken,
+    tokenAddress: fixedProductMarketMaker.collateralToken,
   });
 
   useEffect(() => {
@@ -127,13 +138,13 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
       setTokenAmountOut(amountOut);
     } else {
-      if (!market.outcomeTokenAmounts || !tokenAmountIn) return;
+      if (!fixedProductMarketMaker.outcomeTokenAmounts || !tokenAmountIn) return;
 
       const sellAmountInColleteral = calcSellAmountInCollateral(
         parseEther(tokenAmountIn).toString(),
-        market.outcomeTokenAmounts,
+        fixedProductMarketMaker.outcomeTokenAmounts,
         outcome.index,
-        parseFloat(formatEther(market.fee))
+        parseFloat(formatEther(fixedProductMarketMaker.fee))
       );
 
       if (!sellAmountInColleteral) return;
@@ -142,8 +153,8 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
     }
   }, [
     buyAmount,
-    market.fee,
-    market.outcomeTokenAmounts,
+    fixedProductMarketMaker.fee,
+    fixedProductMarketMaker.outcomeTokenAmounts,
     outcome.index,
     swapDirection,
     tokenAmountIn,
@@ -157,9 +168,9 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const oneShareSellPrice = calcSellAmountInCollateral(
     parseEther(ONE_UNIT).toString(),
-    market.outcomeTokenAmounts,
+    fixedProductMarketMaker.outcomeTokenAmounts,
     outcome.index,
-    parseFloat(formatEther(market.fee))
+    parseFloat(formatEther(fixedProductMarketMaker.fee))
   );
 
   const outcomeBalances = [outcome0Balance, outcome1Balance];
@@ -168,7 +179,7 @@ export const Swapbox = ({ market }: { market: FixedProductMarketMaker }) => {
 
   const collateralToken = new Token(
     ChainId.GNOSIS,
-    market.collateralToken,
+    fixedProductMarketMaker.collateralToken,
     decimals,
     symbol,
     name

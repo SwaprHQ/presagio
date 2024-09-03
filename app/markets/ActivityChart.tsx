@@ -40,7 +40,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
   >({
     queryKey: ['getMarket', id],
   });
-  const market = marketData?.fixedProductMarketMaker;
+  const fixedProductMarketMaker = marketData?.fixedProductMarketMaker;
 
   const { data: trades } = useQuery({
     queryKey: ['getMarketTrades', id],
@@ -107,7 +107,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
   if (isFetching || isFetchingMarket)
     return <div className="h-full w-full animate-pulse rounded-8 bg-outline-low-em" />;
 
-  if (!data || !market)
+  if (!data || !fixedProductMarketMaker)
     return (
       <p className="flex h-full items-center justify-center text-md">
         No available data.
@@ -154,7 +154,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
   const lastDataPoint = data[data.length - 1];
   const total = +lastDataPoint[OUTCOME_0] + +lastDataPoint[OUTCOME_1];
 
-  const marketModel = new Market(market);
+  const marketModel = new Market(fixedProductMarketMaker);
   const isLightTheme = resolvedTheme === 'light';
 
   return (

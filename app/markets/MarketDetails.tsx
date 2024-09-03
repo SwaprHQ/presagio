@@ -35,9 +35,9 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   if (error) throw error;
   if (isLoading || !data?.fixedProductMarketMaker) return <LoadingMarketDetails />;
 
-  const marketOmenFpmm = data.fixedProductMarketMaker;
-  const marketModel = new Market(marketOmenFpmm);
-  const closingDate = new Date(+marketOmenFpmm.openingTimestamp * 1000);
+  const fixedProductMarketMaker = data.fixedProductMarketMaker;
+  const marketModel = new Market(fixedProductMarketMaker);
+  const closingDate = new Date(+fixedProductMarketMaker.openingTimestamp * 1000);
 
   return (
     <div className="w-full">
@@ -47,7 +47,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           <div className="space-y-4 p-5">
             <div className="flex items-center justify-between">
               <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
-                {marketOmenFpmm.category}
+                {fixedProductMarketMaker.category}
               </Tag>
               {marketModel.isClosed ? (
                 <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
@@ -62,12 +62,12 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                 width={20}
                 height={20}
                 className="size-20 flex-shrink-0 rounded-8"
-                marketId={marketOmenFpmm.id}
+                marketId={fixedProductMarketMaker.id}
               />
-              <h1 className="text-xl font-semibold">{marketOmenFpmm.title}</h1>
+              <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
             </div>
             <div className="!mt-7">
-              <OutcomeBar market={marketOmenFpmm} />
+              <OutcomeBar market={fixedProductMarketMaker} />
             </div>
           </div>
           <div className="px-4 pb-2">
@@ -91,7 +91,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           </div>
           {tab === Tabs.BET && (
             <div className="p-2">
-              <Bet market={marketOmenFpmm} />
+              <Bet fixedProductMarketMaker={fixedProductMarketMaker} />
             </div>
           )}
           {tab === Tabs.HISTORY && <HistorySection id={id} />}
@@ -102,11 +102,11 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           )}
           {tab === Tabs.INFO && (
             <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
-              <Info market={marketOmenFpmm} />
+              <Info fixedProductMarketMaker={fixedProductMarketMaker} />
             </div>
           )}
         </div>
-        <UserBets market={marketOmenFpmm} />
+        <UserBets fixedProductMarketMaker={fixedProductMarketMaker} />
       </div>
     </div>
   );
