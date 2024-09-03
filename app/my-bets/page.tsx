@@ -109,10 +109,12 @@ export default function MyBetsPage() {
   const filterUnredeemedBets = useMemo(
     () =>
       userPositionsComplete?.filter(userPosition => {
-        const market = new Market(userPosition.fpmm);
         const position = new Position(userPosition.position);
         const outcomeIndex = position.getOutcomeIndex();
-        const marketCondition = new MarketCondition(market, position.condition);
+        const marketCondition = new MarketCondition(
+          userPosition.fpmm,
+          position.condition
+        );
         const canRedeem = marketCondition.canRedeem(outcomeIndex, userPosition.balance);
         return canRedeem;
       }) ?? [],

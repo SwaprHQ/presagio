@@ -52,7 +52,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
   const position = new Position(userPositionComplete.position);
   const outcomeIndex = position.getOutcomeIndex();
   const condition = position.condition;
-  const marketCondition = new MarketCondition(market, condition);
+  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
 
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);

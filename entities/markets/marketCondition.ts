@@ -1,12 +1,12 @@
 import { Market } from '@/entities/markets/market';
 import { Condition as ConditionalTokenCondition } from '@/queries/conditional-tokens/types';
+import { FixedProductMarketMaker } from '@/queries/omen';
 
-export class MarketCondition {
-  market: Market;
+export class MarketCondition extends Market {
   condition: ConditionalTokenCondition;
 
-  constructor(market: Market, condition: ConditionalTokenCondition) {
-    this.market = market;
+  constructor(fpmm: FixedProductMarketMaker, condition: ConditionalTokenCondition) {
+    super(fpmm);
     this.condition = condition;
   }
 
@@ -14,7 +14,7 @@ export class MarketCondition {
     const isResolved = this.condition.resolved;
     const hasPayoutDenominator = +this.condition.payoutDenominator > 0;
 
-    return this.market.isWinner(index) && isResolved && hasPayoutDenominator;
+    return this.isWinner(index) && isResolved && hasPayoutDenominator;
   }
 
   alreadyClaimed(index: number, outcomeBalance: BigInt | string) {

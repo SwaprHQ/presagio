@@ -160,7 +160,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
 
           const isWinner = marketModel.isWinner(index);
 
-          const marketCondition = new MarketCondition(marketModel, condition);
+          const marketCondition = new MarketCondition(fixedProductMarketMaker, condition);
           const canClaim = marketCondition.canClaim(index);
           const alreadyClaimed = marketCondition.alreadyClaimed(
             index,
