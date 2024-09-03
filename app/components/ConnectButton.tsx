@@ -6,7 +6,7 @@ import { useBalance, useEnsAvatar } from 'wagmi';
 
 import { ChainId } from '@/constants';
 import { Address, formatEther } from 'viem';
-import { Button, ButtonProps, ButtonSizeProp } from '@swapr/ui';
+import { Button, ButtonProps } from '@swapr/ui';
 import { PropsWithChildren } from 'react';
 import { cx } from 'class-variance-authority';
 
@@ -14,7 +14,7 @@ interface CustomConnectButtonProps {
   address: Address;
   onClick: () => void;
   ensName?: string;
-  size?: ButtonSizeProp;
+  size?: ButtonProps['size'];
   width?: ButtonProps['width'];
 }
 
@@ -74,7 +74,7 @@ const CustomConnectButton = ({
 };
 
 interface ConnectButtonProps extends PropsWithChildren {
-  size?: ButtonSizeProp;
+  size?: ButtonProps['size'];
   width?: ButtonProps['width'];
   className?: string;
   variant?: ButtonProps['variant'];
