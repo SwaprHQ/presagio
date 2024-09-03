@@ -2,6 +2,7 @@ import { Token } from '@/entities';
 
 export const AI_AGENTS_ALLOWLIST = [
   '0x89c5cc945dd550bcffb72fe42bff002429f46fec',
+  '0xffc8029154ecd55abed15bd428ba596e7d23f557',
   '0x993dfce14768e4de4c366654be57c21d9ba54748',
 ];
 
