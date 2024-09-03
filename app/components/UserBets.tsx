@@ -2,10 +2,16 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
-import { formatEther, parseEther } from 'viem';
 import { cx } from 'class-variance-authority';
 import { waitForTransactionReceipt } from 'wagmi/actions';
-import { Market, Token, valueByTrade } from '@/entities';
+import {
+  getOutcomeUserTrades,
+  Market,
+  MarketCondition,
+  Token,
+  tradesCollateralAmountUSDSpent,
+  tradesOutcomeBalance,
+} from '@/entities';
 import { useState } from 'react';
 import { Button, Icon, Tag } from '@swapr/ui';
 import { ChainId } from '@/constants';
@@ -20,18 +26,16 @@ import { TokenLogo } from '.';
 import { formatValueWithFixedDecimals } from '@/utils';
 
 interface UserBets {
-  market: FixedProductMarketMaker;
+  fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
-export const UserBets = ({ market }: UserBets) => {
-  const conditionId = market.condition?.id;
-
+export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
+  const [txHash, setTxHash] = useState('');
+  const [isTxLoading, setIsTxLoading] = useState(false);
   const { address } = useAccount();
   const { openModal } = useModal();
 
-  const [txHash, setTxHash] = useState('');
-  const [isTxLoading, setIsTxLoading] = useState(false);
-
+  const conditionId = fixedProductMarketMaker.condition?.id;
   const { data: conditionData, isLoading: isConditionLoading } = useQuery({
     queryKey: ['getCondition', conditionId],
     queryFn: async () => {
@@ -44,76 +48,55 @@ export const UserBets = ({ market }: UserBets) => {
   });
 
   const { data: userTrades, isLoading: isUserTradesLoading } = useQuery({
-    queryKey: ['getMarketUserTrades', address, market.id, ['0', '1']],
+    queryKey: ['getMarketUserTrades', address, fixedProductMarketMaker.id, ['0', '1']],
     queryFn: async () => {
       if (!!address)
         return getMarketUserTrades({
           creator: address.toLowerCase(),
-          fpmm: market.id,
+          fpmm: fixedProductMarketMaker.id,
           outcomeIndex_in: ['0', '1'],
         });
     },
     enabled: !!address,
   });
 
-  const [outcome0UserTrades, outcome1UserTrades] = [
-    userTrades?.fpmmTrades.filter(trade => trade.outcomeIndex === '0') || [],
-    userTrades?.fpmmTrades.filter(trade => trade.outcomeIndex === '1') || [],
-  ];
-
-  const outcome0CollateralAmountUSDSpent = outcome0UserTrades.reduce((acc, trade) => {
-    const type = trade.type;
-    const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-    return valueByTrade[type](acc, collateralAmountUSD);
-  }, 0);
-
-  const outcome1CollateralAmountUSDSpent = outcome1UserTrades.reduce((acc, trade) => {
-    const type = trade.type;
-    const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-    return valueByTrade[type](acc, collateralAmountUSD);
-  }, 0);
+  const [outcome0UserTrades, outcome1UserTrades] = getOutcomeUserTrades({
+    fpmmTrades: userTrades?.fpmmTrades,
+  });
+  const outcome0CollateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+    fpmmTrades: outcome0UserTrades,
+  });
+  const outcome1CollateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+    fpmmTrades: outcome1UserTrades,
+  });
 
   const outcomesCollateralAmountUSDSpent = [
     outcome0CollateralAmountUSDSpent,
     outcome1CollateralAmountUSDSpent,
   ];
 
-  const outcome0TradedBalance = outcome0UserTrades.reduce((acc, trade) => {
-    const type = trade.type;
-    const collateralAmountUSD = parseFloat(
-      formatEther(trade.outcomeTokensTraded as bigint)
-    );
-    return valueByTrade[type](acc, collateralAmountUSD);
-  }, 0);
-
-  const outcome1TradedBalance = outcome1UserTrades.reduce((acc, trade) => {
-    const type = trade.type;
-    const collateralAmountUSD = parseFloat(
-      formatEther(trade.outcomeTokensTraded as bigint)
-    );
-    return valueByTrade[type](acc, collateralAmountUSD);
-  }, 0);
-
+  const outcome0TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome0UserTrades });
+  const outcome1TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome1UserTrades });
   const outcomesTradedBalance = [outcome0TradedBalance, outcome1TradedBalance];
 
   const { data: outcome0Balance, isLoading: isOutcome0BalanceLoading } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     1
   );
 
   const { data: outcome1Balance, isLoading: isOutcome1BalanceLoading } = useReadBalance(
     address,
-    market.collateralToken,
-    market.condition?.id,
+    fixedProductMarketMaker.collateralToken,
+    fixedProductMarketMaker.condition?.id,
     2
   );
 
   const outcomesBalance = [outcome0Balance as bigint, outcome1Balance as bigint];
 
   const { name, symbol, decimals } = useReadToken({
-    tokenAddress: market.collateralToken,
+    tokenAddress: fixedProductMarketMaker.collateralToken,
   });
 
   if (
@@ -131,17 +114,16 @@ export const UserBets = ({ market }: UserBets) => {
 
   const collateralToken = new Token(
     ChainId.GNOSIS,
-    market.collateralToken,
+    fixedProductMarketMaker.collateralToken,
     decimals,
     symbol,
     name
   );
 
-  const marketModel = new Market(market);
+  const marketModel = new Market(fixedProductMarketMaker);
 
   const { condition } = conditionData;
   const isResolved = condition.resolved;
-  const hasPayoutDenominator = +condition.payoutDenominator > 0;
 
   const redeem = async () => {
     setIsTxLoading(true);
@@ -175,10 +157,16 @@ export const UserBets = ({ market }: UserBets) => {
       <div className="space-y-3">
         {marketModel.outcomes.map((outcome, index) => {
           if (!outcomesCollateralAmountUSDSpent[index]) return null;
-          const isWinner = marketModel.isWinner(index);
-          const canClaim = isWinner && isResolved && hasPayoutDenominator;
 
-          const alreadyClaimed = canClaim && outcomesBalance[index] === BigInt(0);
+          const isWinner = marketModel.isWinner(index);
+
+          const marketCondition = new MarketCondition(fixedProductMarketMaker, condition);
+          const canClaim = marketCondition.canClaim(index);
+          const alreadyClaimed = marketCondition.alreadyClaimed(
+            index,
+            outcomesBalance[index]
+          );
+          const canRedeem = marketCondition.canRedeem(index, outcomesBalance[index]);
 
           const collateralSpent = formatValueWithFixedDecimals(
             outcomesCollateralAmountUSDSpent[index],
@@ -188,6 +176,7 @@ export const UserBets = ({ market }: UserBets) => {
             outcomesTradedBalance[index],
             4
           );
+
           const resultString = alreadyClaimed
             ? 'You claimed:'
             : canClaim
@@ -240,7 +229,7 @@ export const UserBets = ({ market }: UserBets) => {
                     </div>
                   </div>
                 </div>
-                {canClaim && !alreadyClaimed && (
+                {canRedeem && (
                   <>
                     <div className="space-y-4 px-4 pt-4">
                       <p className="px-6 font-semibold text-text-low-em">

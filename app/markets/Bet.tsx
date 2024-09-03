@@ -6,21 +6,29 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { Swapbox } from '@/app/components';
 import { KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
 
-export const Bet = ({ market }: { market: FixedProductMarketMaker }) => {
-  const marketModel = new Market(market);
+interface BetProps {
+  fixedProductMarketMaker: FixedProductMarketMaker;
+}
+
+export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
+  const marketModel = new Market(fixedProductMarketMaker);
 
   if (!marketModel.isClosed && marketModel.hasLiquidity)
-    return <Swapbox market={market} />;
+    return <Swapbox fixedProductMarketMaker={fixedProductMarketMaker} />;
 
-  if (!market.isPendingArbitration && marketModel.answer === null && marketModel.isClosed)
+  if (
+    !fixedProductMarketMaker.isPendingArbitration &&
+    marketModel.answer === null &&
+    marketModel.isClosed
+  )
     return (
       <div className="flex flex-col items-center space-y-6 p-8">
         <p className="text-md">
           Answer still <span className="font-semibold">pending</span>.
         </p>
-        {market.question && (
+        {fixedProductMarketMaker.question && (
           <ButtonLink
-            href={`${REALITY_QUESTION_URL}${market.question.id}`}
+            href={`${REALITY_QUESTION_URL}${fixedProductMarketMaker.question.id}`}
             target="_blank"
             width="fit"
             className="flex items-center space-x-1"
@@ -33,7 +41,7 @@ export const Bet = ({ market }: { market: FixedProductMarketMaker }) => {
       </div>
     );
 
-  if (market.isPendingArbitration)
+  if (fixedProductMarketMaker.isPendingArbitration)
     return (
       <div className="flex flex-col items-center space-y-6 p-8">
         <p className="text-md">

@@ -4,9 +4,12 @@ import { Icon, IconButton } from '@swapr/ui';
 import { FixedProductMarketMaker } from '../../queries/omen';
 import { GNOSIS_SCAN_URL, KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
 
-export const Info = ({ market }: { market: FixedProductMarketMaker }) => {
+interface InfoProps {
+  fixedProductMarketMaker: FixedProductMarketMaker;
+}
+export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
   const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
-  const id = market.id;
+  const id = fixedProductMarketMaker.id;
 
   return (
     <>
@@ -34,9 +37,9 @@ export const Info = ({ market }: { market: FixedProductMarketMaker }) => {
         <span>View market contract</span>
         <Icon name="arrow-top-right" size={16} />
       </a>
-      {market.question && (
+      {fixedProductMarketMaker.question && (
         <a
-          href={`${REALITY_QUESTION_URL}${market.question.id}`}
+          href={`${REALITY_QUESTION_URL}${fixedProductMarketMaker.question.id}`}
           target="_blank"
           className="flex items-center space-x-1 py-4"
         >

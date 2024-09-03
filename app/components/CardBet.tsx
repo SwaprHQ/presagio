@@ -10,6 +10,7 @@ import { Card, TokenLogo } from '@/app/components';
 import { formatDateTimeWithYear, remainingTime } from '@/utils/dates';
 import {
   Market,
+  MarketCondition,
   Position,
   tradesCollateralAmountUSDSpent,
   tradesOutcomeBalance,
@@ -28,15 +29,10 @@ interface BetProps {
 }
 
 export const CardBet = ({ userPositionComplete }: BetProps) => {
-  const position = new Position(userPositionComplete.position);
-  const outcomeIndex = position.outcomeIndex - 1;
-
-  const config = useConfig();
   const [txHash, setTxHash] = useState('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { openModal } = useModal();
-
-  const market = new Market(userPositionComplete.market);
+  const config = useConfig();
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
     fpmmTrades: userPositionComplete?.fpmmTrades,
@@ -49,24 +45,24 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
     fpmmTrades: userPositionComplete?.fpmmTrades,
   });
 
-  if (!market) return;
+  const market = new Market(userPositionComplete.fpmm);
+
+  if (!market) return null;
+
+  const position = new Position(userPositionComplete.position);
+  const outcomeIndex = position.getOutcomeIndex();
+  const condition = position.condition;
+  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
 
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
 
   const outcomeAmountString = market.isClosed
     ? isWinner
       ? 'You won'
       : 'You lost'
     : 'Potential win';
-
-  const condition = userPositionComplete.position.conditions[0];
-
-  const isClaimed = !outcomeBalance;
-  const isResolved = condition.resolved;
-  const hasPayoutDenominator = +condition.payoutDenominator > 0;
-
-  const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
 
   const redeem = async () => {
     setIsTxLoading(true);
@@ -97,12 +93,12 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
         isLoser && 'from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]'
       )}
     >
-      <Link key={market.data.id} href={`markets?id=${market.data.id}`} className="block">
+      <Link key={market.fpmm.id} href={`markets?id=${market.fpmm.id}`} className="block">
         <section className="flex h-[144px] flex-col justify-between space-y-4 p-4">
           <div className="flex items-center justify-between">
             <div className="flex space-x-2">
               <Tag colorScheme="quaternary" size="sm" className="capitalize">
-                {market.data.category}
+                {market.fpmm.category}
               </Tag>
               <Tag colorScheme="success" size="sm">
                 You chose {position.getOutcome()}
@@ -117,10 +113,10 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
               width={40}
               height={40}
               className="size-[40px] rounded-8"
-              marketId={market.data.id}
+              marketId={market.fpmm.id}
             />
             <div className="text-normal h-[80px] flex-1 overflow-y-auto font-semibold text-text-high-em md:text-xl">
-              {market.data.title}
+              {market.fpmm.title}
             </div>
           </div>
         </section>
@@ -142,7 +138,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
                 {!market.isClosed || isWinner ? (
                   <>
                     <p>{formatValueWithFixedDecimals(outcomeBalance)}</p>
-                    <TokenLogo address={market.data.collateralToken} className="size-3" />
+                    <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
                   </>
                 ) : (
                   '$' + formatValueWithFixedDecimals(collateralAmountUSDSpent)
@@ -158,7 +154,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
               </div>
             )}
           </div>
-          {canClaim && (
+          {canRedeem && (
             <>
               <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
                 Reedem

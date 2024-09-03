@@ -3,7 +3,7 @@
 import { CardBet, LoadingCardBet } from '@/app/components/CardBet';
 import NoBetsPage from '@/app/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
-import { Market, Position } from '@/entities';
+import { Market, MarketCondition, Position } from '@/entities';
 
 import { getUserPositions } from '@/queries/conditional-tokens';
 import { UserPosition, Condition } from '@/queries/conditional-tokens/types';
@@ -21,7 +21,7 @@ import { useAccount } from 'wagmi';
 
 export interface UserPositionComplete extends UserPosition {
   fpmmTrades: FpmmTrade[];
-  market: FixedProductMarketMaker;
+  fpmm: FixedProductMarketMaker;
   condition: Condition;
 }
 
@@ -60,13 +60,13 @@ export default function MyBetsPage() {
 
               const tradesData = await getMarketUserTrades({
                 creator: address.toLowerCase(),
-                fpmm: market.data.id,
+                fpmm: market.fpmm.id,
                 outcomeIndex_in: [outcomeIndex],
               });
 
               return {
                 ...userPosition,
-                market: market.data,
+                fpmm: market.fpmm,
                 condition: position.condition as Condition,
                 fpmmTrades: tradesData?.fpmmTrades || [],
               };
@@ -109,12 +109,13 @@ export default function MyBetsPage() {
   const filterUnredeemedBets = useMemo(
     () =>
       userPositionsComplete?.filter(userPosition => {
-        const marketModel = new Market(userPosition.market);
         const position = new Position(userPosition.position);
         const outcomeIndex = position.getOutcomeIndex();
-        const canClaim = marketModel.canClaim(outcomeIndex, position.condition);
-        const alreadyClaimed = canClaim && +userPosition.balance === 0;
-        const canRedeem = canClaim && !alreadyClaimed;
+        const marketCondition = new MarketCondition(
+          userPosition.fpmm,
+          position.condition
+        );
+        const canRedeem = marketCondition.canRedeem(outcomeIndex, userPosition.balance);
         return canRedeem;
       }) ?? [],
     [userPositionsComplete]

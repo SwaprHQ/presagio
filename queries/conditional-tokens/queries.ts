@@ -24,6 +24,7 @@ const getUserPositionsQuery = gql`
         lastActive
       }
       position {
+        id
         activeValue
         conditionIdsStr
         indexSets
