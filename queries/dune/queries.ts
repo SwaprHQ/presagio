@@ -1,5 +1,5 @@
 import { LatestResultArgs, ParameterType } from '@duneanalytics/client-sdk';
-import { duneClient } from '@/providers';
+import { duneClient } from '@/utils';
 
 export const getAIAgents = async () => {
   const DUNE_AGENTS_INFO_QUERY_ID = 3582994;

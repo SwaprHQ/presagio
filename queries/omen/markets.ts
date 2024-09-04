@@ -437,8 +437,6 @@ const getUserPositionsComplete = async (address?: string) => {
   const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
   const userPositions = userPositionsData?.userPositions ?? [];
 
-  console.log(userPositions);
-
   const userPositionsComplete = await Promise.allSettled(
     userPositions.map(async (userPosition): Promise<UserPositionComplete | undefined> => {
       try {

@@ -90,7 +90,7 @@ const Profile = () => {
 
   const isLoadingUserPositions = userPositions === undefined;
 
-  const lossesInUSD = userPositions?.reduce((acc, userPosition) => {
+  const spentAmountInUSD = userPositions?.reduce((acc, userPosition) => {
     const market = new Market(userPosition.fpmm);
 
     if (market.answer === null) return acc;
@@ -102,7 +102,7 @@ const Profile = () => {
     return amountSpentInUSD + acc;
   }, 0);
 
-  const winsInUSD = userPositions?.reduce((acc, userPosition) => {
+  const winAmountInUSD = userPositions?.reduce((acc, userPosition) => {
     const position = new Position(userPosition.position);
     const market = new Market(userPosition.fpmm);
 
@@ -116,7 +116,7 @@ const Profile = () => {
     return winOutcomeBalancesInColleteralToken + acc;
   }, 0);
 
-  const potentialWinsInUSD = userPositions?.reduce((acc, userPosition) => {
+  const potentialWinAmountInUSD = userPositions?.reduce((acc, userPosition) => {
     const position = new Position(userPosition.position);
     const market = new Market(userPosition.fpmm);
 
@@ -146,7 +146,7 @@ const Profile = () => {
     0
   );
 
-  const numberOfWins = userPositions?.reduce((acc, userPosition) => {
+  const numberOfWonBets = userPositions?.reduce((acc, userPosition) => {
     const position = new Position(userPosition.position);
     const market = new Market(userPosition.fpmm);
 
@@ -169,22 +169,22 @@ const Profile = () => {
     : null;
 
   const positionValue =
-    potentialWinsInUSD !== undefined
-      ? formatValueWithFixedDecimals(potentialWinsInUSD, 2)
+    potentialWinAmountInUSD !== undefined
+      ? formatValueWithFixedDecimals(potentialWinAmountInUSD, 2)
       : '-';
   const volumeTraded =
     totalVolumeInUSD !== undefined
       ? formatValueWithFixedDecimals(totalVolumeInUSD, 2)
       : '-';
-  const succesRate =
+  const successRate =
     numberOfClosedBets !== undefined &&
     numberOfClosedBets !== 0 &&
-    numberOfWins !== undefined
-      ? ((numberOfWins / numberOfClosedBets) * 100).toFixed(0)
+    numberOfWonBets !== undefined
+      ? ((numberOfWonBets / numberOfClosedBets) * 100).toFixed(0)
       : '-';
   const profitLoss =
-    lossesInUSD !== undefined && winsInUSD !== undefined
-      ? (winsInUSD - lossesInUSD).toFixed(2)
+    spentAmountInUSD !== undefined && winAmountInUSD !== undefined
+      ? (winAmountInUSD - spentAmountInUSD).toFixed(2)
       : '-';
 
   return (
@@ -229,7 +229,7 @@ const Profile = () => {
         />
         <StatsCard
           title="Success rate"
-          value={succesRate}
+          value={successRate}
           symbol="%"
           isLoading={isLoadingUserPositions}
         />
@@ -279,25 +279,17 @@ const StatsCard = ({
   symbol: string;
   isLoading?: boolean;
 }) => {
-  if (isLoading) return <StatsCardLoading />;
-
   return (
     <div className="w-full space-y-2 rounded-16 bg-surface-surface-0 p-6 font-semibold text-text-low-em ring-1 ring-outline-base-em">
       <div className="text-xs font-bold uppercase">{title}</div>
-      <div className="text-2xl">
-        <span className="text-text-high-em">{value}</span>{' '}
+      <div className="flex space-x-1.5 text-2xl">
+        {isLoading ? (
+          <div className="h-9 w-12 animate-pulse rounded-8 bg-outline-low-em" />
+        ) : (
+          <span className="text-text-high-em">{value}</span>
+        )}
         <span className="uppercase">{symbol}</span>
       </div>
     </div>
   );
 };
-
-const StatsCardLoading = () => (
-  <div className="w-full space-y-2 rounded-16 bg-surface-surface-0 p-6 font-semibold text-text-low-em ring-1 ring-outline-base-em">
-    <div className="h-3 w-20 animate-pulse rounded-8 bg-outline-low-em" />
-    <div className="flex space-x-2">
-      <div className="h-9 w-28 animate-pulse rounded-8 bg-outline-low-em" />
-      <div className="h-9 w-10 animate-pulse rounded-8 bg-outline-low-em" />
-    </div>
-  </div>
-);

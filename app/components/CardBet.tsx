@@ -47,12 +47,8 @@ export const CardBet = ({ userPositionComplete, children }: CardBetProps) => {
 
   if (!market) return null;
 
-  const condition = position.condition;
-  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
-
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);
-  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
 
   const outcomeAmountString = market.isClosed
     ? isWinner
@@ -147,17 +143,12 @@ export const MyBetsCardBet = ({
   const { openModal } = useModal();
 
   const position = new Position(userPositionComplete.position);
-  const market = new Market(userPositionComplete.fpmm);
+  const outcomeIndex = position.getOutcomeIndex();
 
-  const outcomeIndex = position.outcomeIndex - 1;
   const condition = userPositionComplete.position.conditions[0];
+  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
 
-  const isClaimed = +userPositionComplete.balance === 0;
-  const isResolved = condition.resolved;
-  const hasPayoutDenominator = +condition.payoutDenominator > 0;
-  const isWinner = market.isWinner(outcomeIndex);
-
-  const canClaim = isWinner && isResolved && !isClaimed && hasPayoutDenominator;
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
 
   const redeem = async () => {
     setIsTxLoading(true);
@@ -182,7 +173,7 @@ export const MyBetsCardBet = ({
 
   return (
     <CardBet userPositionComplete={userPositionComplete}>
-      {canClaim && (
+      {canRedeem && (
         <>
           <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
             Reedem
