@@ -471,7 +471,9 @@ const getUserPositionsComplete = async (address?: string) => {
     results
       .filter(
         (result): result is PromiseFulfilledResult<UserPositionComplete> =>
-          result.status === 'fulfilled' && result.value !== undefined
+          result.status === 'fulfilled' &&
+          result.value !== undefined &&
+          result.value.fpmmTrades.length > 0
       )
       .map(result => result.value)
       .sort(sortByNewestBet)

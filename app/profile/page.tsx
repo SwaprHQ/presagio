@@ -247,7 +247,11 @@ const Profile = () => {
           <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
         </TabHeader>
         <TabBody className="mt-8 w-full">
-          <ProfileBetsListPanel bets={userPositions ?? []} isLoading={isLoading} />
+          <ProfileBetsListPanel
+            emptyText="No bets"
+            bets={userPositions ?? []}
+            isLoading={isLoading}
+          />
           <ProfileBetsListPanel
             emptyText="No active bets"
             bets={filterActiveBets}

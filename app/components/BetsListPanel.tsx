@@ -60,7 +60,7 @@ export const BetsListPanel = ({
         ))}
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
-          <p>{emptyText}</p>
+          <p className="text-center">{emptyText}</p>
         </div>
       )}
     </TabPanel>
