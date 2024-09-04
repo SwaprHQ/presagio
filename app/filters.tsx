@@ -75,6 +75,7 @@ export const stateFilters: StateFilter[] = [
     when: {
       openingTimestamp_lt: nowTimestamp,
       isPendingArbitration: false,
+      currentAnswer_not: null,
     },
   },
   {
