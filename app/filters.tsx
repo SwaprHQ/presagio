@@ -70,6 +70,15 @@ export const stateFilters: StateFilter[] = [
     },
   },
   {
+    name: 'Finalizing',
+    key: 'finalizing',
+    when: {
+      openingTimestamp_lt: nowTimestamp,
+      isPendingArbitration: false,
+      currentAnswer_not: null,
+    },
+  },
+  {
     name: 'Pending',
     key: 'pending',
     when: {

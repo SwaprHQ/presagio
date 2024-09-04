@@ -140,6 +140,7 @@ const getMarketsQuery = (
     $openingTimestamp_lt: Int
     $isPendingArbitration: Boolean
     $currentAnswer: Bytes
+    $currentAnswer_not: Bytes
     $answerFinalizedTimestamp_lt: Int
     $openingTimestamp_lte: Int
     $scaledLiquidityParameter_gt: Int
@@ -158,6 +159,7 @@ const getMarketsQuery = (
         ${params.openingTimestamp_lt ? 'openingTimestamp_lt: $openingTimestamp_lt' : ''}
         ${params.isPendingArbitration !== undefined ? 'isPendingArbitration: $isPendingArbitration' : ''}
         ${params.currentAnswer !== undefined ? 'currentAnswer: $currentAnswer' : ''}
+        ${params.currentAnswer_not !== undefined ? 'currentAnswer_not: $currentAnswer_not' : ''}
         ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
         ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
         ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
