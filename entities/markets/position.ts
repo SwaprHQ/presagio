@@ -19,7 +19,7 @@ export class Position {
   }
 
   getOutcome(): string {
-    return this.outcomes ? this.outcomes[this.outcomeIndex - 1] : '';
+    return this.outcomes ? this.outcomes[this.getOutcomeIndex()] : '';
   }
 
   getOutcomeIndex(): number {

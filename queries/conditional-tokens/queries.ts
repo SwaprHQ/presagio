@@ -3,6 +3,7 @@ import {
   Position,
   Query,
   QueryConditionArgs,
+  QueryUserArgs,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
 } from './types';
@@ -124,6 +125,16 @@ const getConditionQuery = gql`
   }
 `;
 
+const getUserQuery = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      id
+      firstParticipation
+      lastActive
+    }
+  }
+`;
+
 const getUserPositions = async (params: QueryUserPositionArgs & QueryUserPositionsArgs) =>
   request<Pick<Query, 'userPositions'>>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
@@ -147,4 +158,7 @@ const getCondition = async (params: QueryConditionArgs) =>
     params
   );
 
-export { getUserPositions, getMarketUserPositions, getCondition };
+const getUser = async (params: QueryUserArgs) =>
+  request<Pick<Query, 'user'>>(CONDITIONAL_TOKENS_SUBGRAPH_URL, getUserQuery, params);
+
+export { getUserPositions, getMarketUserPositions, getCondition, getUser };

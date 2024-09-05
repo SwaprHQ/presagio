@@ -8,7 +8,7 @@ import { NetworkButton } from './NetworkButton';
 
 export const Navbar = () => {
   return (
-    <nav className="h-20 bg-surface-surface-0 px-6 py-5">
+    <nav className="h-20 bg-surface-surface-bg px-6 py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/">

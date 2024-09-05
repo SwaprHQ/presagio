@@ -21,7 +21,7 @@ export const formatValueWithFixedDecimals = (
   const smallNumberString = `<${smallestNumber.toFixed(fixedDecimals)}`;
   const isVerySmallNumber = Number(value) < smallestNumber;
 
-  if (isAnInteger) return value;
+  if (isAnInteger) return value.toString();
   if (isVerySmallNumber) return smallNumberString;
 
   return Number(value).toFixed(fixedDecimals);

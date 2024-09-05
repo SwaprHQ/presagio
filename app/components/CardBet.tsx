@@ -17,22 +17,22 @@ import {
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
 import { waitForTransactionReceipt } from 'wagmi/actions';
-import { useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { MarketThumbnail } from './MarketThumbnail';
 import { UserPositionComplete } from '@/app/my-bets/page';
 import { formatValueWithFixedDecimals } from '@/utils';
 
-interface BetProps {
+interface CardBetProps extends PropsWithChildren {
   userPositionComplete: UserPositionComplete;
 }
 
-export const CardBet = ({ userPositionComplete }: BetProps) => {
-  const [txHash, setTxHash] = useState('');
-  const [isTxLoading, setIsTxLoading] = useState(false);
-  const { openModal } = useModal();
-  const config = useConfig();
+export const CardBet = ({ userPositionComplete, children }: CardBetProps) => {
+  const position = new Position(userPositionComplete.position);
+  const outcomeIndex = position.getOutcomeIndex();
+
+  const market = new Market(userPositionComplete.fpmm);
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
     fpmmTrades: userPositionComplete?.fpmmTrades,
@@ -45,45 +45,16 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
     fpmmTrades: userPositionComplete?.fpmmTrades,
   });
 
-  const market = new Market(userPositionComplete.fpmm);
-
   if (!market) return null;
-
-  const position = new Position(userPositionComplete.position);
-  const outcomeIndex = position.getOutcomeIndex();
-  const condition = position.condition;
-  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
 
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);
-  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
 
   const outcomeAmountString = market.isClosed
     ? isWinner
-      ? 'You won'
-      : 'You lost'
+      ? 'Won'
+      : 'Lost'
     : 'Potential win';
-
-  const redeem = async () => {
-    setIsTxLoading(true);
-
-    try {
-      const txHash = await redeemPositions({
-        conditionId: condition.id,
-        outcomeIndex: position.outcomeIndex,
-      });
-      setTxHash(txHash);
-      openModal(ModalId.WAITING_TRANSACTION);
-
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsTxLoading(false);
-    }
-  };
 
   return (
     <Card
@@ -101,7 +72,7 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
                 {market.fpmm.category}
               </Tag>
               <Tag colorScheme="success" size="sm">
-                You chose {position.getOutcome()}
+                {position.getOutcome()}
               </Tag>
             </div>
             <p className="text-sm text-text-low-em">
@@ -154,27 +125,78 @@ export const CardBet = ({ userPositionComplete }: BetProps) => {
               </div>
             )}
           </div>
-          {canRedeem && (
-            <>
-              <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
-                Reedem
-              </Button>
-              <TransactionModal isLoading={isTxLoading} txHash={txHash} />
-            </>
-          )}
+          {children}
         </div>
       </section>
     </Card>
   );
 };
 
+export const MyBetsCardBet = ({
+  userPositionComplete,
+}: {
+  userPositionComplete: UserPositionComplete;
+}) => {
+  const config = useConfig();
+  const [txHash, setTxHash] = useState('');
+  const [isTxLoading, setIsTxLoading] = useState(false);
+  const { openModal } = useModal();
+
+  const position = new Position(userPositionComplete.position);
+  const outcomeIndex = position.getOutcomeIndex();
+
+  const condition = userPositionComplete.position.conditions[0];
+  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
+
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
+
+  const redeem = async () => {
+    setIsTxLoading(true);
+
+    try {
+      const txHash = await redeemPositions({
+        conditionId: condition.id,
+        outcomeIndex: position.outcomeIndex,
+      });
+      setTxHash(txHash);
+      openModal(ModalId.WAITING_TRANSACTION);
+
+      await waitForTransactionReceipt(config, {
+        hash: txHash,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsTxLoading(false);
+    }
+  };
+
+  return (
+    <CardBet userPositionComplete={userPositionComplete}>
+      {canRedeem && (
+        <>
+          <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
+            Reedem
+          </Button>
+          <TransactionModal isLoading={isTxLoading} txHash={txHash} />
+        </>
+      )}
+    </CardBet>
+  );
+};
+export const ProfileCardBet = ({
+  userPositionComplete,
+}: {
+  userPositionComplete: UserPositionComplete;
+}) => <CardBet userPositionComplete={userPositionComplete} />;
+
 export const LoadingCardBet = () => (
-  <Card className="flex h-[194px] flex-col justify-between p-4 md:w-[760px]">
+  <Card className="flex h-[194px] w-full flex-col justify-between p-4">
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="h-8 w-48 animate-pulse rounded-8 bg-outline-low-em"></div>
         <div className="h-8 w-32 animate-pulse rounded-8 bg-outline-low-em"></div>
-      </div>{' '}
+      </div>
       <div className="h-20 animate-pulse rounded-8 bg-outline-low-em"></div>
     </div>
     <div className="flex items-center justify-between">

@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import Image, { ImageProps } from 'next/image';
 import { OMEN_THUMBNAIL_MAPPING_SUBGRAPH_URL } from '@/constants';
-import { byte32ToIPFSCIDV0 } from '@/utils/ipfs';
+import { byte32ToIPFSCIDV0 } from '@/utils';
 import request from 'graphql-request';
 
 interface MarketThumbnailProps extends Omit<ImageProps, 'src' | 'alt'> {
