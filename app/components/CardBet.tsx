@@ -30,7 +30,7 @@ interface CardBetProps extends PropsWithChildren {
 
 export const CardBet = ({ userPositionComplete, children }: CardBetProps) => {
   const position = new Position(userPositionComplete.position);
-  const outcomeIndex = position.outcomeIndex - 1;
+  const outcomeIndex = position.getOutcomeIndex();
 
   const market = new Market(userPositionComplete.fpmm);
 

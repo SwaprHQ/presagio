@@ -441,7 +441,7 @@ const getUserPositionsComplete = async (address?: string) => {
     userPositions.map(async (userPosition): Promise<UserPositionComplete | undefined> => {
       try {
         const position = new Position(userPosition.position);
-        const outcomeIndex = position.outcomeIndex - 1;
+        const outcomeIndex = position.getOutcomeIndex();
 
         const omenConditionData = await getConditionMarket({
           id: position.conditionId,

@@ -126,7 +126,7 @@ const getConditionQuery = gql`
 `;
 
 const getUserQuery = gql`
-  query GetCondition($id: ID!) {
+  query GetUser($id: ID!) {
     user(id: $id) {
       id
       firstParticipation

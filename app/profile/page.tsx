@@ -33,14 +33,6 @@ import Image from 'next/image';
 import { getAIAgents } from '@/queries/dune';
 
 export default function ProfilePage() {
-  return (
-    <Suspense>
-      <Profile />
-    </Suspense>
-  );
-}
-
-const Profile = () => {
   const searchParams = useSearchParams();
 
   const address = searchParams.get('address')?.toLocaleLowerCase();
@@ -106,7 +98,7 @@ const Profile = () => {
     const position = new Position(userPosition.position);
     const market = new Market(userPosition.fpmm);
 
-    if (market.answer === null || market.isLoser(position.outcomeIndex - 1)) return acc;
+    if (market.answer === null || market.isLoser(position.getOutcomeIndex())) return acc;
 
     // missing usd price
     const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
@@ -126,7 +118,7 @@ const Profile = () => {
     const oneShareSellPrice = calcSellAmountInCollateral(
       userPosition.balance,
       market.fpmm.outcomeTokenAmounts,
-      position.outcomeIndex - 1,
+      position.getOutcomeIndex(),
       parseFloat(formatEther(market.fpmm.fee))
     );
 
@@ -150,7 +142,7 @@ const Profile = () => {
     const position = new Position(userPosition.position);
     const market = new Market(userPosition.fpmm);
 
-    if (market.answer !== null && market.isWinner(position.outcomeIndex - 1))
+    if (market.answer !== null && market.isWinner(position.getOutcomeIndex()))
       return acc + 1;
 
     return acc;
@@ -266,7 +258,7 @@ const Profile = () => {
       </TabGroup>
     </main>
   );
-};
+}
 
 const ProfileBetsListPanel = (props: BetsListPanelProps) => (
   <BetsListPanel {...props} CardComponent={ProfileCardBet} />
