@@ -241,7 +241,7 @@ const Profile = () => {
         />
       </div>
       <TabGroup>
-        <TabHeader className="w-full overflow-x-auto md:overflow-x-visible">
+        <TabHeader className="w-full overflow-x-auto border-t border-outline-base-em pt-6 md:overflow-x-visible">
           <BetsListTab bets={userPositions ?? []}>All Bets</BetsListTab>
           <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
           <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
