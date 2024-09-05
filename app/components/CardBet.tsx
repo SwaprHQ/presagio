@@ -14,6 +14,7 @@ import {
   Position,
   tradesCollateralAmountUSDSpent,
   tradesOutcomeBalance,
+  UserBet,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
 import { waitForTransactionReceipt } from 'wagmi/actions';
@@ -21,42 +22,40 @@ import { useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { MarketThumbnail } from './MarketThumbnail';
-import { UserPositionComplete } from '@/app/my-bets/page';
 import { formatValueWithFixedDecimals } from '@/utils';
 
 interface BetProps {
-  userPositionComplete: UserPositionComplete;
+  userBet: UserBet;
 }
 
-export const CardBet = ({ userPositionComplete }: BetProps) => {
+export const CardBet = ({ userBet }: BetProps) => {
   const [txHash, setTxHash] = useState('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { openModal } = useModal();
   const config = useConfig();
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
-    fpmmTrades: userPositionComplete?.fpmmTrades,
+    fpmmTrades: userBet?.fpmmTrades,
   });
   const lastTradeTimestamp =
-    userPositionComplete?.fpmmTrades[userPositionComplete?.fpmmTrades.length - 1]
-      ?.creationTimestamp;
+    userBet?.fpmmTrades[userBet?.fpmmTrades.length - 1]?.creationTimestamp;
 
   const outcomeBalance = tradesOutcomeBalance({
-    fpmmTrades: userPositionComplete?.fpmmTrades,
+    fpmmTrades: userBet?.fpmmTrades,
   });
 
-  const market = new Market(userPositionComplete.fpmm);
+  const market = new Market(userBet.fpmm);
 
   if (!market) return null;
 
-  const position = new Position(userPositionComplete.position);
+  const position = new Position(userBet.position);
   const outcomeIndex = position.getOutcomeIndex();
   const condition = position.condition;
-  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
+  const marketCondition = new MarketCondition(userBet.fpmm, condition);
 
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);
-  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userBet.balance);
 
   const outcomeAmountString = market.isClosed
     ? isWinner

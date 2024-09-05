@@ -3,29 +3,18 @@
 import { CardBet, LoadingCardBet } from '@/app/components/CardBet';
 import NoBetsPage from '@/app/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
-import { Market, MarketCondition, Position } from '@/entities';
+import { Market, MarketCondition, Position, UserBet } from '@/entities';
 
 import { getUserPositions } from '@/queries/conditional-tokens';
 import { UserPosition, Condition } from '@/queries/conditional-tokens/types';
-import {
-  FixedProductMarketMaker,
-  FpmmTrade,
-  getConditionMarket,
-  getMarketUserTrades,
-} from '@/queries/omen';
+import { getConditionMarket, getMarketUserTrades } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 
 import { PropsWithChildren, ReactNode, useMemo } from 'react';
 import { TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 
-export interface UserPositionComplete extends UserPosition {
-  fpmmTrades: FpmmTrade[];
-  fpmm: FixedProductMarketMaker;
-  condition: Condition;
-}
-
-const sortByNewestBet = (a: UserPositionComplete, b: UserPositionComplete) => {
+const sortByNewestBet = (a: UserBet, b: UserBet) => {
   return (
     b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
     a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
@@ -35,7 +24,7 @@ const sortByNewestBet = (a: UserPositionComplete, b: UserPositionComplete) => {
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete, isLoading } = useQuery<UserPositionComplete[]>({
+  const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserPositionsComplete', address],
     queryFn: async () => {
       if (!address) return [];
@@ -44,41 +33,39 @@ export default function MyBetsPage() {
       const userPositions = userPositionsData?.userPositions ?? [];
 
       const userPositionsComplete = await Promise.allSettled(
-        userPositions.map(
-          async (userPosition): Promise<UserPositionComplete | undefined> => {
-            try {
-              const position = new Position(userPosition.position);
-              const outcomeIndex = position.outcomeIndex - 1;
+        userPositions.map(async (userPosition): Promise<UserBet | undefined> => {
+          try {
+            const position = new Position(userPosition.position);
+            const outcomeIndex = position.outcomeIndex - 1;
 
-              const omenConditionData = await getConditionMarket({
-                id: position.conditionId,
-              });
-              const omenCondition = omenConditionData?.conditions[0];
-              const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
+            const omenConditionData = await getConditionMarket({
+              id: position.conditionId,
+            });
+            const omenCondition = omenConditionData?.conditions[0];
+            const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
 
-              if (!market) return undefined;
+            if (!market) return undefined;
 
-              const tradesData = await getMarketUserTrades({
-                creator: address.toLowerCase(),
-                fpmm: market.fpmm.id,
-                outcomeIndex_in: [outcomeIndex],
-              });
+            const tradesData = await getMarketUserTrades({
+              creator: address.toLowerCase(),
+              fpmm: market.fpmm.id,
+              outcomeIndex_in: [outcomeIndex],
+            });
 
-              return {
-                ...userPosition,
-                fpmm: market.fpmm,
-                condition: position.condition as Condition,
-                fpmmTrades: tradesData?.fpmmTrades || [],
-              };
-            } catch (error) {
-              console.error(error);
-            }
+            return {
+              ...userPosition,
+              fpmm: market.fpmm,
+              condition: position.condition as Condition,
+              fpmmTrades: tradesData?.fpmmTrades || [],
+            };
+          } catch (error) {
+            console.error(error);
           }
-        )
+        })
       ).then(results =>
         results
           .filter(
-            (result): result is PromiseFulfilledResult<UserPositionComplete> =>
+            (result): result is PromiseFulfilledResult<UserBet> =>
               result.status === 'fulfilled' && result.value !== undefined
           )
           .map(result => result.value)
@@ -171,7 +158,7 @@ const LoadingBets = () =>
 
 interface BetsListPanelProps {
   emptyText?: string;
-  bets: UserPositionComplete[];
+  bets: UserBet[];
   isLoading: boolean;
   unredeemed?: boolean;
 }
@@ -197,12 +184,7 @@ const BetsListPanel = ({ emptyText = '', bets, isLoading }: BetsListPanelProps) 
       {isLoading && <LoadingBets />}
       {!isLoading &&
         bets.length > 0 &&
-        bets.map((userPositionComplete: UserPositionComplete) => (
-          <CardBet
-            userPositionComplete={userPositionComplete}
-            key={userPositionComplete.id}
-          />
-        ))}
+        bets.map((userBet: UserBet) => <CardBet userBet={userBet} key={userBet.id} />)}
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
           <p>{emptyText}</p>
