@@ -16,10 +16,10 @@ import {
   tradesCollateralAmountUSDSpent,
   tradesOutcomeBalance,
   tradesVolume,
+  UserBets,
 } from '@/entities';
 import { getUser } from '@/queries/conditional-tokens';
-import { UserPositionComplete } from '../my-bets/page';
-import { getUserPositionsComplete } from '@/queries/omen';
+import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 import { fromUnixTime, format } from 'date-fns';
 import {
@@ -46,9 +46,9 @@ export default function ProfilePage() {
     enabled: !!address,
   });
 
-  const { data: userPositions, isLoading } = useQuery<UserPositionComplete[]>({
-    queryKey: ['getUserPositionsComplete', address],
-    queryFn: async () => await getUserPositionsComplete(address),
+  const { data: userPositions, isLoading } = useQuery<UserBets[]>({
+    queryKey: ['getUserBets', address],
+    queryFn: async () => await getUserBets(address),
     enabled: !!address,
   });
 

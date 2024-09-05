@@ -13,8 +13,7 @@ import {
 } from './types';
 import { OMEN_SUBGRAPH_URL } from '@/constants';
 import { getUserPositions } from '../conditional-tokens';
-import { UserPositionComplete } from '@/app/my-bets/page';
-import { Market, Position } from '@/entities';
+import { Market, Position, UserBets } from '@/entities';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -424,21 +423,21 @@ const getMarketTradesAndTransactions = async (
   );
 };
 
-const sortByNewestBet = (a: UserPositionComplete, b: UserPositionComplete) => {
+const sortByNewestBet = (a: UserBets, b: UserBets) => {
   return (
     b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
     a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
   );
 };
 
-const getUserPositionsComplete = async (address?: string) => {
+const getUserBets = async (address?: string) => {
   if (!address) return [];
 
   const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
   const userPositions = userPositionsData?.userPositions ?? [];
 
   const userPositionsComplete = await Promise.allSettled(
-    userPositions.map(async (userPosition): Promise<UserPositionComplete | undefined> => {
+    userPositions.map(async (userPosition): Promise<UserBets | undefined> => {
       try {
         const position = new Position(userPosition.position);
         const outcomeIndex = position.getOutcomeIndex();
@@ -470,7 +469,7 @@ const getUserPositionsComplete = async (address?: string) => {
   ).then(results =>
     results
       .filter(
-        (result): result is PromiseFulfilledResult<UserPositionComplete> =>
+        (result): result is PromiseFulfilledResult<UserBets> =>
           result.status === 'fulfilled' &&
           result.value !== undefined &&
           result.value.fpmmTrades.length > 0
@@ -491,5 +490,5 @@ export {
   getMarketTransactions,
   getMarketTrades,
   getMarketTradesAndTransactions,
-  getUserPositionsComplete,
+  getUserBets,
 };
