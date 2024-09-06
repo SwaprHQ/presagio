@@ -38,9 +38,13 @@ export const SettingsPopover = () => {
                 variant="pastel"
                 as={Link}
                 href={`/profile?address=${address}`}
-                className="justify-start"
+                className="items-center justify-between"
               >
-                Profile
+                <div className="flex space-x-1">
+                  <Icon size={14} name="user" />
+                  <span>Profile</span>
+                </div>
+                <Icon size={14} name="chevron-right" />
               </ButtonLink>
             )}
           </div>

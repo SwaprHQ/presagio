@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useMemo } from 'react';
+import { useMemo } from 'react';
 import { formatEther, isAddress } from 'viem';
 import {
   calcSellAmountInCollateral,
@@ -20,7 +20,7 @@ import {
 } from '@/entities';
 import { getUser } from '@/queries/conditional-tokens';
 import { getUserBets } from '@/queries/omen';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { fromUnixTime, format } from 'date-fns';
 import {
   BetsListPanel,
@@ -31,6 +31,7 @@ import {
 import { cx } from 'class-variance-authority';
 import Image from 'next/image';
 import { getAIAgents } from '@/queries/dune';
+import { getTokenUSDPrice } from '@/queries/mobula';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
@@ -50,6 +51,28 @@ export default function ProfilePage() {
     queryKey: ['getUserBets', address],
     queryFn: async () => await getUserBets(address),
     enabled: !!address,
+  });
+
+  const { data: tokenPrices, isLoading: isLoadingTokenPrices } = useQueries({
+    queries: (userPositions || []).map(userPosition => {
+      const { collateralTokenAddress } = userPosition.position;
+      return {
+        queryKey: ['tokenPriceUSD', collateralTokenAddress],
+        queryFn: async () => ({
+          [collateralTokenAddress]: await getTokenUSDPrice(collateralTokenAddress),
+        }),
+        staleTime: Infinity,
+      };
+    }),
+    combine: results => {
+      return {
+        data: results.reduce<Record<string, number>>(
+          (acc, result) => ({ ...result.data, ...acc }),
+          {}
+        ),
+        isLoading: results.some(result => result.isPending),
+      };
+    },
   });
 
   const filterActiveBets = useMemo(
@@ -80,8 +103,6 @@ export default function ProfilePage() {
 
   if (!address || !isAddress(address)) return null;
 
-  const isLoadingUserPositions = userPositions === undefined;
-
   const spentAmountInUSD = userPositions?.reduce((acc, userPosition) => {
     const market = new Market(userPosition.fpmm);
 
@@ -99,13 +120,16 @@ export default function ProfilePage() {
     const market = new Market(userPosition.fpmm);
 
     if (market.answer === null || market.isLoser(position.getOutcomeIndex())) return acc;
+    const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+    const priceInUSD = tokenPrices[collateralTokenAddress];
 
-    // missing usd price
+    if (!priceInUSD) return acc;
+
     const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
       fpmmTrades: userPosition.fpmmTrades,
     });
 
-    return winOutcomeBalancesInColleteralToken + acc;
+    return winOutcomeBalancesInColleteralToken * priceInUSD + acc;
   }, 0);
 
   const potentialWinAmountInUSD = userPositions?.reduce((acc, userPosition) => {
@@ -124,10 +148,14 @@ export default function ProfilePage() {
 
     if (!oneShareSellPrice) return acc;
 
-    // missing usd price
+    const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+    const priceInUSD = tokenPrices[collateralTokenAddress];
+
+    if (!priceInUSD) return acc;
+
     const priceInColleteralToken = parseFloat(formatEther(oneShareSellPrice));
 
-    return priceInColleteralToken + acc;
+    return priceInColleteralToken * priceInUSD + acc;
   }, 0);
 
   const totalVolumeInUSD = userPositions?.reduce(
@@ -179,6 +207,8 @@ export default function ProfilePage() {
       ? (winAmountInUSD - spentAmountInUSD).toFixed(2)
       : '-';
 
+  const isLoadingStats = userPositions === undefined || isLoadingTokenPrices;
+
   return (
     <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div className="flex w-full items-center justify-between rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em">
@@ -211,25 +241,25 @@ export default function ProfilePage() {
           title="Positions value"
           value={positionValue}
           symbol="usd"
-          isLoading={isLoadingUserPositions}
+          isLoading={isLoadingStats}
         />
         <StatsCard
           title="Volume traded"
           value={volumeTraded}
           symbol="usd"
-          isLoading={isLoadingUserPositions}
+          isLoading={isLoadingStats}
         />
         <StatsCard
           title="Success rate"
           value={successRate}
           symbol="%"
-          isLoading={isLoadingUserPositions}
+          isLoading={isLoadingStats}
         />
         <StatsCard
           title="Profit/loss"
           value={profitLoss}
           symbol="usd"
-          isLoading={isLoadingUserPositions}
+          isLoading={isLoadingStats}
         />
       </div>
       <TabGroup>
