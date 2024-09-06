@@ -14,6 +14,7 @@ import {
   Position,
   tradesCollateralAmountUSDSpent,
   tradesOutcomeBalance,
+  UserBets,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
 import { waitForTransactionReceipt } from 'wagmi/actions';
@@ -21,28 +22,26 @@ import { PropsWithChildren, useState } from 'react';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { TransactionModal } from './TransactionModal';
 import { MarketThumbnail } from './MarketThumbnail';
-import { UserPositionComplete } from '@/app/my-bets/page';
 import { formatValueWithFixedDecimals } from '@/utils';
 
 interface CardBetProps extends PropsWithChildren {
-  userPositionComplete: UserPositionComplete;
+  userBets: UserBets;
 }
 
-export const CardBet = ({ userPositionComplete, children }: CardBetProps) => {
-  const position = new Position(userPositionComplete.position);
+export const CardBet = ({ userBets, children }: CardBetProps) => {
+  const position = new Position(userBets.position);
   const outcomeIndex = position.getOutcomeIndex();
 
-  const market = new Market(userPositionComplete.fpmm);
+  const market = new Market(userBets.fpmm);
 
   const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
-    fpmmTrades: userPositionComplete?.fpmmTrades,
+    fpmmTrades: userBets?.fpmmTrades,
   });
   const lastTradeTimestamp =
-    userPositionComplete?.fpmmTrades[userPositionComplete?.fpmmTrades.length - 1]
-      ?.creationTimestamp;
+    userBets?.fpmmTrades[userBets?.fpmmTrades.length - 1]?.creationTimestamp;
 
   const outcomeBalance = tradesOutcomeBalance({
-    fpmmTrades: userPositionComplete?.fpmmTrades,
+    fpmmTrades: userBets?.fpmmTrades,
   });
 
   if (!market) return null;
@@ -132,23 +131,19 @@ export const CardBet = ({ userPositionComplete, children }: CardBetProps) => {
   );
 };
 
-export const MyBetsCardBet = ({
-  userPositionComplete,
-}: {
-  userPositionComplete: UserPositionComplete;
-}) => {
+export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
   const config = useConfig();
   const [txHash, setTxHash] = useState('');
   const [isTxLoading, setIsTxLoading] = useState(false);
   const { openModal } = useModal();
 
-  const position = new Position(userPositionComplete.position);
+  const position = new Position(userBets.position);
   const outcomeIndex = position.getOutcomeIndex();
 
-  const condition = userPositionComplete.position.conditions[0];
-  const marketCondition = new MarketCondition(userPositionComplete.fpmm, condition);
+  const condition = userBets.position.conditions[0];
+  const marketCondition = new MarketCondition(userBets.fpmm, condition);
 
-  const canRedeem = marketCondition.canRedeem(outcomeIndex, userPositionComplete.balance);
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userBets.balance);
 
   const redeem = async () => {
     setIsTxLoading(true);
@@ -172,7 +167,7 @@ export const MyBetsCardBet = ({
   };
 
   return (
-    <CardBet userPositionComplete={userPositionComplete}>
+    <CardBet userBets={userBets}>
       {canRedeem && (
         <>
           <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
@@ -184,11 +179,9 @@ export const MyBetsCardBet = ({
     </CardBet>
   );
 };
-export const ProfileCardBet = ({
-  userPositionComplete,
-}: {
-  userPositionComplete: UserPositionComplete;
-}) => <CardBet userPositionComplete={userPositionComplete} />;
+export const ProfileCardBet = ({ userBets }: { userBets: UserBets }) => (
+  <CardBet userBets={userBets} />
+);
 
 export const LoadingCardBet = () => (
   <Card className="flex h-[194px] w-full flex-col justify-between p-4">

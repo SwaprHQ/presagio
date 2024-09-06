@@ -2,32 +2,22 @@
 
 import NoBetsPage from '@/app/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
-import { MarketCondition, Position } from '@/entities';
+import { MarketCondition, Position, UserBets } from '@/entities';
 
-import { Condition, UserPosition } from '@/queries/conditional-tokens/types';
-import {
-  FixedProductMarketMaker,
-  FpmmTrade,
-  getUserPositionsComplete,
-} from '@/queries/omen';
+import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 
 import { useMemo } from 'react';
 import { TabBody, TabGroup, TabHeader } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 import { BetsListPanel, BetsListTab } from '@/app/components';
-export interface UserPositionComplete extends UserPosition {
-  fpmmTrades: FpmmTrade[];
-  fpmm: FixedProductMarketMaker;
-  condition: Condition;
-}
 
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete, isLoading } = useQuery<UserPositionComplete[]>({
-    queryKey: ['getUserPositionsComplete', address],
-    queryFn: async () => await getUserPositionsComplete(address),
+  const { data: userPositionsComplete, isLoading } = useQuery<UserBets[]>({
+    queryKey: ['getUserBets', address],
+    queryFn: async () => await getUserBets(address),
     enabled: !!address,
   });
 
