@@ -18,7 +18,7 @@ import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
 
-import { TokenLogo, UserAvatarAddress } from '@/app/components';
+import { TokenLogo, UserAvatarWithAddress } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 
@@ -204,7 +204,10 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <UserAvatarAddress address={creatorAddress as Address} isAIAgent={isAIAgent} />
+        <UserAvatarWithAddress
+          address={creatorAddress as Address}
+          isAIAgent={isAIAgent}
+        />
         {activity.transactionType && (
           <p className="text-text-low-em">
             {txTypeHumanWords[activity.transactionType][0]}
@@ -246,7 +249,10 @@ const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) =
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <UserAvatarAddress address={creatorAddress as Address} isAIAgent={isAIAgent} />
+        <UserAvatarWithAddress
+          address={creatorAddress as Address}
+          isAIAgent={isAIAgent}
+        />
         <p className="lowercase text-text-low-em">
           {txTypeHumanWords[transaction.transactionType][0]}
         </p>

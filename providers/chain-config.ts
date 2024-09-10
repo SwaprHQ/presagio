@@ -26,3 +26,9 @@ export const config = createConfig({
   ...defaultConfig,
   connectors: defaultConfig.connectors ? defaultConfig.connectors : [safeConnector],
 });
+
+// need for ens, we need to set mainnet chain to work
+export const mainnetConfigForENS = createConfig({
+  chains: [mainnet],
+  transports: { [mainnet.id]: fallback([http(RPC_LIST[ChainId.MAINNET]), http()]) },
+});
