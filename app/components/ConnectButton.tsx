@@ -27,7 +27,7 @@ const CustomConnectButton = ({
 }: CustomConnectButtonProps) => {
   const { data: avatar } = useEnsAvatar({
     name: ensName,
-    chainId: ChainId.ETHEREUM,
+    chainId: ChainId.MAINNET,
   });
 
   const { data: balance } = useBalance({
