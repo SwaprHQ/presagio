@@ -24,7 +24,11 @@ export const UserAvatarWithAddress = ({
       )}
     >
       <Avatar address={address} />
-      <AddressLink address={address} isAIAgent={isAIAgent} />
+      <AddressLink
+        address={address}
+        isAIAgent={isAIAgent}
+        href={`/profile?address=${address}`}
+      />
     </div>
   );
 };

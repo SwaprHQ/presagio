@@ -7,7 +7,6 @@ import {
   calcSellAmountInCollateral,
   formatValueWithFixedDecimals,
   getGnosisAddressExplorerLink,
-  shortenAddress,
 } from '@/utils';
 import { TabBody, TabGroup, TabHeader, Tag } from '@swapr/ui';
 import {
@@ -23,13 +22,13 @@ import { getUserBets } from '@/queries/omen';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { fromUnixTime, format } from 'date-fns';
 import {
+  AddressLink,
+  Avatar,
   BetsListPanel,
   BetsListPanelProps,
   BetsListTab,
   ProfileCardBet,
 } from '@/app/components';
-import { cx } from 'class-variance-authority';
-import Image from 'next/image';
 import { getAIAgents } from '@/queries/dune';
 import { getTokenUSDPrice } from '@/queries/mobula';
 
@@ -213,18 +212,14 @@ export default function ProfilePage() {
     <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div className="flex w-full items-center justify-between rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em">
         <div className="flex items-center space-x-4">
-          <a
+          <Avatar address={address} size={32} className="size-8" />
+          <AddressLink
             href={getGnosisAddressExplorerLink(address)}
-            className={cx(
-              'text-2xl font-semibold text-text-high-em hover:underline',
-              isAIAgent ? 'text-text-primary-main' : 'text-text-high-em'
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {shortenAddress(address)}
-          </a>
-          {isAIAgent && <Image src="/ai.svg" alt="ai" width={26} height={26} />}
+            address={address}
+            isAIAgent={isAIAgent}
+            className="text-2xl font-semibold"
+            iconSize={24}
+          />
         </div>
         {userFirstParticipationDate && (
           <Tag

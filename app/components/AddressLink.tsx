@@ -14,9 +14,17 @@ interface AddressLinkProps {
   address: Address;
   isAIAgent: boolean;
   className?: string;
+  href: string;
+  iconSize?: number;
 }
 
-export const AddressLink = ({ address, isAIAgent, className }: AddressLinkProps) => {
+export const AddressLink = ({
+  address,
+  isAIAgent,
+  className,
+  href,
+  iconSize = 16,
+}: AddressLinkProps) => {
   const normalizedAddress = useMemo(() => {
     try {
       return getAddress(address);
@@ -35,18 +43,16 @@ export const AddressLink = ({ address, isAIAgent, className }: AddressLinkProps)
   return (
     <div className="flex items-center space-x-2 text-sm md:text-base">
       <Link
-        href={`/profile?address=${address}`}
+        href={href}
         className={twMerge(
           'hover:underline',
           isAIAgent ? 'text-text-primary-main' : 'text-text-high-em',
           className
         )}
-        target="_blank"
-        rel="noopener noreferrer"
       >
         {ensName || shortenAddress(address)}
       </Link>
-      {isAIAgent && <Image src="/ai.svg" alt="ai" width={16} height={16} />}
+      {isAIAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
     </div>
   );
 };
