@@ -18,7 +18,7 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
 
   if (
     !fixedProductMarketMaker.isPendingArbitration &&
-    marketModel.answer === null &&
+    marketModel.currentAnswer === null &&
     marketModel.isClosed
   )
     return (
@@ -57,6 +57,36 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
           <span>More about disputes</span>
           <Icon name="arrow-top-right" size={16} />
         </ButtonLink>
+      </div>
+    );
+
+  if (!marketModel.isAnswerFinal && marketModel.currentAnswer !== null)
+    return (
+      <div className="flex flex-col items-center space-y-8 p-8">
+        <div className="flex items-center space-x-2">
+          <span>Current winner outcome is</span>
+          <Tag
+            className="w-fit uppercase"
+            colorScheme={marketModel.currentAnswer === 0 ? 'success' : 'danger'}
+          >
+            {marketModel.outcomes[marketModel.currentAnswer]?.name}
+          </Tag>
+        </div>
+        <div className="flex w-full flex-col items-center space-y-2 rounded-12 bg-surface-surface-1 py-4">
+          <span>Is this result incorrect?</span>
+          {fixedProductMarketMaker.question && (
+            <ButtonLink
+              href={`${REALITY_QUESTION_URL}${fixedProductMarketMaker.question.id}`}
+              target="_blank"
+              width="fit"
+              className="flex items-center space-x-1"
+              variant="ghost"
+            >
+              <span>Submit new answer</span>
+              <Icon name="arrow-top-right" size={16} />
+            </ButtonLink>
+          )}
+        </div>
       </div>
     );
 

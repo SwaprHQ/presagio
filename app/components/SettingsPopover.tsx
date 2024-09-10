@@ -14,6 +14,7 @@ import {
 import { useShowClientUI } from '@/hooks';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
+import { cx } from 'class-variance-authority';
 
 export const SettingsPopover = () => {
   const { setTheme, theme } = useTheme();
@@ -30,9 +31,9 @@ export const SettingsPopover = () => {
         <IconButton name="settings-fill" variant="pastel" />
       </PopoverTrigger>
       <PopoverContent className="max-w-lg px-4">
-        <div className="space-y-3 divide-y divide-outline-base-em">
-          <div>
-            {address && (
+        <div className={address && 'space-y-3 divide-y divide-outline-base-em'}>
+          {address && (
+            <div>
               <ButtonLink
                 size="sm"
                 variant="pastel"
@@ -46,9 +47,9 @@ export const SettingsPopover = () => {
                 </div>
                 <Icon size={14} name="chevron-right" />
               </ButtonLink>
-            )}
-          </div>
-          <div className="space-y-2 pt-3">
+            </div>
+          )}
+          <div className={cx('space-y-2', { 'pt-3': !!address })}>
             <div className="flex items-center text-text-low-em">
               <p className="text-xs font-bold">Theme</p>
             </div>

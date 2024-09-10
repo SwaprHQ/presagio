@@ -150,6 +150,8 @@ const getMarketsQuery = (
     $answerFinalizedTimestamp_lt: Int
     $openingTimestamp_lte: Int
     $scaledLiquidityParameter_gt: Int
+    $resolutionTimestamp: Int
+    $currentAnswerTimestamp_gt: Int
   ) {
     fixedProductMarketMakers(
       first: $first
@@ -169,6 +171,8 @@ const getMarketsQuery = (
         ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
         ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
         ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
+        ${params.resolutionTimestamp !== undefined ? 'resolutionTimestamp: $resolutionTimestamp' : ''}
+        ${params.currentAnswerTimestamp_gt !== undefined ? 'currentAnswerTimestamp_gt: $currentAnswerTimestamp_gt' : ''}
       }
     ) {
       ...marketData

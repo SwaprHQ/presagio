@@ -4,6 +4,7 @@ import {
   OrderDirection,
 } from '@/queries/omen';
 import { AI_AGENTS_ALLOWLIST } from '../constants';
+import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
 
 export type OrderFilter = {
   name: string;
@@ -45,13 +46,13 @@ export const orderFilters: OrderFilter[] = [
   },
 ];
 
-const nowTimestamp = Math.floor(Date.now() / 1000);
-
 export type StateFilter = {
   name: string;
   key: string;
   when: FixedProductMarketMaker_Filter;
 };
+
+const oneDayAgoTimestamp = nowTimestamp - _24HoursInSeconds;
 
 export const stateFilters: StateFilter[] = [
   {
@@ -73,6 +74,8 @@ export const stateFilters: StateFilter[] = [
     name: 'Finalizing',
     key: 'finalizing',
     when: {
+      resolutionTimestamp: null,
+      currentAnswerTimestamp_gt: oneDayAgoTimestamp,
       openingTimestamp_lt: nowTimestamp,
       isPendingArbitration: false,
       currentAnswer_not: null,
