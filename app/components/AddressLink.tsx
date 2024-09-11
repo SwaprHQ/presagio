@@ -16,7 +16,6 @@ interface AddressLinkProps extends ComponentProps<typeof Link> {
   className?: string;
   href: string;
   iconSize?: number;
-  showAddressWithENS?: boolean;
 }
 
 export const AddressLink = ({
@@ -25,7 +24,6 @@ export const AddressLink = ({
   className,
   href,
   iconSize = 16,
-  showAddressWithENS,
   ...props
 }: AddressLinkProps) => {
   const { data: ensName } = useEnsName({
@@ -35,22 +33,19 @@ export const AddressLink = ({
   });
 
   return (
-    <div>
-      <div className="flex items-center space-x-2 text-sm md:text-base">
-        <Link
-          href={href}
-          className={twMerge(
-            'hover:underline',
-            isAIAgent ? 'text-text-primary-main' : 'text-text-high-em',
-            className
-          )}
-          {...props}
-        >
-          {ensName || shortenAddress(address)}
-        </Link>
-        {isAIAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
-      </div>
-      <p>{showAddressWithENS && ensName && shortenAddress(address)}</p>
+    <div className="flex items-center space-x-2 text-sm md:text-base">
+      <Link
+        href={href}
+        className={twMerge(
+          'hover:underline',
+          isAIAgent ? 'text-text-primary-main' : 'text-text-high-em',
+          className
+        )}
+        {...props}
+      >
+        {ensName || shortenAddress(address)}
+      </Link>
+      {isAIAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
     </div>
   );
 };
