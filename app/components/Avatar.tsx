@@ -3,10 +3,9 @@
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { twMerge } from 'tailwind-merge';
 import Image from 'next/image';
-import { Address, getAddress } from 'viem';
+import { Address } from 'viem';
 import { mainnet } from 'viem/chains';
 import { useEnsAvatar, useEnsName } from 'wagmi';
-import { useMemo } from 'react';
 
 interface AvatarProps {
   address: Address;
@@ -14,15 +13,6 @@ interface AvatarProps {
 }
 
 export const Avatar = ({ address, className }: AvatarProps) => {
-  const normalizedAddress = useMemo(() => {
-    try {
-      return getAddress(address);
-    } catch (error) {
-      console.error('Invalid Ethereum address:', error);
-      return address;
-    }
-  }, [address]);
-
   const { data: ensName } = useEnsName({
     address: address,
     chainId: mainnet.id,
@@ -38,13 +28,9 @@ export const Avatar = ({ address, className }: AvatarProps) => {
   const GRADIENT_BASED_ON_ADDRESS_URL = 'https://avatars.jakerunzer.com';
   const ENS_METADATA_AVATAR_URL = 'https://metadata.ens.domains/mainnet/avatar';
 
-  const avatarGradientUrl = (address: string) =>
-    `${GRADIENT_BASED_ON_ADDRESS_URL}/${normalizedAddress}`;
-
-  const avatarEnsUrl = (ens: string) => `${ENS_METADATA_AVATAR_URL}/${ens}`;
-
-  const avatarUrl =
-    ensName && ensAvatar ? avatarEnsUrl(ensName) : avatarGradientUrl(normalizedAddress);
+  const avatarGradientUrl = `${GRADIENT_BASED_ON_ADDRESS_URL}/${address}`;
+  const avatarEnsUrl = `${ENS_METADATA_AVATAR_URL}/${ensName}`;
+  const avatarUrl = ensName && ensAvatar ? avatarEnsUrl : avatarGradientUrl;
 
   return (
     <Image

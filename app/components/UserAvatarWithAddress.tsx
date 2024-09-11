@@ -5,7 +5,7 @@ import { Avatar } from '@/app/components';
 import { Address } from 'viem';
 import { twMerge } from 'tailwind-merge';
 
-interface UserAvatarWithAddressLinkProps {
+interface UserAvatarWithAddressProps {
   address: Address;
   isAIAgent: boolean;
   className?: string;
@@ -15,7 +15,7 @@ export const UserAvatarWithAddress = ({
   address,
   isAIAgent,
   className,
-}: UserAvatarWithAddressLinkProps) => {
+}: UserAvatarWithAddressProps) => {
   return (
     <div
       className={twMerge(

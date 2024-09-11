@@ -4,9 +4,9 @@ import { mainnetConfigForENS } from '@/providers/chain-config';
 import { shortenAddress } from '@/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { Address, getAddress } from 'viem';
+import { Address } from 'viem';
 import { mainnet } from 'viem/chains';
 import { useEnsName } from 'wagmi';
 
@@ -28,17 +28,8 @@ export const AddressLink = ({
   showAddressWithENS,
   ...props
 }: AddressLinkProps) => {
-  const normalizedAddress = useMemo(() => {
-    try {
-      return getAddress(address);
-    } catch (error) {
-      console.error('Invalid Ethereum address:', error);
-      return address;
-    }
-  }, [address]);
-
   const { data: ensName } = useEnsName({
-    address: normalizedAddress,
+    address: address,
     chainId: mainnet.id,
     config: mainnetConfigForENS,
   });
