@@ -2,11 +2,14 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { fromHex } from 'viem';
 import { Outcome } from '@/entities';
 import { isPast } from 'date-fns';
+import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
 
 export class Market {
   fpmm: FixedProductMarketMaker;
   closingDate: Date;
   answer: number | null;
+  currentAnswer: number | null;
+  isAnswerFinal: boolean;
   isClosed: boolean;
   outcomes: Outcome[];
   hasLiquidity: boolean;
@@ -14,8 +17,15 @@ export class Market {
   constructor(fpmm: FixedProductMarketMaker) {
     this.fpmm = fpmm;
     this.closingDate = new Date(+fpmm.openingTimestamp * 1000);
+    this.isAnswerFinal =
+      !!fpmm.resolutionTimestamp ||
+      nowTimestamp - fpmm.currentAnswerTimestamp > _24HoursInSeconds;
+
+    this.currentAnswer = fpmm.question?.currentAnswer
+      ? fromHex(fpmm.question.currentAnswer, 'number')
+      : null;
     this.answer =
-      fpmm?.question?.currentAnswer && !!fpmm.resolutionTimestamp
+      fpmm.question && this.currentAnswer !== null && this.isAnswerFinal
         ? fromHex(fpmm.question.currentAnswer, 'number')
         : null;
     this.isClosed = this.answer !== null || isPast(this.closingDate);
