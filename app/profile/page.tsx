@@ -210,15 +210,17 @@ export default function ProfilePage() {
 
   return (
     <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
-      <div className="flex w-full items-center justify-between rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em">
+      <div className="flex w-full flex-col justify-between space-y-4 rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em md:flex-row md:items-center md:space-y-0">
         <div className="flex items-center space-x-4">
-          <Avatar address={address} size={32} className="size-8" />
+          <Avatar address={address} className="size-14" />
           <AddressLink
             href={getGnosisAddressExplorerLink(address)}
             address={address}
             isAIAgent={isAIAgent}
-            className="text-2xl font-semibold"
+            className="text-xl font-semibold md:text-2xl"
             iconSize={24}
+            target="_blank"
+            showAddressWithENS={true}
           />
         </div>
         {userFirstParticipationDate && (

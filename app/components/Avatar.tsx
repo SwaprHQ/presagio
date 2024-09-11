@@ -11,10 +11,9 @@ import { useMemo } from 'react';
 interface AvatarProps {
   address: Address;
   className?: string;
-  size?: number;
 }
 
-export const Avatar = ({ address, className, size = 24 }: AvatarProps) => {
+export const Avatar = ({ address, className }: AvatarProps) => {
   const normalizedAddress = useMemo(() => {
     try {
       return getAddress(address);
@@ -51,9 +50,9 @@ export const Avatar = ({ address, className, size = 24 }: AvatarProps) => {
     <Image
       src={avatarUrl}
       alt={`ens avatar for ${ensName}`}
-      width={size}
-      height={size}
-      className={twMerge('size-6 rounded-100 bg-outline-low-em', className)}
+      width={320}
+      height={320}
+      className={twMerge('size-6 rounded-100 bg-outline-low-em bg-cover', className)}
     />
   );
 };
