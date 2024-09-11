@@ -12,3 +12,6 @@ export * from './Navbar';
 export * from './Footer';
 export * from './BetsListPanel';
 export * from './CardBet';
+export * from './UserAvatarWithAddress';
+export * from './Avatar';
+export * from './AddressLink';

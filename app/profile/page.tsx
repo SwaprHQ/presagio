@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
-import { formatEther, isAddress } from 'viem';
+import { Address, formatEther, isAddress } from 'viem';
 import {
   calcSellAmountInCollateral,
   formatValueWithFixedDecimals,
@@ -23,20 +23,29 @@ import { getUserBets } from '@/queries/omen';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { fromUnixTime, format } from 'date-fns';
 import {
+  AddressLink,
+  Avatar,
   BetsListPanel,
   BetsListPanelProps,
   BetsListTab,
   ProfileCardBet,
 } from '@/app/components';
-import { cx } from 'class-variance-authority';
-import Image from 'next/image';
 import { getAIAgents } from '@/queries/dune';
 import { getTokenUSDPrice } from '@/queries/mobula';
+import { useEnsName } from 'wagmi';
+import { mainnetConfigForENS } from '@/providers/chain-config';
+import { mainnet } from 'viem/chains';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();
 
   const address = searchParams.get('address')?.toLocaleLowerCase();
+
+  const { data: ensName } = useEnsName({
+    address: address as Address,
+    chainId: mainnet.id,
+    config: mainnetConfigForENS,
+  });
 
   const { data: userInfo } = useQuery({
     queryKey: ['getUser', address],
@@ -211,20 +220,20 @@ export default function ProfilePage() {
 
   return (
     <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
-      <div className="flex w-full items-center justify-between rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em">
+      <div className="flex w-full flex-col justify-between space-y-4 rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em md:flex-row md:items-center md:space-y-0">
         <div className="flex items-center space-x-4">
-          <a
-            href={getGnosisAddressExplorerLink(address)}
-            className={cx(
-              'text-2xl font-semibold text-text-high-em hover:underline',
-              isAIAgent ? 'text-text-primary-main' : 'text-text-high-em'
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {shortenAddress(address)}
-          </a>
-          {isAIAgent && <Image src="/ai.svg" alt="ai" width={26} height={26} />}
+          <Avatar address={address} className="size-14" />
+          <div>
+            <AddressLink
+              href={getGnosisAddressExplorerLink(address)}
+              address={address}
+              isAIAgent={isAIAgent}
+              className="text-xl font-semibold md:text-2xl"
+              iconSize={24}
+              target="_blank"
+            />
+            {ensName && <p className="text-text-low-em">{shortenAddress(address)}</p>}
+          </div>
         </div>
         {userFirstParticipationDate && (
           <Tag

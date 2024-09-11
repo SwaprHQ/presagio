@@ -14,18 +14,13 @@ import {
   getMarketTrades,
   getMarketTradesAndTransactions,
 } from '@/queries/omen';
-import {
-  formatDateTimeWithYear,
-  formatEtherWithFixedDecimals,
-  shortenAddress,
-  timeAgo,
-} from '@/utils';
+import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@/utils';
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
-import Image from 'next/image';
-import { TokenLogo } from '@/app/components';
-import Link from 'next/link';
+
+import { TokenLogo, UserAvatarWithAddress } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
+import { Address } from 'viem';
 
 const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
   0: 'success',
@@ -209,7 +204,10 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <AILink address={creatorAddress} isAIAgent={isAIAgent} />
+        <UserAvatarWithAddress
+          address={creatorAddress as Address}
+          isAIAgent={isAIAgent}
+        />
         {activity.transactionType && (
           <p className="text-text-low-em">
             {txTypeHumanWords[activity.transactionType][0]}
@@ -240,38 +238,10 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
   );
 };
 
-interface AILinkProps {
-  address: string;
-  isAIAgent: boolean;
-}
-
-const AILink = ({ address, isAIAgent }: AILinkProps) => (
-  <div className="flex w-fit flex-shrink-0 items-center space-x-1 text-sm md:text-base">
-    <Link
-      href={`/profile?address=${address}`}
-      className={cx(
-        'hover:underline',
-        isAIAgent ? 'text-text-primary-main' : 'text-text-high-em'
-      )}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {shortenAddress(address)}
-    </Link>
-    {isAIAgent && <Image src="/ai.svg" alt="ai" width={16} height={16} />}
-  </div>
-);
-
 interface LiquidityEventRowProps {
   transaction: FpmmTransaction;
   isAIAgent: boolean;
 }
-
-const RowWrapper = ({ children }: PropsWithChildren) => (
-  <div className="flex w-full min-w-max items-center justify-between space-x-2 p-4">
-    {children}
-  </div>
-);
 
 const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) => {
   const creatorAddress = transaction.user.id;
@@ -279,7 +249,10 @@ const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) =
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <AILink address={creatorAddress} isAIAgent={isAIAgent} />
+        <UserAvatarWithAddress
+          address={creatorAddress as Address}
+          isAIAgent={isAIAgent}
+        />
         <p className="lowercase text-text-low-em">
           {txTypeHumanWords[transaction.transactionType][0]}
         </p>
@@ -303,6 +276,12 @@ const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) =
     </RowWrapper>
   );
 };
+
+const RowWrapper = ({ children }: PropsWithChildren) => (
+  <div className="flex w-full min-w-max items-center justify-between space-x-2 p-4">
+    {children}
+  </div>
+);
 
 const LoadingSkeleton = () => (
   <div className="text-base font-semibold">
