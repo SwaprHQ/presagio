@@ -248,7 +248,7 @@ export default function HomePage() {
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
         <Input
           className="w-full"
-          placeholder="Search markets for keywords or address"
+          placeholder="Search markets keywords or address"
           leftIcon="search"
           onChange={event => handleSearch(event.target.value)}
           value={search}
