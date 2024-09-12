@@ -28,7 +28,9 @@ import {
   useReadToken,
 } from '@/hooks/contracts/erc20';
 import { gnosis } from 'viem/chains';
-import { formatEtherWithFixedDecimals } from '@/utils';
+import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
+import { useQuery } from '@tanstack/react-query';
+import { getTokenUSDPrice } from '@/queries/mobula';
 
 export const SLIPPAGE = 0.01;
 const ONE_UNIT = '1';
@@ -130,8 +132,10 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     tokenAddress: fixedProductMarketMaker.collateralToken,
   });
 
+  const isBuying = swapDirection === SwapDirection.BUY;
+
   useEffect(() => {
-    if (swapDirection === SwapDirection.BUY) {
+    if (isBuying) {
       if (!buyAmount) return;
 
       const amountOut = removeFraction(buyAmount as bigint, SLIPPAGE);
@@ -155,8 +159,8 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     buyAmount,
     fixedProductMarketMaker.fee,
     fixedProductMarketMaker.outcomeTokenAmounts,
+    isBuying,
     outcome.index,
-    swapDirection,
     tokenAmountIn,
   ]);
 
@@ -174,6 +178,12 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   );
 
   const outcomeBalances = [outcome0Balance, outcome1Balance];
+
+  const { data: collateralTokenUSDPrice } = useQuery({
+    queryKey: ['tokenPriceUSD', fixedProductMarketMaker.collateralToken],
+    queryFn: async () => await getTokenUSDPrice(fixedProductMarketMaker.collateralToken),
+    staleTime: Infinity,
+  });
 
   if (!name || !symbol || !decimals) return;
 
@@ -230,6 +240,27 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     !!connectorChainId &&
     !supportedChains.some(supportedChain => supportedChain.id === connectorChainId);
 
+  const priceInUSD = collateralTokenUSDPrice
+    ? isBuying
+      ? collateralTokenUSDPrice
+      : collateralTokenUSDPrice * +currentState.tokenPrice
+    : null;
+
+  const formattedPriceInUSD = priceInUSD && formatValueWithFixedDecimals(priceInUSD, 2);
+
+  const potentialProfit =
+    tokenAmountOut && tokenAmountIn && isBuying
+      ? +formatEther(tokenAmountOut) - +tokenAmountIn
+      : null;
+
+  const formattedPotentialProfit =
+    potentialProfit !== null && formatValueWithFixedDecimals(potentialProfit, 2);
+
+  const potentialProfitInUSD =
+    potentialProfit !== null && collateralTokenUSDPrice
+      ? formatValueWithFixedDecimals(collateralTokenUSDPrice * potentialProfit, 2)
+      : null;
+
   return (
     <>
       <div className="relative space-y-2">
@@ -245,7 +276,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
         >
           <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
             <p className="text-text-low-em">
-              Balance:
+              Balance:{' '}
               {currentState.balance
                 ? formatEtherWithFixedDecimals(currentState.balance)
                 : 0}
@@ -294,13 +325,28 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
                 >
                   {currentState.tokenPrice} {currentState.outToken.symbol}
                 </p>
-                <p className="text-text-low-em">(≈ $1)</p>
+                {formattedPriceInUSD && (
+                  <p className="text-text-low-em">(≈ ${formattedPriceInUSD})</p>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-text-low-em">Slippage</p>
               <p>{SLIPPAGE * 100}%</p>
             </div>
+            {potentialProfit && (
+              <div className="flex items-center justify-between">
+                <p className="text-text-low-em">Potential profit</p>
+                <div className="flex items-center space-x-1">
+                  <p className="text-text-success-main">
+                    {formattedPotentialProfit} {collateralToken.symbol}
+                  </p>
+                  {potentialProfitInUSD && (
+                    <p className="text-text-low-em">(≈ ${potentialProfitInUSD})</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           {isDisconnected ? (
             <ConnectButton width="full" size="lg">
