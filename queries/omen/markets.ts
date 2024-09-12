@@ -139,6 +139,7 @@ const getMarketsQuery = (
     $skip: Int!
     $orderBy: String
     $orderDirection: String
+    $id: String
     $title_contains_nocase: String
     $creator_in: [String]
     $category_contains: String
@@ -152,7 +153,7 @@ const getMarketsQuery = (
     $scaledLiquidityParameter_gt: Int
     $resolutionTimestamp: Int
     $currentAnswerTimestamp_gt: Int
-  ) {
+    ) {
     fixedProductMarketMakers(
       first: $first
       skip: $skip
@@ -161,6 +162,7 @@ const getMarketsQuery = (
       where: {
         outcomeSlotCount: 2
         ${params.title_contains_nocase ? 'title_contains_nocase: $title_contains_nocase' : ''}
+        ${params.id ? 'id: $id' : ''}
         ${params.creator_in ? 'creator_in: $creator_in' : ''}
         ${params.category_contains ? 'category_contains: $category_contains' : ''}
         ${params.openingTimestamp_gt ? 'openingTimestamp_gt: $openingTimestamp_gt' : ''}

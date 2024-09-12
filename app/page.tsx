@@ -27,6 +27,7 @@ import {
   orderFilters,
   stateFilters,
 } from './filters';
+import { isAddress } from 'viem';
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
@@ -110,6 +111,21 @@ export default function HomePage() {
 
   const [page, setPage] = useState(initialPage());
 
+  const searchFilterParams = isAddress(debouncedSearch)
+    ? { id: debouncedSearch.toLowerCase() }
+    : { title_contains_nocase: debouncedSearch };
+
+  const marketsBaseParams = {
+    first: ITEMS_PER_PAGE,
+    skip: (page - 1) * ITEMS_PER_PAGE,
+    orderBy: selectedOrderOption.orderBy,
+    orderDirection: selectedOrderOption.orderDirection,
+    category_contains: category,
+    ...selectedCreatorOption.when,
+    ...selectedStateOption.when,
+    ...searchFilterParams,
+  };
+
   const { data, isLoading } = useQuery({
     queryKey: [
       'getMarkets',
@@ -121,17 +137,7 @@ export default function HomePage() {
       selectedStateOption.key,
       selectedCreatorOption.key,
     ],
-    queryFn: async () =>
-      getMarkets({
-        first: ITEMS_PER_PAGE,
-        skip: (page - 1) * ITEMS_PER_PAGE,
-        orderBy: selectedOrderOption.orderBy,
-        orderDirection: selectedOrderOption.orderDirection,
-        title_contains_nocase: debouncedSearch,
-        category_contains: category,
-        ...selectedCreatorOption.when,
-        ...selectedStateOption.when,
-      }),
+    queryFn: async () => getMarkets(marketsBaseParams),
   });
 
   const handleSearch = (query: string) => {
@@ -206,17 +212,7 @@ export default function HomePage() {
       selectedStateOption.key,
       selectedCreatorOption.key,
     ],
-    queryFn: async () =>
-      getMarkets({
-        first: ITEMS_PER_PAGE,
-        skip: nextPage,
-        orderBy: selectedOrderOption.orderBy,
-        orderDirection: selectedOrderOption.orderDirection,
-        title_contains_nocase: debouncedSearch,
-        category_contains: category,
-        ...selectedCreatorOption.when,
-        ...selectedStateOption.when,
-      }),
+    queryFn: async () => getMarkets({ ...marketsBaseParams, skip: nextPage }),
   });
 
   const hasMoreMarkets =
@@ -252,7 +248,7 @@ export default function HomePage() {
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
         <Input
           className="w-full"
-          placeholder="Search market"
+          placeholder="Search markets for keywords or address"
           leftIcon="search"
           onChange={event => handleSearch(event.target.value)}
           value={search}
