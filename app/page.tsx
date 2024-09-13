@@ -28,6 +28,7 @@ import {
   stateFilters,
 } from './filters';
 import { isAddress } from 'viem';
+import Image from 'next/image';
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
@@ -277,7 +278,12 @@ export default function HomePage() {
                     })}
                     name="tick-fill"
                   />
-                  <p>{option.name}</p>
+                  <div className="flex items-center space-x-2">
+                    <p>{option.name}</p>
+                    {option.key === 'ai' && (
+                      <Image src="/ai.svg" alt="ai" width={20} height={20} />
+                    )}
+                  </div>
                 </div>
               ))}
             </PopoverContent>

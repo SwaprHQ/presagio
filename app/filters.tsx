@@ -109,13 +109,13 @@ export type CreatorFilter = {
 
 export const creatorFilters: CreatorFilter[] = [
   {
-    name: 'AI markets',
-    key: 'ai',
-    when: { creator_in: AI_AGENTS_ALLOWLIST },
-  },
-  {
     name: 'All markets',
     key: 'all',
     when: {},
+  },
+  {
+    name: 'AI markets',
+    key: 'ai',
+    when: { creator_in: AI_AGENTS_ALLOWLIST },
   },
 ];
