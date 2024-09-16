@@ -1,14 +1,29 @@
 'use client';
 
-import { ButtonLink, Icon, Tag } from '@swapr/ui';
+import {
+  ButtonLink,
+  Icon,
+  Tag,
+  TagProps,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@swapr/ui';
 import { Market } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { Swapbox } from '@/app/components';
 import { KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
+import { PropsWithChildren } from 'react';
 
 interface BetProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
+
+const tagSchemeColors: Record<number, TagProps['colorScheme']> = {
+  0: 'success',
+  1: 'danger',
+  [Market.INVALID_ANSWER]: 'quaternary',
+};
 
 export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
   const marketModel = new Market(fixedProductMarketMaker);
@@ -67,10 +82,13 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
           <span>Current winner outcome is</span>
           <Tag
             className="w-fit uppercase"
-            colorScheme={marketModel.currentAnswer === 0 ? 'success' : 'danger'}
+            colorScheme={tagSchemeColors[marketModel.currentAnswer]}
           >
-            {marketModel.outcomes[marketModel.currentAnswer]?.name}
+            {marketModel.currentAnswer === Market.INVALID_ANSWER
+              ? 'Invalid'
+              : marketModel.outcomes[marketModel.currentAnswer].name}
           </Tag>
+          <Info>For questions which can&apos;t be answered, answer must be Invalid.</Info>
         </div>
         <div className="flex w-full flex-col items-center space-y-2 rounded-12 bg-surface-surface-1 py-4">
           <span>Is this result incorrect?</span>
@@ -90,15 +108,24 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
       </div>
     );
 
-  if (marketModel.answer !== null)
+  if (marketModel.isAnswerInvalid)
+    return (
+      <div className="flex items-center justify-center space-x-1 p-8 text-center text-md">
+        <p> Market is considered invalid</p>
+        <Info>Invalid markets have questions which can&apos;t be answered</Info>
+      </div>
+    );
+
+  const winnerOutcome = marketModel.getWinnerOutcome();
+  if (winnerOutcome !== null)
     return (
       <div className="flex flex-col items-center p-8">
         <div className="flex items-center space-x-2">
           <Tag
             className="w-fit uppercase"
-            colorScheme={marketModel.isWinner(0) ? 'success' : 'danger'}
+            colorScheme={tagSchemeColors[winnerOutcome.index]}
           >
-            {marketModel.getWinnerOutcome()?.name}
+            {winnerOutcome.name}
           </Tag>
           <span>is the winner outcome 🎉</span>
         </div>
@@ -107,3 +134,12 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
 
   return <div className="p-8 text-center text-md">Market is currently closed.</div>;
 };
+
+const Info = ({ children }: PropsWithChildren) => (
+  <Tooltip>
+    <TooltipTrigger>
+      <Icon name="info" size={16} />
+    </TooltipTrigger>
+    <TooltipContent className="bg-surface-surface-0">{children}</TooltipContent>
+  </Tooltip>
+);

@@ -9,6 +9,7 @@ import { ConnectKitProvider, Types } from 'connectkit';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { TxProvider, ModalProvider } from '@/context';
 import { useAnalytics } from '@/hooks';
+import { TooltipProvider } from '@swapr/ui';
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,9 @@ export const Providers = ({ children }: PropsWithChildren) => {
         <QueryClientProvider client={queryClient}>
           <CustomConnectKitProvider>
             <ModalProvider>
-              <TxProvider>{children}</TxProvider>
+              <TxProvider>
+                <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+              </TxProvider>
             </ModalProvider>
           </CustomConnectKitProvider>
         </QueryClientProvider>
