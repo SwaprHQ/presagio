@@ -1,6 +1,6 @@
 'use client';
 
-import { OutcomeBar, UserBets, MarketThumbnail } from '@/app/components';
+import { OutcomeBar, UserBets, MarketThumbnail, Skeleton } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
 import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
@@ -115,34 +115,34 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
 const LoadingMarketDetails = () => (
   <div className="flex w-full flex-col items-center space-y-4">
     <div className="flex w-full max-w-[464px] items-start">
-      <div className="h-8 w-8 animate-pulse rounded-12 bg-outline-low-em"></div>
+      <Skeleton className="h-8 w-8 rounded-12" />
     </div>
     <div className="w-full max-w-[464px] rounded-16 border border-outline-base-em bg-surface-surface-0">
       <div className="space-y-4 p-5">
         <div className="flex items-center justify-between">
-          <div className="h-7 w-20 animate-pulse rounded-8 bg-outline-low-em" />
-          <div className="h-4 w-28 animate-pulse rounded-8 bg-outline-low-em" />
+          <Skeleton className="h-7 w-20" />
+          <Skeleton className="h-4 w-28" />
         </div>
         <div className="flex space-x-4">
-          <div className="size-20 flex-shrink-0 animate-pulse rounded-8 bg-outline-low-em" />
-          <div className="h-28 w-full animate-pulse rounded-8 bg-outline-low-em" />
+          <Skeleton className="size-20 flex-shrink-0" />
+          <Skeleton className="h-28 w-full" />
         </div>
-        <div className="!mt-4 h-6 w-full animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="!mt-4 h-6 w-full" />
       </div>
       <div className="w-full px-4 pb-2">
-        <div className="h-12 w-full animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="h-12 w-full" />
       </div>
       <div className="h-32 w-full p-2">
-        <div className="h-full w-full animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="h-full w-full" />
       </div>
       <div className="h-28 w-full p-2">
-        <div className="h-full w-full animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="h-full w-full" />
       </div>
       <div className="h-14 w-full p-2">
-        <div className="h-full w-full" />
+        <Skeleton className="h-full w-full" />
       </div>
       <div className="h-16 w-full p-2">
-        <div className="h-full w-full animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="h-full w-full" />
       </div>
     </div>
   </div>
