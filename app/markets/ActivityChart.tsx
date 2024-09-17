@@ -13,6 +13,7 @@ import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
 import { format, fromUnixTime } from 'date-fns';
 import { Market } from '@/entities';
 import { useTheme } from 'next-themes';
+import { Skeleton } from '@/app/components';
 
 const MAX_TRADES_AMOUNT = 999;
 
@@ -104,8 +105,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
     enabled: !!trades,
   });
 
-  if (isFetching || isFetchingMarket)
-    return <div className="h-full w-full animate-pulse rounded-8 bg-outline-low-em" />;
+  if (isFetching || isFetchingMarket) return <Skeleton className="h-full w-full" />;
 
   if (!data || !fixedProductMarketMaker)
     return (

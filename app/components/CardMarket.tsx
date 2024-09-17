@@ -5,6 +5,7 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { formattedNumberDollars } from '@/utils/currencies';
 import { remainingTime } from '@/utils/dates';
 import { MarketThumbnail } from './MarketThumbnail';
+import { Skeleton } from './Skeleton';
 
 interface CardMarketProps {
   market: FixedProductMarketMaker;
@@ -47,12 +48,12 @@ export const CardMarket = ({ market }: CardMarketProps) => {
 export const LoadingCardMarket = () => (
   <Card className="h-[202px]">
     <div className="space-y-3 p-4">
-      <div className="h-[80px] animate-pulse rounded-8 bg-outline-low-em"></div>
-      <div className="h-9 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <Skeleton className="h-[80px]" />
+      <Skeleton className="h-9" />
     </div>
     <div className="flex items-center justify-between px-4">
-      <div className="h-8 w-20 animate-pulse rounded-8 bg-outline-low-em"></div>
-      <div className="h-8 w-20 animate-pulse rounded-8 bg-outline-low-em"></div>
+      <Skeleton className="h-8 w-20" />
+      <Skeleton className="h-8 w-20" />
     </div>
   </Card>
 );

@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { format, parseISO } from 'date-fns';
 import Image from 'next/image';
 
+import { Skeleton } from '@/app/components';
+
 interface NewsProps {
   id: string;
 }
@@ -39,7 +41,7 @@ export const News = ({ id }: NewsProps) => {
 
   if (isLoading)
     return Array.from({ length: 4 }).map((_, index) => (
-      <NewsSkeleton key={Number(index)} />
+      <LoadingNewsArticle key={Number(index)} />
     ));
 
   if (!news) return <div className="py-4 text-center">No news</div>;
@@ -85,7 +87,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
           alt="news image"
         />
       ) : isLoading ? (
-        <div className="h-16 w-[88px] flex-shrink-0 animate-pulse rounded-4 bg-outline-low-em" />
+        <Skeleton className="h-16 w-[88px] flex-shrink-0 rounded-4" />
       ) : null}
       <div className="flex flex-col space-y-1">
         <p className="font-semibold">{title}</p>
@@ -94,20 +96,20 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
             {format(publishDate, 'd MMM y, HH:mm')}
           </p>
         ) : isLoading ? (
-          <div className="h-4 w-24 animate-pulse rounded-8 bg-outline-low-em" />
+          <Skeleton className="h-4 w-24" />
         ) : null}
       </div>
     </a>
   );
 };
 
-const NewsSkeleton = () => {
+const LoadingNewsArticle = () => {
   return (
     <div className="flex w-full cursor-pointer space-x-6 py-4">
-      <div className="h-16 w-[88px] flex-shrink-0 animate-pulse rounded-4 bg-outline-low-em" />
+      <Skeleton className="h-16 w-[88px] flex-shrink-0 rounded-4" />
       <div className="flex w-full flex-col space-y-2">
-        <div className="h-9 w-full animate-pulse rounded-8 bg-outline-low-em" />
-        <div className="h-4 w-24 animate-pulse rounded-8 bg-outline-low-em" />
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-4 w-24" />
       </div>
     </div>
   );

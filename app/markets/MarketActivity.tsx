@@ -18,7 +18,7 @@ import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@
 import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
 import { Outcome } from '@/entities';
 
-import { TokenLogo, UserAvatarWithAddress } from '@/app/components';
+import { Skeleton, TokenLogo, UserAvatarWithAddress } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 
@@ -92,8 +92,8 @@ export const MarketActivity = ({ id }: { id: string }) => {
   return (
     <div>
       <div>
-        {isLoading ? (
-          <LoadingSkeleton />
+        {true ? (
+          <LoadingMarketActivity />
         ) : (
           <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-semibold md:overflow-x-auto">
             {marketTransactions?.map(transaction => {
@@ -283,26 +283,26 @@ const RowWrapper = ({ children }: PropsWithChildren) => (
   </div>
 );
 
-const LoadingSkeleton = () => (
+const LoadingMarketActivity = () => (
   <div className="text-base font-semibold">
     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(fakeActivity => (
       <RowWrapper key={fakeActivity}>
         <div className="flex items-center space-x-1.5">
           <div className="text-text-high-em">
-            <div className="h-[23px] w-[120px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+            <Skeleton className="h-[23px] w-[120px] py-2" />
           </div>
           <div>
-            <div className="h-[23px] w-[44px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+            <Skeleton className="h-[23px] w-[44px] py-2" />
           </div>
           <div>
-            <div className="h-[25px] w-[69px] animate-pulse rounded-8 bg-outline-low-em py-2"></div>
+            <Skeleton className="h-[25px] w-[69px] py-2" />
           </div>
           <div className="text-text-high-em">
-            <div className="h-[23px] w-[42px] animate-pulse rounded-8 bg-outline-low-em py-2 md:w-[59px]"></div>
+            <Skeleton className="h-[23px] w-[42px] py-2 md:w-[59px]" />
           </div>
         </div>
         <div className="hidden justify-end text-text-low-em md:flex">
-          <div className="h-[15px] w-[22px] animate-pulse rounded-6 bg-outline-low-em py-2"></div>
+          <Skeleton className="h-[15px] w-[22px] rounded-6 py-2" />
         </div>
       </RowWrapper>
     ))}

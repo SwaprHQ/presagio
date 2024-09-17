@@ -29,6 +29,7 @@ import {
   BetsListPanelProps,
   BetsListTab,
   ProfileCardBet,
+  Skeleton,
 } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { getTokenUSDPrice } from '@/queries/mobula';
@@ -319,7 +320,7 @@ const StatsCard = ({
       <div className="text-xs font-bold uppercase">{title}</div>
       <div className="flex space-x-1.5 text-2xl">
         {isLoading ? (
-          <div className="h-9 w-12 animate-pulse rounded-8 bg-outline-low-em" />
+          <Skeleton className="h-9 w-12" />
         ) : (
           <span className="text-text-high-em">{value}</span>
         )}
