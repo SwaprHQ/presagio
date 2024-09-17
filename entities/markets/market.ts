@@ -4,7 +4,12 @@ import { Outcome } from '@/entities';
 import { isPast } from 'date-fns';
 import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
 
+const INVALID_ANSWER_HEX =
+  '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
 export class Market {
+  static INVALID_ANSWER = -1;
+
   fpmm: FixedProductMarketMaker;
   closingDate: Date;
   answer: number | null;
@@ -13,6 +18,7 @@ export class Market {
   isClosed: boolean;
   outcomes: Outcome[];
   hasLiquidity: boolean;
+  isAnswerInvalid: boolean;
 
   constructor(fpmm: FixedProductMarketMaker) {
     this.fpmm = fpmm;
@@ -22,12 +28,18 @@ export class Market {
       nowTimestamp - fpmm.currentAnswerTimestamp > _24HoursInSeconds;
 
     this.currentAnswer = fpmm.question?.currentAnswer
-      ? fromHex(fpmm.question.currentAnswer, 'number')
+      ? fpmm.question.currentAnswer === INVALID_ANSWER_HEX
+        ? Market.INVALID_ANSWER
+        : fromHex(fpmm.question.currentAnswer, 'number')
       : null;
     this.answer =
       fpmm.question && this.currentAnswer !== null && this.isAnswerFinal
-        ? fromHex(fpmm.question.currentAnswer, 'number')
+        ? fpmm.question.currentAnswer === INVALID_ANSWER_HEX
+          ? Market.INVALID_ANSWER
+          : fromHex(fpmm.question.currentAnswer, 'number')
         : null;
+    this.isAnswerInvalid = this.answer === Market.INVALID_ANSWER;
+
     this.isClosed = this.answer !== null || isPast(this.closingDate);
     this.hasLiquidity = Number(fpmm.scaledLiquidityParameter) > 0;
 
@@ -56,6 +68,8 @@ export class Market {
   }
 
   getWinnerOutcome() {
-    return this.isClosed && this.answer !== null ? this.outcomes[this.answer] : null;
+    return this.isClosed && this.answer !== null && this.answer !== Market.INVALID_ANSWER
+      ? this.outcomes[this.answer]
+      : null;
   }
 }
