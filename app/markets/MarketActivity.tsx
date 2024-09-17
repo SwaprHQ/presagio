@@ -92,7 +92,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
   return (
     <div>
       <div>
-        {true ? (
+        {isLoading ? (
           <LoadingMarketActivity />
         ) : (
           <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-semibold md:overflow-x-auto">
