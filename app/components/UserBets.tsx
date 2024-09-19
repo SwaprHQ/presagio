@@ -125,13 +125,13 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const { condition } = conditionData;
   const isResolved = condition.resolved;
 
-  const redeem = async () => {
+  const redeem = async (outcomeIndex: number) => {
     setIsTxLoading(true);
 
     try {
       const txHash = await redeemPositions({
         conditionId: condition.id,
-        outcomeIndex: 1,
+        outcomeIndex: outcomeIndex,
       });
       setTxHash(txHash);
       openModal(ModalId.WAITING_TRANSACTION);
@@ -243,7 +243,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                         width="full"
                         size="lg"
                         className="space-x-2"
-                        onClick={redeem}
+                        onClick={redeem(index)}
                       >
                         <TokenLogo address={collateralToken.address} size="xs" />
                         <p>
