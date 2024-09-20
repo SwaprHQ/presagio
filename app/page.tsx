@@ -1,9 +1,9 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
-import { getMarkets } from '@/queries/omen';
-import { CardMarket, LoadingCardMarket, Skeleton } from '@/app/components';
+import { FixedProductMarketMaker, getMarket, getMarkets } from '@/queries/omen';
+import { CardMarket, LoadingCardMarket, OutcomeBar, Skeleton } from '@/app/components';
 import {
   Button,
   Icon,
@@ -33,6 +33,15 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
+import kamalaVsTrumpImage from '@/public/assets/kamala-trump.png';
+import { formatValueWithFixedDecimals } from '@/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselSelector,
+} from './components/Carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -270,6 +279,7 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
+      <MarketHighlight />
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (
@@ -525,3 +535,71 @@ const LoadingMarketCategories = () => (
     </div>
   </div>
 );
+
+const MarketHighlight = () => {
+  const marketIdList = [
+    '0x8943a769cb0503f7bc4e92a777fcd1aa9decfc33',
+    '0x0539590c0cf0d929e3f40b290fda04b9b4a8cf68',
+  ];
+
+  const { data: markets, isLoading } = useQueries({
+    queries: marketIdList.map(id => ({
+      queryKey: ['getMarket', id],
+      queryFn: async () => getMarket({ id }),
+    })),
+    combine: results => {
+      return {
+        data: results
+          .map(result => result.data?.fixedProductMarketMaker)
+          .filter((market): market is FixedProductMarketMaker => !!market),
+        isLoading: results.some(result => result.isPending),
+      };
+    },
+  });
+
+  if (markets.length === 0 || isLoading) return null;
+
+  return (
+    <Carousel
+      plugins={[
+        Autoplay({
+          delay: 10000,
+        }),
+      ]}
+      opts={{ loop: true }}
+      className="relative mb-6 w-full"
+    >
+      <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-4" />
+      <CarouselContent>
+        {markets.map(market => (
+          <CarouselItem key={market.id}>
+            <Link
+              href={`/markets?id=${market.id}`}
+              target="_blank"
+              className="flex h-72 w-full justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em 2xl:h-96"
+            >
+              <div className="mx-10 my-8 mr-36 flex w-full flex-col space-y-8">
+                <div className="flex flex-col space-y-4">
+                  <p className="text-sm font-semibold text-text-low-em">
+                    2 days remaining
+                  </p>
+                  {/* <p className="text-[44px] font-semibold leading-[56px]"> */}
+                  <p className="text-xl font-semibold">{market.title}</p>
+                </div>
+                <OutcomeBar market={market} />
+                <p className="text-base font-semibold text-text-med-em">
+                  ${formatValueWithFixedDecimals(market.usdVolume, 2)} Vol
+                </p>
+              </div>
+              <Image
+                className="h-full rounded-e-20"
+                src={kamalaVsTrumpImage}
+                alt="kamala vs trump"
+              />
+            </Link>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+    </Carousel>
+  );
+};

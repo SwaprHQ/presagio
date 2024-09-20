@@ -20,6 +20,8 @@
     "class-variance-authority": "^0.7.0",
     "connectkit": "^1.7.2",
     "date-fns": "^3.6.0",
+    "embla-carousel-autoplay": "^8.3.0",
+    "embla-carousel-react": "^8.3.0",
     "eventemitter3": "^5.0.1",
     "fathom-client": "^3.7.0",
     "graphql": "^16.8.1",
