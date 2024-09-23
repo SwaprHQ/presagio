@@ -153,6 +153,7 @@ const getMarketsQuery = (
     $scaledLiquidityParameter_gt: Int
     $resolutionTimestamp: Int
     $currentAnswerTimestamp_gt: Int
+    $collateralToken_in: [String]
     ) {
     fixedProductMarketMakers(
       first: $first
@@ -175,6 +176,7 @@ const getMarketsQuery = (
         ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
         ${params.resolutionTimestamp !== undefined ? 'resolutionTimestamp: $resolutionTimestamp' : ''}
         ${params.currentAnswerTimestamp_gt !== undefined ? 'currentAnswerTimestamp_gt: $currentAnswerTimestamp_gt' : ''}
+        ${params.collateralToken_in !== undefined ? 'collateralToken_in: $collateralToken_in' : ''}
       }
     ) {
       ...marketData
