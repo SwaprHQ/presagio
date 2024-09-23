@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { getMarkets } from '@/queries/omen';
@@ -31,6 +32,8 @@ import {
 } from './filters';
 import { isAddress } from 'viem';
 import Image from 'next/image';
+import { getMarketCategories, getOpenMarkets } from '@/queries/dune';
+import { Categories } from '@/constants';
 
 const ITEMS_PER_PAGE = 12;
 const SEARCH_DEBOUNCE_DELAY = 600;
@@ -39,18 +42,42 @@ const DEFAULT_STATE_OPTION = stateFilters[0];
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 const DEFAULT_TOKEN_OPTION = tokenFilters[0];
 
-enum Categories {
-  TECHNOLOGY = 'technology',
-  CRYPTO = 'crypto',
-  BUSINESS = 'business',
-  POLITICS = 'politics',
-  ECONOMY = 'economy',
-  INTERNATIONAL = 'international',
-  SPORTS = 'sports',
-  ENTERTAINMENT = 'entertainment',
-}
-
 type CategoryOptions = Categories | '';
+
+const groupOpenMarketsByCategory = (data: any) => {
+  if (!data) return [];
+  const marketsGroupedByCategory = Object.groupBy(
+    data,
+    (market: { Category: string }) => market.Category
+  );
+
+  if (!marketsGroupedByCategory) return [];
+
+  const categoryCounts = Object.values(Categories).map(category => {
+    const count = marketsGroupedByCategory[category]?.length || 0;
+    return { [category]: count };
+  });
+
+  return categoryCounts.sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
+};
+
+const buildSortedMarketArray = (data: any) => {
+  if (!data) return [];
+
+  const allMarketsSortedCategories: { [key: string]: number }[] = [];
+
+  for (const category of Object.values(Categories)) {
+    const market = data.find(
+      ({ category: categoryOption }: { category: string }) => categoryOption === category
+    );
+    const count = market ? market.cnt : 0;
+    allMarketsSortedCategories.push({ [category]: count });
+  }
+
+  allMarketsSortedCategories.sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
+
+  return allMarketsSortedCategories;
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -144,6 +171,20 @@ export default function HomePage() {
     ...selectedTokenOption.when,
     ...searchFilterParams,
   };
+
+  const { data: openMarkets } = useQuery({
+    queryKey: ['getOpenMarkets'],
+    queryFn: getOpenMarkets,
+    staleTime: Infinity,
+    select: groupOpenMarketsByCategory,
+  });
+
+  const { data: marketCategories } = useQuery({
+    queryKey: ['getMarketCategories'],
+    queryFn: getMarketCategories,
+    staleTime: Infinity,
+    select: buildSortedMarketArray,
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -255,6 +296,7 @@ export default function HomePage() {
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
       <div className="w-full">
+        <p>Current solution</p>
         <ToggleGroup
           value={category}
           onChange={handleCategory}
@@ -273,6 +315,60 @@ export default function HomePage() {
               {category}
             </ToggleGroupOption>
           ))}
+        </ToggleGroup>
+      </div>
+      <div className="w-full">
+        <p>Only open markets, desc sorted by qty of markets per category</p>
+        <ToggleGroup
+          value={category}
+          onChange={handleCategory}
+          className="overflow-x-scroll md:overflow-x-auto"
+        >
+          <ToggleGroupOption size="md" value={''} className="font-semibold">
+            All
+          </ToggleGroupOption>
+          {openMarkets?.map((marketCategory, idx) => {
+            const categoryOption = Object.keys(marketCategory)[0];
+            const showFireEmoji = idx === 0;
+
+            return (
+              <ToggleGroupOption
+                key={categoryOption}
+                value={categoryOption}
+                className="font-semibold capitalize"
+                size="md"
+              >
+                {`${showFireEmoji ? '🔥 ' : ''}${categoryOption}`}
+              </ToggleGroupOption>
+            );
+          })}
+        </ToggleGroup>
+      </div>
+      <div className="w-full">
+        <p>All (open, closed, etc) markets, desc sorted by qty of markets per category</p>
+        <ToggleGroup
+          value={category}
+          onChange={handleCategory}
+          className="overflow-x-scroll md:overflow-x-auto"
+        >
+          <ToggleGroupOption size="md" value={''} className="font-semibold">
+            All
+          </ToggleGroupOption>
+          {marketCategories?.map((marketCategory, idx) => {
+            const categoryOption = Object.keys(marketCategory)[0];
+            const showFireEmoji = idx === 0;
+
+            return (
+              <ToggleGroupOption
+                key={categoryOption}
+                value={categoryOption}
+                className="font-semibold capitalize"
+                size="md"
+              >
+                {`${showFireEmoji ? '🔥 ' : ''}${categoryOption}`}
+              </ToggleGroupOption>
+            );
+          })}
         </ToggleGroup>
       </div>
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">

@@ -57,3 +57,14 @@ export const GNOSIS_SCAN_URL = 'https://gnosisscan.io';
 export const KLEROS_URL = 'https://kleros.io';
 const REALITY_URL = 'https://reality.eth.limo';
 export const REALITY_QUESTION_URL = `${REALITY_URL}/app/#!/network/100/question/0x79e32ae03fb27b07c89c0c568f80287c01ca2e57-`;
+
+export enum Categories {
+  TECHNOLOGY = 'technology',
+  CRYPTO = 'crypto',
+  BUSINESS = 'business',
+  POLITICS = 'politics',
+  ECONOMY = 'economy',
+  INTERNATIONAL = 'international',
+  SPORTS = 'sports',
+  ENTERTAINMENT = 'entertainment',
+}
