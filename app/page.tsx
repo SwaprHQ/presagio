@@ -23,9 +23,11 @@ import {
   CreatorFilter,
   OrderFilter,
   StateFilter,
+  TokenFilter,
   creatorFilters,
   orderFilters,
   stateFilters,
+  tokenFilters,
 } from './filters';
 import { isAddress } from 'viem';
 import Image from 'next/image';
@@ -35,6 +37,7 @@ const SEARCH_DEBOUNCE_DELAY = 600;
 const DEFAULT_ORDER_OPTION = orderFilters[0];
 const DEFAULT_STATE_OPTION = stateFilters[0];
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
+const DEFAULT_TOKEN_OPTION = tokenFilters[0];
 
 enum Categories {
   TECHNOLOGY = 'technology',
@@ -55,6 +58,7 @@ export default function HomePage() {
   const [isCreatorFilterPopoverOpen, setCreatorFilterPopoverOpen] = useState(false);
   const [isOrderFilterPopoverOpen, setOrderFilterPopoverOpen] = useState(false);
   const [isStateFilterPopoverOpen, setStateFilterPopoverOpen] = useState(false);
+  const [isTokenFilterPopoverOpen, setTokenFilterPopoverOpen] = useState(false);
 
   const searchParams =
     typeof window !== 'undefined'
@@ -100,8 +104,21 @@ export default function HomePage() {
     );
   };
 
+  const initialTokenFilter = () => {
+    const filterValueFromSearchParams = searchParams.get('tf');
+    if (!filterValueFromSearchParams) return DEFAULT_TOKEN_OPTION;
+
+    return (
+      tokenFilters.find(option => option.key === filterValueFromSearchParams) ||
+      DEFAULT_TOKEN_OPTION
+    );
+  }
+
   const [selectedCreatorOption, setSelectedCreatorOption] =
     useState(initialCreatorFilter());
+
+  const [selectedTokenOption, setSelectedTokenOption] =
+    useState(initialTokenFilter());
 
   const initialPage = () => {
     const page = searchParams.get('p');
@@ -124,6 +141,7 @@ export default function HomePage() {
     category_contains: category,
     ...selectedCreatorOption.when,
     ...selectedStateOption.when,
+    ...selectedTokenOption.when,
     ...searchFilterParams,
   };
 
@@ -137,6 +155,7 @@ export default function HomePage() {
       category,
       selectedStateOption.key,
       selectedCreatorOption.key,
+      selectedTokenOption.key,
     ],
     queryFn: async () => getMarkets(marketsBaseParams),
   });
@@ -189,6 +208,16 @@ export default function HomePage() {
     searchParams.set('cf', option.key);
     router.replace(`?${searchParams.toString()}`);
   };
+
+  const selectTokenFilter = (option: TokenFilter) => {
+    setSelectedTokenOption(option);
+    setTokenFilterPopoverOpen(false);
+    setPage(1);
+
+    searchParams.delete('p');
+    searchParams.set('tf', option.key);
+    router.replace(`?${searchParams.toString()}`);
+  }
 
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
@@ -291,6 +320,41 @@ export default function HomePage() {
         ) : (
           <Button variant="pastel" className="space-x-2 text-nowrap">
             <p>{selectedCreatorOption.name}</p>
+            <Icon name="chevron-down" />
+          </Button>
+        )}
+        {showClientUI ? (
+          <Popover
+            open={isTokenFilterPopoverOpen}
+            onOpenChange={setTokenFilterPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button variant="pastel" className="space-x-2 text-nowrap">
+                <p>{selectedTokenOption.name}</p>
+                <Icon name="chevron-down" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="px-1 py-2">
+              {tokenFilters.map(option => (
+                <div
+                  key={option.key}
+                  onClick={() => selectTokenFilter(option)}
+                  className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                >
+                  <Icon
+                    className={cx({
+                      invisible: selectedTokenOption.key !== option.key,
+                    })}
+                    name="tick-fill"
+                  />
+                  <p>{option.name}</p>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
+        ) : (
+          <Button variant="pastel" className="space-x-2 text-nowrap">
+            <p>{selectedTokenOption.name}</p>
             <Icon name="chevron-down" />
           </Button>
         )}

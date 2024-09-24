@@ -19,6 +19,14 @@ export const WXDAI = new Token(
   'Wrapped xDAI'
 );
 
+export const SDAI = new Token(
+  100,
+  '0xaf204776c7245bf4147c2612bf6e5972ee483701',
+  18,
+  'SDAI',
+  'Savings xDAI'
+);
+
 // RPC endpoints
 export const RPC_LIST: { [chainId: number]: string } = {
   [ChainId.MAINNET]: process.env.RPC_MAINNET ?? 'https://eth.meowrpc.com/',

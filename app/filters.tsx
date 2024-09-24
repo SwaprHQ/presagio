@@ -5,6 +5,7 @@ import {
 } from '@/queries/omen';
 import { AI_AGENTS_ALLOWLIST } from '../constants';
 import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
+import {WXDAI, SDAI} from '@/constants/index';
 
 export type OrderFilter = {
   name: string;
@@ -117,5 +118,33 @@ export const creatorFilters: CreatorFilter[] = [
     name: 'AI markets',
     key: 'ai',
     when: { creator_in: AI_AGENTS_ALLOWLIST },
+  },
+];
+
+
+export type TokenFilter = {
+  name: string;
+  key: string;
+  when: {
+    collateralToken_in?: string[];
+  };
+};
+
+
+export const tokenFilters: TokenFilter[] = [
+  {
+    name: 'All tokens',
+    key: 'all',
+    when: {},
+  },
+  {
+    name: 'wxDai',
+    key: 'wxdai',
+    when: { collateralToken_in: [WXDAI.address] },
+  },
+  {
+    name: 'sDai',
+    key: 'sdai',
+    when: { collateralToken_in: [SDAI.address] },
   },
 ];
