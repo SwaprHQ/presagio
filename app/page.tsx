@@ -274,37 +274,37 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      {openMarketsLoading ? (
+      {/* {openMarketsLoading ? (
         <LoadingMarketCategories />
-      ) : (
-        <div className="w-full">
-          <ToggleGroup
-            value={category}
-            onChange={handleCategory}
-            className="overflow-x-scroll md:overflow-x-auto"
-          >
-            <ToggleGroupOption size="md" value={''} className="font-semibold">
-              All
-            </ToggleGroupOption>
-            {marketCategories?.map(marketCategory => {
-              const categoryOption = openMarkets?.length
-                ? Object.keys(marketCategory)[0]
-                : marketCategory;
+      ) : ( */}
+      <div className="w-full">
+        <ToggleGroup
+          value={category}
+          onChange={handleCategory}
+          className="overflow-x-scroll md:overflow-x-auto"
+        >
+          <ToggleGroupOption size="md" value={''} className="font-semibold">
+            All
+          </ToggleGroupOption>
+          {marketCategories?.map(marketCategory => {
+            const categoryOption = openMarkets?.length
+              ? Object.keys(marketCategory)[0]
+              : marketCategory;
 
-              return (
-                <ToggleGroupOption
-                  key={categoryOption}
-                  value={categoryOption}
-                  className="font-semibold capitalize"
-                  size="md"
-                >
-                  {categoryOption}
-                </ToggleGroupOption>
-              );
-            })}
-          </ToggleGroup>
-        </div>
-      )}
+            return (
+              <ToggleGroupOption
+                key={categoryOption}
+                value={categoryOption}
+                className="font-semibold capitalize"
+                size="md"
+              >
+                {categoryOption}
+              </ToggleGroupOption>
+            );
+          })}
+        </ToggleGroup>
+      </div>
+      {/* )} */}
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
         <Input
           className="w-full"
