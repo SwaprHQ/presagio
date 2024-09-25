@@ -46,7 +46,6 @@ type CategoryOptions = Categories | '';
 type DuneCategory = { Category: string };
 
 /**
- *
  * @param {DunateCategory[]} data - Response from Dune API query
  * @returns {{ [key in Categories]: number }[]} A sorted array of objects with the count of markets per category
  */
