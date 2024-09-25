@@ -34,21 +34,21 @@ import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
 
-const ITEMS_PER_PAGE = 12;
-const SEARCH_DEBOUNCE_DELAY = 600;
+const DEFAULT_CATEGORIES = Object.values(Categories);
+const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 const DEFAULT_ORDER_OPTION = orderFilters[0];
 const DEFAULT_STATE_OPTION = stateFilters[0];
-const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 const DEFAULT_TOKEN_OPTION = tokenFilters[0];
+const ITEMS_PER_PAGE = 12;
+const SEARCH_DEBOUNCE_DELAY = 600;
 
 type CategoryOptions = Categories | '';
 type DuneCategory = { Category: string };
-type PresagioCategory = { [key in Categories]: number };
 
 /**
  *
  * @param {DunateCategory[]} data - Response from Dune API query
- * @returns {PresagioCategory[]} A sorted array of objects with the count of markets per category
+ * @returns {{ [key in Categories]: number }[]} A sorted array of objects with the count of markets per category
  */
 const rankCategoriesByMarketCount = (data: any) => {
   if (!data) return [];
@@ -67,8 +67,6 @@ const rankCategoriesByMarketCount = (data: any) => {
 
   return countByCategory.sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
 };
-
-const DEFAULT_CATEGORIES = Object.values(Categories);
 
 export default function HomePage() {
   const router = useRouter();
@@ -130,13 +128,12 @@ export default function HomePage() {
       tokenFilters.find(option => option.key === filterValueFromSearchParams) ||
       DEFAULT_TOKEN_OPTION
     );
-  }
+  };
 
   const [selectedCreatorOption, setSelectedCreatorOption] =
     useState(initialCreatorFilter());
 
-  const [selectedTokenOption, setSelectedTokenOption] =
-    useState(initialTokenFilter());
+  const [selectedTokenOption, setSelectedTokenOption] = useState(initialTokenFilter());
 
   const initialPage = () => {
     const page = searchParams.get('p');
@@ -242,7 +239,7 @@ export default function HomePage() {
     searchParams.delete('p');
     searchParams.set('tf', option.key);
     router.replace(`?${searchParams.toString()}`);
-  }
+  };
 
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
