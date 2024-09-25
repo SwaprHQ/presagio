@@ -66,23 +66,28 @@ export const useReadBalance = (
   return useReadBalanceOf(owner, positionId as number);
 };
 
+// currently we only support 2 outcomes, so we can hardcode the indexSetOptions
+// on the contract level it will check both outcomes and withdraw the correct one
+type IndexSetOptions = [1, 2];
+const outcomeIndexOptions: IndexSetOptions = [1, 2];
+
 interface RedeemPositionsArgs {
   collateralToken?: string;
   parentCollectionId?: string;
   conditionId: string;
-  outcomeIndex: number;
+  outcomeIndex?: IndexSetOptions;
 }
 
 export const redeemPositions = async ({
   collateralToken = WXDAI.address,
   parentCollectionId = zeroHash,
   conditionId,
-  outcomeIndex,
+  outcomeIndex = outcomeIndexOptions,
 }: RedeemPositionsArgs) => {
   return await writeContract(config, {
     abi: ConditionalTokensABI,
     address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
     functionName: 'redeemPositions',
-    args: [collateralToken, parentCollectionId, conditionId, [outcomeIndex]],
+    args: [collateralToken, parentCollectionId, conditionId, outcomeIndex],
   });
 };

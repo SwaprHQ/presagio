@@ -131,7 +131,6 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
     try {
       const txHash = await redeemPositions({
         conditionId: condition.id,
-        outcomeIndex: 1,
       });
       setTxHash(txHash);
       openModal(ModalId.WAITING_TRANSACTION);
