@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { getMarkets } from '@/queries/omen';
-import { CardMarket, LoadingCardMarket } from '@/app/components';
+import { CardMarket, LoadingCardMarket, Skeleton } from '@/app/components';
 import {
   Button,
   Icon,
@@ -31,26 +31,37 @@ import {
 } from './filters';
 import { isAddress } from 'viem';
 import Image from 'next/image';
+import { getOpenMarkets } from '@/queries/dune';
+import { Categories } from '@/constants';
 
-const ITEMS_PER_PAGE = 12;
-const SEARCH_DEBOUNCE_DELAY = 600;
+const DEFAULT_CATEGORIES = Object.values(Categories);
+const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 const DEFAULT_ORDER_OPTION = orderFilters[0];
 const DEFAULT_STATE_OPTION = stateFilters[0];
-const DEFAULT_CREATOR_OPTION = creatorFilters[0];
 const DEFAULT_TOKEN_OPTION = tokenFilters[0];
-
-enum Categories {
-  TECHNOLOGY = 'technology',
-  CRYPTO = 'crypto',
-  BUSINESS = 'business',
-  POLITICS = 'politics',
-  ECONOMY = 'economy',
-  INTERNATIONAL = 'international',
-  SPORTS = 'sports',
-  ENTERTAINMENT = 'entertainment',
-}
+const ITEMS_PER_PAGE = 12;
+const SEARCH_DEBOUNCE_DELAY = 600;
 
 type CategoryOptions = Categories | '';
+type DuneCategory = { Category: string };
+
+const rankCategoriesByMarketCount = (data: any) => {
+  if (!data) return [];
+
+  const marketsGroupedByCategory = Object.groupBy(
+    data,
+    (market: DuneCategory) => market.Category
+  );
+
+  if (!marketsGroupedByCategory) return [];
+
+  const countByCategory = Object.values(Categories).map(category => {
+    const count = marketsGroupedByCategory[category]?.length || 0;
+    return { [category]: count };
+  });
+
+  return countByCategory.sort((a, b) => Object.values(b)[0] - Object.values(a)[0]);
+};
 
 export default function HomePage() {
   const router = useRouter();
@@ -112,13 +123,12 @@ export default function HomePage() {
       tokenFilters.find(option => option.key === filterValueFromSearchParams) ||
       DEFAULT_TOKEN_OPTION
     );
-  }
+  };
 
   const [selectedCreatorOption, setSelectedCreatorOption] =
     useState(initialCreatorFilter());
 
-  const [selectedTokenOption, setSelectedTokenOption] =
-    useState(initialTokenFilter());
+  const [selectedTokenOption, setSelectedTokenOption] = useState(initialTokenFilter());
 
   const initialPage = () => {
     const page = searchParams.get('p');
@@ -144,6 +154,13 @@ export default function HomePage() {
     ...selectedTokenOption.when,
     ...searchFilterParams,
   };
+
+  const { data: openMarkets, isLoading: openMarketsLoading } = useQuery({
+    queryKey: ['getOpenMarkets'],
+    queryFn: getOpenMarkets,
+    staleTime: Infinity,
+    select: rankCategoriesByMarketCount,
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -217,7 +234,7 @@ export default function HomePage() {
     searchParams.delete('p');
     searchParams.set('tf', option.key);
     router.replace(`?${searchParams.toString()}`);
-  }
+  };
 
   const handleNextPage = (page: number) => {
     if (page <= 0) return;
@@ -247,34 +264,43 @@ export default function HomePage() {
 
   const hasMoreMarkets =
     marketsNextPage && marketsNextPage.fixedProductMarketMakers.length !== 0;
-
+  const marketCategories = openMarkets?.length ? openMarkets : DEFAULT_CATEGORIES;
   const markets = data?.fixedProductMarketMakers;
-
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      <div className="w-full">
-        <ToggleGroup
-          value={category}
-          onChange={handleCategory}
-          className="overflow-x-scroll md:overflow-x-auto"
-        >
-          <ToggleGroupOption size="md" value={''} className="font-semibold">
-            All
-          </ToggleGroupOption>
-          {Object.values(Categories).map(category => (
-            <ToggleGroupOption
-              key={category}
-              value={category}
-              className="font-semibold capitalize"
-              size="md"
-            >
-              {category}
+      {openMarketsLoading ? (
+        <LoadingMarketCategories />
+      ) : (
+        <div className="w-full">
+          <ToggleGroup
+            value={category}
+            onChange={handleCategory}
+            className="overflow-x-scroll md:overflow-x-auto"
+          >
+            <ToggleGroupOption size="md" value={''} className="font-semibold">
+              All
             </ToggleGroupOption>
-          ))}
-        </ToggleGroup>
-      </div>
+            {marketCategories?.map(marketCategory => {
+              const categoryOption = openMarkets?.length
+                ? Object.keys(marketCategory)[0]
+                : marketCategory;
+
+              return (
+                <ToggleGroupOption
+                  key={categoryOption}
+                  value={categoryOption}
+                  className="font-semibold capitalize"
+                  size="md"
+                >
+                  {categoryOption}
+                </ToggleGroupOption>
+              );
+            })}
+          </ToggleGroup>
+        </div>
+      )}
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
         <Input
           className="w-full"
@@ -489,3 +515,13 @@ export default function HomePage() {
     </div>
   );
 }
+
+const LoadingMarketCategories = () => (
+  <div className="w-full">
+    <div className="flex h-12 w-[796px] items-center justify-between space-x-1 rounded-12 bg-surface-surface-2 px-3 py-1">
+      {Array.from({ length: DEFAULT_CATEGORIES.length + 1 }).map((_, index) => (
+        <Skeleton className="h-6 w-[80px]" key={index} />
+      ))}
+    </div>
+  </div>
+);
