@@ -45,10 +45,6 @@ const SEARCH_DEBOUNCE_DELAY = 600;
 type CategoryOptions = Categories | '';
 type DuneCategory = { Category: string };
 
-/**
- * @param {DunateCategory[]} data - Response from Dune API query
- * @returns {{ [key in Categories]: number }[]} A sorted array of objects with the count of markets per category
- */
 const rankCategoriesByMarketCount = (data: any) => {
   if (!data) return [];
 
@@ -274,37 +270,37 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      {/* {openMarketsLoading ? (
+      {openMarketsLoading ? (
         <LoadingMarketCategories />
-      ) : ( */}
-      <div className="w-full">
-        <ToggleGroup
-          value={category}
-          onChange={handleCategory}
-          className="overflow-x-scroll md:overflow-x-auto"
-        >
-          <ToggleGroupOption size="md" value={''} className="font-semibold">
-            All
-          </ToggleGroupOption>
-          {marketCategories?.map(marketCategory => {
-            const categoryOption = openMarkets?.length
-              ? Object.keys(marketCategory)[0]
-              : marketCategory;
+      ) : (
+        <div className="w-full">
+          <ToggleGroup
+            value={category}
+            onChange={handleCategory}
+            className="overflow-x-scroll md:overflow-x-auto"
+          >
+            <ToggleGroupOption size="md" value={''} className="font-semibold">
+              All
+            </ToggleGroupOption>
+            {marketCategories?.map(marketCategory => {
+              const categoryOption = openMarkets?.length
+                ? Object.keys(marketCategory)[0]
+                : marketCategory;
 
-            return (
-              <ToggleGroupOption
-                key={categoryOption}
-                value={categoryOption}
-                className="font-semibold capitalize"
-                size="md"
-              >
-                {categoryOption}
-              </ToggleGroupOption>
-            );
-          })}
-        </ToggleGroup>
-      </div>
-      {/* )} */}
+              return (
+                <ToggleGroupOption
+                  key={categoryOption}
+                  value={categoryOption}
+                  className="font-semibold capitalize"
+                  size="md"
+                >
+                  {categoryOption}
+                </ToggleGroupOption>
+              );
+            })}
+          </ToggleGroup>
+        </div>
+      )}
       <div className="flex w-full flex-wrap items-center gap-2 sm:flex-nowrap">
         <Input
           className="w-full"
@@ -522,9 +518,9 @@ export default function HomePage() {
 
 const LoadingMarketCategories = () => (
   <div className="w-full">
-    <div className="flex w-auto space-x-1 rounded-12 bg-surface-surface-2 p-1 md:w-fit">
+    <div className="flex h-12 w-[796px] items-center justify-between space-x-1 rounded-12 bg-surface-surface-2 px-3 py-1">
       {Array.from({ length: DEFAULT_CATEGORIES.length + 1 }).map((_, index) => (
-        <Skeleton className="h-10 w-[85px]" key={index} />
+        <Skeleton className="h-6 w-[80px]" key={index} />
       ))}
     </div>
   </div>
