@@ -8,13 +8,19 @@ import { type WriteContractParameters } from '@wagmi/core';
 import { writeContract } from 'wagmi/actions';
 import { TransactionModal } from '@/app/components';
 import { config } from '@/providers/chain-config';
+import { Address } from 'viem';
 
 export interface TxContextProps {
-  submitTx: (args: WriteContractParameters) => Promise<void>;
+  submitTx: (args: WriteContractParameters) => Promise<Address | void>;
+  submitCustomTx: (args: {
+    writeTxFunction: any;
+    args: any;
+  }) => Promise<Address | void>;
 }
 
 export const TxContext = createContext<TxContextProps>({
-  submitTx: async (args: WriteContractParameters) => {},
+  submitTx: async (args: WriteContractParameters) => '0x' as Address | void,
+  submitCustomTx: async (args: any) => '0x' as Address | void,
 });
 
 export const TxProvider = ({ children }: PropsWithChildren) => {
@@ -24,15 +30,22 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
 
   const { openModal } = useModal();
 
-  const submitTx = async (args: WriteContractParameters): Promise<void> => {
+  const submitCustomTx = async ({
+    writeTxFunction,
+    args,
+  }: any): Promise<Address | void> => submitWriteTx(() => writeTxFunction(args));
+
+  const submitTx = async (args: WriteContractParameters): Promise<Address | void> =>
+    submitWriteTx(() => writeContract(config, args));
+
+  const submitWriteTx = async (writeTxFn?: any): Promise<Address | void> => {
     setIsTxLoading(true);
     setIsError(false);
     setTxHash('');
 
     try {
-      const txHash = await writeContract(config, args);
+      const txHash = await writeTxFn();
       setTxHash(txHash);
-
       openModal(ModalId.WAITING_TRANSACTION);
 
       await waitForTransactionReceipt(config, {
@@ -48,6 +61,7 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
 
   const txContext = {
     submitTx,
+    submitCustomTx,
   };
 
   return (

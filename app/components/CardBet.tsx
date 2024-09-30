@@ -1,8 +1,8 @@
 'use client';
 
+import { PropsWithChildren } from 'react';
 import { cx } from 'class-variance-authority';
 import Link from 'next/link';
-import { useConfig } from 'wagmi';
 
 import { Button, Tag } from '@swapr/ui';
 import { Card, TokenLogo } from '@/app/components';
@@ -17,13 +17,10 @@ import {
   UserBets,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
-import { waitForTransactionReceipt } from 'wagmi/actions';
-import { PropsWithChildren, useState } from 'react';
-import { ModalId, useModal } from '@/context/ModalContext';
 import { MarketThumbnail } from './MarketThumbnail';
 import { Skeleton } from './Skeleton';
-import { TransactionModal } from './TransactionModal';
 import { formatValueWithFixedDecimals } from '@/utils';
+import { useTx } from '@/context';
 
 interface CardBetProps extends PropsWithChildren {
   userBets: UserBets;
@@ -133,10 +130,7 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
 };
 
 export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
-  const config = useConfig();
-  const [txHash, setTxHash] = useState('');
-  const [isTxLoading, setIsTxLoading] = useState(false);
-  const { openModal } = useModal();
+  const { submitCustomTx } = useTx();
 
   const position = new Position(userBets.position);
   const outcomeIndex = position.getOutcomeIndex();
@@ -147,34 +141,20 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
   const canRedeem = marketCondition.canRedeem(outcomeIndex, userBets.balance);
 
   const redeem = async () => {
-    setIsTxLoading(true);
-
-    try {
-      const txHash = await redeemPositions({
+    await submitCustomTx({
+      writeTxFunction: redeemPositions,
+      args: {
         conditionId: condition.id,
-      });
-      setTxHash(txHash);
-      openModal(ModalId.WAITING_TRANSACTION);
-
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsTxLoading(false);
-    }
+      },
+    });
   };
 
   return (
     <CardBet userBets={userBets}>
       {canRedeem && (
-        <>
-          <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
-            Reedem
-          </Button>
-          <TransactionModal isLoading={isTxLoading} txHash={txHash} />
-        </>
+        <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
+          Reedem
+        </Button>
       )}
     </CardBet>
   );
