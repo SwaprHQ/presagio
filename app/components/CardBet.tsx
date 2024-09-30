@@ -152,7 +152,6 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
     try {
       const txHash = await redeemPositions({
         conditionId: condition.id,
-        outcomeIndex: position.outcomeIndex,
       });
       setTxHash(txHash);
       openModal(ModalId.WAITING_TRANSACTION);
