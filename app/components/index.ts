@@ -16,3 +16,4 @@ export * from './CardBet';
 export * from './UserAvatarWithAddress';
 export * from './Avatar';
 export * from './AddressLink';
+export * from './EmbedMarketModal';

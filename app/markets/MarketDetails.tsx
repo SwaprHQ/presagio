@@ -13,6 +13,8 @@ import { HistorySection } from './HistorySection';
 import { News } from './News';
 import { Info } from './Info';
 import { Bet } from './Bet';
+import { ModalId, useModal } from '@/context';
+import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 
 interface MarketDetailsProps {
   id: Address;
@@ -27,6 +29,7 @@ enum Tabs {
 
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.BET);
+  const { openModal } = useModal();
   const { data, error, isLoading } = useQuery({
     queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
@@ -40,75 +43,86 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const closingDate = new Date(+fixedProductMarketMaker.openingTimestamp * 1000);
 
   return (
-    <div className="w-full">
-      <div className="mx-auto max-w-[464px] space-y-4">
-        <BackButton />
-        <div className="w-full rounded-16 border border-outline-base-em bg-surface-surface-0">
-          <div className="space-y-4 p-5">
-            <div className="flex items-center justify-between">
-              <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
-                {fixedProductMarketMaker.category}
-              </Tag>
-              {marketModel.isClosed ? (
+    <>
+      <div className="w-full">
+        <div className="mx-auto max-w-[464px] space-y-4">
+          <div className="flex items-center justify-between">
+            <BackButton />
+            <IconButton
+              name="link"
+              variant="pastel"
+              size="sm"
+              onClick={() => openModal(ModalId.EMBED_MARKET)}
+            />
+          </div>
+          <div className="w-full rounded-16 border border-outline-base-em bg-surface-surface-0">
+            <div className="space-y-4 p-5">
+              <div className="flex items-center justify-between">
                 <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
-                  Market Closed
+                  {fixedProductMarketMaker.category}
                 </Tag>
-              ) : (
-                <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
-              )}
+                {marketModel.isClosed ? (
+                  <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                    Market Closed
+                  </Tag>
+                ) : (
+                  <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
+                )}
+              </div>
+              <div className="flex space-x-4">
+                <MarketThumbnail
+                  width={20}
+                  height={20}
+                  className="size-20 flex-shrink-0 rounded-8"
+                  marketId={fixedProductMarketMaker.id}
+                />
+                <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
+              </div>
+              <div className="!mt-7">
+                <OutcomeBar market={fixedProductMarketMaker} />
+              </div>
             </div>
-            <div className="flex space-x-4">
-              <MarketThumbnail
-                width={20}
-                height={20}
-                className="size-20 flex-shrink-0 rounded-8"
-                marketId={fixedProductMarketMaker.id}
-              />
-              <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
+            <div className="px-4 pb-2">
+              <ToggleGroup
+                value={tab}
+                onChange={setTab}
+                className="w-full justify-around md:w-full"
+              >
+                {Object.values(Tabs).map(tab => (
+                  <div className="w-full" key={tab}>
+                    <ToggleGroupOption
+                      size="md"
+                      value={tab}
+                      className="flex justify-center font-semibold capitalize"
+                    >
+                      {tab}
+                    </ToggleGroupOption>
+                  </div>
+                ))}
+              </ToggleGroup>
             </div>
-            <div className="!mt-7">
-              <OutcomeBar market={fixedProductMarketMaker} />
-            </div>
+            {tab === Tabs.BET && (
+              <div className="p-2">
+                <Bet fixedProductMarketMaker={fixedProductMarketMaker} />
+              </div>
+            )}
+            {tab === Tabs.HISTORY && <HistorySection id={id} />}
+            {tab === Tabs.NEWS && (
+              <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+                <News id={id} />
+              </div>
+            )}
+            {tab === Tabs.INFO && (
+              <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+                <Info fixedProductMarketMaker={fixedProductMarketMaker} />
+              </div>
+            )}
           </div>
-          <div className="px-4 pb-2">
-            <ToggleGroup
-              value={tab}
-              onChange={setTab}
-              className="w-full justify-around md:w-full"
-            >
-              {Object.values(Tabs).map(tab => (
-                <div className="w-full" key={tab}>
-                  <ToggleGroupOption
-                    size="md"
-                    value={tab}
-                    className="flex justify-center font-semibold capitalize"
-                  >
-                    {tab}
-                  </ToggleGroupOption>
-                </div>
-              ))}
-            </ToggleGroup>
-          </div>
-          {tab === Tabs.BET && (
-            <div className="p-2">
-              <Bet fixedProductMarketMaker={fixedProductMarketMaker} />
-            </div>
-          )}
-          {tab === Tabs.HISTORY && <HistorySection id={id} />}
-          {tab === Tabs.NEWS && (
-            <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
-              <News id={id} />
-            </div>
-          )}
-          {tab === Tabs.INFO && (
-            <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
-              <Info fixedProductMarketMaker={fixedProductMarketMaker} />
-            </div>
-          )}
+          <UserBets fixedProductMarketMaker={fixedProductMarketMaker} />
         </div>
-        <UserBets fixedProductMarketMaker={fixedProductMarketMaker} />
       </div>
-    </div>
+      <EmbedMarketModal fixedProductMarketMaker={fixedProductMarketMaker} id={id} />
+    </>
   );
 };
 
