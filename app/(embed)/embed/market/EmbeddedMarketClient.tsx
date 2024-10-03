@@ -16,7 +16,7 @@ export const EmbeddedMarketClient = ({ id }: { id: any }) => {
           <div className="size-6 bg-black-12"></div>
           <h1 className="text-xl font-semibold">This is a test market</h1>
         </div>
-        <div className="font-bold">{id}</div>
+        <p className="text-xs">{id}</p>
         <p className="text-center">
           Bet on{' '}
           <a href={APP_URL} className="text-text-primary-main">
