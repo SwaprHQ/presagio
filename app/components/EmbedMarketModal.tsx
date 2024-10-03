@@ -1,16 +1,11 @@
 'use client';
 
 import {
-  Button,
   Dialog,
   DialogBody,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  Icon,
-  IconBadge,
-  Input,
   Tag,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
@@ -39,10 +34,10 @@ export const EmbedMarketModal = ({
   };
 
   const iframeCode = `<iframe
+  title="presagio-market-iframe"
   src="${APP_URL}/embed/market?id=${id}"
-  width="400"
-  height="600"
-  frameborder="0"
+  width="384"
+  height="180"
 ></iframe>`;
 
   return (
@@ -94,7 +89,7 @@ export const EmbedMarketModal = ({
                 </div>
                 <p className="text-center">
                   Bet on{' '}
-                  <a href={APP_URL} className="text-text-primary-main">
+                  <a href={APP_URL} target="_blank" className="text-text-primary-main">
                     {APP_NAME}.eth
                   </a>
                 </p>

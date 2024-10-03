@@ -5,7 +5,7 @@ import { Tag } from '@swapr/ui';
 
 export const EmbeddedMarketClient = ({ id }: { id: any }) => {
   return (
-    <div className="mx-auto max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0 p-4">
+    <div className="mx-auto h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0 p-4">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
