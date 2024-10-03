@@ -1,7 +1,7 @@
 import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 
-import { MarketActivity } from '@/app/markets/MarketActivity';
-import { ActivityChart } from '@/app/markets/ActivityChart';
+import { ActivityChart } from '@/app/(main)/markets/ActivityChart';
+import { MarketActivity } from '@/app/(main)/markets/MarketActivity';
 
 interface HistorySectionProps {
   id: string;

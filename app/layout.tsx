@@ -6,10 +6,7 @@ import './globals.css';
 import '@swapr/ui/colors.css';
 
 import { Providers } from '@/providers';
-
-import { Footer, Navbar } from '@/app/components';
 import { Suspense } from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
@@ -29,11 +26,7 @@ export default function RootLayout({
         className={`${manrope.className} bg-surface-surface-bg text-base antialiased`}
       >
         <Suspense>
-          <Providers>
-            <Navbar />
-            <NextThemesProvider>{children}</NextThemesProvider>
-            <Footer />
-          </Providers>
+          <Providers>{children}</Providers>
         </Suspense>
       </body>
     </html>

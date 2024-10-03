@@ -1,7 +1,7 @@
 'use client';
 
-import NoBetsPage from '@/app/my-bets/NoBetsPage';
-import NoWalletConnectedPage from '@/app/my-bets/NoWalletConnectedPage';
+import NoBetsPage from '@/app/(main)/my-bets/NoBetsPage';
+import NoWalletConnectedPage from '@/app/(main)/my-bets/NoWalletConnectedPage';
 import { MarketCondition, Position, UserBets } from '@/entities';
 
 import { getUserBets } from '@/queries/omen';
