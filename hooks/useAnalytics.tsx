@@ -1,11 +1,10 @@
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import * as Fathom from 'fathom-client';
+import { APP_URL } from '@/constants';
 
-const PRESAGIO_DEFAULT_URL = 'presagio.pages.dev';
 const FATHOM_KEY = process.env.NEXT_PUBLIC_FATHOM_KEY || '';
-const PRESAGIO_DOMAINS =
-  process.env.NEXT_PUBLIC_ANALYTICS_DOMAINS || PRESAGIO_DEFAULT_URL;
+const APP_DOMAINS = process.env.NEXT_PUBLIC_ANALYTICS_DOMAINS || APP_URL;
 
 export function useAnalytics() {
   const pathname = usePathname();
@@ -25,6 +24,6 @@ export function useAnalytics() {
   if (typeof window === 'undefined') return;
 
   Fathom.load(FATHOM_KEY, {
-    includedDomains: PRESAGIO_DOMAINS.split(','),
+    includedDomains: APP_DOMAINS.split(','),
   });
 }

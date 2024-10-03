@@ -69,5 +69,5 @@ export enum Categories {
   ENTERTAINMENT = 'entertainment',
 }
 
-export const APP_NAME = 'Presagio';
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Presagio';
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://presagio.pages.dev';

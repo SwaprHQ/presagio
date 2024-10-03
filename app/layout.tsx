@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { Manrope } from 'next/font/google';
@@ -6,13 +7,13 @@ import './globals.css';
 import '@swapr/ui/colors.css';
 
 import { Providers } from '@/providers';
-import { Suspense } from 'react';
+import { APP_NAME } from '@/constants';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Presagio 👁️ - The Prediction Market on Gnosis',
-  description: 'Win with your predicitons.',
+  title: `${APP_NAME} 👁️ - The Prediction Market on Gnosis with AI`,
+  description: 'Bet on your predicitons. Analyse AI bets.',
 };
 
 export default function RootLayout({
