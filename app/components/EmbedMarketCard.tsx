@@ -18,6 +18,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
   const marketModel = new Market(fixedProductMarketMaker);
   const closingDate = new Date(+fixedProductMarketMaker.openingTimestamp * 1000);
   const marketUrl = `${APP_URL}/markets?id=${fixedProductMarketMaker.id}`;
+
   return (
     <div className="mx-auto h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0">
       <div className="space-y-4 p-4">
