@@ -4,10 +4,11 @@ import { Tag } from '@swapr/ui';
 
 import { Market } from '@/entities';
 import { MarketThumbnail } from '@/app/components/MarketThumbnail';
-import { remainingTime } from '@/utils';
+import { formattedNumberDollars, remainingTime } from '@/utils';
 import { OutcomeBar } from '@/app/components/OutcomeBar';
 import { APP_NAME, APP_URL } from '@/constants';
 import { FixedProductMarketMaker } from '@/queries/omen';
+import { TokenLogo } from '@/app/components/TokenLogo';
 
 interface EmbedMarketCardProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
@@ -43,9 +44,21 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
             <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
           </a>
         </div>
-        <div className="!mt-7">
+        <div className="space-y-2">
+          <div className="flex items-center justify-center space-x-1">
+            <p className="text-sm font-semibold text-text-med-em">
+              {formattedNumberDollars(+fixedProductMarketMaker.usdVolume) || '-'}{' '}
+              <span>Vol</span>
+            </p>
+            <TokenLogo
+              address={fixedProductMarketMaker.collateralToken}
+              size="xs"
+              className="size-3 opacity-65 hover:opacity-100"
+            />
+          </div>
           <OutcomeBar market={fixedProductMarketMaker} />
         </div>
+
         <div className="flex items-center justify-between">
           <a
             className="flex h-fit select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-2 px-3 py-2 text-base font-bold text-text-high-em hover:bg-surface-surface-3"
@@ -54,6 +67,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
           >
             Check market
           </a>
+
           <p>
             More on{' '}
             <a href={APP_URL} target="_blank" className="text-text-primary-main">
