@@ -2,7 +2,7 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { fromHex } from 'viem';
 import { Outcome } from '@/entities';
 import { isPast } from 'date-fns';
-import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
+import { nowTimestamp } from '@/utils/time';
 
 const INVALID_ANSWER_HEX =
   '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -25,7 +25,7 @@ export class Market {
     this.closingDate = new Date(+fpmm.openingTimestamp * 1000);
     this.isAnswerFinal =
       !!fpmm.resolutionTimestamp ||
-      nowTimestamp - fpmm.currentAnswerTimestamp > _24HoursInSeconds;
+      fpmm.answerFinalizedTimestamp < nowTimestamp;
 
     this.currentAnswer = fpmm.question?.currentAnswer
       ? fpmm.question.currentAnswer === INVALID_ANSWER_HEX
