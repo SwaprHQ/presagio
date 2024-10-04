@@ -34,7 +34,7 @@ export const EmbedMarketModal = ({
   title="presagio-market-iframe"
   src="${APP_URL}/embed/market?id=${id}"
   width="384"
-  height="324"
+  height="222"
 ></iframe>`;
 
   return (
