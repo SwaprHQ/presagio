@@ -149,6 +149,7 @@ const getMarketsQuery = (
     $currentAnswer: Bytes
     $currentAnswer_not: Bytes
     $answerFinalizedTimestamp_lt: Int
+    $answerFinalizedTimestamp_gt: Int
     $openingTimestamp_lte: Int
     $scaledLiquidityParameter_gt: Int
     $resolutionTimestamp: Int
@@ -172,6 +173,7 @@ const getMarketsQuery = (
         ${params.currentAnswer !== undefined ? 'currentAnswer: $currentAnswer' : ''}
         ${params.currentAnswer_not !== undefined ? 'currentAnswer_not: $currentAnswer_not' : ''}
         ${params.answerFinalizedTimestamp_lt ? 'answerFinalizedTimestamp_lt: $answerFinalizedTimestamp_lt' : ''}
+        ${params.answerFinalizedTimestamp_gt ? 'answerFinalizedTimestamp_gt: $answerFinalizedTimestamp_gt' : ''}
         ${params.openingTimestamp_lte ? 'openingTimestamp_lte: $openingTimestamp_lte' : ''}
         ${params.scaledLiquidityParameter_gt !== undefined ? 'scaledLiquidityParameter_gt: $scaledLiquidityParameter_gt' : ''}
         ${params.resolutionTimestamp !== undefined ? 'resolutionTimestamp: $resolutionTimestamp' : ''}
