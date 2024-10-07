@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
 import { cx } from 'class-variance-authority';
-import { waitForTransactionReceipt } from 'wagmi/actions';
 import {
   getOutcomeUserTrades,
   Market,
@@ -12,28 +11,23 @@ import {
   tradesCollateralAmountUSDSpent,
   tradesOutcomeBalance,
 } from '@/entities';
-import { useState } from 'react';
 import { Button, Icon, Tag } from '@swapr/ui';
 import { ChainId } from '@/constants';
-import { TransactionModal } from '.';
-import { ModalId, useModal } from '@/context/ModalContext';
-import { config } from '@/providers/chain-config';
 import { redeemPositions, useReadBalance } from '@/hooks/contracts';
 import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
 import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
 import { formatValueWithFixedDecimals } from '@/utils';
+import { useTx } from '@/context';
 
 interface UserBets {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
 export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
-  const [txHash, setTxHash] = useState('');
-  const [isTxLoading, setIsTxLoading] = useState(false);
   const { address } = useAccount();
-  const { openModal } = useModal();
+  const { submitCustomTx } = useTx();
 
   const conditionId = fixedProductMarketMaker.condition?.id;
   const { data: conditionData, isLoading: isConditionLoading } = useQuery({
@@ -126,24 +120,12 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const isResolved = condition.resolved;
 
   const redeem = async () => {
-    setIsTxLoading(true);
-
-    try {
-      const txHash = await redeemPositions({
+    await submitCustomTx(() =>
+      redeemPositions({
         conditionId: condition.id,
-        collateralToken: collateralToken.address
-      });
-      setTxHash(txHash);
-      openModal(ModalId.WAITING_TRANSACTION);
-
-      await waitForTransactionReceipt(config, {
-        hash: txHash,
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsTxLoading(false);
-    }
+        collateralToken: collateralToken.address,
+      })
+    );
   };
 
   const hasBetted =
@@ -245,13 +227,16 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                         className="space-x-2"
                         onClick={redeem}
                       >
-                        <TokenLogo address={collateralToken.address} size="xs" />
                         <p>
                           Redeem {tradedBalance} {collateralToken.symbol}
                         </p>
+                        <TokenLogo
+                          address={collateralToken.address}
+                          size="xs"
+                          className="size-4"
+                        />
                       </Button>
                     </div>
-                    <TransactionModal isLoading={isTxLoading} txHash={txHash} />
                   </>
                 )}
               </div>

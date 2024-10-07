@@ -11,10 +11,12 @@ import { config } from '@/providers/chain-config';
 
 export interface TxContextProps {
   submitTx: (args: WriteContractParameters) => Promise<void>;
+  submitCustomTx: (tx: Function) => Promise<void>;
 }
 
 export const TxContext = createContext<TxContextProps>({
-  submitTx: async (args: WriteContractParameters) => {},
+  submitTx: async () => {},
+  submitCustomTx: async () => {},
 });
 
 export const TxProvider = ({ children }: PropsWithChildren) => {
@@ -24,15 +26,19 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
 
   const { openModal } = useModal();
 
-  const submitTx = async (args: WriteContractParameters): Promise<void> => {
+  const submitCustomTx = async (writeTxFn: Function): Promise<void> =>
+    submitWriteTx(() => writeTxFn());
+  const submitTx = async (args: WriteContractParameters): Promise<void> =>
+    submitWriteTx(() => writeContract(config, args));
+
+  const submitWriteTx = async (writeTxFn: Function): Promise<void> => {
     setIsTxLoading(true);
     setIsError(false);
     setTxHash('');
 
     try {
-      const txHash = await writeContract(config, args);
+      const txHash = await writeTxFn();
       setTxHash(txHash);
-
       openModal(ModalId.WAITING_TRANSACTION);
 
       await waitForTransactionReceipt(config, {
@@ -48,6 +54,7 @@ export const TxProvider = ({ children }: PropsWithChildren) => {
 
   const txContext = {
     submitTx,
+    submitCustomTx,
   };
 
   return (
