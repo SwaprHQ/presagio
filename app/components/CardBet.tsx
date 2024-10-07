@@ -144,6 +144,7 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
     await submitCustomTx(() =>
       redeemPositions({
         conditionId: condition.id,
+        collateralToken: userBets.position.collateralTokenAddress,
       })
     );
   };

@@ -123,6 +123,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
     await submitCustomTx(() =>
       redeemPositions({
         conditionId: condition.id,
+        collateralToken: collateralToken.address,
       })
     );
   };
