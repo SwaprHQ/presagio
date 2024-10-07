@@ -23,9 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="dark" style={{ colorScheme: 'dark' }}>
-      <body
-        className={`${manrope.className} bg-surface-surface-bg text-base antialiased`}
-      >
+      <body className={`${manrope.className} text-base antialiased`}>
         <Suspense>
           <Providers>{children}</Providers>
         </Suspense>

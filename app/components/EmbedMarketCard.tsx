@@ -17,7 +17,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
   const marketUrl = `${APP_URL}/markets?id=${fixedProductMarketMaker.id}`;
 
   return (
-    <div className="mx-auto h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0">
+    <div className="h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0">
       <div className="space-y-3 p-4">
         <a href={APP_URL} target="_blank" className="text-text-primary-main">
           {APP_NAME}

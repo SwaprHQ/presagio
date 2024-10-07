@@ -6,10 +6,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <div className="bg-surface-surface-bg">
       <Navbar />
       {children}
       <Footer />
-    </>
+    </div>
   );
 }

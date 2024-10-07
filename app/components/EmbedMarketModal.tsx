@@ -30,9 +30,11 @@ export const EmbedMarketModal = ({
     closeModal(ModalId.EMBED_MARKET);
   };
 
+  const embedUrl = `${APP_URL}/embed/market?id=${id}`;
+
   const iframeCode = `<iframe
   title="presagio-market-iframe"
-  src="${APP_URL}/embed/market?id=${id}"
+  src="${embedUrl}"
   width="384"
   height="222"
 ></iframe>`;
@@ -46,7 +48,7 @@ export const EmbedMarketModal = ({
         <DialogBody className="space-y-6 px-6 pb-8">
           <div className="space-y-4">
             <h3 className="font-bold">Embed Code</h3>
-            <div className="relative rounded-16">
+            <div className="relative">
               <div className="absolute right-2 top-2 z-10">
                 <IconButton
                   onClick={() => {
@@ -62,7 +64,11 @@ export const EmbedMarketModal = ({
                   size="sm"
                 />
               </div>
-              <SyntaxHighlighter language="javascript" style={atomDark}>
+              <SyntaxHighlighter
+                language="html"
+                style={atomDark}
+                customStyle={{ borderRadius: '16px' }}
+              >
                 {iframeCode}
               </SyntaxHighlighter>
             </div>
