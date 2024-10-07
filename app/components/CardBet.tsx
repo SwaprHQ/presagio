@@ -141,12 +141,11 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
   const canRedeem = marketCondition.canRedeem(outcomeIndex, userBets.balance);
 
   const redeem = async () => {
-    await submitCustomTx({
-      writeTxFunction: redeemPositions,
-      args: {
+    await submitCustomTx(() =>
+      redeemPositions({
         conditionId: condition.id,
-      },
-    });
+      })
+    );
   };
 
   return (

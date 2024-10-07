@@ -120,12 +120,11 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const isResolved = condition.resolved;
 
   const redeem = async () => {
-    await submitCustomTx({
-      writeTxFunction: redeemPositions,
-      args: {
+    await submitCustomTx(() =>
+      redeemPositions({
         conditionId: condition.id,
-      },
-    });
+      })
+    );
   };
 
   const hasBetted =
