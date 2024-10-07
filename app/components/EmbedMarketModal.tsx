@@ -44,7 +44,7 @@ export const EmbedMarketModal = ({
           <DialogTitle>Embed Market</DialogTitle>
         </DialogHeader>
         <DialogBody className="space-y-6 px-6 pb-8">
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h3 className="font-bold">Embed Code</h3>
             <div className="relative rounded-16">
               <div className="absolute right-2 top-2 z-10">
@@ -67,7 +67,7 @@ export const EmbedMarketModal = ({
               </SyntaxHighlighter>
             </div>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-4">
             <h3 className="font-bold">Preview</h3>
             <EmbedMarketCard fixedProductMarketMaker={fixedProductMarketMaker} />
           </div>

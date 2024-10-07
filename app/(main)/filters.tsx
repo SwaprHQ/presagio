@@ -3,9 +3,9 @@ import {
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
 } from '@/queries/omen';
-import { AI_AGENTS_ALLOWLIST } from '../../constants';
+
 import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
-import { WXDAI, SDAI } from '@/constants/index';
+import { WXDAI, SDAI, AI_AGENTS_ALLOWLIST } from '@/constants';
 
 export type OrderFilter = {
   name: string;
