@@ -1,15 +1,21 @@
 import { Footer, Navbar } from '@/app/components';
+import { Providers } from '@/providers';
+import { Suspense } from 'react';
 
-export default function RootLayout({
+export default function MainLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-surface-surface-bg">
-      <Navbar />
-      {children}
-      <Footer />
-    </div>
+    <Suspense>
+      <Providers>
+        <div className="bg-surface-surface-bg">
+          <Navbar />
+          {children}
+          <Footer />
+        </div>
+      </Providers>
+    </Suspense>
   );
 }

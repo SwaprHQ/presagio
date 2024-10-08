@@ -1,43 +1,78 @@
 'use client';
 
 import {
+  Button,
   Dialog,
   DialogBody,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  Icon,
   IconButton,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { APP_URL } from '@/constants';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { EmbedMarketCard } from '@/app/components/EmbedMarketCard';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { cx } from 'class-variance-authority';
+
+export const themeFilters: any[] = [
+  {
+    name: 'Light',
+    value: 'light',
+  },
+  {
+    name: 'Dark',
+    value: 'dark',
+  },
+  {
+    name: 'System',
+    value: 'system',
+  },
+];
+
 interface EmbedMarketModalProps {
   id: string;
-  fixedProductMarketMaker: any;
 }
 
-export const EmbedMarketModal = ({
-  id,
-  fixedProductMarketMaker,
-}: EmbedMarketModalProps) => {
+export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
   const { isModalOpen, closeModal } = useModal();
   const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
+  const [isThemePopoverOpen, setThemePopoverOpen] = useState(false);
+  const [selectedTheme, setSelectTheme] = useState({
+    name: 'Light',
+    value: 'light',
+  });
 
   const close = () => {
     closeModal(ModalId.EMBED_MARKET);
   };
 
-  const embedUrl = `${APP_URL}/embed/market?id=${id}`;
+  const IFRAME_WIDTH = 384;
+  const IFRAME_HEIGHT = 222;
 
-  const iframeCode = `<iframe
-  title="presagio-market-iframe"
-  src="${embedUrl}"
-  width="384"
-  height="222"
-></iframe>`;
+  const embedUrl = useMemo(
+    () => `${APP_URL}/embed/market?id=${id}&theme=${selectedTheme.value}`,
+    [id, selectedTheme.value]
+  );
+
+  const iframeCode = useMemo(
+    () => `<iframe
+    title="presagio-market-iframe"
+    src="${embedUrl}"
+    width="${IFRAME_WIDTH}"
+    height="${IFRAME_HEIGHT}"
+  />`,
+    [embedUrl]
+  );
+
+  const MemoizedIframe = useMemo(() => {
+    return <div dangerouslySetInnerHTML={{ __html: iframeCode }} />;
+  }, [iframeCode]);
 
   return (
     <Dialog open={isModalOpen(ModalId.EMBED_MARKET)} onOpenChange={close}>
@@ -45,7 +80,7 @@ export const EmbedMarketModal = ({
         <DialogHeader>
           <DialogTitle>Embed Market</DialogTitle>
         </DialogHeader>
-        <DialogBody className="space-y-6 px-6 pb-8">
+        <DialogBody className="space-y-6 px-3 pb-8 md:px-6">
           <div className="space-y-4">
             <h3 className="font-bold">Embed Code</h3>
             <div className="relative">
@@ -74,8 +109,42 @@ export const EmbedMarketModal = ({
             </div>
           </div>
           <div className="space-y-4">
-            <h3 className="font-bold">Preview</h3>
-            <EmbedMarketCard fixedProductMarketMaker={fixedProductMarketMaker} />
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold">Preview</h3>
+              <div className="flex items-center space-x-2">
+                <p>Select theme</p>
+                <div className="w-28">
+                  <Popover open={isThemePopoverOpen} onOpenChange={setThemePopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button variant="pastel" className="w-full space-x-2 text-nowrap">
+                        <p>{selectedTheme.name}</p>
+                        <Icon name="chevron-down" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="px-1 py-2">
+                      {themeFilters.map(option => (
+                        <div
+                          key={option.name}
+                          onClick={() => setSelectTheme(option)}
+                          className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                        >
+                          <Icon
+                            className={cx({
+                              invisible: selectedTheme.value !== option.value,
+                            })}
+                            name="tick-fill"
+                          />
+                          <p>{option.name}</p>
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+            </div>
+            <div className="mx-auto flex h-72 w-full flex-col items-center justify-center rounded-12 bg-surface-surface-1">
+              {MemoizedIframe}
+            </div>
           </div>
         </DialogBody>
       </DialogContent>

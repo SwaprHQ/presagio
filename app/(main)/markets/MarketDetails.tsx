@@ -121,7 +121,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           <UserBets fixedProductMarketMaker={fixedProductMarketMaker} />
         </div>
       </div>
-      <EmbedMarketModal fixedProductMarketMaker={fixedProductMarketMaker} id={id} />
+      <EmbedMarketModal id={id} />
     </>
   );
 };

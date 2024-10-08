@@ -1,6 +1,6 @@
 'use client';
 
-import { PropsWithChildren, useMemo } from 'react';
+import { PropsWithChildren } from 'react';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
@@ -17,9 +17,9 @@ export const Providers = ({ children }: PropsWithChildren) => {
   useAnalytics();
 
   return (
-    <NextThemesProvider>
-      <WagmiProvider config={config}>
-        <QueryClientProvider client={queryClient}>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <NextThemesProvider>
           <CustomConnectKitProvider>
             <ModalProvider>
               <TxProvider>
@@ -27,9 +27,9 @@ export const Providers = ({ children }: PropsWithChildren) => {
               </TxProvider>
             </ModalProvider>
           </CustomConnectKitProvider>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </NextThemesProvider>
+        </NextThemesProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 };
 

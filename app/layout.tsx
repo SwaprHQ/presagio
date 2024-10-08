@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import type { Metadata } from 'next';
 
 import { Manrope } from 'next/font/google';
@@ -6,8 +5,8 @@ import { Manrope } from 'next/font/google';
 import './globals.css';
 import '@swapr/ui/colors.css';
 
-import { Providers } from '@/providers';
 import { APP_NAME } from '@/constants';
+import { Suspense } from 'react';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
@@ -22,11 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en">
       <body className={`${manrope.className} text-base antialiased`}>
-        <Suspense>
-          <Providers>{children}</Providers>
-        </Suspense>
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );
