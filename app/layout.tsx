@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" style={{ colorScheme: 'dark' }}>
+    <html lang="en" data-theme="dark">
       <body className={`${manrope.className} text-base antialiased`}>
         <Suspense>
           <Providers>{children}</Providers>
