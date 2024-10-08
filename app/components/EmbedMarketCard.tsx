@@ -22,7 +22,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
         <a href={APP_URL} target="_blank" className="text-text-primary-main">
           {APP_NAME}
         </a>
-        <div className="min-h-16">
+        <div className="h-16">
           <a href={marketUrl} target="_blank" className="flex space-x-4 hover:underline">
             <MarketThumbnail
               width={48}
