@@ -33,7 +33,6 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
-import kamalaVsTrumpImage from '@/public/assets/kamala-trump.png';
 import { formatValueWithFixedDecimals } from '@/utils';
 import {
   Carousel,
@@ -287,7 +286,7 @@ export default function HomePage() {
           <ToggleGroup
             value={category}
             onChange={handleCategory}
-            className="overflow-x-scroll md:overflow-x-auto"
+            className="overflow-x-auto md:w-auto lg:w-fit"
           >
             <ToggleGroupOption size="md" value={''} className="font-semibold">
               All
@@ -576,26 +575,22 @@ const MarketHighlight = () => {
             <Link
               href={`/markets?id=${market.id}`}
               target="_blank"
-              className="flex h-72 w-full justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em 2xl:h-96"
+              className="flex h-auto w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:flex-row 2xl:h-96"
             >
-              <div className="mx-10 my-8 mr-36 flex w-full flex-col space-y-8">
+              <div className="m-0 flex w-full flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
                 <div className="flex flex-col space-y-4">
-                  <p className="text-sm font-semibold text-text-low-em">
+                  <p className="text-xs font-semibold text-text-low-em md:text-sm">
                     2 days remaining
                   </p>
                   {/* <p className="text-[44px] font-semibold leading-[56px]"> */}
-                  <p className="text-xl font-semibold">{market.title}</p>
+                  <p className="font-semibold md:text-lg lg:text-xl">{market.title}</p>
                 </div>
                 <OutcomeBar market={market} />
-                <p className="text-base font-semibold text-text-med-em">
+                <p className="text-xs font-semibold text-text-med-em md:text-base">
                   ${formatValueWithFixedDecimals(market.usdVolume, 2)} Vol
                 </p>
               </div>
-              <Image
-                className="h-full rounded-e-20"
-                src={kamalaVsTrumpImage}
-                alt="kamala vs trump"
-              />
+              <div className="h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/kamala-trump.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center" />
             </Link>
           </CarouselItem>
         ))}

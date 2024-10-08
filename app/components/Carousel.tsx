@@ -191,14 +191,7 @@ const CarouselSelector = React.forwardRef<
   if (nodes.length < 2) return null;
 
   return (
-    <div
-      ref={ref}
-      className={cx(
-        'flex w-fit space-x-2 self-center rounded-100 bg-surface-surface-0 p-2 shadow-2 ring-1 ring-outline-low-em',
-        className
-      )}
-      {...props}
-    >
+    <div ref={ref} className={cx('flex w-fit space-x-2', className)} {...props}>
       {nodes.map((_, index) => (
         <button
           className={cx(
