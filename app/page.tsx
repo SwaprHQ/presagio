@@ -3,7 +3,13 @@
 import { useQueries, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { FixedProductMarketMaker, getMarket, getMarkets } from '@/queries/omen';
-import { CardMarket, LoadingCardMarket, OutcomeBar, Skeleton } from '@/app/components';
+import {
+  CardMarket,
+  LoadingCardMarket,
+  OutcomeBar,
+  Skeleton,
+  TokenLogo,
+} from '@/app/components';
 import {
   Button,
   Icon,
@@ -33,7 +39,11 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
-import { formatValueWithFixedDecimals } from '@/utils';
+import {
+  formatEtherWithFixedDecimals,
+  formatValueWithFixedDecimals,
+  remainingTime,
+} from '@/utils';
 import {
   Carousel,
   CarouselContent,
@@ -41,6 +51,7 @@ import {
   CarouselSelector,
 } from './components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { highlightedMarketsList } from '@/market-highlight.config';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -536,13 +547,8 @@ const LoadingMarketCategories = () => (
 );
 
 const MarketHighlight = () => {
-  const marketIdList = [
-    '0x8943a769cb0503f7bc4e92a777fcd1aa9decfc33',
-    '0x0539590c0cf0d929e3f40b290fda04b9b4a8cf68',
-  ];
-
   const { data: markets, isLoading } = useQueries({
-    queries: marketIdList.map(id => ({
+    queries: Object.keys(highlightedMarketsList).map(id => ({
       queryKey: ['getMarket', id],
       queryFn: async () => getMarket({ id }),
     })),
@@ -570,30 +576,38 @@ const MarketHighlight = () => {
     >
       <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-4" />
       <CarouselContent>
-        {markets.map(market => (
-          <CarouselItem key={market.id}>
-            <Link
-              href={`/markets?id=${market.id}`}
-              target="_blank"
-              className="flex h-auto w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:flex-row 2xl:h-96"
-            >
-              <div className="m-0 flex w-full flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
-                <div className="flex flex-col space-y-4">
-                  <p className="text-xs font-semibold text-text-low-em md:text-sm">
-                    2 days remaining
-                  </p>
-                  {/* <p className="text-[44px] font-semibold leading-[56px]"> */}
-                  <p className="font-semibold md:text-lg lg:text-xl">{market.title}</p>
+        {markets.map(market => {
+          const closingDate = new Date(+market.openingTimestamp * 1000);
+
+          return (
+            <CarouselItem key={market.id}>
+              <Link
+                href={`/markets?id=${market.id}`}
+                target="_blank"
+                className="flex h-auto w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:flex-row 2xl:h-96"
+              >
+                <div className="m-0 flex w-full flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
+                  <div className="flex flex-col space-y-4">
+                    <p className="text-xs font-semibold text-text-low-em first-letter:uppercase md:text-sm">
+                      {remainingTime(closingDate)}
+                    </p>
+                    <p className="font-semibold md:text-lg lg:text-xl">{market.title}</p>
+                  </div>
+                  <OutcomeBar market={market} />
+                  <div className="flex items-center space-x-1">
+                    <TokenLogo address={market.collateralToken} className="size-3" />
+                    <p className="text-xs font-semibold text-text-med-em md:text-base">
+                      {formatEtherWithFixedDecimals(market.collateralVolume, 2)} Vol
+                    </p>
+                  </div>
                 </div>
-                <OutcomeBar market={market} />
-                <p className="text-xs font-semibold text-text-med-em md:text-base">
-                  ${formatValueWithFixedDecimals(market.usdVolume, 2)} Vol
-                </p>
-              </div>
-              <div className="h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/kamala-trump.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center" />
-            </Link>
-          </CarouselItem>
-        ))}
+                <div
+                  className={`h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/highlights/${highlightedMarketsList[market.id.toLowerCase()].image}'),_url('/assets/highlights/default.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center`}
+                />
+              </Link>
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
     </Carousel>
   );
