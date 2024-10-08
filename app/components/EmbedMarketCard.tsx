@@ -22,7 +22,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
         <a href={APP_URL} target="_blank" className="text-text-primary-main">
           {APP_NAME}
         </a>
-        <div className="h-16">
+        <div className="min-h-16">
           <a href={marketUrl} target="_blank" className="flex space-x-4 hover:underline">
             <MarketThumbnail
               width={48}
@@ -30,14 +30,16 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
               className="size-12 flex-shrink-0 rounded-8"
               marketId={fixedProductMarketMaker.id}
             />
-            <p className="text-[13px] font-semibold">{fixedProductMarketMaker.title}</p>
+            <p className="line-clamp-3 text-[13px] font-semibold">
+              {fixedProductMarketMaker.title}
+            </p>
           </a>
         </div>
         <div className="space-y-2">
           <OutcomeBar market={fixedProductMarketMaker} />
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <a
             className="flex h-fit select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-2 px-3 py-2 text-sm font-bold text-text-high-em hover:bg-surface-surface-3"
             href={marketUrl}

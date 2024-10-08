@@ -27,7 +27,7 @@ export const EmbeddedMarketClient = () => {
   const fixedProductMarketMaker = data.fixedProductMarketMaker;
 
   return (
-    <div className="flex w-screen flex-col items-center justify-center">
+    <div className="flex w-full min-w-0 flex-col items-center justify-center">
       <EmbedMarketCard fixedProductMarketMaker={fixedProductMarketMaker} />
     </div>
   );

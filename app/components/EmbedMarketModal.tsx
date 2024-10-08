@@ -19,21 +19,24 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useMemo, useState } from 'react';
 import { cx } from 'class-variance-authority';
+import { isMobile } from 'react-device-detect';
 
-export const themeFilters: any[] = [
-  {
-    name: 'Light',
-    value: 'light',
-  },
-  {
-    name: 'Dark',
-    value: 'dark',
-  },
-  {
-    name: 'System',
-    value: 'system',
-  },
-];
+const lightTheme = {
+  name: 'Light',
+  value: 'light',
+};
+
+const darkTheme = {
+  name: 'Dark',
+  value: 'dark',
+};
+
+const systemTheme = {
+  name: 'System',
+  value: 'system',
+};
+
+export const themeFilters = [systemTheme, lightTheme, darkTheme];
 
 interface EmbedMarketModalProps {
   id: string;
@@ -43,10 +46,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
   const { isModalOpen, closeModal } = useModal();
   const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
   const [isThemePopoverOpen, setThemePopoverOpen] = useState(false);
-  const [selectedTheme, setSelectTheme] = useState({
-    name: 'Light',
-    value: 'light',
-  });
+  const [selectedTheme, setSelectTheme] = useState(systemTheme);
 
   const close = () => {
     closeModal(ModalId.EMBED_MARKET);
@@ -60,19 +60,34 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
     [id, selectedTheme.value]
   );
 
+  const getIframeCode = (
+    url: string,
+    width: number = IFRAME_WIDTH,
+    height: number = IFRAME_HEIGHT
+  ) =>
+    `<iframe
+  title="presagio-market-iframe"
+  src=${url} 
+  width=${width} 
+  height=${height} 
+/>`;
+
   const iframeCode = useMemo(
-    () => `<iframe
-    title="presagio-market-iframe"
-    src="${embedUrl}"
-    width="${IFRAME_WIDTH}"
-    height="${IFRAME_HEIGHT}"
-  />`,
+    () => getIframeCode(embedUrl, IFRAME_WIDTH, IFRAME_HEIGHT),
     [embedUrl]
   );
 
-  const MemoizedIframe = useMemo(() => {
-    return <div dangerouslySetInnerHTML={{ __html: iframeCode }} />;
-  }, [iframeCode]);
+  const iFrameCodeRender = useMemo(() => {
+    const width = isMobile ? 325 : IFRAME_WIDTH;
+
+    return (
+      <div
+        dangerouslySetInnerHTML={{
+          __html: getIframeCode(embedUrl, width, IFRAME_HEIGHT),
+        }}
+      />
+    );
+  }, [embedUrl]);
 
   return (
     <Dialog open={isModalOpen(ModalId.EMBED_MARKET)} onOpenChange={close}>
@@ -112,7 +127,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
             <div className="flex items-center justify-between">
               <h3 className="font-bold">Preview</h3>
               <div className="flex items-center space-x-2">
-                <p>Select theme</p>
+                <p>Select theme:</p>
                 <div className="w-28">
                   <Popover open={isThemePopoverOpen} onOpenChange={setThemePopoverOpen}>
                     <PopoverTrigger asChild>
@@ -142,8 +157,8 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                 </div>
               </div>
             </div>
-            <div className="mx-auto flex h-72 w-full flex-col items-center justify-center rounded-12 bg-surface-surface-1">
-              {MemoizedIframe}
+            <div className="flex h-72 w-full flex-col items-center justify-center rounded-12 bg-surface-surface-1 p-2">
+              {iFrameCodeRender}
             </div>
           </div>
         </DialogBody>
