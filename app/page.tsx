@@ -48,6 +48,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
   CarouselSelector,
 } from './components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
@@ -572,9 +574,13 @@ const MarketHighlight = () => {
         }),
       ]}
       opts={{ loop: true }}
-      className="relative mb-6 w-full"
+      className="group relative mb-6 w-full"
     >
       <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-4" />
+      <div className="absolute bottom-0 right-0 z-50 mb-2 mr-6 flex space-x-2 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100">
+        <CarouselPrevious />
+        <CarouselNext />
+      </div>
       <CarouselContent>
         {markets.map(market => {
           const closingDate = new Date(+market.openingTimestamp * 1000);
@@ -602,6 +608,7 @@ const MarketHighlight = () => {
                   </div>
                 </div>
                 <div
+                  key={highlightedMarketsList[market.id.toLowerCase()].image}
                   className={`h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/highlights/${highlightedMarketsList[market.id.toLowerCase()].image}'),_url('/assets/highlights/default.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center`}
                 />
               </Link>

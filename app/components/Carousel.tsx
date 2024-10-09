@@ -3,6 +3,7 @@
 import * as React from 'react';
 import useEmblaCarousel, { type UseEmblaCarouselType } from 'embla-carousel-react';
 import { cx } from 'class-variance-authority';
+import { Button, IconButton } from '@swapr/ui';
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;
@@ -214,4 +215,70 @@ const CarouselSelector = React.forwardRef<
 });
 CarouselSelector.displayName = 'CarouselSelector';
 
-export { type CarouselApi, Carousel, CarouselContent, CarouselItem, CarouselSelector };
+const CarouselPrevious = React.forwardRef<
+  HTMLButtonElement,
+  Omit<React.ComponentProps<typeof IconButton>, 'name'>
+>(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
+  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+
+  return (
+    <IconButton
+      ref={ref}
+      variant={variant}
+      size={size}
+      // className={cx(
+      //   'rounded-full absolute h-8 w-8',
+      //   orientation === 'horizontal'
+      //     ? '-left-12 top-1/2 -translate-y-1/2'
+      //     : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
+      //   className
+      // )}
+      disabled={!canScrollPrev}
+      onClick={scrollPrev}
+      name="chevron-left"
+      {...props}
+    >
+      <span className="sr-only">Previous slide</span>
+    </IconButton>
+  );
+});
+CarouselPrevious.displayName = 'CarouselPrevious';
+
+const CarouselNext = React.forwardRef<
+  HTMLButtonElement,
+  Omit<React.ComponentProps<typeof IconButton>, 'name'>
+>(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
+  const { orientation, scrollNext, canScrollNext } = useCarousel();
+
+  return (
+    <IconButton
+      ref={ref}
+      variant={variant}
+      size={size}
+      // className={cx(
+      //   'rounded-full absolute h-8 w-8',
+      //   orientation === 'horizontal'
+      //     ? '-right-12 top-1/2 -translate-y-1/2'
+      //     : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
+      //   className
+      // )}
+      disabled={!canScrollNext}
+      onClick={scrollNext}
+      name="chevron-right"
+      {...props}
+    >
+      <span className="sr-only">Next slide</span>
+    </IconButton>
+  );
+});
+CarouselNext.displayName = 'CarouselNext';
+
+export {
+  type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselSelector,
+  CarouselPrevious,
+  CarouselNext,
+};
