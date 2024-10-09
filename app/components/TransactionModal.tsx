@@ -57,7 +57,7 @@ export const TransactionModal = ({
               </>
             ) : (
               <>
-                {!isError && (
+                {txHash && !isError && (
                   <>
                     <IconBadge name="tick" colorScheme="success" />
                     <div className="flex flex-col items-center space-y-2">
@@ -88,8 +88,8 @@ export const TransactionModal = ({
             )}
           </div>
         </DialogBody>
-        <DialogFooter>
-          {txHash && (
+        {txHash && (
+          <DialogFooter>
             <a
               href={`https://gnosisscan.io/tx/${txHash}`}
               target="_blank"
@@ -107,8 +107,8 @@ export const TransactionModal = ({
                 </>
               </Button>
             </a>
-          )}
-        </DialogFooter>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

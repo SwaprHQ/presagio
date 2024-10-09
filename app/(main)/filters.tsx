@@ -4,7 +4,7 @@ import {
   OrderDirection,
 } from '@/queries/omen';
 
-import { _24HoursInSeconds, nowTimestamp } from '@/utils/time';
+import { nowTimestamp } from '@/utils/time';
 import { WXDAI, SDAI, AI_AGENTS_ALLOWLIST } from '@/constants';
 
 export type OrderFilter = {
@@ -53,8 +53,6 @@ export type StateFilter = {
   when: FixedProductMarketMaker_Filter;
 };
 
-const oneDayAgoTimestamp = nowTimestamp - _24HoursInSeconds;
-
 export const stateFilters: StateFilter[] = [
   {
     name: 'Open',
@@ -76,7 +74,8 @@ export const stateFilters: StateFilter[] = [
     key: 'finalizing',
     when: {
       resolutionTimestamp: null,
-      currentAnswerTimestamp_gt: oneDayAgoTimestamp,
+      answerFinalizedTimestamp_gt: nowTimestamp,
+      answerFinalizedTimestamp_not: null,
       openingTimestamp_lt: nowTimestamp,
       isPendingArbitration: false,
       currentAnswer_not: null,

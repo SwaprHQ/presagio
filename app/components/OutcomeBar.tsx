@@ -98,7 +98,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
 
   return (
-    <div className="space-y-1">
+    <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
         <div
           className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"

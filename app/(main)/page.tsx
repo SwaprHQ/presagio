@@ -33,6 +33,7 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
+import { MarketsHighlight } from './MarketsHighlight';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -270,6 +271,7 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
+      <MarketsHighlight />
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (
@@ -277,7 +279,7 @@ export default function HomePage() {
           <ToggleGroup
             value={category}
             onChange={handleCategory}
-            className="overflow-x-scroll md:overflow-x-auto"
+            className="overflow-x-auto md:w-auto lg:w-fit"
           >
             <ToggleGroupOption size="md" value={''} className="font-semibold">
               All
