@@ -362,6 +362,7 @@ const getMarketTradesAndTransactionsQuery = gql`
       }
       fpmm {
         collateralToken
+        creator
         __typename
       }
       fpmmType
