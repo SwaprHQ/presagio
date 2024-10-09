@@ -219,20 +219,17 @@ const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof IconButton>, 'name'>
 >(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
-  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+  const { scrollPrev, canScrollPrev, api } = useCarousel();
+
+  const nodes = api?.slideNodes() ?? [];
+
+  if (nodes.length < 2) return null;
 
   return (
     <IconButton
       ref={ref}
       variant={variant}
       size={size}
-      // className={cx(
-      //   'rounded-full absolute h-8 w-8',
-      //   orientation === 'horizontal'
-      //     ? '-left-12 top-1/2 -translate-y-1/2'
-      //     : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
-      //   className
-      // )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
       name="chevron-left"
@@ -248,20 +245,17 @@ const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof IconButton>, 'name'>
 >(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
-  const { orientation, scrollNext, canScrollNext } = useCarousel();
+  const { scrollNext, canScrollNext, api } = useCarousel();
+
+  const nodes = api?.slideNodes() ?? [];
+
+  if (nodes.length < 2) return null;
 
   return (
     <IconButton
       ref={ref}
       variant={variant}
       size={size}
-      // className={cx(
-      //   'rounded-full absolute h-8 w-8',
-      //   orientation === 'horizontal'
-      //     ? '-right-12 top-1/2 -translate-y-1/2'
-      //     : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
-      //   className
-      // )}
       disabled={!canScrollNext}
       onClick={scrollNext}
       name="chevron-right"

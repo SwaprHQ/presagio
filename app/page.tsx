@@ -607,8 +607,8 @@ const MarketHighlight = () => {
                     </p>
                   </div>
                 </div>
+
                 <div
-                  key={highlightedMarketsList[market.id.toLowerCase()].image}
                   className={`h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/highlights/${highlightedMarketsList[market.id.toLowerCase()].image}'),_url('/assets/highlights/default.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center`}
                 />
               </Link>
