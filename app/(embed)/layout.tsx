@@ -23,6 +23,7 @@ export default function EmbedLayout({
           defaultTheme="system"
           enableSystem={parsedTheme === 'system' ? true : false}
           forcedTheme={parsedTheme}
+          enableColorScheme={false}
         >
           {children}
         </NextThemesProvider>

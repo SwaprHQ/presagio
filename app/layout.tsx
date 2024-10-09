@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} text-base antialiased`}>
+      <body className={`${manrope.className} text-base text-text-high-em antialiased`}>
         <Suspense>{children}</Suspense>
       </body>
     </html>

@@ -2,7 +2,7 @@ import { Skeleton } from '@/app/components';
 
 export const EmbeddedMarketCardLoading = () => (
   <div className="mx-auto h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0">
-    <div className="space-y-2 p-5">
+    <div className="space-y-2 p-4">
       <div className="flex items-center justify-between">
         <Skeleton className="h-3 w-20" />
       </div>

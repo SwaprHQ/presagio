@@ -67,9 +67,9 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
   ) =>
     `<iframe
   title="presagio-market-iframe"
-  src=${url} 
-  width=${width} 
-  height=${height} 
+  src="${url}"
+  width="${width}"
+  height="${height}" 
 />`;
 
   const iframeCode = useMemo(
@@ -131,7 +131,10 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                 <div className="w-28">
                   <Popover open={isThemePopoverOpen} onOpenChange={setThemePopoverOpen}>
                     <PopoverTrigger asChild>
-                      <Button variant="pastel" className="w-full space-x-2 text-nowrap">
+                      <Button
+                        variant="pastel"
+                        className="w-full justify-between text-nowrap"
+                      >
                         <p>{selectedTheme.name}</p>
                         <Icon name="chevron-down" />
                       </Button>
