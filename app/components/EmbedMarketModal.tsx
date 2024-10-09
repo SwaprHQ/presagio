@@ -20,6 +20,7 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useMemo, useState } from 'react';
 import { cx } from 'class-variance-authority';
 import { isMobile } from 'react-device-detect';
+import { Address } from 'viem';
 
 const lightTheme = {
   name: 'Light',
@@ -39,14 +40,14 @@ const systemTheme = {
 export const themeFilters = [systemTheme, lightTheme, darkTheme];
 
 interface EmbedMarketModalProps {
-  id: string;
+  id: Address;
 }
 
 export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
   const { isModalOpen, closeModal } = useModal();
-  const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
   const [isThemePopoverOpen, setThemePopoverOpen] = useState(false);
   const [selectedTheme, setSelectTheme] = useState(systemTheme);
+  const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
 
   const close = () => {
     closeModal(ModalId.EMBED_MARKET);
@@ -77,7 +78,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
     [embedUrl]
   );
 
-  const iFrameCodeRender = useMemo(() => {
+  const iFrameCodeRendered = useMemo(() => {
     const width = isMobile ? 325 : IFRAME_WIDTH;
 
     return (
@@ -161,7 +162,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
               </div>
             </div>
             <div className="flex h-72 w-full flex-col items-center justify-center rounded-12 bg-surface-surface-1 p-2">
-              {iFrameCodeRender}
+              {iFrameCodeRendered}
             </div>
           </div>
         </DialogBody>
