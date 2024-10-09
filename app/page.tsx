@@ -39,11 +39,7 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
-import {
-  formatEtherWithFixedDecimals,
-  formatValueWithFixedDecimals,
-  remainingTime,
-} from '@/utils';
+import { formatEtherWithFixedDecimals, remainingTime } from '@/utils';
 import {
   Carousel,
   CarouselContent,
@@ -54,6 +50,7 @@ import {
 } from './components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { highlightedMarketsList } from '@/market-highlight.config';
+import defaultHighlightImage from '@/public/assets/highlights/default.png';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -582,40 +579,48 @@ const MarketHighlight = () => {
         <CarouselNext />
       </div>
       <CarouselContent>
-        {markets.map(market => {
-          const closingDate = new Date(+market.openingTimestamp * 1000);
-
-          return (
-            <CarouselItem key={market.id}>
-              <Link
-                href={`/markets?id=${market.id}`}
-                target="_blank"
-                className="flex h-auto w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:flex-row 2xl:h-96"
-              >
-                <div className="m-0 flex w-full flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
-                  <div className="flex flex-col space-y-4">
-                    <p className="text-xs font-semibold text-text-low-em first-letter:uppercase md:text-sm">
-                      {remainingTime(closingDate)}
-                    </p>
-                    <p className="font-semibold md:text-lg lg:text-xl">{market.title}</p>
-                  </div>
-                  <OutcomeBar market={market} />
-                  <div className="flex items-center space-x-1">
-                    <TokenLogo address={market.collateralToken} className="size-3" />
-                    <p className="text-xs font-semibold text-text-med-em md:text-base">
-                      {formatEtherWithFixedDecimals(market.collateralVolume, 2)} Vol
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  className={`h-44 w-full rounded-e-0 rounded-t-20 bg-[url('/assets/highlights/${highlightedMarketsList[market.id.toLowerCase()].image}'),_url('/assets/highlights/default.png')] bg-cover md:h-full md:rounded-e-20 md:rounded-s-0 md:bg-center`}
-                />
-              </Link>
-            </CarouselItem>
-          );
-        })}
+        {markets.map(market => (
+          <HighlightCarouselItem key={market.id} market={market} />
+        ))}
       </CarouselContent>
     </Carousel>
+  );
+};
+
+const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) => {
+  const [image, setImage] = useState(highlightedMarketsList[market.id].image);
+  const closingDate = new Date(+market.openingTimestamp * 1000);
+
+  return (
+    <CarouselItem key={market.id}>
+      <Link
+        href={`/markets?id=${market.id}`}
+        target="_blank"
+        className="flex h-auto w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:flex-row 2xl:h-96"
+      >
+        <div className="m-0 flex w-full max-w-2xl flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
+          <div className="flex flex-col space-y-4">
+            <p className="text-xs font-semibold text-text-low-em first-letter:uppercase md:text-sm">
+              {remainingTime(closingDate)}
+            </p>
+            <p className="font-semibold md:text-lg lg:text-xl">{market.title}</p>
+          </div>
+          <OutcomeBar market={market} />
+          <div className="flex items-center space-x-1">
+            <TokenLogo address={market.collateralToken} className="size-3" />
+            <p className="text-xs font-semibold text-text-med-em md:text-base">
+              {formatEtherWithFixedDecimals(market.collateralVolume, 2)} Vol
+            </p>
+          </div>
+        </div>
+        <Image
+          className="h-44 w-full rounded-e-0 rounded-t-20 md:h-full md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
+          src={image}
+          alt="Market highlight"
+          style={{ objectFit: 'cover', objectPosition: 'top' }}
+          onError={() => setImage(defaultHighlightImage)}
+        />
+      </Link>
+    </CarouselItem>
   );
 };
