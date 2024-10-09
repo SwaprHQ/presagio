@@ -4,7 +4,7 @@ import { Categories } from '@/constants';
 
 const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
 
-const presagioCategories = Object.values(Categories).join(',');
+const marketCategories = Object.values(Categories).join(',');
 
 export const getAIAgents = async () => {
   const DUNE_AGENTS_INFO_QUERY_ID = 3582994;
@@ -22,7 +22,7 @@ export const getAIAgents = async () => {
 export const getOpenMarkets = async () => {
   const options: RunQueryArgs = {
     queryId: DUNE_OPEN_MARKETS_INFO_QUERY_ID,
-    filters: `category in (${presagioCategories})`,
+    filters: `category in (${marketCategories})`,
     columns: ['category'],
     sort_by: 'category asc',
   };

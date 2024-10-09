@@ -1,6 +1,6 @@
 'use client';
 
-import { Address, isAddress } from 'viem';
+import { isAddress } from 'viem';
 import { MarketDetails } from './MarketDetails';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';

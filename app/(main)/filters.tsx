@@ -3,9 +3,9 @@ import {
   FixedProductMarketMaker_OrderBy,
   OrderDirection,
 } from '@/queries/omen';
-import { AI_AGENTS_ALLOWLIST } from '../constants';
+
 import { nowTimestamp } from '@/utils/time';
-import {WXDAI, SDAI} from '@/constants/index';
+import { WXDAI, SDAI, AI_AGENTS_ALLOWLIST } from '@/constants';
 
 export type OrderFilter = {
   name: string;
@@ -120,7 +120,6 @@ export const creatorFilters: CreatorFilter[] = [
   },
 ];
 
-
 export type TokenFilter = {
   name: string;
   key: string;
@@ -128,7 +127,6 @@ export type TokenFilter = {
     collateralToken_in?: string[];
   };
 };
-
 
 export const tokenFilters: TokenFilter[] = [
   {

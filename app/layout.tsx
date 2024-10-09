@@ -5,17 +5,14 @@ import { Manrope } from 'next/font/google';
 import './globals.css';
 import '@swapr/ui/colors.css';
 
-import { Providers } from '@/providers';
-
-import { Footer, Navbar } from '@/app/components';
+import { APP_NAME } from '@/constants';
 import { Suspense } from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
 const manrope = Manrope({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Presagio 👁️ - The Prediction Market on Gnosis',
-  description: 'Win with your predicitons.',
+  title: `${APP_NAME} 👁️ - The Prediction Market on Gnosis with AI`,
+  description: 'Bet on your predicitons. Analyse AI bets.',
 };
 
 export default function RootLayout({
@@ -24,17 +21,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" style={{ colorScheme: 'dark' }}>
-      <body
-        className={`${manrope.className} bg-surface-surface-bg text-base antialiased`}
-      >
-        <Suspense>
-          <Providers>
-            <Navbar />
-            <NextThemesProvider>{children}</NextThemesProvider>
-            <Footer />
-          </Providers>
-        </Suspense>
+    <html lang="en">
+      <body className={`${manrope.className} text-base text-text-high-em antialiased`}>
+        <Suspense>{children}</Suspense>
       </body>
     </html>
   );

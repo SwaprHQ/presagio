@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@swapr/ui';
 import { ConnectButton, SettingsPopover } from '@/app/components';
 import { NetworkButton } from './NetworkButton';
+import { APP_NAME } from '@/constants';
 
 export const Navbar = () => {
   return (
@@ -14,7 +15,7 @@ export const Navbar = () => {
           <Link href="/">
             <div className="text-white flex items-center text-[24px] font-black md:space-x-2">
               <p>👁️</p>
-              <p className="hidden md:block">Presagio</p>
+              <p className="hidden md:block">{APP_NAME}</p>
             </div>
           </Link>
           <div className="mx-3 md:ml-28"></div>

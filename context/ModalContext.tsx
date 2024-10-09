@@ -5,6 +5,7 @@ import { createContext, useContext, ReactNode, useMemo, useReducer } from 'react
 export enum ModalId {
   WAITING_TRANSACTION = 'waiting_transaction',
   CONFIRM_SWAP = 'confirm_swap',
+  EMBED_MARKET = 'embed_market',
 }
 
 enum ActionType {

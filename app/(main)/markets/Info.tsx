@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { shortenAddress } from '../../utils';
 import { Icon, IconButton } from '@swapr/ui';
-import { FixedProductMarketMaker } from '../../queries/omen';
 import { GNOSIS_SCAN_URL, KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
+import { shortenAddress } from '@/utils';
+import { FixedProductMarketMaker } from '@/queries/omen';
 
 interface InfoProps {
   fixedProductMarketMaker: FixedProductMarketMaker;

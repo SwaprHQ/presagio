@@ -100,31 +100,31 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   return (
     <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
-        {outcome0.percentage !== '0' && (
-          <div
-            className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"
-            style={{
-              width: outcome0.percentage ? `${outcome0.percentage}%` : '50%',
-            }}
-          />
-        )}
-        {outcome1.percentage !== '0' && (
-          <div
-            className="flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2"
-            style={{
-              width: outcome1.percentage ? `${outcome1.percentage}%` : '50%',
-            }}
-          />
+        <div
+          className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"
+          style={{
+            width: outcome0?.percentage ? `${outcome0.percentage}%` : '50%',
+          }}
+        />
+
+        <div
+          className="flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2"
+          style={{
+            width: outcome1?.percentage ? `${outcome1.percentage}%` : '50%',
+          }}
+        />
+      </div>
+
+      <div className="flex h-4 justify-between text-sm font-semibold">
+        {hasOutcomePercentages && (
+          <>
+            <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
+            <p className="w-full text-right uppercase text-text-danger-main">
+              {`${outcome1.symbol} ${outcome1.percentage || '-'}%`}
+            </p>
+          </>
         )}
       </div>
-      {hasOutcomePercentages && (
-        <div className="flex justify-between text-sm font-semibold">
-          <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
-          <p className="w-full text-right uppercase text-text-danger-main">
-            {`${outcome1.symbol} ${outcome1.percentage || '-'}%`}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

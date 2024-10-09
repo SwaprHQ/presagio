@@ -12,7 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   CarouselSelector,
-} from './components/Carousel';
+} from '../components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { highlightedMarketsList } from '@/market-highlight.config';
 import defaultHighlightImage from '@/public/assets/highlights/default.png';
