@@ -573,12 +573,12 @@ const MarketHighlight = () => {
       opts={{ loop: true }}
       className="group relative mb-6 w-full"
     >
-      <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-4" />
-      <div className="absolute bottom-0 right-0 z-50 mb-2 mr-6 flex space-x-2 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100">
+      <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-6" />
+      <div className="absolute bottom-0 right-0 z-50 mb-4 mr-6 flex space-x-2 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100">
         <CarouselPrevious />
         <CarouselNext />
       </div>
-      <CarouselContent>
+      <CarouselContent className="pb-2">
         {markets.map(market => (
           <HighlightCarouselItem key={market.id} market={market} />
         ))}
