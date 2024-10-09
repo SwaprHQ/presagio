@@ -162,7 +162,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
               </div>
             </div>
             <div className="flex h-72 w-full flex-col items-center justify-center rounded-12 bg-surface-surface-1 p-2">
-              {iFrameCodeRendered}
+              <div style={{ colorScheme: 'system' }}>{iFrameCodeRendered}</div>
             </div>
           </div>
         </DialogBody>
