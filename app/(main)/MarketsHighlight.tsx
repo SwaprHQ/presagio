@@ -69,7 +69,6 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
     <CarouselItem key={market.id}>
       <Link
         href={`/markets?id=${market.id}`}
-        target="_blank"
         className="flex h-auto min-h-[400px] w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
       >
         <div className="m-0 flex w-full max-w-2xl flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
