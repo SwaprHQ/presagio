@@ -1,7 +1,7 @@
 'use client';
 
-import { EmbeddedMarketCardLoading } from '@/app/(embed)/embed/market/EmbedMarketCardLoading';
-import { EmbedMarketCard } from '@/app/components/EmbedMarketCard';
+import { EmbeddedMarketCardLoading } from './EmbedMarketCardLoading';
+import { EmbedMarketCard } from './EmbedMarketCard';
 import { APP_URL } from '@/constants';
 import { getMarket } from '@/queries/omen';
 import { Icon } from '@swapr/ui';
