@@ -33,7 +33,7 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
-import { MarketHighlight } from './MarketHighlight';
+import { MarketsHighlight } from './MarketsHighlight';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -271,7 +271,7 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      <MarketHighlight />
+      <MarketsHighlight />
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (

@@ -19,7 +19,7 @@ import defaultHighlightImage from '@/public/assets/highlights/default.png';
 import Image from 'next/image';
 import { useState } from 'react';
 
-export const MarketHighlight = () => {
+export const MarketsHighlight = () => {
   const { data: markets, isLoading } = useQueries({
     queries: Object.keys(highlightedMarketsList).map(id => ({
       queryKey: ['getMarket', id],
@@ -90,6 +90,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
         <Image
           className="h-44 w-full rounded-e-0 rounded-t-20 md:h-full md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
           src={image}
+          priority
           alt="Market highlight"
           style={{ objectFit: 'cover', objectPosition: 'top' }}
           onError={() => setImage(defaultHighlightImage)}
