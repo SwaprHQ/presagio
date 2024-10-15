@@ -96,7 +96,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
         <DialogHeader>
           <DialogTitle>Embed Market</DialogTitle>
         </DialogHeader>
-        <DialogBody className="space-y-6 px-3 pb-8 md:px-6">
+        <DialogBody className="space-y-6 pb-8">
           <div className="space-y-4">
             <h3 className="font-bold">Embed Code</h3>
             <div className="relative">

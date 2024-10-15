@@ -34,8 +34,8 @@ export const TransactionModal = ({
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader />
-        <DialogBody className="mb-8 mt-8 w-[496px] max-w-[496px] space-y-2 px-2">
-          <div className="flex w-full flex-col items-center space-y-20">
+        <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:mx-0 md:w-[496px] md:max-w-[496px]">
+          <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
               <>
                 <Image
