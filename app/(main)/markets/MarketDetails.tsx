@@ -49,7 +49,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           <div className="flex items-center justify-between">
             <BackButton />
             <IconButton
-              name="copy-fill"
+              name="code"
               variant="pastel"
               size="sm"
               onClick={() => openModal(ModalId.EMBED_MARKET)}
