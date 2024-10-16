@@ -34,8 +34,8 @@ export const TransactionModal = ({
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader />
-        <DialogBody className="mb-8 mt-8 w-[496px] max-w-[496px] space-y-2 px-2">
-          <div className="flex w-full flex-col items-center space-y-20">
+        <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:max-w-[496px]">
+          <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
               <>
                 <Image
@@ -49,7 +49,7 @@ export const TransactionModal = ({
                   <p className="text-2xl font-semibold text-text-high-em">
                     Transaction submitted
                   </p>
-                  <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
+                  <p className="text-center text-md font-semibold text-text-low-em">
                     The transaction has been submitted. <br />
                     It takes a couple of minutes to complete.
                   </p>

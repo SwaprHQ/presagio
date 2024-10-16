@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   Icon,
 } from '@swapr/ui';
 import { SLIPPAGE, SwapDirection, SwapState } from '.';
@@ -126,15 +127,13 @@ export const ConfirmTrade = ({
   return (
     <Dialog open={isModalOpen(ModalId.CONFIRM_SWAP)} onOpenChange={closeBetModal}>
       <DialogContent>
-        <DialogHeader size="xl" className="text-center">
-          <DialogClose position="left" size="xl">
-            <Button variant="ghost">
-              <Icon name="arrow-left" />
-            </Button>
+        <DialogHeader className="text-center">
+          <DialogClose position="left">
+            <Icon name="arrow-left" />
           </DialogClose>
-          Confirm Swap
+          <DialogTitle>Confirm Swap</DialogTitle>
         </DialogHeader>
-        <DialogBody className="space-y-2 px-2">
+        <DialogBody className="space-y-2">
           <div className="relative rounded-16 bg-surface-surface-1">
             <div className="flex w-full flex-col items-center space-y-1 border-b-[1px] border-b-outline-base-em pb-8 pt-3">
               <p className="text-xs uppercase text-text-low-em">You sell</p>
