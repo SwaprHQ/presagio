@@ -13,7 +13,7 @@ import { TabBody, TabGroup, TabHeader, Tag } from '@swapr/ui';
 import {
   Market,
   Position,
-  tradesCollateralAmountUSDSpent,
+  tradesCollateralAmountSpent,
   tradesOutcomeBalance,
   tradesVolume,
   UserBets,
@@ -111,88 +111,127 @@ export default function ProfilePage() {
     aiAgentsList?.some(aiAgent => String(aiAgent.address).toLowerCase() === address) ??
     false;
 
-  if (!address || !isAddress(address)) return null;
+  const spentAmountInUSD = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const market = new Market(userPosition.fpmm);
 
-  const spentAmountInUSD = userPositions?.reduce((acc, userPosition) => {
-    const market = new Market(userPosition.fpmm);
+        if (market.answer === null) return acc;
 
-    if (market.answer === null) return acc;
+        const amountSpentWei = tradesCollateralAmountSpent({
+          fpmmTrades: userPosition.fpmmTrades,
+        });
 
-    const amountSpentInUSD = tradesCollateralAmountUSDSpent({
-      fpmmTrades: userPosition.fpmmTrades,
-    });
+        const amountSpent = parseFloat(formatEther(amountSpentWei));
 
-    return amountSpentInUSD + acc;
-  }, 0);
+        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+        const priceInUSD = tokenPrices[collateralTokenAddress];
 
-  const winAmountInUSD = userPositions?.reduce((acc, userPosition) => {
-    const position = new Position(userPosition.position);
-    const market = new Market(userPosition.fpmm);
+        if (!priceInUSD) return acc;
 
-    if (market.answer === null || market.isLoser(position.getOutcomeIndex())) return acc;
-    const collateralTokenAddress = userPosition.position.collateralTokenAddress;
-    const priceInUSD = tokenPrices[collateralTokenAddress];
-
-    if (!priceInUSD) return acc;
-
-    const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
-      fpmmTrades: userPosition.fpmmTrades,
-    });
-
-    return winOutcomeBalancesInColleteralToken * priceInUSD + acc;
-  }, 0);
-
-  const potentialWinAmountInUSD = userPositions?.reduce((acc, userPosition) => {
-    const position = new Position(userPosition.position);
-    const market = new Market(userPosition.fpmm);
-
-    if (!userPosition.balance || market.answer !== null || !market.hasLiquidity)
-      return acc;
-
-    const oneShareSellPrice = calcSellAmountInCollateral(
-      userPosition.balance,
-      market.fpmm.outcomeTokenAmounts,
-      position.getOutcomeIndex(),
-      parseFloat(formatEther(market.fpmm.fee))
-    );
-
-    if (!oneShareSellPrice) return acc;
-
-    const collateralTokenAddress = userPosition.position.collateralTokenAddress;
-    const priceInUSD = tokenPrices[collateralTokenAddress];
-
-    if (!priceInUSD) return acc;
-
-    const priceInColleteralToken = parseFloat(formatEther(oneShareSellPrice));
-
-    return priceInColleteralToken * priceInUSD + acc;
-  }, 0);
-
-  const totalVolumeInUSD = userPositions?.reduce(
-    (acc, userPosition) =>
-      tradesVolume({
-        fpmmTrades: userPosition.fpmmTrades,
-      }) + acc,
-    0
+        return amountSpent * priceInUSD + acc;
+      }, 0),
+    [tokenPrices, userPositions]
   );
 
-  const numberOfWonBets = userPositions?.reduce((acc, userPosition) => {
-    const position = new Position(userPosition.position);
-    const market = new Market(userPosition.fpmm);
+  const winAmountInUSD = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const position = new Position(userPosition.position);
+        const market = new Market(userPosition.fpmm);
 
-    if (market.answer !== null && market.isWinner(position.getOutcomeIndex()))
-      return acc + 1;
+        if (market.answer === null || market.isLoser(position.getOutcomeIndex()))
+          return acc;
+        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+        const priceInUSD = tokenPrices[collateralTokenAddress];
 
-    return acc;
-  }, 0);
+        if (!priceInUSD) return acc;
 
-  const numberOfClosedBets = userPositions?.reduce((acc, userPosition) => {
-    const market = new Market(userPosition.fpmm);
+        const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
+          fpmmTrades: userPosition.fpmmTrades,
+        });
 
-    if (market.isClosed && market.answer !== null) return acc + 1;
+        return winOutcomeBalancesInColleteralToken * priceInUSD + acc;
+      }, 0),
+    [tokenPrices, userPositions]
+  );
 
-    return acc;
-  }, 0);
+  const potentialWinAmountInUSD = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const position = new Position(userPosition.position);
+        const market = new Market(userPosition.fpmm);
+
+        if (!userPosition.balance || market.answer !== null || !market.hasLiquidity)
+          return acc;
+
+        const oneShareSellPrice = calcSellAmountInCollateral(
+          userPosition.balance,
+          market.fpmm.outcomeTokenAmounts,
+          position.getOutcomeIndex(),
+          parseFloat(formatEther(market.fpmm.fee))
+        );
+
+        if (!oneShareSellPrice) return acc;
+
+        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+        const priceInUSD = tokenPrices[collateralTokenAddress];
+
+        if (!priceInUSD) return acc;
+
+        const priceInColleteralToken = parseFloat(formatEther(oneShareSellPrice));
+
+        return priceInColleteralToken * priceInUSD + acc;
+      }, 0),
+    [tokenPrices, userPositions]
+  );
+
+  const totalVolumeInUSD = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const volumeTradedWei = tradesVolume({
+          fpmmTrades: userPosition.fpmmTrades,
+        });
+
+        const volumeTraded = parseFloat(formatEther(volumeTradedWei));
+
+        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
+        const priceInUSD = tokenPrices[collateralTokenAddress];
+
+        if (!priceInUSD) return acc;
+
+        return volumeTraded * priceInUSD + acc;
+      }, 0),
+    [tokenPrices, userPositions]
+  );
+
+  const numberOfWonBets = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const position = new Position(userPosition.position);
+        const market = new Market(userPosition.fpmm);
+
+        if (market.answer !== null && market.isWinner(position.getOutcomeIndex()))
+          return acc + 1;
+
+        return acc;
+      }, 0),
+    [userPositions]
+  );
+
+  const numberOfClosedBets = useMemo(
+    () =>
+      userPositions?.reduce((acc, userPosition) => {
+        const market = new Market(userPosition.fpmm);
+
+        if (market.isClosed && market.answer !== null) return acc + 1;
+
+        return acc;
+      }, 0),
+    [userPositions]
+  );
+
+  if (!address || !isAddress(address)) return null;
 
   const userFirstParticipationDate = userInfo?.user
     ? format(fromUnixTime(userInfo.user.firstParticipation), 'MMMM y')

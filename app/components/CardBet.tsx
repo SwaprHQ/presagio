@@ -12,14 +12,14 @@ import {
   Market,
   MarketCondition,
   Position,
-  tradesCollateralAmountUSDSpent,
+  tradesCollateralAmountSpent,
   tradesOutcomeBalance,
   UserBets,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
 import { MarketThumbnail } from './MarketThumbnail';
 import { Skeleton } from './Skeleton';
-import { formatValueWithFixedDecimals } from '@/utils';
+import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
 
 interface CardBetProps extends PropsWithChildren {
@@ -32,7 +32,7 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
 
   const market = new Market(userBets.fpmm);
 
-  const collateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+  const collateralAmountSpent = tradesCollateralAmountSpent({
     fpmmTrades: userBets?.fpmmTrades,
   });
   const lastTradeTimestamp =
@@ -94,8 +94,9 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
           <div className="flex flex-col items-start space-y-0.5 md:flex-row md:items-center md:space-x-3">
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">Bet amount:</p>
-              <p className="text-sm font-semibold text-text-high-em">
-                ${formatValueWithFixedDecimals(collateralAmountUSDSpent, 4)}
+              <p className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+                <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
+                <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
               </p>
             </div>
             <div className="flex items-center space-x-1">
@@ -104,13 +105,11 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
               </p>
               <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
                 {!market.isClosed || isWinner ? (
-                  <>
-                    <p>{formatValueWithFixedDecimals(outcomeBalance)}</p>
-                    <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
-                  </>
+                  <p>{formatValueWithFixedDecimals(outcomeBalance)}</p>
                 ) : (
-                  '$' + formatValueWithFixedDecimals(collateralAmountUSDSpent)
+                  <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
                 )}
+                <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
               </div>
             </div>
             {lastTradeTimestamp && (
