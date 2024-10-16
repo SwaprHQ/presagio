@@ -8,7 +8,7 @@ import {
   Market,
   MarketCondition,
   Token,
-  tradesCollateralAmountUSDSpent,
+  tradesCollateralAmountSpent,
   tradesOutcomeBalance,
 } from '@/entities';
 import { Button, Icon, Tag } from '@swapr/ui';
@@ -18,7 +18,7 @@ import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
 import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
-import { formatValueWithFixedDecimals } from '@/utils';
+import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
 
 interface UserBets {
@@ -57,16 +57,16 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const [outcome0UserTrades, outcome1UserTrades] = getOutcomeUserTrades({
     fpmmTrades: userTrades?.fpmmTrades,
   });
-  const outcome0CollateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+  const outcome0CollateralAmountSpent = tradesCollateralAmountSpent({
     fpmmTrades: outcome0UserTrades,
   });
-  const outcome1CollateralAmountUSDSpent = tradesCollateralAmountUSDSpent({
+  const outcome1CollateralAmountSpent = tradesCollateralAmountSpent({
     fpmmTrades: outcome1UserTrades,
   });
 
-  const outcomesCollateralAmountUSDSpent = [
-    outcome0CollateralAmountUSDSpent,
-    outcome1CollateralAmountUSDSpent,
+  const outcomesCollateralAmountSpent = [
+    outcome0CollateralAmountSpent,
+    outcome1CollateralAmountSpent,
   ];
 
   const outcome0TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome0UserTrades });
@@ -129,7 +129,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   };
 
   const hasBetted =
-    outcomesCollateralAmountUSDSpent[0] > 0 || outcomesCollateralAmountUSDSpent[1] > 0;
+    outcomesCollateralAmountSpent[0] > 0 || outcomesCollateralAmountSpent[1] > 0;
 
   if (!hasBetted) return null;
 
@@ -138,7 +138,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
       <p className="text-text-low-em">You betted on: </p>
       <div className="space-y-3">
         {marketModel.outcomes.map((outcome, index) => {
-          if (!outcomesCollateralAmountUSDSpent[index]) return null;
+          if (!outcomesCollateralAmountSpent[index]) return null;
 
           const isWinner = marketModel.isWinner(index);
 
@@ -150,8 +150,8 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
           );
           const canRedeem = marketCondition.canRedeem(index, outcomesBalance[index]);
 
-          const collateralSpent = formatValueWithFixedDecimals(
-            outcomesCollateralAmountUSDSpent[index],
+          const collateralSpent = formatEtherWithFixedDecimals(
+            outcomesCollateralAmountSpent[index],
             4
           );
           const tradedBalance = formatValueWithFixedDecimals(

@@ -6,6 +6,11 @@ export const valueByTrade = {
   [TradeType.Sell]: (previousValue: number, newValue: number) => previousValue - newValue,
 };
 
+export const valueByTradeBigInt = {
+  [TradeType.Buy]: (previousValue: bigint, newValue: bigint) => previousValue + newValue,
+  [TradeType.Sell]: (previousValue: bigint, newValue: bigint) => previousValue - newValue,
+};
+
 interface TradesProps {
   fpmmTrades: FpmmTrade[] | undefined;
 }
@@ -22,22 +27,21 @@ export const tradesOutcomeBalance = ({ fpmmTrades }: TradesProps) => {
   );
 };
 
-export const tradesCollateralAmountUSDSpent = ({ fpmmTrades }: TradesProps) => {
+export const tradesCollateralAmountSpent = ({ fpmmTrades }: TradesProps) => {
   return (
     fpmmTrades?.reduce((acc, trade) => {
       const type = trade.type;
-      const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return valueByTrade[type](acc, collateralAmountUSD);
-    }, 0) ?? 0
+      return valueByTradeBigInt[type](acc, BigInt(trade.collateralAmount));
+    }, BigInt(0)) ?? BigInt(0)
   );
 };
 
 export const tradesVolume = ({ fpmmTrades }: TradesProps) => {
   return (
     fpmmTrades?.reduce((acc, trade) => {
-      const collateralAmountUSD = parseFloat(trade.collateralAmountUSD);
-      return acc + collateralAmountUSD;
-    }, 0) ?? 0
+      const collateralAmount = BigInt(trade.collateralAmount);
+      return acc + collateralAmount;
+    }, BigInt(0)) ?? BigInt(0)
   );
 };
 

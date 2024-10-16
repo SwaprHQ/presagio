@@ -2,10 +2,10 @@
 
 import { OutcomeBar, Card, ScrollArea, TokenLogo } from '@/app/components';
 import { FixedProductMarketMaker } from '@/queries/omen';
-import { formattedNumberDollars } from '@/utils/currencies';
 import { remainingTime } from '@/utils/dates';
 import { MarketThumbnail } from './MarketThumbnail';
 import { Skeleton } from './Skeleton';
+import { formatEther } from 'viem';
 
 interface CardMarketProps {
   market: FixedProductMarketMaker;
@@ -35,7 +35,8 @@ export const CardMarket = ({ market }: CardMarketProps) => {
           <div className="flex items-center space-x-2">
             <TokenLogo address={market.collateralToken} size="xs" />
             <p className="text-sm font-semibold text-text-med-em">
-              {formattedNumberDollars(+market.usdVolume) || '-'} <span>Vol</span>
+              {Number(formatEther(market.collateralVolume)).toFixed(2) ?? '-'}{' '}
+              <span>Vol</span>
             </p>
           </div>
           <p className="text-sm text-text-low-em">{remainingTime(closingDate)}</p>
