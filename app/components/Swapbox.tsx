@@ -261,6 +261,11 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
       ? formatValueWithFixedDecimals(collateralTokenUSDPrice * potentialProfit, 2)
       : null;
 
+  const resetSwapState = () => {
+    setTokenAmountIn('');
+    setTokenAmountOut(undefined);
+  };
+
   return (
     <>
       <div className="relative space-y-2">
@@ -386,6 +391,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
           refetchCollateralBalance();
           refetchOutcome0Balance();
           refetchOutcome1Balance();
+          resetSwapState();
         }}
         onApprove={currentState.refetchAllowence}
       />
