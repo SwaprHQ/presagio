@@ -135,12 +135,12 @@ export const tokenFilters: TokenFilter[] = [
     when: {},
   },
   {
-    name: 'wxDai',
+    name: 'WXDAI',
     key: 'wxdai',
     when: { collateralToken_in: [WXDAI.address] },
   },
   {
-    name: 'sDai',
+    name: 'sDAI',
     key: 'sdai',
     when: { collateralToken_in: [SDAI.address] },
   },
