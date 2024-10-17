@@ -3,7 +3,7 @@
 import Link from 'next/link';
 
 import { Button } from '@swapr/ui';
-import { ConnectButton, SettingsPopover } from '@/app/components';
+import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
 import { NetworkButton } from './NetworkButton';
 import { APP_NAME } from '@/constants';
 
@@ -21,10 +21,14 @@ export const Navbar = () => {
           <div className="mx-3 md:ml-28"></div>
         </div>
         <div className="flex h-10 items-center justify-end space-x-2 md:w-[488px]">
+          <div className="hidden md:block">
+            <LifiWidgetPopover />
+          </div>
           <Link href="/my-bets">
-            <Button variant="pastel">My bets</Button>
+            <Button variant="pastel" className="text-nowrap">
+              My bets
+            </Button>
           </Link>
-
           <ConnectButton />
           <NetworkButton />
           <SettingsPopover />
