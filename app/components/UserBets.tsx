@@ -10,6 +10,7 @@ import {
   Token,
   tradesCollateralAmountSpent,
   tradesOutcomeBalance,
+  outcomeTokensTradedTotal,
 } from '@/entities';
 import { Button, Icon, Tag } from '@swapr/ui';
 import { ChainId } from '@/constants';
@@ -57,18 +58,23 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const [outcome0UserTrades, outcome1UserTrades] = getOutcomeUserTrades({
     fpmmTrades: userTrades?.fpmmTrades,
   });
-  const outcome0CollateralAmountSpent = tradesCollateralAmountSpent({
-    fpmmTrades: outcome0UserTrades,
-  });
-  const outcome1CollateralAmountSpent = tradesCollateralAmountSpent({
-    fpmmTrades: outcome1UserTrades,
-  });
-
   const outcomesCollateralAmountSpent = [
-    outcome0CollateralAmountSpent,
-    outcome1CollateralAmountSpent,
+    tradesCollateralAmountSpent({
+      fpmmTrades: outcome0UserTrades,
+    }),
+    tradesCollateralAmountSpent({
+      fpmmTrades: outcome1UserTrades,
+    }),
   ];
 
+  const outcomesTokensTraded = [
+    outcomeTokensTradedTotal({
+      fpmmTrades: outcome0UserTrades,
+    }),
+    outcomeTokensTradedTotal({
+      fpmmTrades: outcome1UserTrades,
+    }),
+  ];
   const outcome0TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome0UserTrades });
   const outcome1TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome1UserTrades });
   const outcomesTradedBalance = [outcome0TradedBalance, outcome1TradedBalance];
@@ -159,13 +165,40 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
             4
           );
 
-          const resultString = alreadyClaimed
-            ? 'You claimed:'
-            : canClaim
-              ? 'You won:'
-              : isResolved
-                ? 'You lost:'
-                : 'You can win:';
+          const getResultString = (): string => {
+            if (alreadyClaimed) return 'Claimed';
+            if (canClaim && marketModel.isAnswerInvalid) return 'Receive';
+            if (canClaim) return 'Won';
+            if (isResolved) return 'Lost';
+
+            return 'Can win';
+          };
+
+          const resultString = getResultString();
+
+          const invalidMarketColleteralToRedeem =
+            marketCondition.getRedeemableColleteralToken(
+              outcomesTokensTraded[index],
+              index
+            );
+          const formattedInvalidMarketColleteralToRedeem = formatValueWithFixedDecimals(
+            invalidMarketColleteralToRedeem || 0,
+            2
+          );
+          const formattedOutcomesTokensTraded = formatEtherWithFixedDecimals(
+            outcomesTokensTraded[index],
+            2
+          );
+
+          function getResultAmount() {
+            if (marketModel.isAnswerInvalid)
+              return formattedInvalidMarketColleteralToRedeem;
+            if (!canClaim && isResolved) return collateralSpent;
+
+            return tradedBalance;
+          }
+
+          const resultAmount = getResultAmount();
 
           return (
             <div className="flex space-x-4" key={index}>
@@ -194,7 +227,7 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                       </span>
                     </p>
                     <div className="font-semibold">
-                      <span className="text-text-low-em">{resultString} </span>
+                      <span className="text-text-low-em">{resultString}: </span>
                       <div
                         className={cx(
                           'inline-flex items-center',
@@ -202,42 +235,66 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                         )}
                       >
                         <span>
-                          {tradedBalance} {collateralToken.symbol}
+                          {resultAmount} {collateralToken.symbol}
                         </span>
-                        {isResolved && (
+                        {!marketModel.isAnswerInvalid && isResolved && (
                           <Icon name={isWinner ? 'arrow-up' : 'arrow-down'} />
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
-                {canRedeem && (
-                  <>
-                    <div className="space-y-4 px-4 pt-4">
-                      <p className="px-6 font-semibold text-text-low-em">
-                        Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
-                        {collateralToken.symbol} from your {collateralSpent} shares of the
-                        winning outcome.
+                {!marketModel.isAnswerInvalid && canRedeem && (
+                  <div className="space-y-4 px-4 pt-4">
+                    <p className="px-6 font-semibold text-text-low-em">
+                      Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
+                      {collateralToken.symbol} from your {formattedOutcomesTokensTraded}{' '}
+                      shares of the winning outcome.
+                    </p>
+                    <Button
+                      colorScheme={index === 0 ? 'success' : 'error'}
+                      variant="pastel"
+                      width="full"
+                      size="lg"
+                      className="space-x-2"
+                      onClick={redeem}
+                    >
+                      <p>
+                        Redeem {tradedBalance} {collateralToken.symbol}
                       </p>
-                      <Button
-                        colorScheme={index === 0 ? 'success' : 'error'}
-                        variant="pastel"
-                        width="full"
-                        size="lg"
-                        className="space-x-2"
-                        onClick={redeem}
-                      >
-                        <p>
-                          Redeem {tradedBalance} {collateralToken.symbol}
-                        </p>
-                        <TokenLogo
-                          address={collateralToken.address}
-                          size="xs"
-                          className="size-4"
-                        />
-                      </Button>
-                    </div>
-                  </>
+                      <TokenLogo
+                        address={collateralToken.address}
+                        size="xs"
+                        className="size-4"
+                      />
+                    </Button>
+                  </div>
+                )}
+                {marketModel.isAnswerInvalid && canRedeem && (
+                  <div className="space-y-4 px-4 pt-4">
+                    <p className="px-6 font-semibold text-text-low-em">
+                      Since market is invalid, you can now redeem{' '}
+                      {formattedInvalidMarketColleteralToRedeem} {collateralToken.symbol}{' '}
+                      from your {formattedOutcomesTokensTraded} shares.
+                    </p>
+                    <Button
+                      variant="pastel"
+                      width="full"
+                      size="lg"
+                      className="space-x-2"
+                      onClick={redeem}
+                    >
+                      <p>
+                        Redeem {formattedInvalidMarketColleteralToRedeem}{' '}
+                        {collateralToken.symbol}
+                      </p>
+                      <TokenLogo
+                        address={collateralToken.address}
+                        size="xs"
+                        className="size-4"
+                      />
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
