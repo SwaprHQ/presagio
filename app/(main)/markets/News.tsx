@@ -60,7 +60,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
       const response = await fetch(metadataAPI);
 
       if (!response.ok) {
-        console.log(`Error fetching ${url}`);
+        console.error(`Error fetching ${url}`);
         return;
       }
       return await response.json();

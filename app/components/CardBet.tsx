@@ -14,6 +14,7 @@ import {
   Position,
   tradesCollateralAmountSpent,
   tradesOutcomeBalance,
+  outcomeTokensTradedTotal,
   UserBets,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
@@ -31,8 +32,12 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
   const outcomeIndex = position.getOutcomeIndex();
 
   const market = new Market(userBets.fpmm);
+  const marketCondition = new MarketCondition(userBets.fpmm, position.condition);
 
   const collateralAmountSpent = tradesCollateralAmountSpent({
+    fpmmTrades: userBets?.fpmmTrades,
+  });
+  const outcomeTokensTraded = outcomeTokensTradedTotal({
     fpmmTrades: userBets?.fpmmTrades,
   });
   const lastTradeTimestamp =
@@ -47,11 +52,31 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
   const isWinner = market.isWinner(outcomeIndex);
   const isLoser = market.isLoser(outcomeIndex);
 
-  const outcomeAmountString = market.isClosed
-    ? isWinner
-      ? 'Won'
-      : 'Lost'
-    : 'Potential win';
+  const getResultAmountString = (): string => {
+    if (!market.isClosed) return 'Potential win';
+    if (isWinner) return 'Won';
+    if (market.isAnswerInvalid) return 'Receive';
+
+    return 'Lost';
+  };
+
+  const getResultAmount = (): string => {
+    const invalidMarketColleteralToRedeem = marketCondition.getRedeemableColleteralToken(
+      outcomeTokensTraded,
+      outcomeIndex
+    );
+
+    if (!market.isClosed || isWinner)
+      return formatValueWithFixedDecimals(outcomeBalance, 2);
+
+    if (market.isAnswerInvalid)
+      return formatValueWithFixedDecimals(invalidMarketColleteralToRedeem || 0, 2);
+
+    return formatEtherWithFixedDecimals(collateralAmountSpent, 2);
+  };
+
+  const resultAmountString = getResultAmountString();
+  const resultAmount = getResultAmount();
 
   return (
     <Card
@@ -101,14 +126,10 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
             </div>
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">
-                {outcomeAmountString}:
+                {resultAmountString}:
               </p>
               <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
-                {!market.isClosed || isWinner ? (
-                  <p>{formatValueWithFixedDecimals(outcomeBalance)}</p>
-                ) : (
-                  <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
-                )}
+                <p>{resultAmount}</p>
                 <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
               </div>
             </div>

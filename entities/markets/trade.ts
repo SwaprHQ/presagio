@@ -36,6 +36,15 @@ export const tradesCollateralAmountSpent = ({ fpmmTrades }: TradesProps) => {
   );
 };
 
+export const outcomeTokensTradedTotal = ({ fpmmTrades }: TradesProps) => {
+  return (
+    fpmmTrades?.reduce((acc, trade) => {
+      const type = trade.type;
+      return valueByTradeBigInt[type](acc, BigInt(trade.outcomeTokensTraded));
+    }, BigInt(0)) ?? BigInt(0)
+  );
+};
+
 export const tradesVolume = ({ fpmmTrades }: TradesProps) => {
   return (
     fpmmTrades?.reduce((acc, trade) => {
