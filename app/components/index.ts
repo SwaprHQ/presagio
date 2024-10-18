@@ -17,3 +17,4 @@ export * from './UserAvatarWithAddress';
 export * from './Avatar';
 export * from './AddressLink';
 export * from './EmbedMarketModal';
+export * from './LifiWidgetPopover';

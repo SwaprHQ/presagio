@@ -6,6 +6,7 @@ export enum ModalId {
   WAITING_TRANSACTION = 'waiting_transaction',
   CONFIRM_SWAP = 'confirm_swap',
   EMBED_MARKET = 'embed_market',
+  LIFI_WIDGET = 'lifi_widget',
 }
 
 enum ActionType {
