@@ -14,7 +14,9 @@ export class MarketCondition extends Market {
     const isResolved = this.condition.resolved;
     const hasPayoutDenominator = +this.condition.payoutDenominator > 0;
 
-    return this.isWinner(index) && isResolved && hasPayoutDenominator;
+    return (
+      (this.isWinner(index) || this.isAnswerInvalid) && isResolved && hasPayoutDenominator
+    );
   }
 
   alreadyClaimed(index: number, outcomeBalance: BigInt | string) {

@@ -10,6 +10,7 @@ import {
   Token,
   tradesCollateralAmountSpent,
   tradesOutcomeBalance,
+  outcomeTokensTradedTotal,
 } from '@/entities';
 import { Button, Icon, Tag } from '@swapr/ui';
 import { ChainId } from '@/constants';
@@ -18,8 +19,13 @@ import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
 import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
-import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
+import {
+  calcSellAmountInCollateral,
+  formatEtherWithFixedDecimals,
+  formatValueWithFixedDecimals,
+} from '@/utils';
 import { useTx } from '@/context';
+import { formatEther } from 'viem';
 
 interface UserBets {
   fixedProductMarketMaker: FixedProductMarketMaker;
@@ -57,18 +63,23 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
   const [outcome0UserTrades, outcome1UserTrades] = getOutcomeUserTrades({
     fpmmTrades: userTrades?.fpmmTrades,
   });
-  const outcome0CollateralAmountSpent = tradesCollateralAmountSpent({
-    fpmmTrades: outcome0UserTrades,
-  });
-  const outcome1CollateralAmountSpent = tradesCollateralAmountSpent({
-    fpmmTrades: outcome1UserTrades,
-  });
-
   const outcomesCollateralAmountSpent = [
-    outcome0CollateralAmountSpent,
-    outcome1CollateralAmountSpent,
+    tradesCollateralAmountSpent({
+      fpmmTrades: outcome0UserTrades,
+    }),
+    tradesCollateralAmountSpent({
+      fpmmTrades: outcome1UserTrades,
+    }),
   ];
 
+  const outcomesTokensTraded = [
+    outcomeTokensTradedTotal({
+      fpmmTrades: outcome0UserTrades,
+    }),
+    outcomeTokensTradedTotal({
+      fpmmTrades: outcome1UserTrades,
+    }),
+  ];
   const outcome0TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome0UserTrades });
   const outcome1TradedBalance = tradesOutcomeBalance({ fpmmTrades: outcome1UserTrades });
   const outcomesTradedBalance = [outcome0TradedBalance, outcome1TradedBalance];
@@ -154,18 +165,26 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
             outcomesCollateralAmountSpent[index],
             4
           );
+          const outcomeTokensTraded = formatEtherWithFixedDecimals(
+            outcomesTokensTraded[index],
+            2
+          );
           const tradedBalance = formatValueWithFixedDecimals(
             outcomesTradedBalance[index],
             4
           );
 
           const resultString = alreadyClaimed
-            ? 'You claimed:'
+            ? 'Claimed:'
             : canClaim
-              ? 'You won:'
+              ? marketModel.isAnswerInvalid
+                ? 'Receive:'
+                : 'Won:'
               : isResolved
-                ? 'You lost:'
-                : 'You can win:';
+                ? 'Lost:'
+                : 'Can win:';
+
+          const invalidMarketColleteralToRedeem = parseFloat(outcomeTokensTraded) * 0.5;
 
           return (
             <div className="flex space-x-4" key={index}>
@@ -202,16 +221,21 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                         )}
                       >
                         <span>
-                          {tradedBalance} {collateralToken.symbol}
+                          {marketModel.isAnswerInvalid
+                            ? invalidMarketColleteralToRedeem
+                            : !canClaim && isResolved
+                              ? collateralSpent
+                              : tradedBalance}{' '}
+                          {collateralToken.symbol}
                         </span>
-                        {isResolved && (
+                        {!marketModel.isAnswerInvalid && isResolved && (
                           <Icon name={isWinner ? 'arrow-up' : 'arrow-down'} />
                         )}
                       </div>
                     </div>
                   </div>
                 </div>
-                {canRedeem && (
+                {!marketModel.isAnswerInvalid && canRedeem && (
                   <>
                     <div className="space-y-4 px-4 pt-4">
                       <p className="px-6 font-semibold text-text-low-em">
@@ -229,6 +253,34 @@ export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
                       >
                         <p>
                           Redeem {tradedBalance} {collateralToken.symbol}
+                        </p>
+                        <TokenLogo
+                          address={collateralToken.address}
+                          size="xs"
+                          className="size-4"
+                        />
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {marketModel.isAnswerInvalid && canRedeem && (
+                  <>
+                    <div className="space-y-4 px-4 pt-4">
+                      <p className="px-6 font-semibold text-text-low-em">
+                        Since market is invalid, you can now redeem{' '}
+                        {invalidMarketColleteralToRedeem} {collateralToken.symbol} from
+                        your {collateralSpent} shares.
+                      </p>
+                      <Button
+                        variant="pastel"
+                        width="full"
+                        size="lg"
+                        className="space-x-2"
+                        onClick={redeem}
+                      >
+                        <p>
+                          Redeem {invalidMarketColleteralToRedeem}{' '}
+                          {collateralToken.symbol}
                         </p>
                         <TokenLogo
                           address={collateralToken.address}
