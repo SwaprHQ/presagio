@@ -163,7 +163,7 @@ const LoadingMarketDetails = () => (
 );
 
 const BackButton = () => {
-  const { back } = useRouter();
+  const { back, push } = useRouter();
 
   return (
     <IconButton
@@ -171,7 +171,11 @@ const BackButton = () => {
       name="arrow-left"
       variant="pastel"
       size="sm"
-      onClick={back}
+      onClick={() => {
+        const hasPreviousPage = window.history.length > 2;
+
+        hasPreviousPage ? back() : push('/');
+      }}
     />
   );
 };
