@@ -71,3 +71,8 @@ export enum Categories {
 
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Presagio';
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://presagio.pages.dev';
+export const X_URL = process.env.NEXT_PUBLIC_X_URL || 'https://x.com/PresagioDev';
+export const DISCORD_URL =
+  process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.com/invite/QFkNsjTkzD';
+export const GITHUB_URL =
+  process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/SwaprHQ/presagio';

@@ -12,12 +12,7 @@ export const Navbar = () => {
     <nav className="h-20 bg-surface-surface-bg px-6 py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/">
-            <div className="text-white flex items-center text-[24px] font-black md:space-x-2">
-              <p>👁️</p>
-              <p className="hidden md:block">{APP_NAME}</p>
-            </div>
-          </Link>
+          <Logo />
           <div className="mx-3 md:ml-28"></div>
         </div>
         <div className="flex h-10 items-center justify-end space-x-2 md:w-[488px]">
@@ -37,3 +32,12 @@ export const Navbar = () => {
     </nav>
   );
 };
+
+const Logo = () => (
+  <Link href="/">
+    <div className="text-white flex items-center text-[24px] font-black md:space-x-2">
+      <p>👁️</p>
+      <p className="hidden md:block">{APP_NAME}</p>
+    </div>
+  </Link>
+);
