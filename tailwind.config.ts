@@ -9,7 +9,17 @@ const config: Config = {
     './node_modules/@swapr/ui/**/*.{js,ts,js,mjs}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        cityFlip: {
+          '0%, 100%': { transform: 'translateY(0)', opacity: '1' },
+          '50%': { transform: 'translateY(-10px)', opacity: '0' },
+        },
+      },
+      animation: {
+        'city-flip': 'cityFlip 200ms ease-in-out',
+      },
+    },
   },
   plugins: [],
 };
