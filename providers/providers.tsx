@@ -9,7 +9,7 @@ import { ConnectKitProvider, Types } from 'connectkit';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { TxProvider, ModalProvider } from '@/context';
 import { useAnalytics } from '@/hooks';
-import { TooltipProvider } from '@swapr/ui';
+import { Toaster, TooltipProvider } from '@swapr/ui';
 
 const queryClient = new QueryClient();
 
@@ -23,7 +23,10 @@ export const Providers = ({ children }: PropsWithChildren) => {
           <CustomConnectKitProvider>
             <ModalProvider>
               <TxProvider>
-                <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+                <TooltipProvider delayDuration={300}>
+                  {children}{' '}
+                  <Toaster position="top-right" toastOptions={{ duration: 7000 }} />
+                </TooltipProvider>
               </TxProvider>
             </ModalProvider>
           </CustomConnectKitProvider>

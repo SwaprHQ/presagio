@@ -12,6 +12,7 @@ import {
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
 import Image from 'next/image';
+import { GNOSIS_SCAN_URL } from '@/constants';
 
 interface TransactionModalProps {
   isLoading: boolean;
@@ -46,7 +47,7 @@ export const TransactionModal = ({
                   className="animate-spin"
                 />
                 <div className="flex flex-col items-center space-y-2">
-                  <p className="text-2xl font-semibold text-text-high-em">
+                  <p className="text-center text-2xl font-semibold text-text-high-em">
                     Transaction submitted
                   </p>
                   <p className="text-center text-md font-semibold text-text-low-em">
@@ -61,7 +62,7 @@ export const TransactionModal = ({
                   <>
                     <IconBadge name="tick" colorScheme="success" />
                     <div className="flex flex-col items-center space-y-2">
-                      <p className="text-2xl font-semibold text-text-high-em">
+                      <p className="text-center text-2xl font-semibold text-text-high-em">
                         Transaction successful!
                       </p>
                       <p className="max-w-80 text-center text-md font-semibold text-text-low-em">
@@ -91,10 +92,9 @@ export const TransactionModal = ({
         {txHash && (
           <DialogFooter>
             <a
-              href={`https://gnosisscan.io/tx/${txHash}`}
+              href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
               target="_blank"
               className="w-full"
-              rel="noopener noreferrer"
             >
               <Button
                 width="full"
@@ -102,9 +102,7 @@ export const TransactionModal = ({
                 variant="pastel"
                 size="lg"
               >
-                <>
-                  View in explorer <Icon name="arrow-top-right" />
-                </>
+                View in explorer <Icon name="arrow-top-right" />
               </Button>
             </a>
           </DialogFooter>

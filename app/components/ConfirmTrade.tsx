@@ -8,7 +8,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  errorToast,
   Icon,
+  successToast,
+  toast,
 } from '@swapr/ui';
 import { SLIPPAGE, SwapDirection, SwapState } from '.';
 import MarketABI from '@/abi/market.json';
@@ -20,8 +23,17 @@ import ConditionalTokensABI from '@/abi/conditionalTokens.json';
 import { addFraction, removeFraction } from '@/utils/price';
 import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
 import { useTx } from '@/context';
-import { Token } from '@/entities';
-import { formatEtherWithFixedDecimals } from '@/utils';
+import { Outcome, Token } from '@/entities';
+import { formatEtherWithFixedDecimals, shortenAddress } from '@/utils';
+import {
+  waitForTransactionReceipt,
+  WaitForTransactionReceiptErrorType,
+  writeContract,
+  WriteContractErrorType,
+} from 'wagmi/actions';
+import { config } from '@/providers/chain-config';
+import { SVGProps, useEffect, useState } from 'react';
+import { GNOSIS_SCAN_URL } from '@/constants';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -48,6 +60,13 @@ export const ConfirmTrade = ({
 }: ConfirmTradeProps) => {
   const { isModalOpen, closeModal } = useModal();
   const { submitTx } = useTx();
+  const [isApproving, setIsApproving] = useState(false);
+
+  useEffect(() => {
+    if (!swapState.isAllowed) {
+      setIsApproving(false);
+    }
+  }, [swapState.isAllowed]);
 
   const { data: sellAmount } = useReadCalcSellAmount(
     marketId,
@@ -65,27 +84,103 @@ export const ConfirmTrade = ({
     ? formatEtherWithFixedDecimals(tokenAmountOut)
     : '';
 
+  const waitingTxToast = (txHash: string) =>
+    toast({
+      children: (
+        <div className="flex items-center space-x-4">
+          <Spinner className="h-5 w-5 shrink-0 animate-spin" />
+          <div className="font-normal">
+            Wating for transaction confirmation{' '}
+            <a
+              href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
+              target="_blank"
+              className="inline-block underline"
+            >
+              {shortenAddress(txHash)}
+            </a>
+          </div>
+        </div>
+      ),
+    });
+
+  const succesTxToast = (txHash: string, token: Token | Outcome) => {
+    const symbol = token.symbol || '';
+
+    successToast({
+      children: (
+        <div className="font-normal">
+          {symbol} approved successfully{' '}
+          <a
+            href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
+            target="_blank"
+            className="inline-block underline"
+          >
+            {shortenAddress(txHash)}
+          </a>
+        </div>
+      ),
+    });
+  };
+
+  const approveTxErrorHandling = (e: Error) => {
+    const error = e as WriteContractErrorType | WaitForTransactionReceiptErrorType;
+    const errorMessage =
+      error.cause?.toString().split('\n').at(0) ||
+      'Error found on approve transaction submission.';
+
+    errorToast({
+      children: <div className="font-normal">{errorMessage}</div>,
+    });
+
+    setIsApproving(false);
+  };
+
   const approveToken = async () => {
+    setIsApproving(true);
     const inToken = swapState.inToken as Token;
-    submitTx({
+
+    writeContract(config, {
       abi: erc20Abi,
       address: inToken.address,
       functionName: 'approve',
       args: [marketId, amountWei],
-    }).then(() => {
-      onApprove();
-    });
+    })
+      .then(async txHash => {
+        waitingTxToast(txHash);
+
+        await waitForTransactionReceipt(config, {
+          hash: txHash,
+        });
+
+        succesTxToast(txHash, inToken);
+
+        onApprove();
+      })
+      .catch(approveTxErrorHandling);
   };
 
   const approveNFT = async () => {
-    submitTx({
+    setIsApproving(true);
+    const inToken = swapState.inToken as Outcome;
+
+    writeContract(config, {
       abi: ConditionalTokensABI as Abi,
       address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
       functionName: 'setApprovalForAll',
       args: [marketId, true],
-    }).then(() => {
-      onApprove();
-    });
+    })
+      .then(async txHash => {
+        waitingTxToast(txHash);
+
+        await waitForTransactionReceipt(config, {
+          hash: txHash,
+        });
+
+        succesTxToast(txHash, inToken);
+
+        onApprove();
+      })
+      .catch(approveTxErrorHandling);
   };
 
   const submitBuyBet = async () => {
@@ -181,8 +276,15 @@ export const ConfirmTrade = ({
               variant="pastel"
               onClick={currentConfirmState.approve}
               size="lg"
+              disabled={isApproving}
             >
-              Approve
+              {isApproving ? (
+                <div className="flex items-center space-x-2">
+                  <p>Approving</p> <Spinner className="h-5 w-5 animate-spin" />
+                </div>
+              ) : (
+                'Approve'
+              )}
             </Button>
           )}
           <Button
@@ -200,3 +302,21 @@ export const ConfirmTrade = ({
     </Dialog>
   );
 };
+
+const Spinner = (props: SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" {...props}>
+    <circle
+      className="opacity-25"
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="4"
+    ></circle>
+    <path
+      className="opacity-75"
+      fill="currentColor"
+      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+    ></path>
+  </svg>
+);

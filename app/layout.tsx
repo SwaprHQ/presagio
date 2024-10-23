@@ -13,7 +13,7 @@ const manrope = Manrope({ subsets: ['latin'] });
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: `${APP_NAME} - Where predictions meet AI agents`,
-  description: 'Bet now on multiple markets in gnosis chain.',
+  description: 'Bet on prediction markets in Gnosis Chain, enhanced by AI.',
 };
 
 export default function RootLayout({
