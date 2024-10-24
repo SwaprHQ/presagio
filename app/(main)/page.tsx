@@ -34,6 +34,7 @@ import Image from 'next/image';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
 import { MarketsHighlight } from './MarketsHighlight';
+import { DevconflictBanner } from '@/app/components/Devconflict';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -269,9 +270,17 @@ export default function HomePage() {
   const markets = data?.fixedProductMarketMakers;
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
+  const isDevconflict = category === 'devconflict';
   return (
-    <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
+    <div
+      className={cx(
+        'mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40',
+        isDevconflict &&
+          "bg-[url('/devconflict/dd-tiger.svg')] dark:bg-[url('/devconflict/dd-tiger-dark.svg')]"
+      )}
+    >
       <MarketsHighlight />
+      {isDevconflict && <DevconflictBanner />}
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (
@@ -281,8 +290,15 @@ export default function HomePage() {
             onChange={handleCategory}
             className="overflow-x-auto md:w-auto lg:w-fit"
           >
-            <ToggleGroupOption size="md" value={''} className="font-semibold">
+            <ToggleGroupOption size="md" value="" className="font-semibold">
               All
+            </ToggleGroupOption>
+            <ToggleGroupOption
+              size="md"
+              value="devconflict"
+              className="font-semibold text-outline-primary-high-em"
+            >
+              Devconflict
             </ToggleGroupOption>
             {marketCategories?.map(marketCategory => {
               const categoryOption = openMarkets?.length
