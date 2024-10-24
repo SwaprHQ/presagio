@@ -13,7 +13,7 @@ import {
   successToast,
   toast,
 } from '@swapr/ui';
-import { SLIPPAGE, SwapDirection, SwapState } from '.';
+import { SwapDirection, SwapState } from '.';
 import MarketABI from '@/abi/market.json';
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
@@ -22,7 +22,7 @@ import {
 import ConditionalTokensABI from '@/abi/conditionalTokens.json';
 import { addFraction, removeFraction } from '@/utils/price';
 import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
-import { useTx } from '@/context';
+import { useSlippage, useTx } from '@/context';
 import { Outcome, Token } from '@/entities';
 import { formatEtherWithFixedDecimals, shortenAddress } from '@/utils';
 import {
@@ -61,6 +61,7 @@ export const ConfirmTrade = ({
   const { isModalOpen, closeModal } = useModal();
   const { submitTx } = useTx();
   const [isApproving, setIsApproving] = useState(false);
+  const { slippage } = useSlippage();
 
   useEffect(() => {
     if (!swapState.isAllowed) {
@@ -199,7 +200,7 @@ export const ConfirmTrade = ({
     if (!tokenAmountOut || !sellAmount) return;
 
     const roundedAmountOut = removeFraction(tokenAmountOut, ROUNDING_PRECISON);
-    const maxSellAmount = addFraction(sellAmount as bigint, SLIPPAGE);
+    const maxSellAmount = addFraction(sellAmount as bigint, slippage);
 
     submitTx({
       abi: MarketABI as Abi,
@@ -263,7 +264,7 @@ export const ConfirmTrade = ({
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-text-low-em">Slippage</p>
-                <p>{SLIPPAGE * 100}%</p>
+                <p>{slippage * 100}%</p>
               </div>
             </div>
           </div>
