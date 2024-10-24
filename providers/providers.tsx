@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from './chain-config';
 import { ConnectKitProvider, Types } from 'connectkit';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
-import { TxProvider, ModalProvider } from '@/context';
+import { TxProvider, ModalProvider, SlippageProvider } from '@/context';
 import { useAnalytics } from '@/hooks';
 import { Toaster, TooltipProvider } from '@swapr/ui';
 
@@ -22,10 +22,10 @@ export const Providers = ({ children }: PropsWithChildren) => {
         <NextThemesProvider>
           <CustomConnectKitProvider>
             <ModalProvider>
+              <Toaster position="top-right" toastOptions={{ duration: 7000 }} />
               <TxProvider>
                 <TooltipProvider delayDuration={300}>
-                  {children}{' '}
-                  <Toaster position="top-right" toastOptions={{ duration: 7000 }} />
+                  <SlippageProvider>{children}</SlippageProvider>
                 </TooltipProvider>
               </TxProvider>
             </ModalProvider>

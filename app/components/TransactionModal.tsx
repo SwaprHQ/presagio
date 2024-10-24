@@ -102,7 +102,8 @@ export const TransactionModal = ({
                 variant="pastel"
                 size="lg"
               >
-                View in explorer <Icon name="arrow-top-right" />
+                <p>View in explorer</p>
+                <Icon name="arrow-top-right" />
               </Button>
             </a>
           </DialogFooter>

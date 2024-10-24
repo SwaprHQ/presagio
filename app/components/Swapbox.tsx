@@ -1,6 +1,14 @@
 'use client';
 
-import { Button, IconButton } from '@swapr/ui';
+import {
+  Button,
+  IconButton,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  ToggleGroup,
+  ToggleGroupOption,
+} from '@swapr/ui';
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
@@ -31,8 +39,8 @@ import { gnosis } from 'viem/chains';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
+import { useSlippage } from '@/context';
 
-export const SLIPPAGE = 0.01;
 const ONE_UNIT = '1';
 
 export enum SwapDirection {
@@ -73,6 +81,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   const { address, isDisconnected, chainId: connectorChainId } = useAccount();
   const supportedChains = useChains();
   const { openModal } = useModal();
+  const { slippage } = useSlippage();
 
   const [tokenAmountIn, setTokenAmountIn] = useState('');
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
@@ -137,8 +146,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   useEffect(() => {
     if (isBuying) {
       if (!buyAmount) return;
-
-      const amountOut = removeFraction(buyAmount as bigint, SLIPPAGE);
+      const amountOut = removeFraction(buyAmount as bigint, slippage);
 
       setTokenAmountOut(amountOut);
     } else {
@@ -162,6 +170,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     isBuying,
     outcome.index,
     tokenAmountIn,
+    slippage,
   ]);
 
   useEffect(() => {
@@ -337,7 +346,10 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
             </div>
             <div className="flex items-center justify-between">
               <p className="text-text-low-em">Slippage</p>
-              <p>{SLIPPAGE * 100}%</p>
+              <div className="flex items-center space-x-2">
+                <p>{slippage * 100}%</p>
+                <SlippageSettings />
+              </div>
             </div>
             {potentialProfit && (
               <div className="flex items-center justify-between">
@@ -396,5 +408,29 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
         onApprove={currentState.refetchAllowence}
       />
     </>
+  );
+};
+
+const SlippageSettings = () => {
+  const { slippage, updateSlippage } = useSlippage();
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <IconButton name="settings" size="xs" variant="ghost" />
+      </PopoverTrigger>
+      <PopoverContent className="px-4">
+        <div className="space-y-2">
+          <div className="flex items-center text-text-low-em">
+            <p className="text-xs font-bold">Slippage tolerance</p>
+          </div>
+          <ToggleGroup value={slippage} onChange={updateSlippage}>
+            <ToggleGroupOption value={0.0001}>0.01%</ToggleGroupOption>
+            <ToggleGroupOption value={0.001}>0.1%</ToggleGroupOption>
+            <ToggleGroupOption value={0.01}>1%</ToggleGroupOption>
+          </ToggleGroup>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
