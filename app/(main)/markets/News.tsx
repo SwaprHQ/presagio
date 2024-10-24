@@ -1,14 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { format, parseISO } from 'date-fns';
+import { trackEvent } from 'fathom-client';
 import Image from 'next/image';
 
 import { Skeleton } from '@/app/components';
+import { FA_EVENTS } from '@/constants';
 
 interface NewsProps {
   id: string;
 }
 
 interface NewsArticleProps {
+  id: string;
   url: string;
   title: string;
 }
@@ -47,11 +50,11 @@ export const News = ({ id }: NewsProps) => {
   if (!news) return <div className="py-4 text-center">No news</div>;
 
   return news.map((newsArticle, index) => (
-    <NewsArticle key={index} url={newsArticle.url} title={newsArticle.title} />
+    <NewsArticle id={id} key={index} url={newsArticle.url} title={newsArticle.title} />
   ));
 };
 
-const NewsArticle = ({ url, title }: NewsArticleProps) => {
+const NewsArticle = ({ id, url, title }: NewsArticleProps) => {
   const { data, isLoading } = useQuery<NewsDetails>({
     queryKey: ['getNewsDetails', url],
     queryFn: async () => {
@@ -77,6 +80,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NEWS_ARTICLE(id))}
     >
       {data?.ogImage ? (
         <Image

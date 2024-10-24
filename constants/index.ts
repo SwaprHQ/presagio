@@ -76,3 +76,37 @@ export const DISCORD_URL =
   process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.com/invite/QFkNsjTkzD';
 export const GITHUB_URL =
   process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/SwaprHQ/presagio';
+
+const formatEventName = (eventName: string) =>
+  eventName.split(' ').join('-').toLocaleLowerCase();
+export const FA_EVENTS = {
+  GET_SDAI: `click/get-${SDAI.symbol}`,
+  MARKETS: {
+    CATEGORY: (category: string) => `click/market-category_${category}`,
+    DETAILS: {
+      ID: (id: string) => `click/market-details_${id}`,
+      INFO: {
+        CONTRACT: (contract: string) => `click/market-details-info_external-${contract}`,
+        DISPUTE: (contract: string) => `click/market-details-info_kleros-${contract}`,
+        ORACLE_ANSWER: (realityId: string) =>
+          `click/market-details-info_reality-${realityId}`,
+      },
+      TABS: {
+        NAME: (id: string, tabName: string) =>
+          `click/market-details-tab_${tabName}-${id}`,
+        NEWS_ARTICLE: (id: string) => `click/market-details-tab_news-article-${id}`,
+      },
+    },
+    FILTERS: {
+      CREATOR: (creatorName: string) =>
+        `click/market-filter-creator_${formatEventName(creatorName)}`,
+      ORDER: (orderName: string) =>
+        `click/market-filter-order_${formatEventName(orderName)}`,
+      STATE: (stateName: string) =>
+        `click/market-filter-state_${formatEventName(stateName)}`,
+      TOKEN: (tokenName: string) =>
+        `click/market-filter-token_${formatEventName(tokenName)}`,
+    },
+    SEARCH_BAR: `click/market-search-bar`,
+  },
+};
