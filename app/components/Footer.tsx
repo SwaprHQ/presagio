@@ -1,16 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  APP_NAME,
-  Categories,
-  DISCORD_URL,
-  FA_EVENTS,
-  GITHUB_URL,
-  X_URL,
-} from '@/constants';
+import { APP_NAME, Categories, DISCORD_URL, GITHUB_URL, X_URL } from '@/constants';
 import { MadeBySwapr } from '@/app/components/MadeBySwapr';
 import { trackEvent } from 'fathom-client';
+import { FA_EVENTS } from '@/analytics';
 
 export const Footer = () => (
   <div className="mt-32 border-t border-surface-surface-2 bg-surface-surface-0 px-6 md:px-10 lg:px-20 xl:px-40">

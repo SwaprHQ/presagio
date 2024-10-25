@@ -20,10 +20,10 @@ import { HistorySection } from './HistorySection';
 import { News } from './News';
 import { Info } from './Info';
 import { Bet } from './Bet';
+import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context';
 import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 import { formatValueWithFixedDecimals } from '@/utils';
-import { FA_EVENTS } from '@/constants';
 
 interface MarketDetailsProps {
   id: Address;

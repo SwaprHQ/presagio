@@ -33,8 +33,9 @@ import { isAddress } from 'viem';
 import Image from 'next/image';
 import { trackEvent } from 'fathom-client';
 
+import { FA_EVENTS } from '@/analytics';
 import { getOpenMarkets } from '@/queries/dune';
-import { Categories, FA_EVENTS } from '@/constants';
+import { Categories } from '@/constants';
 
 import { MarketsHighlight } from './MarketsHighlight';
 import { DevconflictBanner } from '@/app/components/Devconflict';

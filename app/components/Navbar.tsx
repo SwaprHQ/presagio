@@ -5,8 +5,9 @@ import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import { Button } from '@swapr/ui';
 import Link from 'next/link';
 
+import { FA_EVENTS } from '@/analytics';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
-import { APP_NAME, FA_EVENTS } from '@/constants';
+import { APP_NAME } from '@/constants';
 
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';

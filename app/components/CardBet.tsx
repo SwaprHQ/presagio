@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { Button, Tag } from '@swapr/ui';
 import { Card, TokenLogo } from '@/app/components';
 
-import { FA_EVENTS } from '@/constants';
+import { FA_EVENTS } from '@/analytics';
 import { formatDateTimeWithYear, remainingTime } from '@/utils/dates';
 import {
   Market,

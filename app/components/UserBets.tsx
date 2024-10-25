@@ -14,7 +14,7 @@ import {
   outcomeTokensTradedTotal,
 } from '@/entities';
 import { Button, Icon, Tag } from '@swapr/ui';
-import { ChainId, FA_EVENTS } from '@/constants';
+import { ChainId } from '@/constants';
 import { redeemPositions, useReadBalance } from '@/hooks/contracts';
 import { getCondition } from '@/queries/conditional-tokens';
 import { FixedProductMarketMaker, getMarketUserTrades } from '@/queries/omen';
@@ -22,6 +22,7 @@ import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
+import { FA_EVENTS } from '@/analytics';
 
 interface UserBets {
   fixedProductMarketMaker: FixedProductMarketMaker;

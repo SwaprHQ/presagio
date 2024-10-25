@@ -7,7 +7,8 @@ import { trackEvent } from 'fathom-client';
 import { useTheme } from 'next-themes';
 import { Appearance, LiFiWidget, WidgetConfig } from '@lifi/widget';
 
-import { APP_NAME, ChainId, FA_EVENTS, RPC_LIST, SDAI } from '@/constants';
+import { FA_EVENTS } from '@/analytics';
+import { APP_NAME, ChainId, RPC_LIST, SDAI } from '@/constants';
 
 export const LifiWidgetPopover = () => {
   const { theme } = useTheme();

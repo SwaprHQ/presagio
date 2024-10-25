@@ -3,12 +3,8 @@ import { useState } from 'react';
 import { Icon, IconButton } from '@swapr/ui';
 import { trackEvent } from 'fathom-client';
 
-import {
-  FA_EVENTS,
-  GNOSIS_SCAN_URL,
-  KLEROS_URL,
-  REALITY_QUESTION_URL,
-} from '@/constants';
+import { FA_EVENTS } from '@/analytics';
+import { GNOSIS_SCAN_URL, KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { shortenAddress } from '@/utils';
 

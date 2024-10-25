@@ -1,9 +1,9 @@
 import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
 import { trackEvent } from 'fathom-client';
 
+import { FA_EVENTS } from '@/analytics';
 import { ActivityChart } from '@/app/(main)/markets/ActivityChart';
 import { MarketActivity } from '@/app/(main)/markets/MarketActivity';
-import { FA_EVENTS } from '@/constants';
 
 interface HistorySectionProps {
   id: string;

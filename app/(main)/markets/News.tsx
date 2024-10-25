@@ -3,8 +3,8 @@ import { format, parseISO } from 'date-fns';
 import { trackEvent } from 'fathom-client';
 import Image from 'next/image';
 
+import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
-import { FA_EVENTS } from '@/constants';
 
 interface NewsProps {
   id: string;

@@ -13,8 +13,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@swapr/ui';
+import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context/ModalContext';
-import { APP_URL, FA_EVENTS } from '@/constants';
+import { APP_URL } from '@/constants';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useMemo, useState } from 'react';
