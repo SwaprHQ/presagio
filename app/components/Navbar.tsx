@@ -36,7 +36,7 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
-          <Link href="/my-bets">
+          <Link href="/my-bets" onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}>
             <Button variant="pastel" className="text-nowrap">
               My bets
             </Button>

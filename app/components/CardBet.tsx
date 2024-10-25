@@ -2,11 +2,13 @@
 
 import { PropsWithChildren } from 'react';
 import { cx } from 'class-variance-authority';
+import { trackEvent } from 'fathom-client';
 import Link from 'next/link';
 
 import { Button, Tag } from '@swapr/ui';
 import { Card, TokenLogo } from '@/app/components';
 
+import { FA_EVENTS } from '@/constants';
 import { formatDateTimeWithYear, remainingTime } from '@/utils/dates';
 import {
   Market,
@@ -167,6 +169,7 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
         collateralToken: userBets.position.collateralTokenAddress,
       })
     );
+    trackEvent(FA_EVENTS.BETS.REDEEM);
   };
 
   return (

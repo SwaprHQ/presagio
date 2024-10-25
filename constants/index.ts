@@ -80,6 +80,10 @@ export const GITHUB_URL =
 const formatEventName = (eventName: string) =>
   eventName.split(' ').join('-').toLocaleLowerCase();
 export const FA_EVENTS = {
+  BETS: {
+    MY_BETS: `click/bets_-my-bets`,
+    REDEEM: `click/bets_redeem`,
+  },
   FOOTER: {
     CONNECT: {
       DISCORD: 'click/footer-connect_discord',
