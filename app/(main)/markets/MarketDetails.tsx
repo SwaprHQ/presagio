@@ -61,7 +61,10 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               name="code"
               variant="pastel"
               size="sm"
-              onClick={() => openModal(ModalId.EMBED_MARKET)}
+              onClick={() => {
+                trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.ID(id));
+                openModal(ModalId.EMBED_MARKET);
+              }}
             />
           </div>
           <div className="w-full rounded-16 border border-outline-base-em bg-surface-surface-0">
