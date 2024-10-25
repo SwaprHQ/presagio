@@ -5,8 +5,8 @@ const formatEventName = (eventName: string) =>
 
 export const FA_EVENTS = {
   BETS: {
-    MY_BETS: `click/bets_my-bets`,
-    REDEEM: `click/bets_redeem`,
+    MY_BETS: 'click/bets_my-bets',
+    REDEEM: 'click/bets_redeem',
   },
   DEVCONFLICT: 'click/devconflict-banner',
   FOOTER: {
@@ -26,8 +26,8 @@ export const FA_EVENTS = {
   },
   LIFI_WIDGET: {
     OPEN: `click/lifi-widget_open-${SDAI.symbol}`,
-    ROUTE_FAILED: `click/lifi-widget_route-failed`,
-    ROUTE_SUCCESS: `click/lifi-widget_route-success`,
+    ROUTE_FAILED: 'click/lifi-widget_route-failed',
+    ROUTE_SUCCESS: 'click/lifi-widget_route-success',
   },
   MARKETS: {
     CATEGORY: (category: string) => `click/markets_category-${category}`,
