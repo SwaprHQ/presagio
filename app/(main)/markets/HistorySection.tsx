@@ -21,7 +21,7 @@ export const HistorySection = ({ id }: HistorySectionProps) => {
           <TabStyled
             className="space-x-2"
             onClick={() =>
-              trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(id, 'history-charts'))
+              trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME('history-charts'))
             }
           >
             <Icon size={18} name="pie-chart"></Icon>

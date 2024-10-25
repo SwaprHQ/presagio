@@ -62,7 +62,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               variant="pastel"
               size="sm"
               onClick={() => {
-                trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.ID(id));
+                trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.ID);
                 openModal(ModalId.EMBED_MARKET);
               }}
             />
@@ -136,9 +136,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                       size="md"
                       value={tab}
                       className="flex justify-center font-semibold capitalize"
-                      onClick={() =>
-                        trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(id, tab))
-                      }
+                      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(tab))}
                     >
                       {tab}
                     </ToggleGroupOption>

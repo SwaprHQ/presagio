@@ -80,7 +80,7 @@ const NewsArticle = ({ id, url, title }: NewsArticleProps) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NEWS_ARTICLE(id, url))}
+      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NEWS_ARTICLE)}
     >
       {data?.ogImage ? (
         <Image

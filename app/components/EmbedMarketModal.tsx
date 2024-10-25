@@ -107,7 +107,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                   onClick={() => {
                     navigator.clipboard.writeText(iframeCode);
                     setClipboardIcon('tick');
-                    trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.COPIED(id));
+                    trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.COPIED);
 
                     setTimeout(() => {
                       setClipboardIcon('copy');

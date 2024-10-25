@@ -33,22 +33,18 @@ export const FA_EVENTS = {
     CATEGORY: (category: string) => `click/markets_category-${category}`,
     DETAILS: {
       EMBED: {
-        COPIED: (id: string) => `click/market-details-embed_copied-${id}`,
-        ID: (id: string) => `click/market-details-embed_${id}`,
+        COPIED: 'click/market-details-embed_copied',
+        ID: 'click/market-details-embed',
       },
       ID: (id: string) => `click/market-details_${id}`,
       INFO: {
-        CONTRACT: (contract: string) =>
-          `click/market-details-info_chain-scan-${contract}`,
-        DISPUTE: (contract: string) => `click/market-details-info_kleros-${contract}`,
-        ORACLE_ANSWER: (realityId: string) =>
-          `click/market-details-info_reality-${realityId}`,
+        CONTRACT: 'click/market-details-info_chain-scanner',
+        DISPUTE: 'click/market-details-info_kleros',
+        ORACLE_ANSWER: 'click/market-details-info_reality',
       },
       TABS: {
-        NAME: (id: string, tabName: string) =>
-          `click/market-details-tabs_${tabName}-${id}`,
-        NEWS_ARTICLE: (id: string, url: string) =>
-          `click/market-details-tabs_news-article-${id}-${url}`,
+        NAME: (tabName: string) => `click/market-details-tabs_${tabName}`,
+        NEWS_ARTICLE: 'click/market-details-tabs_news-article',
       },
     },
     FILTERS: {

@@ -38,7 +38,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
         href={`${GNOSIS_SCAN_URL}/address/${id}`}
         target="_blank"
         className="flex items-center space-x-1 py-4"
-        onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.CONTRACT(id))}
+        onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.CONTRACT)}
       >
         <span>View market contract</span>
         <Icon name="arrow-top-right" size={16} />
@@ -48,9 +48,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
           href={`${REALITY_QUESTION_URL}${questionId}`}
           target="_blank"
           className="flex items-center space-x-1 py-4"
-          onClick={() =>
-            trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.ORACLE_ANSWER(questionId))
-          }
+          onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.ORACLE_ANSWER)}
         >
           <p>
             <span>
@@ -64,7 +62,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
         href={KLEROS_URL}
         target="_blank"
         className="flex items-center space-x-1 py-4"
-        onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.DISPUTE(id))}
+        onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.DISPUTE)}
       >
         <p>
           <span>
