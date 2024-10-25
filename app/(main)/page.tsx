@@ -294,13 +294,19 @@ export default function HomePage() {
             onChange={handleCategory}
             className="overflow-x-auto md:w-auto lg:w-fit"
           >
-            <ToggleGroupOption size="md" value="" className="font-semibold">
+            <ToggleGroupOption
+              size="md"
+              value=""
+              className="font-semibold"
+              onClick={() => trackEvent(FA_EVENTS.MARKETS.CATEGORY('all'))}
+            >
               All
             </ToggleGroupOption>
             <ToggleGroupOption
               size="md"
               value="devconflict"
               className="font-semibold text-outline-primary-high-em"
+              onClick={() => trackEvent(FA_EVENTS.MARKETS.CATEGORY('devconflict'))}
             >
               Devconflict
             </ToggleGroupOption>
