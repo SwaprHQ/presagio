@@ -81,7 +81,7 @@ const formatEventName = (eventName: string) =>
   eventName.split(' ').join('-').toLocaleLowerCase();
 export const FA_EVENTS = {
   BETS: {
-    MY_BETS: `click/bets_-my-bets`,
+    MY_BETS: `click/bets_my-bets`,
     REDEEM: `click/bets_redeem`,
   },
   FOOTER: {
@@ -122,7 +122,8 @@ export const FA_EVENTS = {
       TABS: {
         NAME: (id: string, tabName: string) =>
           `click/market-details-tabs_${tabName}-${id}`,
-        NEWS_ARTICLE: (id: string) => `click/market-details-tabs_news-article-${id}`,
+        NEWS_ARTICLE: (id: string, url: string) =>
+          `click/market-details-tabs_news-article-${id}-${url}`,
       },
     },
     FILTERS: {
