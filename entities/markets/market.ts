@@ -24,8 +24,7 @@ export class Market {
     this.fpmm = fpmm;
     this.closingDate = new Date(+fpmm.openingTimestamp * 1000);
     this.isAnswerFinal =
-      !!fpmm.resolutionTimestamp ||
-      fpmm.answerFinalizedTimestamp < nowTimestamp;
+      !!fpmm.resolutionTimestamp || fpmm.answerFinalizedTimestamp < nowTimestamp;
 
     this.currentAnswer = fpmm.question?.currentAnswer
       ? fpmm.question.currentAnswer === INVALID_ANSWER_HEX
@@ -56,6 +55,7 @@ export class Market {
         fpmm.id,
         fpmm.outcomeTokenMarginalPrices?.[1]
       ),
+      new Outcome(-1, 'Invalid', fpmm.id),
     ];
   }
 
@@ -68,8 +68,24 @@ export class Market {
   }
 
   getWinnerOutcome() {
-    return this.isClosed && this.answer !== null && this.answer !== Market.INVALID_ANSWER
+    return this.isClosed && this.answer !== null && !this.isAnswerInvalid
       ? this.outcomes[this.answer]
       : null;
+  }
+
+  getCurrentAnswerOutcome() {
+    return this.currentAnswer !== null
+      ? this.outcomes.at(this.currentAnswer) || null
+      : null;
+  }
+
+  getMarketStatus() {
+    if (this.isAnswerInvalid) return 'invalid market';
+
+    if (!this.isAnswerFinal && this.isClosed) return 'finalizing';
+
+    if (this.isClosed) return 'closed';
+
+    return 'open';
   }
 }

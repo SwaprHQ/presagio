@@ -24,6 +24,7 @@ import { MarketThumbnail } from './MarketThumbnail';
 import { Skeleton } from './Skeleton';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
+import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
 
 interface CardBetProps extends PropsWithChildren {
   userBets: UserBets;
@@ -55,7 +56,7 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
   const isLoser = market.isLoser(outcomeIndex);
 
   const getResultAmountString = (): string => {
-    if (!market.isClosed) return 'Potential win';
+    if (!market.isClosed || !market.isAnswerFinal) return 'Potential win';
     if (isWinner) return 'Won';
     if (market.isAnswerInvalid) return 'Receive';
 
@@ -68,7 +69,7 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
       outcomeIndex
     );
 
-    if (!market.isClosed || isWinner)
+    if (!market.isClosed || isWinner || !market.isAnswerFinal)
       return formatValueWithFixedDecimals(outcomeBalance, 2);
 
     if (market.isAnswerInvalid)
@@ -85,46 +86,69 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
       className={cx(
         'w-full bg-gradient-to-b from-[#F1F1F1] dark:from-[#131313]',
         isWinner && 'from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]',
-        isLoser && 'from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]'
+        isLoser
+          ? market.isAnswerInvalid
+            ? ''
+            : 'from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]'
+          : ''
       )}
     >
       <Link key={market.fpmm.id} href={`markets?id=${market.fpmm.id}`} className="block">
-        <section className="flex h-[144px] flex-col justify-between space-y-4 p-4">
+        <section className="flex min-h-[144px] flex-col space-y-4 p-4">
           <div className="flex items-center justify-between">
-            <div className="flex space-x-2">
+            <Tag colorScheme="quaternary" size="sm" className="capitalize">
+              {market.fpmm.category}
+            </Tag>
+            <div className="flex items-center space-x-2">
               <Tag colorScheme="quaternary" size="sm" className="capitalize">
-                {market.fpmm.category}
+                {market.getMarketStatus()}
               </Tag>
-              <Tag colorScheme="success" size="sm">
-                {position.getOutcome()}
-              </Tag>
+              <p className="text-sm text-text-low-em">
+                {remainingTime(market.closingDate)}
+              </p>
             </div>
-            <p className="text-sm text-text-low-em">
-              {remainingTime(market.closingDate)}
-            </p>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 py-2">
             <MarketThumbnail
               width={40}
               height={40}
               className="size-[40px] rounded-8"
               marketId={market.fpmm.id}
             />
-            <div className="text-normal h-[80px] flex-1 overflow-y-auto font-semibold text-text-high-em md:text-xl">
-              {market.fpmm.title}
+            <div className="space-y-2">
+              <div className="flex-1 overflow-y-auto text-md font-semibold text-text-high-em md:text-xl">
+                {market.fpmm.title}
+              </div>
+              {market.isClosed && (
+                <div className="flex space-x-2">
+                  <p className="text-text-med-em">Answer:</p>
+                  {market.currentAnswer !== null && (
+                    <Tag colorScheme={OUTCOME_TAG_COLORS_SCHEME[market.currentAnswer]}>
+                      {market.getCurrentAnswerOutcome()?.name}
+                    </Tag>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </section>
       </Link>
-      <section className="flex items-center border-t border-outline-base-em px-4 py-2 md:h-[48px] md:py-0">
+      <section className="flex items-center border-t border-outline-base-em p-4 md:h-[48px]">
         <div className="flex w-full items-center justify-between space-x-4">
-          <div className="flex flex-col items-start space-y-0.5 md:flex-row md:items-center md:space-x-3">
+          <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">Bet amount:</p>
-              <p className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
-                <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
-                <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
-              </p>
+              <p className="text-sm font-semibold text-text-med-em">Bet:</p>{' '}
+              <div className="flex items-center space-x-1.5">
+                <Tag
+                  colorScheme={position.getOutcomeIndex() === 0 ? 'success' : 'danger'}
+                >
+                  {position.getOutcome()}
+                </Tag>
+                <p className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+                  <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
+                  <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
+                </p>
+              </div>
             </div>
             <div className="flex items-center space-x-1">
               <p className="text-sm font-semibold text-text-med-em">
