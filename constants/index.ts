@@ -95,7 +95,11 @@ export const FA_EVENTS = {
       REALITY: 'click/footer-powered-by_reality',
     },
   },
-  GET_SDAI: `click/get-${SDAI.symbol}`,
+  LIFI_WIDGET: {
+    OPEN: `click/lifi-widget_open-${SDAI.symbol}`,
+    ROUTE_FAILED: `click/lifi-widget_route-failed`,
+    ROUTE_SUCCESS: `click/lifi-widget_route-success`,
+  },
   MARKETS: {
     CATEGORY: (category: string) => `click/markets_category-${category}`,
     DETAILS: {
