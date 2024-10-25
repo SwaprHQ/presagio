@@ -4,7 +4,6 @@ import {
   ButtonLink,
   Icon,
   Tag,
-  TagProps,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -12,18 +11,12 @@ import {
 import { Market } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import { Swapbox } from '@/app/components';
-import { KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
+import { KLEROS_URL, OUTCOME_TAG_COLORS_SCHEME, REALITY_QUESTION_URL } from '@/constants';
 import { PropsWithChildren } from 'react';
 
 interface BetProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
-
-const tagSchemeColors: Record<number, TagProps['colorScheme']> = {
-  0: 'success',
-  1: 'danger',
-  [Market.INVALID_ANSWER]: 'quaternary',
-};
 
 export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
   const marketModel = new Market(fixedProductMarketMaker);
@@ -82,7 +75,7 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
           <span>Current winner outcome is</span>
           <Tag
             className="w-fit uppercase"
-            colorScheme={tagSchemeColors[marketModel.currentAnswer]}
+            colorScheme={OUTCOME_TAG_COLORS_SCHEME[marketModel.currentAnswer]}
           >
             {marketModel.currentAnswer === Market.INVALID_ANSWER
               ? 'Invalid'
@@ -123,7 +116,7 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
         <div className="flex items-center space-x-2">
           <Tag
             className="w-fit uppercase"
-            colorScheme={tagSchemeColors[winnerOutcome.index]}
+            colorScheme={OUTCOME_TAG_COLORS_SCHEME[winnerOutcome.index]}
           >
             {winnerOutcome.name}
           </Tag>

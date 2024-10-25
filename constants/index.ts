@@ -1,4 +1,5 @@
-import { Token } from '@/entities';
+import { Market, Token } from '@/entities';
+import { TagProps } from '@swapr/ui';
 
 export const AI_AGENTS_ALLOWLIST = [
   '0x89c5cc945dd550bcffb72fe42bff002429f46fec',
@@ -76,3 +77,9 @@ export const DISCORD_URL =
   process.env.NEXT_PUBLIC_DISCORD_URL || 'https://discord.com/invite/QFkNsjTkzD';
 export const GITHUB_URL =
   process.env.NEXT_PUBLIC_GITHUB_URL || 'https://github.com/SwaprHQ/presagio';
+
+export const OUTCOME_TAG_COLORS_SCHEME: Record<number, TagProps['colorScheme']> = {
+  0: 'success',
+  1: 'danger',
+  [Market.INVALID_ANSWER]: 'quaternary',
+};

@@ -15,17 +15,13 @@ import {
   getMarketTradesAndTransactions,
 } from '@/queries/omen';
 import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@/utils';
-import { Button, Icon, Tag, TagColorSchemeProp } from '@swapr/ui';
+import { Button, Icon, Tag } from '@swapr/ui';
 import { Outcome } from '@/entities';
 
 import { Skeleton, TokenLogo, UserAvatarWithAddress } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
-
-const TAG_COLOR_SCHEMES: { 0: TagColorSchemeProp; 1: TagColorSchemeProp } = {
-  0: 'success',
-  1: 'danger',
-};
+import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
 
 const txTypeHumanWords: Record<TransactionType, string[]> = {
   [TransactionType.Add]: ['added', 'to'],
@@ -215,7 +211,9 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
         )}
         <Tag
           size="xs"
-          colorScheme={outcome ? TAG_COLOR_SCHEMES[outcome.index as 0 | 1] : 'quaternary'}
+          colorScheme={
+            outcome ? OUTCOME_TAG_COLORS_SCHEME[outcome.index as 0 | 1] : 'quaternary'
+          }
           className="w-fit space-x-1 text-sm uppercase"
         >
           <p>{formatEtherWithFixedDecimals(activity.outcomeTokensTraded)}</p>
