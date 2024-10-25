@@ -48,6 +48,8 @@ const getMarketQuery = gql`
       currentAnswerBond
       answerFinalizedTimestamp
       scaledLiquidityParameter
+      scaledLiquidityMeasure
+      scaledCollateralVolume
       runningDailyVolumeByHour
       isPendingArbitration
       arbitrationOccurred
@@ -90,7 +92,6 @@ const marketDataFragment = gql`
     lastActiveDay
     outcomeTokenAmounts
     runningDailyVolumeByHour
-    scaledLiquidityParameter
     title
     outcomes
     openingTimestamp
@@ -98,6 +99,8 @@ const marketDataFragment = gql`
     category
     templateId
     scaledLiquidityParameter
+    scaledLiquidityMeasure
+    scaledCollateralVolume
     curatedByDxDao
     klerosTCRregistered
     outcomeTokenMarginalPrices

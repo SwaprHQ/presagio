@@ -5,7 +5,7 @@ import { FixedProductMarketMaker } from '@/queries/omen';
 import { remainingTime } from '@/utils/dates';
 import { MarketThumbnail } from './MarketThumbnail';
 import { Skeleton } from './Skeleton';
-import { formatEther } from 'viem';
+import { formatValueWithFixedDecimals } from '@/utils';
 
 interface CardMarketProps {
   market: FixedProductMarketMaker;
@@ -33,10 +33,10 @@ export const CardMarket = ({ market }: CardMarketProps) => {
       <div className="flex h-[40px] items-center border-t border-outline-base-em px-4">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex items-center space-x-2">
-            <TokenLogo address={market.collateralToken} size="xs" />
+            <TokenLogo address={market.collateralToken} size="xs" className="size-3.5" />
             <p className="text-sm font-semibold text-text-med-em">
-              {Number(formatEther(market.collateralVolume)).toFixed(2) ?? '-'}{' '}
-              <span>Vol</span>
+              {formatValueWithFixedDecimals(market.scaledCollateralVolume, 2) ?? '-'}
+              <span> Vol</span>
             </p>
           </div>
           <p className="text-sm text-text-low-em">{remainingTime(closingDate)}</p>

@@ -1,6 +1,12 @@
 'use client';
 
-import { OutcomeBar, UserBets, MarketThumbnail, Skeleton } from '@/app/components';
+import {
+  OutcomeBar,
+  UserBets,
+  MarketThumbnail,
+  Skeleton,
+  TokenLogo,
+} from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
 import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
@@ -15,6 +21,7 @@ import { Info } from './Info';
 import { Bet } from './Bet';
 import { ModalId, useModal } from '@/context';
 import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
+import { formatValueWithFixedDecimals } from '@/utils';
 
 interface MarketDetailsProps {
   id: Address;
@@ -78,8 +85,38 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                 />
                 <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
               </div>
-              <div className="!mt-7">
+              <div className="!mt-7 space-y-4">
                 <OutcomeBar market={fixedProductMarketMaker} />
+                <div className="flex items-center justify-end space-x-8">
+                  <div className="flex items-center space-x-2 text-sm font-semibold text-text-med-em">
+                    <TokenLogo
+                      address={fixedProductMarketMaker.collateralToken}
+                      size="xs"
+                      className="size-4"
+                    />
+                    <p>
+                      {formatValueWithFixedDecimals(
+                        fixedProductMarketMaker.scaledCollateralVolume,
+                        2
+                      ) ?? '-'}
+                      <span title="volume"> Volume</span>
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm font-semibold text-text-med-em">
+                    <TokenLogo
+                      address={fixedProductMarketMaker.collateralToken}
+                      size="xs"
+                      className="size-4"
+                    />
+                    <p>
+                      {formatValueWithFixedDecimals(
+                        fixedProductMarketMaker.scaledLiquidityMeasure,
+                        2
+                      ) ?? '-'}
+                      <span title="volume"> Liquidity</span>
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="px-4 pb-2">
