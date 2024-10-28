@@ -1,13 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-
 import { Button } from '@swapr/ui';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
 import { NetworkButton } from './NetworkButton';
 import { APP_NAME } from '@/constants';
+import { useQuery } from '@tanstack/react-query';
+import { Bets, UserBets } from '@/entities';
+import { getUserBets } from '@/queries/omen';
+import { useAccount } from 'wagmi';
+import { useMemo } from 'react';
 
 export const Navbar = () => {
+  const { address } = useAccount();
+
+  const { data: userPositionsComplete } = useQuery<UserBets[]>({
+    queryKey: ['getUserBets', address],
+    queryFn: async () => await getUserBets(address),
+    enabled: !!address,
+  });
+
+  const betsModel = useMemo(
+    () => new Bets(userPositionsComplete),
+    [userPositionsComplete]
+  );
+
+  const unredeemedBets = useMemo(() => betsModel.getUnredeemedBets(), [betsModel]);
+  const hasUnredeemedBets = unredeemedBets.length > 0;
+  const unredeemedBetsNumber = unredeemedBets.length;
+
   return (
     <nav className="h-20 bg-surface-surface-bg px-6 py-5">
       <div className="flex items-center justify-between">
@@ -20,9 +41,16 @@ export const Navbar = () => {
             <LifiWidgetPopover />
           </div>
           <Link href="/my-bets">
-            <Button variant="pastel" className="text-nowrap">
-              My bets
-            </Button>
+            <div className="relative">
+              <Button variant="pastel" className="space-x-1 text-nowrap">
+                My bets
+              </Button>
+              {hasUnredeemedBets && (
+                <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
+                  <p className="text-xs font-semibold">{unredeemedBetsNumber}</p>
+                </div>
+              )}
+            </div>
           </Link>
           <ConnectButton />
           <NetworkButton />

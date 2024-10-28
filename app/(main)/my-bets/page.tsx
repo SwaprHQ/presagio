@@ -2,7 +2,7 @@
 
 import NoBetsPage from '@/app/(main)/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/(main)/my-bets/NoWalletConnectedPage';
-import { MarketCondition, Position, UserBets } from '@/entities';
+import { Bets, UserBets } from '@/entities';
 
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
@@ -21,36 +21,14 @@ export default function MyBetsPage() {
     enabled: !!address,
   });
 
-  const filterActiveBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(
-        userPosition => !userPosition.position.conditions[0].resolved
-      ) ?? [],
+  const betsModel = useMemo(
+    () => new Bets(userPositionsComplete),
     [userPositionsComplete]
   );
 
-  const filterCompleteBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(
-        userPosition => userPosition.position.conditions[0].resolved
-      ) ?? [],
-    [userPositionsComplete]
-  );
-
-  const filterUnredeemedBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(userPosition => {
-        const position = new Position(userPosition.position);
-        const outcomeIndex = position.getOutcomeIndex();
-        const marketCondition = new MarketCondition(
-          userPosition.fpmm,
-          position.condition
-        );
-        const canRedeem = marketCondition.canRedeem(outcomeIndex, userPosition.balance);
-        return canRedeem;
-      }) ?? [],
-    [userPositionsComplete]
-  );
+  const filterActiveBets = useMemo(() => betsModel.getActiveBets(), [betsModel]);
+  const filterCompleteBets = useMemo(() => betsModel.getCompletedBets(), [betsModel]);
+  const filterUnredeemedBets = useMemo(() => betsModel.getUnredeemedBets(), [betsModel]);
 
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
