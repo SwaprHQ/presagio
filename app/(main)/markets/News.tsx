@@ -11,7 +11,6 @@ interface NewsProps {
 }
 
 interface NewsArticleProps {
-  id: string;
   url: string;
   title: string;
 }
@@ -50,11 +49,11 @@ export const News = ({ id }: NewsProps) => {
   if (!news) return <div className="py-4 text-center">No news</div>;
 
   return news.map((newsArticle, index) => (
-    <NewsArticle id={id} key={index} url={newsArticle.url} title={newsArticle.title} />
+    <NewsArticle key={index} url={newsArticle.url} title={newsArticle.title} />
   ));
 };
 
-const NewsArticle = ({ id, url, title }: NewsArticleProps) => {
+const NewsArticle = ({ url, title }: NewsArticleProps) => {
   const { data, isLoading } = useQuery<NewsDetails>({
     queryKey: ['getNewsDetails', url],
     queryFn: async () => {
