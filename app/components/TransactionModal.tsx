@@ -35,7 +35,7 @@ export const TransactionModal = ({
 
   return (
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <VisuallyHidden asChild>
             <DialogTitle>Transaction Modal</DialogTitle>

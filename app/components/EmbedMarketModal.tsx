@@ -94,7 +94,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
 
   return (
     <Dialog open={isModalOpen(ModalId.EMBED_MARKET)} onOpenChange={close}>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Embed Market</DialogTitle>
         </DialogHeader>

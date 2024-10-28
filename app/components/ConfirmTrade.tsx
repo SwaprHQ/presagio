@@ -222,7 +222,7 @@ export const ConfirmTrade = ({
 
   return (
     <Dialog open={isModalOpen(ModalId.CONFIRM_SWAP)} onOpenChange={closeBetModal}>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader className="text-center">
           <DialogClose position="left">
             <Icon name="arrow-left" />
