@@ -6,7 +6,7 @@ import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/compone
 import { NetworkButton } from './NetworkButton';
 import { APP_NAME } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
-import { Bets, UserBets } from '@/entities';
+import { UserBetsManager, UserBet } from '@/entities';
 import { getUserBets } from '@/queries/omen';
 import { useAccount } from 'wagmi';
 import { useMemo } from 'react';
@@ -14,18 +14,21 @@ import { useMemo } from 'react';
 export const Navbar = () => {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete } = useQuery<UserBets[]>({
+  const { data: userPositionsComplete } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
     queryFn: async () => await getUserBets(address),
     enabled: !!address,
   });
 
-  const betsModel = useMemo(
-    () => new Bets(userPositionsComplete),
+  const userBetsManager = useMemo(
+    () => new UserBetsManager(userPositionsComplete),
     [userPositionsComplete]
   );
 
-  const unredeemedBets = useMemo(() => betsModel.getUnredeemedBets(), [betsModel]);
+  const unredeemedBets = useMemo(
+    () => userBetsManager.getUnredeemedBets(),
+    [userBetsManager]
+  );
   const hasUnredeemedBets = unredeemedBets.length > 0;
   const unredeemedBetsNumber = unredeemedBets.length;
 
@@ -47,7 +50,9 @@ export const Navbar = () => {
               </Button>
               {hasUnredeemedBets && (
                 <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
-                  <p className="text-xs font-semibold">{unredeemedBetsNumber}</p>
+                  <p className="text-xs font-bold dark:text-text-black">
+                    {unredeemedBetsNumber}
+                  </p>
                 </div>
               )}
             </div>

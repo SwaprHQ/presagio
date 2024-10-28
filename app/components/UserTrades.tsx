@@ -22,11 +22,11 @@ import { TokenLogo } from '.';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
 
-interface UserBets {
+interface UserTradesProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
-export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
+export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
   const { address } = useAccount();
   const { submitCustomTx } = useTx();
 

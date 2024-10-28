@@ -2,7 +2,7 @@
 
 import NoBetsPage from '@/app/(main)/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/(main)/my-bets/NoWalletConnectedPage';
-import { Bets, UserBets } from '@/entities';
+import { UserBet, UserBetsManager } from '@/entities';
 
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
@@ -15,20 +15,29 @@ import { BetsListPanel, BetsListTab } from '@/app/components';
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete, isLoading } = useQuery<UserBets[]>({
+  const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
     queryFn: async () => await getUserBets(address),
     enabled: !!address,
   });
 
-  const betsModel = useMemo(
-    () => new Bets(userPositionsComplete),
+  const userBetsManager = useMemo(
+    () => new UserBetsManager(userPositionsComplete),
     [userPositionsComplete]
   );
 
-  const filterActiveBets = useMemo(() => betsModel.getActiveBets(), [betsModel]);
-  const filterCompleteBets = useMemo(() => betsModel.getCompletedBets(), [betsModel]);
-  const filterUnredeemedBets = useMemo(() => betsModel.getUnredeemedBets(), [betsModel]);
+  const filterActiveBets = useMemo(
+    () => userBetsManager.getActiveBets(),
+    [userBetsManager]
+  );
+  const filterCompleteBets = useMemo(
+    () => userBetsManager.getCompletedBets(),
+    [userBetsManager]
+  );
+  const filterUnredeemedBets = useMemo(
+    () => userBetsManager.getUnredeemedBets(),
+    [userBetsManager]
+  );
 
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;

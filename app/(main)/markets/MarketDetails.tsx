@@ -2,7 +2,7 @@
 
 import {
   OutcomeBar,
-  UserBets,
+  UserTrades,
   MarketThumbnail,
   Skeleton,
   TokenLogo,
@@ -155,7 +155,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               </div>
             )}
           </div>
-          <UserBets fixedProductMarketMaker={fixedProductMarketMaker} />
+          <UserTrades fixedProductMarketMaker={fixedProductMarketMaker} />
         </div>
       </div>
       <EmbedMarketModal id={id} />

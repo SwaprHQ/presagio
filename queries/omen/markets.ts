@@ -13,7 +13,7 @@ import {
 } from './types';
 import { OMEN_SUBGRAPH_URL } from '@/constants';
 import { getUserPositions } from '../conditional-tokens';
-import { Market, Position, UserBets } from '@/entities';
+import { Market, Position, UserBet } from '@/entities';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -438,7 +438,7 @@ const getMarketTradesAndTransactions = async (
   );
 };
 
-const sortByNewestBet = (a: UserBets, b: UserBets) => {
+const sortByNewestBet = (a: UserBet, b: UserBet) => {
   return (
     b.fpmmTrades[b.fpmmTrades.length - 1]?.creationTimestamp -
     a.fpmmTrades[a.fpmmTrades.length - 1]?.creationTimestamp
@@ -451,8 +451,8 @@ const getUserBets = async (address?: string) => {
   const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
   const userPositions = userPositionsData?.userPositions ?? [];
 
-  const userPositionsComplete = await Promise.allSettled(
-    userPositions.map(async (userPosition): Promise<UserBets | undefined> => {
+  const userBets = await Promise.allSettled(
+    userPositions.map(async (userPosition): Promise<UserBet | undefined> => {
       try {
         const position = new Position(userPosition.position);
         const outcomeIndex = position.getOutcomeIndex();
@@ -465,7 +465,7 @@ const getUserBets = async (address?: string) => {
 
         if (!market) return undefined;
 
-        const tradesData = await getMarketUserTrades({
+        const trades = await getMarketUserTrades({
           creator: address.toLowerCase(),
           fpmm: market.fpmm.id,
           outcomeIndex_in: [outcomeIndex],
@@ -475,7 +475,7 @@ const getUserBets = async (address?: string) => {
           ...userPosition,
           fpmm: market.fpmm,
           condition: position.condition,
-          fpmmTrades: tradesData?.fpmmTrades || [],
+          fpmmTrades: trades?.fpmmTrades || [],
         };
       } catch (error) {
         console.error(error);
@@ -484,7 +484,7 @@ const getUserBets = async (address?: string) => {
   ).then(results =>
     results
       .filter(
-        (result): result is PromiseFulfilledResult<UserBets> =>
+        (result): result is PromiseFulfilledResult<UserBet> =>
           result.status === 'fulfilled' &&
           result.value !== undefined &&
           result.value.fpmmTrades.length > 0
@@ -493,7 +493,7 @@ const getUserBets = async (address?: string) => {
       .sort(sortByNewestBet)
   );
 
-  return userPositionsComplete;
+  return userBets;
 };
 
 export {
