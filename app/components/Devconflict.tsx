@@ -1,5 +1,14 @@
+import { trackEvent } from 'fathom-client';
+
+import { FA_EVENTS } from '@/analytics';
+
 export const DevconflictBanner = () => (
-  <a href="https://devconflict.com/" className="w-full cursor-pointer" target="_blank">
+  <a
+    href="https://devconflict.com/"
+    className="w-full cursor-pointer"
+    target="_blank"
+    onClick={() => trackEvent(FA_EVENTS.DEVCONFLICT)}
+  >
     <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-8 rounded-12 border border-outline-primary-low-em bg-[#948e9474] px-6 py-5 text-center font-medium text-[#000] dark:border-outline-primary-base-em dark:bg-[#b4b3b3cc] md:gap-4 lg:gap-1">
       <DevconflictLogoSvg />
       <p className="text-md">

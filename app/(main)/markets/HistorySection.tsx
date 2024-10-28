@@ -1,5 +1,7 @@
 import { Icon, TabBody, TabGroup, TabHeader, TabPanel, TabStyled } from '@swapr/ui';
+import { trackEvent } from 'fathom-client';
 
+import { FA_EVENTS } from '@/analytics';
 import { ActivityChart } from '@/app/(main)/markets/ActivityChart';
 import { MarketActivity } from '@/app/(main)/markets/MarketActivity';
 
@@ -16,7 +18,12 @@ export const HistorySection = ({ id }: HistorySectionProps) => {
             <Icon size={18} name="activity"></Icon>
             <p>Activity</p>
           </TabStyled>
-          <TabStyled className="space-x-2">
+          <TabStyled
+            className="space-x-2"
+            onClick={() =>
+              trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME('history-charts'))
+            }
+          >
             <Icon size={18} name="pie-chart"></Icon>
             <p>Charts</p>
           </TabStyled>

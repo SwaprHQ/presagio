@@ -1,13 +1,31 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
+import { Button } from '@swapr/ui';
 import Link from 'next/link';
 
-import { Button } from '@swapr/ui';
+import { FA_EVENTS } from '@/analytics';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
-import { NetworkButton } from './NetworkButton';
 import { APP_NAME } from '@/constants';
 
+import { NetworkButton } from './NetworkButton';
+import { trackEvent } from 'fathom-client';
+
 export const Navbar = () => {
+  const widgetEvents = useWidgetEvents();
+
+  useEffect(() => {
+    widgetEvents.on(WidgetEvent.RouteExecutionCompleted, () =>
+      trackEvent(FA_EVENTS.LIFI_WIDGET.ROUTE_SUCCESS)
+    );
+    widgetEvents.on(WidgetEvent.RouteExecutionFailed, () =>
+      trackEvent(FA_EVENTS.LIFI_WIDGET.ROUTE_FAILED)
+    );
+
+    return () => widgetEvents.all.clear();
+  }, [widgetEvents]);
+
   return (
     <nav className="h-20 bg-surface-surface-bg px-6 py-5">
       <div className="flex items-center justify-between">
@@ -19,7 +37,7 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
-          <Link href="/my-bets">
+          <Link href="/my-bets" onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}>
             <Button variant="pastel" className="text-nowrap">
               My bets
             </Button>

@@ -31,8 +31,12 @@ import {
 } from './filters';
 import { isAddress } from 'viem';
 import Image from 'next/image';
+import { trackEvent } from 'fathom-client';
+
+import { FA_EVENTS } from '@/analytics';
 import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
+
 import { MarketsHighlight } from './MarketsHighlight';
 import { DevconflictBanner } from '@/app/components/Devconflict';
 
@@ -290,13 +294,19 @@ export default function HomePage() {
             onChange={handleCategory}
             className="overflow-x-auto md:w-auto lg:w-fit"
           >
-            <ToggleGroupOption size="md" value="" className="font-semibold">
+            <ToggleGroupOption
+              size="md"
+              value=""
+              className="font-semibold"
+              onClick={() => trackEvent(FA_EVENTS.MARKETS.CATEGORY('all'))}
+            >
               All
             </ToggleGroupOption>
             <ToggleGroupOption
               size="md"
               value="devconflict"
               className="font-semibold text-outline-primary-high-em"
+              onClick={() => trackEvent(FA_EVENTS.MARKETS.CATEGORY('devconflict'))}
             >
               Devconflict
             </ToggleGroupOption>
@@ -311,6 +321,9 @@ export default function HomePage() {
                   value={categoryOption}
                   className="font-semibold capitalize"
                   size="md"
+                  onClick={() =>
+                    trackEvent(FA_EVENTS.MARKETS.CATEGORY(categoryOption as string))
+                  }
                 >
                   {categoryOption}
                 </ToggleGroupOption>
@@ -325,6 +338,7 @@ export default function HomePage() {
           placeholder="Search markets keywords or address"
           leftIcon="search"
           onChange={event => handleSearch(event.target.value)}
+          onClick={() => trackEvent(FA_EVENTS.MARKETS.SEARCH_BAR)}
           value={search}
         />
         {showClientUI ? (
@@ -342,7 +356,10 @@ export default function HomePage() {
               {creatorFilters.map(option => (
                 <div
                   key={option.key}
-                  onClick={() => selectCreatorFilter(option)}
+                  onClick={() => {
+                    selectCreatorFilter(option);
+                    trackEvent(FA_EVENTS.MARKETS.FILTERS.CREATOR(option.name));
+                  }}
                   className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                 >
                   <Icon
@@ -382,7 +399,10 @@ export default function HomePage() {
               {tokenFilters.map(option => (
                 <div
                   key={option.key}
-                  onClick={() => selectTokenFilter(option)}
+                  onClick={() => {
+                    selectTokenFilter(option);
+                    trackEvent(FA_EVENTS.MARKETS.FILTERS.TOKEN(option.name));
+                  }}
                   className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                 >
                   <Icon
@@ -417,7 +437,10 @@ export default function HomePage() {
               {orderFilters.map(option => (
                 <div
                   key={option.key}
-                  onClick={() => selectOrderFilter(option)}
+                  onClick={() => {
+                    selectOrderFilter(option);
+                    trackEvent(FA_EVENTS.MARKETS.FILTERS.ORDER(option.name));
+                  }}
                   className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                 >
                   <Icon
@@ -453,7 +476,10 @@ export default function HomePage() {
               {stateFilters.map(option => (
                 <div
                   key={option.key}
-                  onClick={() => selectStateFilter(option)}
+                  onClick={() => {
+                    selectStateFilter(option);
+                    trackEvent(FA_EVENTS.MARKETS.FILTERS.STATE(option.name));
+                  }}
                   className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
                 >
                   <Icon
@@ -483,7 +509,11 @@ export default function HomePage() {
       ) : markets?.length ? (
         <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {markets.map(market => (
-            <Link key={market.id} href={`markets?id=${market.id}`}>
+            <Link
+              key={market.id}
+              href={`markets?id=${market.id}`}
+              onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.ID(market.id))}
+            >
               <CardMarket market={market} />
             </Link>
           ))}

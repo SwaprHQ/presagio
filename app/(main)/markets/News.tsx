@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { format, parseISO } from 'date-fns';
+import { trackEvent } from 'fathom-client';
 import Image from 'next/image';
 
+import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
 
 interface NewsProps {
@@ -77,6 +79,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NEWS_ARTICLE)}
     >
       {data?.ogImage ? (
         <Image
