@@ -1,5 +1,6 @@
 'use client';
 
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import {
   Button,
   Dialog,
@@ -7,6 +8,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   Icon,
   IconBadge,
 } from '@swapr/ui';
@@ -34,7 +36,11 @@ export const TransactionModal = ({
   return (
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
-        <DialogHeader />
+        <DialogHeader>
+          <VisuallyHidden asChild>
+            <DialogTitle>Transaction Modal</DialogTitle>
+          </VisuallyHidden>
+        </DialogHeader>
         <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:max-w-[496px]">
           <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
