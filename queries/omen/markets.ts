@@ -14,6 +14,7 @@ import {
 import { OMEN_SUBGRAPH_URL } from '@/constants';
 import { getUserPositions } from '../conditional-tokens';
 import { Market, Position, UserBet } from '@/entities';
+import { dangerKeywords } from '@/queries/omen/dangerKeywords';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -390,21 +391,37 @@ const getMarketTransactions = async (
     params
   );
 
-const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
-  request<Pick<Query, 'fixedProductMarketMaker'>>(
+const getMarket = async (params: QueryFixedProductMarketMakerArgs) => {
+  const res = request<Pick<Query, 'fixedProductMarketMaker'>>(
     OMEN_SUBGRAPH_URL,
     getMarketQuery,
     params
   );
 
+  const response = await res;
+  const hasDangerKeyword = dangerKeywords.some(keyword =>
+    response.fixedProductMarketMaker?.title?.includes(keyword)
+  );
+  return hasDangerKeyword ? null : res;
+};
+
 const getMarkets = async (
   params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
-) =>
-  request<Pick<Query, 'fixedProductMarketMakers'>>(
+) => {
+  const res = request<Pick<Query, 'fixedProductMarketMakers'>>(
     OMEN_SUBGRAPH_URL,
     getMarketsQuery(params),
     params
   );
+
+  const response = await res;
+
+  const filteredResults = response.fixedProductMarketMakers.filter(
+    item => !dangerKeywords.some(keyword => item?.title?.includes(keyword))
+  );
+
+  return { fixedProductMarketMakers: filteredResults };
+};
 
 const getAccountMarkets = async (
   params: QueryAccountArgs & QueryFixedProductMarketMakersArgs

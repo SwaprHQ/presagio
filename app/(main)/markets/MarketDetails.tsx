@@ -45,7 +45,8 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   });
 
   if (error) throw error;
-  if (isLoading || !data?.fixedProductMarketMaker) return <LoadingMarketDetails />;
+  if (isLoading) return <LoadingMarketDetails />;
+  if (!data?.fixedProductMarketMaker) return <MarketNotFound />;
 
   const fixedProductMarketMaker = data.fixedProductMarketMaker;
   const marketModel = new Market(fixedProductMarketMaker);
@@ -204,6 +205,8 @@ const LoadingMarketDetails = () => (
     </div>
   </div>
 );
+
+const MarketNotFound = () => <div className="h-44">Market not found</div>;
 
 const BackButton = () => {
   const { back, push } = useRouter();
