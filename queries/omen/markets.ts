@@ -1,5 +1,6 @@
 import { gql, request } from 'graphql-request';
 import {
+  FixedProductMarketMaker,
   FixedProductMarketMaker_Filter,
   FpmmTrade_Filter,
   FpmmTransaction_Filter,
@@ -14,6 +15,7 @@ import {
 import { OMEN_SUBGRAPH_URL } from '@/constants';
 import { getUserPositions } from '../conditional-tokens';
 import { Market, Position, UserBet } from '@/entities';
+import { marketHasDangerousKeyword } from './dangerousKeywords';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -390,21 +392,36 @@ const getMarketTransactions = async (
     params
   );
 
-const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
-  request<Pick<Query, 'fixedProductMarketMaker'>>(
+const getMarket = async (params: QueryFixedProductMarketMakerArgs) => {
+  const response = await request<Pick<Query, 'fixedProductMarketMaker'>>(
     OMEN_SUBGRAPH_URL,
     getMarketQuery,
     params
   );
 
+  if (!response.fixedProductMarketMaker) return null;
+  const hasDangerousKeywords = marketHasDangerousKeyword(
+    response.fixedProductMarketMaker
+  );
+
+  return !hasDangerousKeywords ? response : null;
+};
+
 const getMarkets = async (
   params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
-) =>
-  request<Pick<Query, 'fixedProductMarketMakers'>>(
+) => {
+  const response = await request<Pick<Query, 'fixedProductMarketMakers'>>(
     OMEN_SUBGRAPH_URL,
     getMarketsQuery(params),
     params
   );
+
+  const filteredResults = response.fixedProductMarketMakers.filter(
+    fpmm => !marketHasDangerousKeyword(fpmm)
+  );
+
+  return { fixedProductMarketMakers: filteredResults };
+};
 
 const getAccountMarkets = async (
   params: QueryAccountArgs & QueryFixedProductMarketMakersArgs
