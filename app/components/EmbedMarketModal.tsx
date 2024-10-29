@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   Icon,
@@ -12,6 +13,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  VisuallyHidden,
 } from '@swapr/ui';
 import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context/ModalContext';
@@ -94,9 +96,12 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
 
   return (
     <Dialog open={isModalOpen(ModalId.EMBED_MARKET)} onOpenChange={close}>
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Embed Market</DialogTitle>
+          <VisuallyHidden asChild>
+            <DialogDescription />
+          </VisuallyHidden>
         </DialogHeader>
         <DialogBody className="space-y-6 pb-8">
           <div className="space-y-4">

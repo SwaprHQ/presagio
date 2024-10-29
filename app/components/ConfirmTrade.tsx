@@ -5,6 +5,7 @@ import {
   DialogBody,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -12,6 +13,7 @@ import {
   Icon,
   successToast,
   toast,
+  VisuallyHidden,
 } from '@swapr/ui';
 import { SwapDirection, SwapState } from '.';
 import MarketABI from '@/abi/market.json';
@@ -222,12 +224,15 @@ export const ConfirmTrade = ({
 
   return (
     <Dialog open={isModalOpen(ModalId.CONFIRM_SWAP)} onOpenChange={closeBetModal}>
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent>
         <DialogHeader className="text-center">
           <DialogClose position="left">
             <Icon name="arrow-left" />
           </DialogClose>
           <DialogTitle>Confirm Swap</DialogTitle>
+          <VisuallyHidden asChild>
+            <DialogDescription />
+          </VisuallyHidden>
         </DialogHeader>
         <DialogBody className="space-y-2">
           <div className="relative rounded-16 bg-surface-surface-1">
