@@ -13,12 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@swapr/ui';
+import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context/ModalContext';
 import { APP_URL } from '@/constants';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useMemo, useState } from 'react';
 import { cx } from 'class-variance-authority';
+import { trackEvent } from 'fathom-client';
 import { isMobile } from 'react-device-detect';
 import { Address } from 'viem';
 
@@ -105,6 +107,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                   onClick={() => {
                     navigator.clipboard.writeText(iframeCode);
                     setClipboardIcon('tick');
+                    trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.COPIED);
 
                     setTimeout(() => {
                       setClipboardIcon('copy');

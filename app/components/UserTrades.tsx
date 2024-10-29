@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAccount } from 'wagmi';
 import { cx } from 'class-variance-authority';
+import { trackEvent } from 'fathom-client';
 import {
   getOutcomeUserTrades,
   Market,
@@ -21,6 +22,7 @@ import { useReadToken } from '@/hooks/contracts/erc20';
 import { TokenLogo } from '.';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useTx } from '@/context';
+import { FA_EVENTS } from '@/analytics';
 
 interface UserTradesProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
@@ -132,6 +134,7 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
         collateralToken: collateralToken.address,
       })
     );
+    trackEvent(FA_EVENTS.BETS.REDEEM);
   };
 
   const hasBetted =

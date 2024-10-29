@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
 import { APP_NAME, Categories, DISCORD_URL, GITHUB_URL, X_URL } from '@/constants';
 import { MadeBySwapr } from '@/app/components/MadeBySwapr';
+import { trackEvent } from 'fathom-client';
+import { FA_EVENTS } from '@/analytics';
 
 export const Footer = () => (
   <div className="mt-32 border-t border-surface-surface-2 bg-surface-surface-0 px-6 md:px-10 lg:px-20 xl:px-40">
@@ -18,7 +22,10 @@ export const Footer = () => (
           <ul className="space-y-1">
             {Object.values(Categories).map(category => (
               <li className="text-md font-medium capitalize" key={category}>
-                <a href={`/?c=${category}`}>
+                <a
+                  href={`/?c=${category}`}
+                  onClick={() => trackEvent(FA_EVENTS.FOOTER.MARKET_CATEGORY(category))}
+                >
                   <p className="hover:text-text-primary-main">{category}</p>
                 </a>
               </li>
@@ -29,17 +36,29 @@ export const Footer = () => (
           <p className="mb-2 text-lg font-bold">Connect</p>
           <ul className="space-y-1">
             <li className="text-md capitalize">
-              <a href={DISCORD_URL} target="_blank">
+              <a
+                href={DISCORD_URL}
+                target="_blank"
+                onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.DISCORD)}
+              >
                 <p className="hover:text-text-primary-main">Discord</p>
               </a>
             </li>
             <li className="text-md capitalize">
-              <a href={GITHUB_URL} target="_blank">
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.GITHUB)}
+              >
                 <p className="hover:text-text-primary-main">Github</p>
               </a>
             </li>
             <li className="text-md capitalize">
-              <a href={X_URL} target="_blank">
+              <a
+                href={X_URL}
+                target="_blank"
+                onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.X)}
+              >
                 <p className="hover:text-text-primary-main">X</p>
               </a>
             </li>
@@ -58,21 +77,37 @@ const PoweredByPartners = () => (
       href="https://www.gnosis.io/"
       className="flex items-center space-x-1"
       target="_blank"
+      onClick={() => trackEvent(FA_EVENTS.FOOTER.POWERED_BY.GNOSIS)}
     >
       <GnosisIcon />
       <p className="font-bold">Gnosis</p>
     </a>
     <span className="">•</span>
-    <a href="https://reality.eth.limo/" className="font-bold" target="_blank">
+    <a
+      href="https://reality.eth.limo/"
+      className="font-bold"
+      target="_blank"
+      onClick={() => trackEvent(FA_EVENTS.FOOTER.POWERED_BY.REALITY)}
+    >
       Reality.eth
     </a>
     <span className="">•</span>
-    <a href="https://kleros.io/" className="flex items-center space-x-1" target="_blank">
+    <a
+      href="https://kleros.io/"
+      className="flex items-center space-x-1"
+      target="_blank"
+      onClick={() => trackEvent(FA_EVENTS.FOOTER.POWERED_BY.KLEROS)}
+    >
       <KlerosIcon />
       <p className="font-bold">Kleros</p>
     </a>
     <span className="">•</span>
-    <a href="https://www.gnosis.io/labs" className="font-bold" target="_blank">
+    <a
+      href="https://www.gnosis.io/labs"
+      className="font-bold"
+      target="_blank"
+      onClick={() => trackEvent(FA_EVENTS.FOOTER.POWERED_BY.GNOSIS_AI)}
+    >
       Gnosis AI
     </a>
   </div>

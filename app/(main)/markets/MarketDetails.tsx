@@ -7,6 +7,7 @@ import {
   Skeleton,
   TokenLogo,
 } from '@/app/components';
+import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
 import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
@@ -19,6 +20,7 @@ import { HistorySection } from './HistorySection';
 import { News } from './News';
 import { Info } from './Info';
 import { Bet } from './Bet';
+import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context';
 import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 import { formatValueWithFixedDecimals } from '@/utils';
@@ -59,7 +61,10 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               name="code"
               variant="pastel"
               size="sm"
-              onClick={() => openModal(ModalId.EMBED_MARKET)}
+              onClick={() => {
+                trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.ID);
+                openModal(ModalId.EMBED_MARKET);
+              }}
             />
           </div>
           <div className="w-full rounded-16 border border-outline-base-em bg-surface-surface-0">
@@ -131,6 +136,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                       size="md"
                       value={tab}
                       className="flex justify-center font-semibold capitalize"
+                      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(tab))}
                     >
                       {tab}
                     </ToggleGroupOption>

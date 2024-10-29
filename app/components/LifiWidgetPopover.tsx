@@ -1,10 +1,14 @@
 'use client';
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
-import { APP_NAME, ChainId, RPC_LIST, SDAI } from '@/constants';
-import { useTheme } from 'next-themes';
 import { useMemo } from 'react';
+
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
+import { trackEvent } from 'fathom-client';
+import { useTheme } from 'next-themes';
 import { Appearance, LiFiWidget, WidgetConfig } from '@lifi/widget';
+
+import { FA_EVENTS } from '@/analytics';
+import { APP_NAME, ChainId, RPC_LIST, SDAI } from '@/constants';
 
 export const LifiWidgetPopover = () => {
   const { theme } = useTheme();
@@ -34,7 +38,11 @@ export const LifiWidgetPopover = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="pastel" className="space-x-2 text-nowrap">
+        <Button
+          variant="pastel"
+          className="space-x-2 text-nowrap"
+          onClick={() => trackEvent(FA_EVENTS.LIFI_WIDGET.OPEN)}
+        >
           <p>Get {SDAI.symbol}</p>
         </Button>
       </PopoverTrigger>
