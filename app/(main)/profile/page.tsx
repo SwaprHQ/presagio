@@ -16,7 +16,7 @@ import {
   tradesCollateralAmountSpent,
   tradesOutcomeBalance,
   tradesVolume,
-  UserBets,
+  UserBet,
 } from '@/entities';
 import { getUser } from '@/queries/conditional-tokens';
 import { getUserBets } from '@/queries/omen';
@@ -57,7 +57,7 @@ export default function ProfilePage() {
     enabled: !!address,
   });
 
-  const { data: userPositions, isLoading } = useQuery<UserBets[]>({
+  const { data: userPositions, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
     queryFn: async () => await getUserBets(address),
     enabled: !!address,

@@ -24,11 +24,11 @@ import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/ut
 import { useTx } from '@/context';
 import { FA_EVENTS } from '@/analytics';
 
-interface UserBets {
+interface UserTradesProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
-export const UserBets = ({ fixedProductMarketMaker }: UserBets) => {
+export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
   const { address } = useAccount();
   const { submitCustomTx } = useTx();
 

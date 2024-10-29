@@ -5,15 +5,15 @@ import { UserPosition } from '@/queries/conditional-tokens/types';
 
 import { PropsWithChildren, ReactNode } from 'react';
 import { TabPanel, TabStyled } from '@swapr/ui';
-import { UserBets } from '@/entities';
+import { UserBet } from '@/entities';
 
 export interface BetsListPanelProps {
   emptyText?: string;
-  bets: UserBets[];
+  bets: UserBet[];
   isLoading: boolean;
   unredeemed?: boolean;
   CardComponent?: React.ComponentType<{
-    userBets: UserBets;
+    userBet: UserBet;
   }>;
 }
 
@@ -52,8 +52,8 @@ export const BetsListPanel = ({
       {isLoading && <LoadingBets />}
       {!isLoading &&
         bets.length > 0 &&
-        bets.map((userBets: UserBets) => (
-          <CardComponent userBets={userBets} key={userBets.id} />
+        bets.map((userBet: UserBet) => (
+          <CardComponent userBet={userBet} key={userBet.id} />
         ))}
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">

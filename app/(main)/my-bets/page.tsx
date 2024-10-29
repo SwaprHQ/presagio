@@ -2,7 +2,7 @@
 
 import NoBetsPage from '@/app/(main)/my-bets/NoBetsPage';
 import NoWalletConnectedPage from '@/app/(main)/my-bets/NoWalletConnectedPage';
-import { MarketCondition, Position, UserBets } from '@/entities';
+import { UserBet, UserBetsManager } from '@/entities';
 
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
@@ -15,41 +15,28 @@ import { BetsListPanel, BetsListTab } from '@/app/components';
 export default function MyBetsPage() {
   const { address } = useAccount();
 
-  const { data: userPositionsComplete, isLoading } = useQuery<UserBets[]>({
+  const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
     queryFn: async () => await getUserBets(address),
     enabled: !!address,
   });
 
+  const userBetsManager = useMemo(
+    () => new UserBetsManager(userPositionsComplete),
+    [userPositionsComplete]
+  );
+
   const filterActiveBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(
-        userPosition => !userPosition.position.conditions[0].resolved
-      ) ?? [],
-    [userPositionsComplete]
+    () => userBetsManager.getActiveBets(),
+    [userBetsManager]
   );
-
   const filterCompleteBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(
-        userPosition => userPosition.position.conditions[0].resolved
-      ) ?? [],
-    [userPositionsComplete]
+    () => userBetsManager.getCompletedBets(),
+    [userBetsManager]
   );
-
   const filterUnredeemedBets = useMemo(
-    () =>
-      userPositionsComplete?.filter(userPosition => {
-        const position = new Position(userPosition.position);
-        const outcomeIndex = position.getOutcomeIndex();
-        const marketCondition = new MarketCondition(
-          userPosition.fpmm,
-          position.condition
-        );
-        const canRedeem = marketCondition.canRedeem(outcomeIndex, userPosition.balance);
-        return canRedeem;
-      }) ?? [],
-    [userPositionsComplete]
+    () => userBetsManager.getUnredeemedBets(),
+    [userBetsManager]
   );
 
   if (!address) return <NoWalletConnectedPage />;

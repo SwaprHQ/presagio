@@ -17,7 +17,7 @@ import {
   tradesCollateralAmountSpent,
   tradesOutcomeBalance,
   outcomeTokensTradedTotal,
-  UserBets,
+  UserBet,
 } from '@/entities';
 import { redeemPositions } from '@/hooks/contracts';
 import { MarketThumbnail } from './MarketThumbnail';
@@ -27,27 +27,27 @@ import { useTx } from '@/context';
 import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
 
 interface CardBetProps extends PropsWithChildren {
-  userBets: UserBets;
+  userBet: UserBet;
 }
 
-export const CardBet = ({ userBets, children }: CardBetProps) => {
-  const position = new Position(userBets.position);
+export const CardBet = ({ userBet, children }: CardBetProps) => {
+  const position = new Position(userBet.position);
   const outcomeIndex = position.getOutcomeIndex();
 
-  const market = new Market(userBets.fpmm);
-  const marketCondition = new MarketCondition(userBets.fpmm, position.condition);
+  const market = new Market(userBet.fpmm);
+  const marketCondition = new MarketCondition(userBet.fpmm, position.condition);
 
   const collateralAmountSpent = tradesCollateralAmountSpent({
-    fpmmTrades: userBets?.fpmmTrades,
+    fpmmTrades: userBet?.fpmmTrades,
   });
   const outcomeTokensTraded = outcomeTokensTradedTotal({
-    fpmmTrades: userBets?.fpmmTrades,
+    fpmmTrades: userBet?.fpmmTrades,
   });
   const lastTradeTimestamp =
-    userBets?.fpmmTrades[userBets?.fpmmTrades.length - 1]?.creationTimestamp;
+    userBet?.fpmmTrades[userBet?.fpmmTrades.length - 1]?.creationTimestamp;
 
   const outcomeBalance = tradesOutcomeBalance({
-    fpmmTrades: userBets?.fpmmTrades,
+    fpmmTrades: userBet?.fpmmTrades,
   });
 
   if (!market) return null;
@@ -175,29 +175,29 @@ export const CardBet = ({ userBets, children }: CardBetProps) => {
   );
 };
 
-export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
+export const MyBetsCardBet = ({ userBet }: { userBet: UserBet }) => {
   const { submitCustomTx } = useTx();
 
-  const position = new Position(userBets.position);
+  const position = new Position(userBet.position);
   const outcomeIndex = position.getOutcomeIndex();
 
-  const condition = userBets.position.conditions[0];
-  const marketCondition = new MarketCondition(userBets.fpmm, condition);
+  const condition = userBet.position.conditions[0];
+  const marketCondition = new MarketCondition(userBet.fpmm, condition);
 
-  const canRedeem = marketCondition.canRedeem(outcomeIndex, userBets.balance);
+  const canRedeem = marketCondition.canRedeem(outcomeIndex, userBet.balance);
 
   const redeem = async () => {
     await submitCustomTx(() =>
       redeemPositions({
         conditionId: condition.id,
-        collateralToken: userBets.position.collateralTokenAddress,
+        collateralToken: userBet.position.collateralTokenAddress,
       })
     );
     trackEvent(FA_EVENTS.BETS.REDEEM);
   };
 
   return (
-    <CardBet userBets={userBets}>
+    <CardBet userBet={userBet}>
       {canRedeem && (
         <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
           Reedem
@@ -206,8 +206,8 @@ export const MyBetsCardBet = ({ userBets }: { userBets: UserBets }) => {
     </CardBet>
   );
 };
-export const ProfileCardBet = ({ userBets }: { userBets: UserBets }) => (
-  <CardBet userBets={userBets} />
+export const ProfileCardBet = ({ userBet }: { userBet: UserBet }) => (
+  <CardBet userBet={userBet} />
 );
 
 export const LoadingCardBet = () => (

@@ -5,7 +5,7 @@ export * from './ConnectButton';
 export * from './SettingsPopover';
 export * from './Skeleton';
 export * from './TransactionModal';
-export * from './UserBets';
+export * from './UserTrades';
 export * from './MarketThumbnail';
 export * from './TokenLogo';
 export * from './ui';

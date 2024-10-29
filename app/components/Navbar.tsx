@@ -2,12 +2,16 @@
 
 import { useEffect } from 'react';
 import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
-import { Button } from '@swapr/ui';
 import Link from 'next/link';
-
 import { FA_EVENTS } from '@/analytics';
+import { Button } from '@swapr/ui';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
 import { APP_NAME } from '@/constants';
+import { useQuery } from '@tanstack/react-query';
+import { UserBetsManager, UserBet } from '@/entities';
+import { getUserBets } from '@/queries/omen';
+import { useAccount } from 'wagmi';
+import { useMemo } from 'react';
 
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';
@@ -25,6 +29,22 @@ export const Navbar = () => {
 
     return () => widgetEvents.all.clear();
   }, [widgetEvents]);
+  const { address } = useAccount();
+
+  const { data: userPositionsComplete } = useQuery<UserBet[]>({
+    queryKey: ['getUserBets', address],
+    queryFn: async () => await getUserBets(address),
+    enabled: !!address,
+  });
+
+  const betsModel = useMemo(
+    () => new UserBetsManager(userPositionsComplete),
+    [userPositionsComplete]
+  );
+
+  const unredeemedBets = useMemo(() => betsModel.getUnredeemedBets(), [betsModel]);
+  const hasUnredeemedBets = unredeemedBets.length > 0;
+  const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
     <nav className="h-20 bg-surface-surface-bg px-6 py-5">
@@ -37,10 +57,21 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
-          <Link href="/my-bets" onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}>
-            <Button variant="pastel" className="text-nowrap">
-              My bets
-            </Button>
+          <Link href="/my-bets">
+            <div className="relative">
+              <Button
+                variant="pastel"
+                className="space-x-1 text-nowrap"
+                onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}
+              >
+                My bets
+              </Button>
+              {hasUnredeemedBets && (
+                <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
+                  <p className="text-xs font-semibold">{unredeemedBetsNumber}</p>
+                </div>
+              )}
+            </div>
           </Link>
           <ConnectButton />
           <NetworkButton />
