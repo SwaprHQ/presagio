@@ -4,14 +4,19 @@ import { isAddress } from 'viem';
 import { MarketDetails } from './MarketDetails';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { MarketNotFound } from './MarketNotFound';
 
 const Market = () => {
   const searchParams = useSearchParams();
 
   const id = searchParams.get('id')?.toLocaleLowerCase();
 
-  // Empty State
-  if (!id || !isAddress(id)) return null;
+  if (!id || !isAddress(id))
+    return (
+      <main className="mt-12 flex w-full flex-col items-center px-6">
+        <MarketNotFound />;
+      </main>
+    );
 
   return (
     <main className="mt-12 flex w-full flex-col items-center px-6">

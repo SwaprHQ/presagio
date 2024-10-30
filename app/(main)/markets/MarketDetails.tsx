@@ -24,6 +24,7 @@ import { FA_EVENTS } from '@/analytics';
 import { ModalId, useModal } from '@/context';
 import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 import { formatValueWithFixedDecimals } from '@/utils';
+import { MarketNotFound } from './MarketNotFound';
 
 interface MarketDetailsProps {
   id: Address;
@@ -205,8 +206,6 @@ const LoadingMarketDetails = () => (
     </div>
   </div>
 );
-
-const MarketNotFound = () => <div className="h-44">Market not found</div>;
 
 const BackButton = () => {
   const { back, push } = useRouter();
