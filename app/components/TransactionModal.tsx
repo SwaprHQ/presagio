@@ -5,10 +5,13 @@ import {
   Dialog,
   DialogBody,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
   Icon,
   IconBadge,
+  VisuallyHidden,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
 import Image from 'next/image';
@@ -34,7 +37,14 @@ export const TransactionModal = ({
   return (
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
-        <DialogHeader />
+        <DialogHeader>
+          <VisuallyHidden asChild>
+            <>
+              <DialogTitle>Transaction Modal</DialogTitle>
+              <DialogDescription />
+            </>
+          </VisuallyHidden>
+        </DialogHeader>
         <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:max-w-[496px]">
           <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
