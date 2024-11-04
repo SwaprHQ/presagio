@@ -311,7 +311,7 @@ export default function ProfilePage() {
           isLoading={isLoadingStats}
         />
       </div>
-      <TabGroup>
+      <TabGroup className="w-full">
         <TabHeader className="w-full overflow-x-auto border-t border-outline-base-em pt-6 md:overflow-x-visible">
           <BetsListTab bets={userPositions ?? []}>All Bets</BetsListTab>
           <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
