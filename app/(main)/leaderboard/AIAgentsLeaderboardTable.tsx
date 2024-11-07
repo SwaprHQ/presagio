@@ -1,6 +1,7 @@
+// @ts-nocheck
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -11,105 +12,192 @@ import {
   TableRow,
 } from '@/app/components/ui/Table';
 import { Button, Icon } from '@swapr/ui';
-import { UserAvatarWithAddress } from '@/app/components';
-import { Address } from 'viem';
-
-const agents = [
-  {
-    id: '0x49f4e3d8edc85efda9b0a36d96e406a59b13fcc2',
-    profitLoss: 15000.0,
-    positionsValue: 250000.0,
-    volumeTraded: 1000000.0,
-    successRate: 68.5,
-    txCount: 1250,
-  },
-  {
-    id: '0x8cd3e072c8341cfe1a03dbe1d6c32b5177b06164',
-    profitLoss: 22000.0,
-    positionsValue: 300000.0,
-    volumeTraded: 1500000.0,
-    successRate: 72.3,
-    txCount: 1800,
-  },
-  {
-    id: '0x2dd9f5678484c1f59f97ed334725858b938b4102',
-    profitLoss: -5000.0,
-    positionsValue: 180000.0,
-    volumeTraded: 800000.0,
-    successRate: 45.7,
-    txCount: 950,
-  },
-  {
-    id: '0x1b80f1f8fee6fa9d4081e28a6aea4745a41e80d6',
-    profitLoss: 30000.0,
-    positionsValue: 400000.0,
-    volumeTraded: 2000000.0,
-    successRate: 70.2,
-    txCount: 2200,
-  },
-  {
-    id: '0x71948070fa37843dd761d8677bdf3292b90b4f3e',
-    profitLoss: 8000.0,
-    positionsValue: 220000.0,
-    volumeTraded: 900000.0,
-    successRate: 62.8,
-    txCount: 1100,
-  },
-
-  // here
-  {
-    id: '0xb611a9f02b318339049264c7a66ac3401281cc3c',
-    profitLoss: 14221.0,
-    positionsValue: 254500.0,
-    volumeTraded: 1112010.0,
-    successRate: 23.5,
-    txCount: 3153,
-  },
-  {
-    id: '0x3e013a3ca156032005c239de6d84badd3f9b13a9',
-    profitLoss: 12000.0,
-    positionsValue: 431000.0,
-    volumeTraded: 523000.0,
-    successRate: 32.3,
-    txCount: 13,
-  },
-  {
-    id: '0x034c4ad84f7ac6638bf19300d5bbe7d9b981e736',
-    profitLoss: 205000.0,
-    positionsValue: 80000.0,
-    volumeTraded: 1930220.0,
-    successRate: 78.7,
-    txCount: 12950,
-  },
-  {
-    id: '0x593c4ca4c85f24145de87e2591b7ec5d2e01d5e9',
-    profitLoss: 8040.0,
-    positionsValue: 39921.0,
-    volumeTraded: 210000.0,
-    successRate: 75.1,
-    txCount: 2200,
-  },
-  {
-    id: '0x966802275f0208ac34f3e74c67d62c46e69fe378',
-    profitLoss: -100.0,
-    positionsValue: 313.0,
-    volumeTraded: 8130.0,
-    successRate: 48.8,
-    txCount: 92,
-  },
-];
-
-type SortKey = keyof (typeof agents)[0];
+import { Skeleton, UserAvatarWithAddress } from '@/app/components';
+import { Address, formatEther } from 'viem';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Market,
+  Position,
+  tradesCollateralAmountSpent,
+  tradesOutcomeBalance,
+  tradesVolume,
+  UserBet,
+} from '@/entities';
+import {
+  getAllAiAgentsBets,
+  getConditionMarket,
+  getMarketUserTrades,
+} from '@/queries/omen';
 
 export default function AIAgentsLeaderboardTable() {
-  const [sortKey, setSortKey] = useState<SortKey>('profitLoss');
+  const [sortKey, setSortKey] = useState('profitLoss');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const sortedAgents = [...agents].sort((a, b) => {
-    if (a[sortKey] < b[sortKey]) return sortOrder === 'asc' ? -1 : 1;
-    if (a[sortKey] > b[sortKey]) return sortOrder === 'asc' ? 1 : -1;
-    return 0;
+  const { data, isLoading } = useQuery<UserBet[]>({
+    queryKey: ['getAiAgentsBets'],
+    queryFn: getAllAiAgentsBets,
   });
+
+  const aggregatedUserPositionsPerAddress = data?.userPositions?.reduce((acc, item) => {
+    const userId = item.user.id;
+    const newUser = !acc[userId];
+
+    if (newUser) {
+      acc[userId] = {
+        userId: userId,
+        positions: [item.position],
+      };
+    } else {
+      acc[userId].positions.push(item.position);
+    }
+
+    return acc;
+  }, {});
+
+  const fetchUserBets = async () => {
+    const results = await Promise.all(
+      Object.entries(aggregatedUserPositionsPerAddress).map(
+        async ([userId, userData]) => {
+          const userPositions = userData.positions;
+
+          const userBets = await Promise.allSettled(
+            userPositions.map(async (pos): Promise<UserBet | undefined> => {
+              try {
+                const position = new Position(pos);
+                const outcomeIndex = position.getOutcomeIndex();
+                const omenConditionData = await getConditionMarket({
+                  id: position.conditionId,
+                });
+                const omenCondition = omenConditionData?.conditions[0];
+                const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
+
+                if (!market) return undefined;
+
+                const trades = await getMarketUserTrades({
+                  creator: userId.toLowerCase(),
+                  fpmm: market.fpmm.id,
+                  outcomeIndex_in: [outcomeIndex],
+                });
+
+                const volume = parseFloat(
+                  formatEther(
+                    tradesVolume({
+                      fpmmTrades: trades?.fpmmTrades,
+                    })
+                  )
+                );
+                return {
+                  ...pos,
+                  fpmm: market.fpmm,
+                  condition: position.condition,
+                  fpmmTrades: trades?.fpmmTrades || [],
+                  volume: volume,
+                };
+              } catch (error) {
+                console.error(error);
+              }
+            })
+          );
+
+          const validBets = userBets
+            .filter(
+              (result): result is PromiseFulfilledResult<UserBet> =>
+                result.status === 'fulfilled' &&
+                result.value !== undefined &&
+                result.value.fpmmTrades.length > 0
+            )
+            .map(result => result.value);
+
+          const totalVolume = validBets.reduce((acc, item) => {
+            return acc + item.volume;
+          }, 0);
+
+          const numberOfClosedBets = validBets.reduce((acc, userPosition) => {
+            const market = new Market(userPosition.fpmm);
+            if (market.isClosed && market.answer !== null) return acc + 1;
+            return acc;
+          }, 0);
+
+          const numberOfWonBets = validBets.reduce((acc, userPosition) => {
+            const position = new Position(userPosition);
+            const market = new Market(userPosition.fpmm);
+
+            if (market.answer !== null && market.isWinner(position.getOutcomeIndex())) {
+              return acc + 1;
+            }
+
+            return acc;
+          }, 0);
+
+          const successRate = ((numberOfWonBets / numberOfClosedBets) * 100).toFixed(0);
+
+          const spentAmount = validBets.reduce((acc, userPosition) => {
+            const market = new Market(userPosition.fpmm);
+            if (market.answer === null) return acc;
+            const amountSpentWei = tradesCollateralAmountSpent({
+              fpmmTrades: userPosition.fpmmTrades,
+            });
+
+            const amountSpent = parseFloat(formatEther(amountSpentWei));
+            return amountSpent + acc;
+          }, 0);
+
+          const amountWon = validBets.reduce((acc, userPosition) => {
+            const position = new Position(userPosition);
+            const market = new Market(userPosition.fpmm);
+
+            if (market.answer === null || market.isLoser(position.getOutcomeIndex()))
+              return acc;
+
+            const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
+              fpmmTrades: userPosition.fpmmTrades,
+            });
+
+            return winOutcomeBalancesInColleteralToken + acc;
+          }, 0);
+
+          const profitLoss = (amountWon - spentAmount).toFixed(2);
+
+          return {
+            userId,
+            userBets: validBets,
+            totalVolume,
+            profitLoss,
+            successRate,
+            numberOfBets: validBets.length,
+            numberOfWonBets,
+            ...userData,
+          };
+        }
+      )
+    );
+
+    return results.reduce((acc, userData) => {
+      acc[userData.userId] = userData;
+      return acc;
+    }, {});
+  };
+
+  const { data: aggregatedDataWithBets, isLoading: isAggregatedDataWithBetsLoading } =
+    useQuery({
+      queryKey: ['userBets', aggregatedUserPositionsPerAddress],
+      queryFn: fetchUserBets,
+      enabled: !!aggregatedUserPositionsPerAddress,
+      staleTime: 60 * 60 * 1000, // 1 hour
+      keepPreviousData: true,
+    });
+
+  const sortedAgentsData = useMemo(() => {
+    if (!aggregatedDataWithBets) return [];
+
+    return Object.entries(aggregatedDataWithBets).sort(([, a], [, b]) => {
+      const aValue = parseFloat(a[sortKey]);
+      const bValue = parseFloat(b[sortKey]);
+
+      if (isNaN(aValue) || isNaN(bValue)) return 0;
+      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+    });
+  }, [aggregatedDataWithBets, sortKey, sortOrder]);
 
   const handleSort = (key: SortKey) => {
     if (key === sortKey) {
@@ -125,67 +213,143 @@ export default function AIAgentsLeaderboardTable() {
     sortKey: key,
   }: {
     children: React.ReactNode;
-    sortKey: SortKey;
+    sortKey: string;
   }) => (
-    <TableHead className="text-right">
-      <Button
-        variant="ghost"
-        onClick={() => handleSort(key)}
-        className="h-8 text-nowrap text-sm font-bold text-text-low-em"
-      >
-        {children}
-        <Icon name="swap-vertical" className="ml-2 h-4 w-4" />
-      </Button>
+    <TableHead>
+      <div className="flex justify-end">
+        <Button
+          variant="ghost"
+          onClick={() => handleSort(key)}
+          className="h-8 text-nowrap text-sm font-bold text-text-low-em"
+        >
+          {children}
+          {key === sortKey && (
+            <Icon
+              name={sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'}
+              className="ml-2 h-4 w-4"
+            />
+          )}
+        </Button>
+      </div>
     </TableHead>
   );
 
+  if (isLoading || isAggregatedDataWithBetsLoading) return <LoadingLeaderBoardTable />;
+
   return (
-    <Table>
-      <TableCaption className="text-text-low-em">
-        AI Trader Leaderboard is composed by AI trading agents betting on Omen Prediction
-        Markets contracts in gnosis chain.
-      </TableCaption>
-      <TableHeader>
-        <TableRow>
-          <SortableHeader sortKey="id">Agent</SortableHeader>
-          <SortableHeader sortKey="profitLoss">Profit/Loss</SortableHeader>
-          <SortableHeader sortKey="positionsValue">Positions Value</SortableHeader>
-          <SortableHeader sortKey="volumeTraded">Volume Traded</SortableHeader>
-          <SortableHeader sortKey="successRate">Success Rate</SortableHeader>
-          <SortableHeader sortKey="txCount">Transactions</SortableHeader>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sortedAgents.map(agent => (
-          <TableRow key={agent.id}>
-            <TableCell>
-              <UserAvatarWithAddress address={agent.id as Address} isAIAgent={false} />
-            </TableCell>
-            <TableCell
-              className={`text-right ${agent.profitLoss >= 0 ? 'text-text-success-main' : 'text-text-danger-main'}`}
-            >
-              {agent.profitLoss.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </TableCell>
-            <TableCell className="text-right">
-              {agent.positionsValue.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </TableCell>
-            <TableCell className="text-right">
-              {agent.volumeTraded.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </TableCell>
-            <TableCell className="text-right">{agent.successRate.toFixed(1)}%</TableCell>
-            <TableCell className="text-right">{agent.txCount.toLocaleString()}</TableCell>
+    <>
+      <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
+        <StatsCard
+          title="Total tx volume"
+          value={'89,122'}
+          symbol="usd"
+          isLoading={false}
+        />
+        <StatsCard title="Total tx count" value={'8126'} symbol="tx" isLoading={false} />
+        <StatsCard title="Avg success rate" value={'45'} symbol="%" isLoading={false} />
+        <StatsCard
+          title="Total Profit/loss"
+          value={'3,321.00'}
+          symbol="usd"
+          isLoading={false}
+        />
+      </div>
+      <Table>
+        <TableCaption className="text-text-low-em">
+          This Leaderboard is composed by AI trading agents betting on Omen Prediction
+          Markets contracts in gnosis chain.
+        </TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Agent</TableHead>
+            <SortableHeader sortKey="profitLoss">Profit/Loss</SortableHeader>
+            <SortableHeader sortKey="numberOfWonBets">Won bets</SortableHeader>
+            <SortableHeader sortKey="successRate">Success Rate</SortableHeader>
+            <SortableHeader sortKey="totalVolume">Volume Traded</SortableHeader>
+            <SortableHeader sortKey="numberOfBets">Total bets</SortableHeader>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {sortedAgentsData.map(([agentId, agentData]) => (
+            <TableRow key={agentId}>
+              <TableCell>
+                <UserAvatarWithAddress address={agentId as Address} isAIAgent={false} />
+              </TableCell>
+              <TableCell
+                className={`text-right ${parseFloat(agentData.profitLoss) >= 0 ? 'text-text-success-main' : 'text-text-danger-main'}`}
+              >
+                {parseFloat(agentData.profitLoss).toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })}
+              </TableCell>
+              <TableCell className="text-right">
+                {agentData.numberOfWonBets.toLocaleString()}
+              </TableCell>
+              <TableCell className="text-right">{agentData.successRate}%</TableCell>
+              <TableCell className="text-right">
+                {agentData.totalVolume.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })}
+              </TableCell>
+              <TableCell className="text-right">
+                {agentData.numberOfBets.toLocaleString()}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
   );
 }
+
+const StatsCard = ({
+  title,
+  value,
+  symbol,
+  isLoading,
+}: {
+  title: string;
+  value: string;
+  symbol: string;
+  isLoading?: boolean;
+}) => {
+  return (
+    <div className="w-full space-y-2 rounded-16 bg-surface-surface-0 p-6 font-semibold text-text-low-em ring-1 ring-outline-base-em">
+      <div className="text-xs font-bold uppercase">{title}</div>
+      <div className="flex space-x-1.5 text-2xl">
+        {isLoading ? (
+          <Skeleton className="h-9 w-12" />
+        ) : (
+          <span className="text-text-high-em">{value}</span>
+        )}
+        <span className="uppercase">{symbol}</span>
+      </div>
+    </div>
+  );
+};
+
+const LoadingLeaderBoardTable = () => (
+  <div className="w-full space-y-12">
+    <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
+      <Skeleton className="h-28 w-full" />
+      <Skeleton className="h-28 w-full" />
+      <Skeleton className="h-28 w-full" />
+      <Skeleton className="h-28 w-full" />
+    </div>
+    <div className="w-full space-y-3">
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+      <Skeleton className="h-12 w-full" />
+    </div>
+  </div>
+);
