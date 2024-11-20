@@ -277,7 +277,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
 
   return (
     <>
-      <div className="relative space-y-2">
+      <div className="relative space-y-2 font-medium">
         <SwapInput
           title="You Swap"
           value={tokenAmountIn}
