@@ -1,6 +1,5 @@
 import { gql, request } from 'graphql-request';
 import {
-  FixedProductMarketMaker,
   FixedProductMarketMaker_Filter,
   FpmmTrade_Filter,
   FpmmTransaction_Filter,

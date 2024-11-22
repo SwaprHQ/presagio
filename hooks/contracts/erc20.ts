@@ -34,11 +34,11 @@ export const useReadBalanceOf = ({
 
 export const useReadAllowance = ({
   tokenAddress,
-  spenderAddress,
+  spenderAddress = '0x',
   address = '0x',
 }: {
   tokenAddress: Address;
-  spenderAddress: Address;
+  spenderAddress?: Address;
   address?: Address;
 }) =>
   useReadERC20Contract({

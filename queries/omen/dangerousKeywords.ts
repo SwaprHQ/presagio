@@ -1,6 +1,6 @@
 import { FixedProductMarketMaker } from '@/queries/omen/types';
 
-export const marketHasDangerousKeyword = (fpmm: FixedProductMarketMaker) =>
+export const marketHasDangerousKeyword = (fpmm: FixedProductMarketMaker): boolean =>
   dangerousKeywords.some((keyword: string) => fpmm?.title?.includes(keyword));
 
 export const dangerousKeywords = [

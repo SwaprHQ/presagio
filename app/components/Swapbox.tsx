@@ -40,6 +40,7 @@ import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/ut
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
 import { useSlippage } from '@/context';
+import { useUnsupportedNetwork } from '@/hooks';
 
 const ONE_UNIT = '1';
 
@@ -78,10 +79,10 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     id
   );
 
-  const { address, isDisconnected, chainId: connectorChainId } = useAccount();
-  const supportedChains = useChains();
+  const { address, isDisconnected } = useAccount();
   const { openModal } = useModal();
   const { slippage } = useSlippage();
+  const unsupportedNetwork = useUnsupportedNetwork();
 
   const [tokenAmountIn, setTokenAmountIn] = useState('');
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
@@ -244,10 +245,6 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   };
 
   const outcomeList = [outcome0, outcome1];
-
-  const unsupportedNetwork =
-    !!connectorChainId &&
-    !supportedChains.some(supportedChain => supportedChain.id === connectorChainId);
 
   const priceInUSD = collateralTokenUSDPrice
     ? isBuying

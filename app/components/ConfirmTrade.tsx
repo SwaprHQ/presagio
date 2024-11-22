@@ -11,8 +11,6 @@ import {
   DialogTitle,
   errorToast,
   Icon,
-  successToast,
-  toast,
   VisuallyHidden,
 } from '@swapr/ui';
 import { SwapDirection, SwapState } from '.';
@@ -26,7 +24,7 @@ import { addFraction, removeFraction } from '@/utils/price';
 import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
 import { useSlippage, useTx } from '@/context';
 import { Outcome, Token } from '@/entities';
-import { formatEtherWithFixedDecimals, shortenAddress } from '@/utils';
+import { formatEtherWithFixedDecimals } from '@/utils';
 import {
   waitForTransactionReceipt,
   WaitForTransactionReceiptErrorType,
@@ -35,7 +33,7 @@ import {
 } from 'wagmi/actions';
 import { config } from '@/providers/chain-config';
 import { SVGProps, useEffect, useState } from 'react';
-import { GNOSIS_SCAN_URL } from '@/constants';
+import { succesApprovalTxToast, waitingTxToast } from './toasts';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -87,44 +85,6 @@ export const ConfirmTrade = ({
     ? formatEtherWithFixedDecimals(tokenAmountOut)
     : '';
 
-  const waitingTxToast = (txHash: string) =>
-    toast({
-      children: (
-        <div className="flex items-center space-x-4">
-          <Spinner className="h-5 w-5 shrink-0 animate-spin" />
-          <div className="font-normal">
-            Wating for transaction confirmation{' '}
-            <a
-              href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
-              target="_blank"
-              className="inline-block underline"
-            >
-              {shortenAddress(txHash)}
-            </a>
-          </div>
-        </div>
-      ),
-    });
-
-  const succesTxToast = (txHash: string, token: Token | Outcome) => {
-    const symbol = token.symbol || '';
-
-    successToast({
-      children: (
-        <div className="font-normal">
-          {symbol} approved successfully{' '}
-          <a
-            href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
-            target="_blank"
-            className="inline-block underline"
-          >
-            {shortenAddress(txHash)}
-          </a>
-        </div>
-      ),
-    });
-  };
-
   const approveTxErrorHandling = (e: Error) => {
     const error = e as WriteContractErrorType | WaitForTransactionReceiptErrorType;
     const errorMessage =
@@ -155,7 +115,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesTxToast(txHash, inToken);
+        succesApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
@@ -179,7 +139,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesTxToast(txHash, inToken);
+        succesApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
