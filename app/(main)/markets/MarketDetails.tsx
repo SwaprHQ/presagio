@@ -25,6 +25,7 @@ import { ModalId, useModal } from '@/context';
 import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 import { formatValueWithFixedDecimals } from '@/utils';
 import { MarketNotFound } from './MarketNotFound';
+import { Liquidity } from './Liquidity';
 
 interface MarketDetailsProps {
   id: Address;
@@ -33,6 +34,7 @@ interface MarketDetailsProps {
 enum Tabs {
   BET = 'bet',
   HISTORY = 'history',
+  LIQUIDITY = 'liquidity',
   NEWS = 'news',
   INFO = 'info',
 }
@@ -162,6 +164,11 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             {tab === Tabs.INFO && (
               <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
                 <Info fixedProductMarketMaker={fixedProductMarketMaker} />
+              </div>
+            )}
+            {tab === Tabs.LIQUIDITY && (
+              <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
+                <Liquidity id={id} />
               </div>
             )}
           </div>

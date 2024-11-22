@@ -1,13 +1,12 @@
 import { ChainIcon } from 'connectkit';
-import { useAccount, useChainId, useChains } from 'wagmi';
+import { useChainId, useAccount } from 'wagmi';
+import { useUnsupportedNetwork } from '@/hooks';
 
 export const NetworkButton = () => {
   const chainId = useChainId();
-  const supportedChains = useChains();
   const { chainId: connectorChainId } = useAccount();
-  const unsupportedNetwork =
-    !!connectorChainId &&
-    !supportedChains.some(supportedChain => supportedChain.id === connectorChainId);
+
+  const unsupportedNetwork = useUnsupportedNetwork();
 
   return (
     <div className="hidden select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-2 p-3 md:flex">

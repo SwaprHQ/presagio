@@ -8,9 +8,9 @@ import { TokenLogo } from '../TokenLogo';
 
 interface SwapInputProps extends InputHTMLAttributes<HTMLInputElement> {
   title: string;
-  selectedToken: Token | Outcome;
+  selectedToken: Token | Outcome | null;
   onTokenClick?: (outcome?: Outcome) => void;
-  tokenList: Array<Outcome>;
+  tokenList: Array<Outcome> | null;
 }
 
 export const SwapInput = ({
@@ -37,12 +37,13 @@ export const SwapInput = ({
           className="w-full overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
           {...props}
         />
-        {selectedToken instanceof Token ? (
+        {selectedToken instanceof Token && (
           <Button className="flex-shrink-0" variant="pastel">
             <TokenLogo address={selectedToken.address} size="xs" />
             <p className="font-semibold">{selectedToken.symbol}</p>
           </Button>
-        ) : (
+        )}
+        {selectedToken instanceof Outcome && (
           <Popover>
             <PopoverTrigger asChild>
               <Button className="flex-shrink-0" variant="pastel">
@@ -56,11 +57,11 @@ export const SwapInput = ({
                 >
                   {selectedToken.symbol}
                 </p>
-                <Icon name="chevron-down" />
+                {tokenList && <Icon name="chevron-down" />}{' '}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="min-w-fit divide-y-2 divide-outline-base-em px-0 py-0">
-              {tokenList.map(outcome => {
+              {tokenList?.map(outcome => {
                 return (
                   <div
                     key={outcome.index}
