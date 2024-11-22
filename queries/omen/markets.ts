@@ -184,7 +184,7 @@ const getMarketsQuery = (
         ${params.resolutionTimestamp !== undefined ? 'resolutionTimestamp: $resolutionTimestamp' : ''}
         ${params.currentAnswerTimestamp_gt !== undefined ? 'currentAnswerTimestamp_gt: $currentAnswerTimestamp_gt' : ''}
         ${params.collateralToken_in !== undefined ? 'collateralToken_in: $collateralToken_in' : ''}
-        ${!params.category_contains ? 'category_not_contains: "test"' : ''}
+        ${!params.category_contains ? 'category_not_in: ["test", "jobs"]' : ''}
       }
     ) {
       ...marketData
