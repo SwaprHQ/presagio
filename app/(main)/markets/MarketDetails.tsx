@@ -72,9 +72,11 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
           <div className="w-full rounded-16 border border-outline-base-em bg-surface-surface-0">
             <div className="space-y-4 p-5">
               <div className="flex items-center justify-between">
-                <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
-                  {fixedProductMarketMaker.category}
-                </Tag>
+                <a href={`/?c=${fixedProductMarketMaker.category?.toLocaleLowerCase()}`}>
+                  <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                    {fixedProductMarketMaker.category}
+                  </Tag>
+                </a>
                 {marketModel.isClosed ? (
                   <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
                     Market Closed
