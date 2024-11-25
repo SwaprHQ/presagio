@@ -71,7 +71,9 @@ export const Navbar = () => {
               </Button>
               {hasUnredeemedBets && (
                 <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
-                  <p className="text-xs font-semibold">{unredeemedBetsNumber}</p>
+                  <p className="text-xs font-semibold text-text-neutral-alt-white">
+                    {unredeemedBetsNumber}
+                  </p>
                 </div>
               )}
             </div>
