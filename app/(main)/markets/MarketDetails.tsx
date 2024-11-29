@@ -26,6 +26,7 @@ import { EmbedMarketModal } from '@/app/components/EmbedMarketModal';
 import { formatValueWithFixedDecimals } from '@/utils';
 import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
+import { UserLiquidity } from './UserLiquidity';
 
 interface MarketDetailsProps {
   id: Address;
@@ -173,6 +174,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             )}
           </div>
           <UserTrades fixedProductMarketMaker={fixedProductMarketMaker} />
+          <UserLiquidity id={id} />
         </div>
       </div>
       <EmbedMarketModal id={id} />

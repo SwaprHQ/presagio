@@ -22,6 +22,8 @@ export const calcSharesAfterAddFunding = (
  * Compute the numbers of outcome tokens that will be sent to the user by the market maker after adding `addedFunds` of collateral.
  * @param addedFunds - the amount of collateral being added to the market maker as liquidity
  * @param poolBalances - the market maker's balances of outcome tokens
+ * @param poolShareSupply - the total supply of liquidity pool tokens
+ * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L9
  */
 export const calcAddFundingOutcomeTokensReturned = (
   addedFunds: bigint,
@@ -43,6 +45,7 @@ export const calcAddFundingOutcomeTokensReturned = (
  * @param removedFunds - the amount of liquidity pool tokens being sent to the market maker in return for underlying outcome tokens
  * @param poolBalances - the market maker's balances of outcome tokens
  * @param poolShareSupply - the total supply of liquidity pool tokens
+ * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L30
  */
 export const calcDepositedTokens = (
   removedFunds: bigint,
@@ -63,6 +66,7 @@ export const calcDepositedTokens = (
  * @param poolBalances - the market maker's balances of outcome tokens
  * @returns array of BigInt values representing the deposited amounts
  * @throws error if any pool balance is zero
+ * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L44
  */
 export const calcAddFundingDepositedAmounts = (
   addedFunds: bigint,
@@ -86,6 +90,7 @@ export const calcAddFundingDepositedAmounts = (
  * Computes the distribution hint that should be used for setting the initial odds to `initialOdds`
  * @param initialOdds - an array of numbers proportional to the initial estimate of the probability of each outcome
  * @returns array of BigInt values representing the distribution hint
+ * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L61
  */
 export const calcDistributionHint = (initialOdds: number[]): bigint[] => {
   const allEqual = initialOdds.every(initialOdd => initialOdd === initialOdds[0]);
@@ -103,24 +108,6 @@ export const calcDistributionHint = (initialOdds: number[]): bigint[] => {
   return distributionHint;
 };
 
-/**
- * Compute the number of outcome tokens that will be sent to the user by the market maker after funding it for the first time with `addedFunds` of collateral.
- * @dev The distribution hint plays the role of the pool's balances so we can just forward this to calcAddFundingSendAmounts
- * @param addedFunds - the amount of collateral being added to the market maker as liquidity
- * @param distributionHint - a distribution hint as calculated by `calcDistributionHint`
- */
-export const calcInitialFundingSendAmounts = (
-  addedFunds: bigint,
-  distributionHint: bigint[]
-): bigint[] | null => calcAddFundingOutcomeTokensReturned(addedFunds, distributionHint);
-
-/**
- * Compute the number of liquidity pool tokens that will be sent to the user by the Market Maker
- * after adding `addedFunds` of collateral.
- * @param addedFunds - the amount of collateral being added to the market maker as liquidity
- * @param poolBalances - the market maker's balances of outcome tokens
- * @param poolShareSupply - the total supply of liquidity pool tokens
- */
 export const calcTokensToReceiveAfterAddFunding = (
   fundsToAdd: bigint,
   marketOutcomeTokensAmount: bigint[],
@@ -138,12 +125,14 @@ export const calcTokensToReceiveAfterAddFunding = (
     return fundsToAdd;
   }
 };
+
 /**
  * Compute the number of outcome tokens that will be sent to the user by the Market Maker
  * after removing `removedFunds` of pool shares.
  * @param removedFunds - the amount of liquidity pool tokens being sent to the market maker in return for underlying outcome tokens
  * @param poolBalances - the market maker's balances of outcome tokens
  * @param poolShareSupply - the total supply of liquidity pool tokens
+ * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L114
  */
 export const calcRemoveFundingSendAmounts = (
   removedFunds: bigint,
@@ -154,51 +143,4 @@ export const calcRemoveFundingSendAmounts = (
     poolShareSupply > 0 ? (h * removedFunds) / poolShareSupply : BigInt(0)
   );
   return sendAmounts;
-};
-/**
- * Compute the numbers of outcome tokens that will be added to the market maker after adding `addedFunds` of collateral.
- * @dev The distribution hint plays the role of the pool's balances so we can just forward this to calcAddFundingSendAmounts
- * @param addedFunds - the amount of collateral being added to the market maker as liquidity
- * @param poolBalances - the market maker's balances of outcome tokens
- */
-export const calcInitialFundingDepositedAmounts = (
-  addedFunds: bigint,
-  distributionHint: bigint[]
-): bigint[] => {
-  if (distributionHint.some(percentage => percentage === BigInt(0))) {
-    throw new Error(
-      "Invalid Distribution Hint - can't assign a weight of zero to an outcome"
-    );
-  }
-  return calcAddFundingDepositedAmounts(addedFunds, distributionHint);
-};
-export const calcSharesBought = (
-  poolShares: bigint,
-  balances: bigint[],
-  shares: bigint[],
-  collateralTokenAmount: bigint
-) => {
-  const sendAmountsAfterAddingFunding = calcAddFundingOutcomeTokensReturned(
-    collateralTokenAmount,
-    balances,
-    poolShares
-  );
-
-  const sharesAfterAddingFunding = sendAmountsAfterAddingFunding
-    ? shares.map((balance, i) => balance + sendAmountsAfterAddingFunding[i])
-    : shares.map(share => share);
-
-  const sendAmountsAfterRemovingFunding = calcRemoveFundingSendAmounts(
-    collateralTokenAmount,
-    balances,
-    poolShares
-  );
-  const depositedTokens = sendAmountsAfterRemovingFunding.reduce(
-    (min: bigint, amount: bigint) => (amount < min ? amount : min)
-  );
-  const sharesAfterRemovingFunding = shares.map((share, i) => {
-    return share + sendAmountsAfterRemovingFunding[i] - depositedTokens;
-  });
-
-  return sharesAfterAddingFunding[0] - sharesAfterRemovingFunding[0];
 };

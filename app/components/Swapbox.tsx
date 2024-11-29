@@ -348,7 +348,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
                 <SlippageSettings />
               </div>
             </div>
-            {potentialProfit && (
+            {!!potentialProfit && (
               <div className="flex items-center justify-between">
                 <p className="text-text-low-em">Potential profit</p>
                 <div className="flex items-center space-x-1">
