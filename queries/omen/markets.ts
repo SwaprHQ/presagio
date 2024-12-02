@@ -12,9 +12,11 @@ import {
   QueryFpmmTransactionsArgs,
 } from './types';
 import { OMEN_SUBGRAPH_URL } from '@/constants';
-import { getUserPositions } from '../conditional-tokens';
+import { getUserPositions, getUserPositionsByIds } from '../conditional-tokens';
 import { Market, Position, UserBet } from '@/entities';
 import { marketHasDangerousKeyword } from './dangerousKeywords';
+import { getAIAgents } from '@/queries/dune';
+import { Address } from 'viem';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -461,6 +463,14 @@ const sortByNewestBet = (a: UserBet, b: UserBet) => {
   );
 };
 
+const getAllAiAgentsBets = async () => {
+  const aiAgents = await getAIAgents();
+  const addresses = aiAgents?.map(item => item.address) ?? [];
+
+  const userPositions = await getUserPositionsByIds({ id_in: addresses as Address[] });
+  return userPositions;
+};
+
 const getUserBets = async (address?: string) => {
   if (!address) return [];
 
@@ -522,4 +532,5 @@ export {
   getMarketTrades,
   getMarketTradesAndTransactions,
   getUserBets,
+  getAllAiAgentsBets,
 };

@@ -6,6 +6,7 @@ import {
   QueryUserArgs,
   QueryUserPositionArgs,
   QueryUserPositionsArgs,
+  UserPosition_Filter,
 } from './types';
 import { gql, request } from 'graphql-request';
 
@@ -15,7 +16,7 @@ const getUserPositionsQuery = gql`
       where: { user_: { id: $id } }
       orderBy: position__createTimestamp
       orderDirection: desc
-      first: 999
+      first: 100
     ) {
       id
       balance
@@ -136,6 +137,67 @@ const getUserQuery = gql`
   }
 `;
 
+const getUserPositionsByIdsQuery = gql`
+  query GetUserPositionsByIds($id_in: [ID!]!) {
+    userPositions(
+      where: { user_: { id_in: $id_in } }
+      orderBy: position__createTimestamp
+      orderDirection: desc
+      first: 1000
+    ) {
+      id
+      balance
+      totalBalance
+      wrappedBalance
+      user {
+        firstParticipation
+        lastActive
+        id
+      }
+      position {
+        id
+        activeValue
+        conditionIdsStr
+        indexSets
+        multiplicities
+        wrappedTokenAddress
+        collateralTokenAddress
+        createTimestamp
+        collateralToken {
+          activeAmount
+          mergedAmount
+          redeemedAmount
+          splitAmount
+        }
+        conditions {
+          id
+          oracle
+          outcomes
+          outcomeSlotCount
+          payouts
+          payoutNumerators
+          payoutDenominator
+          questionId
+          resolved
+          resolveTimestamp
+          resolveTransaction
+          createTimestamp
+        }
+      }
+    }
+  }
+`;
+
+const getUserPositionsByIds = async (
+  params: QueryUserPositionsArgs & UserPosition_Filter
+) => {
+  return request<Pick<Query, 'userPositions'>>(
+    CONDITIONAL_TOKENS_SUBGRAPH_URL,
+    getUserPositionsByIdsQuery,
+    params
+  );
+};
+
 const getUserPositions = async (params: QueryUserPositionArgs & QueryUserPositionsArgs) =>
   request<Pick<Query, 'userPositions'>>(
     CONDITIONAL_TOKENS_SUBGRAPH_URL,
@@ -162,4 +224,10 @@ const getCondition = async (params: QueryConditionArgs) =>
 const getUser = async (params: QueryUserArgs) =>
   request<Pick<Query, 'user'>>(CONDITIONAL_TOKENS_SUBGRAPH_URL, getUserQuery, params);
 
-export { getUserPositions, getMarketUserPositions, getCondition, getUser };
+export {
+  getUserPositions,
+  getMarketUserPositions,
+  getCondition,
+  getUser,
+  getUserPositionsByIds,
+};
