@@ -1,16 +1,17 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { cx } from 'class-variance-authority';
 import request from 'graphql-request';
 
+import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
+import { Market, Outcome } from '@/entities';
 import {
   FixedProductMarketMaker,
   FpmmTrade_OrderBy,
   getMarketTrades,
   OrderDirection,
 } from '@/queries/omen';
-import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
-import { Outcome } from '@/entities';
 
 const MIN_TRADES_AMOUNT = 1;
 const blockNumberQuery = `
@@ -39,6 +40,9 @@ type OutcomeTokenMarginalPricesResponse = {
 
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
+  const marketModel = new Market(market);
+  const winnerOutcome = marketModel.getWinnerOutcome();
+  const isAnswerFinal = marketModel.isAnswerFinal;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
@@ -95,32 +99,59 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     market.outcomeTokenMarginalPrices?.[1] ?? lastTradeMarginalPrices?.[1]
   );
 
-  const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
+  const getOutcomesPercentages = () => {
+    if (isAnswerFinal && winnerOutcome) {
+      return winnerOutcome.index ? ['0', '100'] : ['100', '0'];
+    }
+
+    return [outcome0?.percentage, outcome1?.percentage];
+  };
+
+  const outcomesPercentages = getOutcomesPercentages();
+  const outcome0percentage = outcomesPercentages[0];
+  const outcome1percentage = outcomesPercentages[1];
+  const hasOutcomePercentages = outcome0percentage && outcome1percentage;
+  const showOutcome0 = !!Number(outcome0percentage) && isAnswerFinal;
+  const showOutcome1 = !!Number(outcome1percentage) && isAnswerFinal;
 
   return (
     <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
-        <div
-          className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"
-          style={{
-            width: outcome0?.percentage ? `${outcome0.percentage}%` : '50%',
-          }}
-        />
+        {showOutcome0 && (
+          <div
+            className={cx(
+              'flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2',
+              {
+                'rounded-e-8': !showOutcome1,
+              }
+            )}
+            style={{
+              width: `${outcome0percentage ?? '50'}%`,
+            }}
+          />
+        )}
 
-        <div
-          className="flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2"
-          style={{
-            width: outcome1?.percentage ? `${outcome1.percentage}%` : '50%',
-          }}
-        />
+        {showOutcome1 && (
+          <div
+            className={cx(
+              'flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2',
+              {
+                'rounded-s-8': !showOutcome0,
+              }
+            )}
+            style={{
+              width: `${outcome1percentage ?? 50}%`,
+            }}
+          />
+        )}
       </div>
 
       <div className="flex h-4 justify-between text-sm font-semibold">
         {hasOutcomePercentages && (
           <>
-            <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
+            <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0percentage || '-'}%`}</p>
             <p className="w-full text-right uppercase text-text-danger-main">
-              {`${outcome1.symbol} ${outcome1.percentage || '-'}%`}
+              {`${outcome1.symbol} ${outcome1percentage || '-'}%`}
             </p>
           </>
         )}
