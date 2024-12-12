@@ -10,7 +10,7 @@ import {
 } from '@swapr/ui';
 import { Market } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
-import { Swapbox } from '@/app/components';
+import { OutcomeTag, Swapbox } from '@/app/components';
 import { KLEROS_URL, OUTCOME_TAG_COLORS_SCHEME, REALITY_QUESTION_URL } from '@/constants';
 import { PropsWithChildren } from 'react';
 
@@ -20,6 +20,7 @@ interface BetProps {
 
 export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
   const marketModel = new Market(fixedProductMarketMaker);
+  const marketAnswer = marketModel.currentAnswer ?? -1;
 
   if (!marketModel.isClosed && marketModel.hasLiquidity)
     return <Swapbox fixedProductMarketMaker={fixedProductMarketMaker} />;
@@ -73,14 +74,10 @@ export const Bet = ({ fixedProductMarketMaker }: BetProps) => {
       <div className="flex flex-col items-center space-y-8 p-8">
         <div className="flex items-center space-x-2">
           <span>Current winner outcome is</span>
-          <Tag
-            className="w-fit uppercase"
-            colorScheme={OUTCOME_TAG_COLORS_SCHEME[marketModel.currentAnswer]}
-          >
-            {marketModel.currentAnswer === Market.INVALID_ANSWER
-              ? 'Invalid'
-              : marketModel.outcomes[marketModel.currentAnswer].name}
-          </Tag>
+          <OutcomeTag
+            outcomeAnswer={marketModel.currentAnswer ?? -1}
+            outcomeName={marketModel.outcomes[marketAnswer]?.name}
+          />
           <Info>For questions which can&apos;t be answered, answer must be Invalid.</Info>
         </div>
         <div className="flex w-full flex-col items-center space-y-2 rounded-12 bg-surface-surface-1 py-4">
