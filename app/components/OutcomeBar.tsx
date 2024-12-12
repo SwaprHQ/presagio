@@ -149,8 +149,12 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       <div className="flex h-4 justify-between text-sm font-semibold">
         {hasOutcomePercentages && (
           <>
-            <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0percentage || '-'}%`}</p>
-            <p className="w-full text-right uppercase text-text-danger-main">
+            <p
+              className={`w-full uppercase ${showOutcome0 ? 'text-text-success-main' : 'text-text-low-em'}`}
+            >{`${outcome0.symbol} ${outcome0percentage || '-'}%`}</p>
+            <p
+              className={`w-full text-right uppercase ${showOutcome1 ? 'text-text-danger-main' : 'text-text-low-em'}`}
+            >
               {`${outcome1.symbol} ${outcome1percentage || '-'}%`}
             </p>
           </>
