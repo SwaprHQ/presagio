@@ -6,7 +6,6 @@ import {
   MarketThumbnail,
   Skeleton,
   TokenLogo,
-  OutcomeTag,
 } from '@/app/components';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
@@ -56,7 +55,6 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const fixedProductMarketMaker = data.fixedProductMarketMaker;
   const marketModel = new Market(fixedProductMarketMaker);
   const closingDate = new Date(+fixedProductMarketMaker.openingTimestamp * 1000);
-  const marketAnswer = marketModel.currentAnswer ?? -1;
 
   return (
     <>
@@ -83,18 +81,8 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   </Tag>
                 </a>
                 {marketModel.isClosed ? (
-                  <Tag
-                    className="w-fit gap-1 capitalize"
-                    colorScheme="quaternary"
-                    size="sm"
-                  >
-                    <p>Market Closed: Outcome</p>
-                    <OutcomeTag
-                      className="h-fit"
-                      hasBorder
-                      outcomeAnswer={marketAnswer}
-                      outcomeName={marketModel.outcomes[marketAnswer]?.name}
-                    />
+                  <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                    Market Closed
                   </Tag>
                 ) : (
                   <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
