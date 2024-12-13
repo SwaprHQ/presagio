@@ -43,6 +43,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const marketModel = new Market(market);
   const winnerOutcome = marketModel.getWinnerOutcome();
   const isClosed = marketModel.isClosed;
+  const isClosedAndInvalid = isClosed && !winnerOutcome;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
@@ -123,9 +124,10 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       <div className="flex space-x-1 transition-all">
         <div
           className={cx(
-            'flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2',
+            'flex h-3 items-center rounded-s-8 px-2',
             isWinnerOutcome0 && 'rounded-e-8',
-            isWinnerOutcome1 && 'hidden'
+            isWinnerOutcome1 && 'hidden',
+            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-success-accent-2'
           )}
           style={{
             width: `${outcome0percentage ?? '50'}%`,
@@ -134,9 +136,10 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
 
         <div
           className={cx(
-            'flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2',
+            'flex h-3 items-center rounded-e-8 px-2',
             isWinnerOutcome1 && 'rounded-s-8',
-            isWinnerOutcome0 && 'hidden'
+            isWinnerOutcome0 && 'hidden',
+            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-accent-2'
           )}
           style={{
             width: `${outcome1percentage ?? 50}%`,
