@@ -42,7 +42,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
   const marketModel = new Market(market);
   const winnerOutcome = marketModel.getWinnerOutcome();
-  const isAnswerFinal = marketModel.isAnswerFinal;
+  const isClosed = marketModel.isClosed;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
@@ -100,7 +100,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   );
 
   const getOutcomesPercentages = () => {
-    if (isAnswerFinal && winnerOutcome) {
+    if (isClosed && winnerOutcome) {
       return winnerOutcome.index ? ['0', '100'] : ['100', '0'];
     }
 
@@ -115,35 +115,33 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const outcome0percentage = outcomesPercentages[0];
   const outcome1percentage = outcomesPercentages[1];
   const hasOutcomePercentages = outcome0percentage && outcome1percentage;
-  const isWinnerOutcome0 = !!Number(outcome0percentage) && isAnswerFinal;
-  const isWinnerOutcome1 = !!Number(outcome1percentage) && isAnswerFinal;
+  const isWinnerOutcome0 = !!Number(outcome0percentage) && isClosed && winnerOutcome;
+  const isWinnerOutcome1 = !!Number(outcome1percentage) && isClosed && winnerOutcome;
 
   return (
     <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
-        {isWinnerOutcome0 && (
-          <div
-            className={cx(
-              'flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2',
-              !isWinnerOutcome1 && 'rounded-e-8'
-            )}
-            style={{
-              width: `${outcome0percentage ?? '50'}%`,
-            }}
-          />
-        )}
+        <div
+          className={cx(
+            'flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2',
+            isWinnerOutcome0 && 'rounded-e-8',
+            isWinnerOutcome1 && 'hidden'
+          )}
+          style={{
+            width: `${outcome0percentage ?? '50'}%`,
+          }}
+        />
 
-        {isWinnerOutcome1 && (
-          <div
-            className={cx(
-              'flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2',
-              !isWinnerOutcome0 && 'rounded-s-8'
-            )}
-            style={{
-              width: `${outcome1percentage ?? 50}%`,
-            }}
-          />
-        )}
+        <div
+          className={cx(
+            'flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2',
+            isWinnerOutcome1 && 'rounded-s-8',
+            isWinnerOutcome0 && 'hidden'
+          )}
+          style={{
+            width: `${outcome1percentage ?? 50}%`,
+          }}
+        />
       </div>
 
       <div className="flex h-4 justify-between text-sm font-semibold">
