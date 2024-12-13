@@ -107,23 +107,25 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     return [outcome0?.percentage, outcome1?.percentage];
   };
 
+  const getOutcomeSymbolAndPercentage = (outcome: Outcome, percentage: string) => {
+    return `${outcome.symbol} ${percentage || '-'}%`;
+  };
+
   const outcomesPercentages = getOutcomesPercentages();
   const outcome0percentage = outcomesPercentages[0];
   const outcome1percentage = outcomesPercentages[1];
   const hasOutcomePercentages = outcome0percentage && outcome1percentage;
-  const showOutcome0 = !!Number(outcome0percentage) && isAnswerFinal;
-  const showOutcome1 = !!Number(outcome1percentage) && isAnswerFinal;
+  const isWinnerOutcome0 = !!Number(outcome0percentage) && isAnswerFinal;
+  const isWinnerOutcome1 = !!Number(outcome1percentage) && isAnswerFinal;
 
   return (
     <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
-        {showOutcome0 && (
+        {isWinnerOutcome0 && (
           <div
             className={cx(
               'flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2',
-              {
-                'rounded-e-8': !showOutcome1,
-              }
+              !isWinnerOutcome1 && 'rounded-e-8'
             )}
             style={{
               width: `${outcome0percentage ?? '50'}%`,
@@ -131,13 +133,11 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
           />
         )}
 
-        {showOutcome1 && (
+        {isWinnerOutcome1 && (
           <div
             className={cx(
               'flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2',
-              {
-                'rounded-s-8': !showOutcome0,
-              }
+              !isWinnerOutcome0 && 'rounded-s-8'
             )}
             style={{
               width: `${outcome1percentage ?? 50}%`,
@@ -150,12 +150,14 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         {hasOutcomePercentages && (
           <>
             <p
-              className={`w-full uppercase ${showOutcome0 ? 'text-text-success-main' : 'text-text-low-em'}`}
-            >{`${outcome0.symbol} ${outcome0percentage || '-'}%`}</p>
-            <p
-              className={`w-full text-right uppercase ${showOutcome1 ? 'text-text-danger-main' : 'text-text-low-em'}`}
+              className={`w-full uppercase ${isWinnerOutcome0 ? 'text-text-success-main' : 'text-text-low-em'}`}
             >
-              {`${outcome1.symbol} ${outcome1percentage || '-'}%`}
+              {getOutcomeSymbolAndPercentage(outcome0, outcome0percentage)}
+            </p>
+            <p
+              className={`w-full text-right uppercase ${isWinnerOutcome1 ? 'text-text-danger-main' : 'text-text-low-em'}`}
+            >
+              {getOutcomeSymbolAndPercentage(outcome1, outcome1percentage)}
             </p>
           </>
         )}
