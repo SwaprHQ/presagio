@@ -148,12 +148,12 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         {hasOutcomePercentages && (
           <>
             <p
-              className={`w-full uppercase ${isWinnerOutcome0 ? 'text-text-success-main' : 'text-text-low-em'}`}
+              className={`w-full uppercase ${isWinnerOutcome0 || !isClosed ? 'text-text-success-main' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome0, outcome0percentage)}
             </p>
             <p
-              className={`w-full text-right uppercase ${isWinnerOutcome1 ? 'text-text-danger-main' : 'text-text-low-em'}`}
+              className={`w-full text-right uppercase ${isWinnerOutcome1 || !isClosed ? 'text-text-danger-main' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome1, outcome1percentage)}
             </p>
