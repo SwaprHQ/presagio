@@ -1,16 +1,17 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { cx } from 'class-variance-authority';
 import request from 'graphql-request';
 
+import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
+import { Market, Outcome } from '@/entities';
 import {
   FixedProductMarketMaker,
   FpmmTrade_OrderBy,
   getMarketTrades,
   OrderDirection,
 } from '@/queries/omen';
-import { OMEN_SUBGRAPH_URL, XDAI_BLOCKS_SUBGRAPH_URL } from '@/constants';
-import { Outcome } from '@/entities';
 
 const MIN_TRADES_AMOUNT = 1;
 const blockNumberQuery = `
@@ -39,6 +40,10 @@ type OutcomeTokenMarginalPricesResponse = {
 
 export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
+  const marketModel = new Market(market);
+  const winnerOutcome = marketModel.getWinnerOutcome();
+  const isClosed = marketModel.isClosed;
+  const isClosedAndInvalid = isClosed && !winnerOutcome;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
@@ -95,22 +100,49 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
     market.outcomeTokenMarginalPrices?.[1] ?? lastTradeMarginalPrices?.[1]
   );
 
-  const hasOutcomePercentages = outcome0.percentage && outcome1.percentage;
+  const getOutcomesPercentages = () => {
+    if (isClosed && winnerOutcome) {
+      return winnerOutcome.index ? ['0', '100'] : ['100', '0'];
+    }
+
+    return [outcome0?.percentage, outcome1?.percentage];
+  };
+
+  const getOutcomeSymbolAndPercentage = (outcome: Outcome, percentage: string) => {
+    return `${outcome.symbol} ${percentage || '-'}%`;
+  };
+
+  const outcomesPercentages = getOutcomesPercentages();
+  const outcome0percentage = outcomesPercentages[0];
+  const outcome1percentage = outcomesPercentages[1];
+  const hasOutcomePercentages = outcome0percentage && outcome1percentage;
+  const isWinnerOutcome0 = !!Number(outcome0percentage) && isClosed && winnerOutcome;
+  const isWinnerOutcome1 = !!Number(outcome1percentage) && isClosed && winnerOutcome;
 
   return (
     <div className="w-full space-y-1">
       <div className="flex space-x-1 transition-all">
         <div
-          className="flex h-3 items-center rounded-s-8 bg-surface-success-accent-2 px-2"
+          className={cx(
+            'flex h-3 items-center rounded-s-8 px-2',
+            isWinnerOutcome0 && 'rounded-e-8',
+            isWinnerOutcome1 && 'hidden',
+            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-success-accent-2'
+          )}
           style={{
-            width: outcome0?.percentage ? `${outcome0.percentage}%` : '50%',
+            width: `${outcome0percentage ?? '50'}%`,
           }}
         />
 
         <div
-          className="flex h-3 items-center rounded-e-8 bg-surface-danger-accent-2 px-2"
+          className={cx(
+            'flex h-3 items-center rounded-e-8 px-2',
+            isWinnerOutcome1 && 'rounded-s-8',
+            isWinnerOutcome0 && 'hidden',
+            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-accent-2'
+          )}
           style={{
-            width: outcome1?.percentage ? `${outcome1.percentage}%` : '50%',
+            width: `${outcome1percentage ?? 50}%`,
           }}
         />
       </div>
@@ -118,9 +150,15 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
       <div className="flex h-4 justify-between text-sm font-semibold">
         {hasOutcomePercentages && (
           <>
-            <p className="w-full uppercase text-text-success-main">{`${outcome0.symbol} ${outcome0.percentage || '-'}%`}</p>
-            <p className="w-full text-right uppercase text-text-danger-main">
-              {`${outcome1.symbol} ${outcome1.percentage || '-'}%`}
+            <p
+              className={`w-full uppercase ${isWinnerOutcome0 || !isClosed ? 'text-text-success-main' : 'text-text-low-em'}`}
+            >
+              {getOutcomeSymbolAndPercentage(outcome0, outcome0percentage)}
+            </p>
+            <p
+              className={`w-full text-right uppercase ${isWinnerOutcome1 || !isClosed ? 'text-text-danger-main' : 'text-text-low-em'}`}
+            >
+              {getOutcomeSymbolAndPercentage(outcome1, outcome1percentage)}
             </p>
           </>
         )}
