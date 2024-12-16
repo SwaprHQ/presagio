@@ -42,8 +42,8 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const { id } = market;
   const marketModel = new Market(market);
   const winnerOutcome = marketModel.getWinnerOutcome();
-  const isClosed = marketModel.isClosed;
-  const isClosedAndInvalid = isClosed && marketModel.isAnswerInvalid;
+  const isAnswerInvalid = marketModel.isAnswerInvalid;
+  const isMarketClosed = marketModel.isClosed;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
@@ -101,7 +101,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   );
 
   const getOutcomesPercentages = () => {
-    if (isClosed && winnerOutcome) {
+    if (isMarketClosed && winnerOutcome) {
       return winnerOutcome.index ? ['0', '100'] : ['100', '0'];
     }
 
@@ -116,8 +116,12 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const outcome0percentage = outcomesPercentages[0];
   const outcome1percentage = outcomesPercentages[1];
   const hasOutcomePercentages = outcome0percentage && outcome1percentage;
-  const isWinnerOutcome0 = !!Number(outcome0percentage) && isClosed && winnerOutcome;
-  const isWinnerOutcome1 = !!Number(outcome1percentage) && isClosed && winnerOutcome;
+  const isWinnerOutcome0 =
+    !!Number(outcome0percentage) && isMarketClosed && winnerOutcome;
+  const isWinnerOutcome1 =
+    !!Number(outcome1percentage) && isMarketClosed && winnerOutcome;
+  const isMarketInvalid = isMarketClosed && isAnswerInvalid;
+  const isMarketPending = isMarketClosed && !winnerOutcome && !isAnswerInvalid;
 
   return (
     <div className="w-full space-y-1">
@@ -127,7 +131,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
             'flex h-3 items-center rounded-s-8 px-2',
             isWinnerOutcome0 && 'rounded-e-8',
             isWinnerOutcome1 && 'hidden',
-            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-success-accent-2'
+            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-success-accent-2'
           )}
           style={{
             width: `${outcome0percentage ?? '50'}%`,
@@ -139,7 +143,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
             'flex h-3 items-center rounded-e-8 px-2',
             isWinnerOutcome1 && 'rounded-s-8',
             isWinnerOutcome0 && 'hidden',
-            isClosedAndInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-accent-2'
+            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-accent-2'
           )}
           style={{
             width: `${outcome1percentage ?? 50}%`,
@@ -151,12 +155,12 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         {hasOutcomePercentages && (
           <>
             <p
-              className={`w-full uppercase ${isWinnerOutcome0 || !isClosed ? 'text-text-success-main' : 'text-text-low-em'}`}
+              className={`w-full uppercase ${isWinnerOutcome0 || isMarketPending || !isMarketClosed ? 'text-text-success-main' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome0, outcome0percentage)}
             </p>
             <p
-              className={`w-full text-right uppercase ${isWinnerOutcome1 || !isClosed ? 'text-text-danger-main' : 'text-text-low-em'}`}
+              className={`w-full text-right uppercase ${isWinnerOutcome1 || isMarketPending || !isMarketClosed ? 'text-text-danger-main' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome1, outcome1percentage)}
             </p>
