@@ -43,7 +43,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
   const marketModel = new Market(market);
   const winnerOutcome = marketModel.getWinnerOutcome();
   const isClosed = marketModel.isClosed;
-  const isClosedAndInvalid = isClosed && !winnerOutcome;
+  const isClosedAndInvalid = isClosed && marketModel.isAnswerInvalid;
 
   const { data: trade } = useQuery({
     queryKey: ['getLastMarketTrade', id],
