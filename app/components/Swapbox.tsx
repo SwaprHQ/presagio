@@ -12,8 +12,8 @@ import {
 import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
-import { useAccount, useChains, useReadContract } from 'wagmi';
-import { ConnectButton } from '.';
+import { useAccount, useReadContract } from 'wagmi';
+import { ExecuteTxButton } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import {
@@ -40,7 +40,6 @@ import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/ut
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
 import { useSlippage } from '@/context';
-import { useUnsupportedNetwork } from '@/hooks';
 
 const ONE_UNIT = '1';
 
@@ -79,10 +78,9 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     id
   );
 
-  const { address, isDisconnected } = useAccount();
+  const { address } = useAccount();
   const { openModal } = useModal();
   const { slippage } = useSlippage();
-  const unsupportedNetwork = useUnsupportedNetwork();
 
   const [tokenAmountIn, setTokenAmountIn] = useState('');
   const [tokenAmountOut, setTokenAmountOut] = useState<bigint>();
@@ -362,30 +360,18 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          {isDisconnected ? (
-            <ConnectButton width="full" size="lg">
-              Connect
-            </ConnectButton>
-          ) : unsupportedNetwork ? (
-            <Button width="full" variant="pastel" size="lg" disabled>
-              Unsupported network
-            </Button>
-          ) : !tokenAmountIn || +tokenAmountIn === 0 ? (
-            <Button width="full" variant="pastel" size="lg" disabled>
-              Enter amount
-            </Button>
-          ) : currentState.isLoading ? (
+          {currentState?.isLoading ? (
             <Button width="full" variant="pastel" size="lg" disabled>
               Fetching price
             </Button>
-          ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
-            <Button width="full" variant="pastel" size="lg" disabled>
-              Insufficient {currentState.inToken.symbol} balance
-            </Button>
           ) : (
-            <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
-              {currentState.buttonText}
-            </Button>
+            <ExecuteTxButton
+              amount={tokenAmountIn ? +tokenAmountIn : 0}
+              balance={+formatEther(currentState.balance ?? BigInt(0))}
+              modalButtonLabel={currentState.buttonText}
+              modalButtonOnClick={openBetModal}
+              tokenSymbol={currentState.inToken.symbol}
+            />
           )}
         </div>
       </div>
