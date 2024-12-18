@@ -1,12 +1,12 @@
 'use client';
 
 import {
+  AccountStateButton,
   TokenLogo,
   SwapInput,
   Spinner,
   succesApprovalTxToast,
   waitingTxToast,
-  ExecuteTxButtonWrapper,
 } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { Query } from '@/queries/omen';
@@ -311,7 +311,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
         outcomeTokenToReceive={outcomeTokenToReceive}
         market={marketModel}
       />
-      <ExecuteTxButtonWrapper>
+      <AccountStateButton>
         {!amount ? (
           <Button width="full" variant="pastel" size="lg" disabled>
             Enter amount
@@ -334,7 +334,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
             {activeLiquidityOperationState.actionTitle}
           </Button>
         )}
-      </ExecuteTxButtonWrapper>
+      </AccountStateButton>
 
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_LIQUIDITY)}

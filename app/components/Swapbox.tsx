@@ -13,7 +13,7 @@ import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
-import { ExecuteTxButtonWrapper } from '.';
+import { AccountStateButton } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import {
@@ -360,31 +360,25 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          {currentState?.isLoading ? (
-            <Button width="full" variant="pastel" size="lg" disabled>
-              Fetching price
-            </Button>
-          ) : (
-            <ExecuteTxButtonWrapper>
-              {!tokenAmountIn || +tokenAmountIn === 0 ? (
-                <Button width="full" variant="pastel" size="lg" disabled>
-                  Enter amount
-                </Button>
-              ) : currentState.isLoading ? (
-                <Button width="full" variant="pastel" size="lg" disabled>
-                  Fetching price
-                </Button>
-              ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
-                <Button width="full" variant="pastel" size="lg" disabled>
-                  Insufficient {currentState.inToken.symbol} balance
-                </Button>
-              ) : (
-                <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
-                  {currentState.buttonText}
-                </Button>
-              )}
-            </ExecuteTxButtonWrapper>
-          )}
+          <AccountStateButton>
+            {!tokenAmountIn || +tokenAmountIn === 0 ? (
+              <Button width="full" variant="pastel" size="lg" disabled>
+                Enter amount
+              </Button>
+            ) : currentState.isLoading ? (
+              <Button width="full" variant="pastel" size="lg" disabled>
+                Fetching price
+              </Button>
+            ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
+              <Button width="full" variant="pastel" size="lg" disabled>
+                Insufficient {currentState.inToken.symbol} balance
+              </Button>
+            ) : (
+              <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
+                {currentState.buttonText}
+              </Button>
+            )}
+          </AccountStateButton>
         </div>
       </div>
       <ConfirmTrade
