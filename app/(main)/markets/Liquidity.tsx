@@ -6,7 +6,7 @@ import {
   Spinner,
   succesApprovalTxToast,
   waitingTxToast,
-  ExecuteTxButton,
+  ExecuteTxButtonWrapper,
 } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { Query } from '@/queries/omen';
@@ -311,17 +311,31 @@ export const Liquidity = ({ id }: { id: Address }) => {
         outcomeTokenToReceive={outcomeTokenToReceive}
         market={marketModel}
       />
-      <ExecuteTxButton
-        amount={+amount}
-        balance={+formatEther(activeLiquidityOperationState.balance)}
-        modalButtonLabel={activeLiquidityOperationState.actionTitle}
-        modalButtonOnClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
-        tokenSymbol={
-          liquidityOperation === LiquidityOperation.ADD
-            ? liquidityOperationState[liquidityOperation].inToken.symbol
-            : 'pool tokens'
-        }
-      />
+      <ExecuteTxButtonWrapper>
+        {!amount ? (
+          <Button width="full" variant="pastel" size="lg" disabled>
+            Enter amount
+          </Button>
+        ) : +amount > +formatEther(activeLiquidityOperationState.balance) ? (
+          <Button width="full" variant="pastel" size="lg" disabled>
+            Insufficient{' '}
+            {liquidityOperation === LiquidityOperation.ADD
+              ? liquidityOperationState[liquidityOperation].inToken.symbol
+              : 'pool tokens'}{' '}
+            balance
+          </Button>
+        ) : (
+          <Button
+            width="full"
+            variant="pastel"
+            size="lg"
+            onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
+          >
+            {activeLiquidityOperationState.actionTitle}
+          </Button>
+        )}
+      </ExecuteTxButtonWrapper>
+
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_LIQUIDITY)}
         onOpenChange={() => closeModal(ModalId.CONFIRM_LIQUIDITY)}

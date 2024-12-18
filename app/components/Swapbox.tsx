@@ -13,7 +13,7 @@ import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
-import { ExecuteTxButton } from '.';
+import { ExecuteTxButtonWrapper } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import {
@@ -365,13 +365,25 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               Fetching price
             </Button>
           ) : (
-            <ExecuteTxButton
-              amount={tokenAmountIn ? +tokenAmountIn : 0}
-              balance={+formatEther(currentState.balance ?? BigInt(0))}
-              modalButtonLabel={currentState.buttonText}
-              modalButtonOnClick={openBetModal}
-              tokenSymbol={currentState.inToken.symbol}
-            />
+            <ExecuteTxButtonWrapper>
+              {!tokenAmountIn || +tokenAmountIn === 0 ? (
+                <Button width="full" variant="pastel" size="lg" disabled>
+                  Enter amount
+                </Button>
+              ) : currentState.isLoading ? (
+                <Button width="full" variant="pastel" size="lg" disabled>
+                  Fetching price
+                </Button>
+              ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
+                <Button width="full" variant="pastel" size="lg" disabled>
+                  Insufficient {currentState.inToken.symbol} balance
+                </Button>
+              ) : (
+                <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
+                  {currentState.buttonText}
+                </Button>
+              )}
+            </ExecuteTxButtonWrapper>
           )}
         </div>
       </div>
