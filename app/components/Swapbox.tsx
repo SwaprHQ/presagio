@@ -371,15 +371,21 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          <TxButton
-            disabled={isButtonDisabled}
-            onClick={openBetModal}
-            size="lg"
-            variant="pastel"
-            width="full"
-          >
-            {getButtonLabel()}
-          </TxButton>
+          {currentState.isLoading ? (
+            <Button width="full" variant="pastel" size="lg" disabled>
+              Fetching price
+            </Button>
+          ) : (
+            <TxButton
+              disabled={isButtonDisabled}
+              onClick={openBetModal}
+              size="lg"
+              variant="pastel"
+              width="full"
+            >
+              {getButtonLabel()}
+            </TxButton>
+          )}
         </div>
       </div>
       <ConfirmTrade
