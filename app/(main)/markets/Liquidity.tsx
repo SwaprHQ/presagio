@@ -1,9 +1,9 @@
 'use client';
 
 import {
+  AccountStateButton,
   TokenLogo,
   SwapInput,
-  ConnectButton,
   Spinner,
   succesApprovalTxToast,
   waitingTxToast,
@@ -30,7 +30,7 @@ import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
 import { Market, Token } from '@/entities';
 import { useState } from 'react';
 import { ModalId, useModal, useTx } from '@/context';
-import { formatEtherWithFixedDecimals } from '@/utils';
+import { formatEtherWithFixedDecimals, getButtonLabel } from '@/utils';
 import {
   calcAddFundingOutcomeTokensReturned,
   calcRemoveFundingSendAmounts,
@@ -50,7 +50,6 @@ import {
 } from 'wagmi/actions';
 import { ChainId } from '@/constants';
 import { cx } from 'class-variance-authority';
-import { useUnsupportedNetwork } from '@/hooks';
 
 enum LiquidityOperation {
   ADD = 'add',
@@ -63,8 +62,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
   const [isApproving, setIsApproving] = useState(false);
   const amountWei = parseFloat(amount) > 0 ? parseEther(amount) : BigInt(0);
   const { isModalOpen, closeModal, openModal } = useModal();
-  const { address, isDisconnected } = useAccount();
-  const unsupportedNetwork = useUnsupportedNetwork();
+  const { address } = useAccount();
   const { data } = useQuery<Pick<Query, 'fixedProductMarketMaker'>>({
     queryKey: ['getMarket', id],
   });
@@ -257,6 +255,13 @@ export const Liquidity = ({ id }: { id: Address }) => {
   };
 
   const activeLiquidityOperationState = liquidityOperationState[liquidityOperation];
+  const isEnoughBalance = +amount <= +formatEther(activeLiquidityOperationState.balance);
+  const isButtonDisabled = !amount || !isEnoughBalance;
+  const tokenSymbolText =
+    liquidityOperation === LiquidityOperation.ADD
+      ? liquidityOperationState[liquidityOperation].inToken.symbol ?? 'pool tokens'
+      : 'pool tokens';
+  const defaultButtonLabel = activeLiquidityOperationState.actionTitle;
 
   return (
     <div className="space-y-4 py-2">
@@ -313,36 +318,16 @@ export const Liquidity = ({ id }: { id: Address }) => {
         outcomeTokenToReceive={outcomeTokenToReceive}
         market={marketModel}
       />
-      {isDisconnected ? (
-        <ConnectButton width="full" size="lg">
-          Connect
-        </ConnectButton>
-      ) : unsupportedNetwork ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Unsupported network
-        </Button>
-      ) : !amount ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Enter amount
-        </Button>
-      ) : +amount > +formatEther(activeLiquidityOperationState.balance) ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Insufficient{' '}
-          {liquidityOperation === LiquidityOperation.ADD
-            ? liquidityOperationState[liquidityOperation].inToken.symbol
-            : 'pool tokens'}{' '}
-          balance
-        </Button>
-      ) : (
-        <Button
-          width="full"
-          variant="pastel"
-          size="lg"
-          onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
-        >
-          {activeLiquidityOperationState.actionTitle}
-        </Button>
-      )}
+      <AccountStateButton
+        disabled={isButtonDisabled}
+        onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
+        size="lg"
+        variant="pastel"
+        width="full"
+      >
+        {getButtonLabel(+amount, defaultButtonLabel, isEnoughBalance, tokenSymbolText)}
+      </AccountStateButton>
+
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_LIQUIDITY)}
         onOpenChange={() => closeModal(ModalId.CONFIRM_LIQUIDITY)}
