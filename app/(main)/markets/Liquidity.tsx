@@ -1,11 +1,11 @@
 'use client';
 
 import {
-  AccountStateButton,
   TokenLogo,
   SwapInput,
   Spinner,
   succesApprovalTxToast,
+  TxButton,
   waitingTxToast,
 } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
@@ -30,7 +30,7 @@ import { Abi, Address, erc20Abi, formatEther, parseEther } from 'viem';
 import { Market, Token } from '@/entities';
 import { useState } from 'react';
 import { ModalId, useModal, useTx } from '@/context';
-import { formatEtherWithFixedDecimals, getButtonLabel } from '@/utils';
+import { formatEtherWithFixedDecimals } from '@/utils';
 import {
   calcAddFundingOutcomeTokensReturned,
   calcRemoveFundingSendAmounts,
@@ -257,11 +257,17 @@ export const Liquidity = ({ id }: { id: Address }) => {
   const activeLiquidityOperationState = liquidityOperationState[liquidityOperation];
   const isEnoughBalance = +amount <= +formatEther(activeLiquidityOperationState.balance);
   const isButtonDisabled = !amount || !isEnoughBalance;
-  const tokenSymbolText =
-    liquidityOperation === LiquidityOperation.ADD
-      ? liquidityOperationState[liquidityOperation].inToken.symbol ?? 'pool tokens'
-      : 'pool tokens';
-  const defaultButtonLabel = activeLiquidityOperationState.actionTitle;
+
+  const getButtonLabel = () => {
+    const tokenSymbolText =
+      liquidityOperation === LiquidityOperation.ADD
+        ? liquidityOperationState[liquidityOperation].inToken.symbol ?? 'pool tokens'
+        : 'pool tokens';
+
+    if (!amount) return 'Enter amount';
+    else if (!isEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
+    else return activeLiquidityOperationState.actionTitle;
+  };
 
   return (
     <div className="space-y-4 py-2">
@@ -318,15 +324,15 @@ export const Liquidity = ({ id }: { id: Address }) => {
         outcomeTokenToReceive={outcomeTokenToReceive}
         market={marketModel}
       />
-      <AccountStateButton
+      <TxButton
         disabled={isButtonDisabled}
         onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
         size="lg"
         variant="pastel"
         width="full"
       >
-        {getButtonLabel(+amount, defaultButtonLabel, isEnoughBalance, tokenSymbolText)}
-      </AccountStateButton>
+        {getButtonLabel()}
+      </TxButton>
 
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_LIQUIDITY)}

@@ -13,7 +13,7 @@ import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
-import { AccountStateButton } from '.';
+import { TxButton } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import {
@@ -36,11 +36,7 @@ import {
   useReadToken,
 } from '@/hooks/contracts/erc20';
 import { gnosis } from 'viem/chains';
-import {
-  formatEtherWithFixedDecimals,
-  formatValueWithFixedDecimals,
-  getButtonLabel,
-} from '@/utils';
+import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
 import { useSlippage } from '@/context';
@@ -277,8 +273,13 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   const isEnoughBalance =
     +tokenAmountIn <= +formatEther(currentState.balance ?? BigInt(0));
   const isButtonDisabled = !tokenAmountIn || !isEnoughBalance;
-  const tokenSymbolText = currentState.inToken.symbol ?? 'pool tokens';
-  const defaultButtonLabel = currentState.buttonText;
+
+  const getButtonLabel = () => {
+    if (!tokenAmountIn) return 'Enter amount';
+    else if (!isEnoughBalance)
+      return `Insufficient ${currentState.inToken.symbol ?? 'pool tokens'} balance`;
+    else return currentState.buttonText;
+  };
 
   return (
     <>
@@ -370,20 +371,15 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          <AccountStateButton
+          <TxButton
             disabled={isButtonDisabled}
             onClick={openBetModal}
             size="lg"
             variant="pastel"
             width="full"
           >
-            {getButtonLabel(
-              +tokenAmountIn,
-              defaultButtonLabel,
-              isEnoughBalance,
-              tokenSymbolText
-            )}
-          </AccountStateButton>
+            {getButtonLabel()}
+          </TxButton>
         </div>
       </div>
       <ConfirmTrade

@@ -17,7 +17,7 @@ export * from './UserAvatarWithAddress';
 export * from './Avatar';
 export * from './AddressLink';
 export * from './EmbedMarketModal';
-export * from './AccountStateButton';
 export * from './LifiWidgetPopover';
 export * from './toasts';
 export * from './Spinner';
+export * from './TxButton';

@@ -6,7 +6,7 @@ import { ConnectButton } from '@/app/components';
 import { useUnsupportedNetwork } from '@/hooks';
 import { Button, ButtonProps } from '@swapr/ui';
 
-export const AccountStateButton = ({ children, ...props }: ButtonProps) => {
+export const TxButton = ({ children, ...props }: ButtonProps) => {
   const { isDisconnected } = useAccount();
   const unsupportedNetwork = useUnsupportedNetwork();
 
