@@ -36,7 +36,11 @@ import {
   useReadToken,
 } from '@/hooks/contracts/erc20';
 import { gnosis } from 'viem/chains';
-import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
+import {
+  formatEtherWithFixedDecimals,
+  formatValueWithFixedDecimals,
+  getButtonLabel,
+} from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
 import { useSlippage } from '@/context';
@@ -270,6 +274,12 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     setTokenAmountOut(undefined);
   };
 
+  const isEnoughBalance =
+    +tokenAmountIn <= +formatEther(currentState.balance ?? BigInt(0));
+  const isButtonDisabled = !tokenAmountIn || !isEnoughBalance;
+  const tokenSymbolText = currentState.inToken.symbol ?? 'pool tokens';
+  const defaultButtonLabel = currentState.buttonText;
+
   return (
     <>
       <div className="relative space-y-2 font-medium">
@@ -360,23 +370,18 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          <AccountStateButton>
-            {!tokenAmountIn || +tokenAmountIn === 0 ? (
-              <Button width="full" variant="pastel" size="lg" disabled>
-                Enter amount
-              </Button>
-            ) : currentState.isLoading ? (
-              <Button width="full" variant="pastel" size="lg" disabled>
-                Fetching price
-              </Button>
-            ) : +tokenAmountIn > +formatEther(currentState.balance) ? (
-              <Button width="full" variant="pastel" size="lg" disabled>
-                Insufficient {currentState.inToken.symbol} balance
-              </Button>
-            ) : (
-              <Button width="full" variant="pastel" size="lg" onClick={openBetModal}>
-                {currentState.buttonText}
-              </Button>
+          <AccountStateButton
+            disabled={isButtonDisabled}
+            onClick={openBetModal}
+            size="lg"
+            variant="pastel"
+            width="full"
+          >
+            {getButtonLabel(
+              +tokenAmountIn,
+              defaultButtonLabel,
+              isEnoughBalance,
+              tokenSymbolText
             )}
           </AccountStateButton>
         </div>

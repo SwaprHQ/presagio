@@ -1,14 +1,12 @@
 'use client';
 
-import { PropsWithChildren } from 'react';
-
 import { useAccount } from 'wagmi';
 
 import { ConnectButton } from '@/app/components';
 import { useUnsupportedNetwork } from '@/hooks';
-import { Button } from '@swapr/ui';
+import { Button, ButtonProps } from '@swapr/ui';
 
-export const AccountStateButton = ({ children }: PropsWithChildren) => {
+export const AccountStateButton = ({ children, ...props }: ButtonProps) => {
   const { isDisconnected } = useAccount();
   const unsupportedNetwork = useUnsupportedNetwork();
 
@@ -28,5 +26,5 @@ export const AccountStateButton = ({ children }: PropsWithChildren) => {
     );
   }
 
-  return <>{children}</>;
+  return <Button {...props}>{children}</Button>;
 };
