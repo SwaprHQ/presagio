@@ -270,15 +270,16 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     setTokenAmountOut(undefined);
   };
 
-  const isEnoughBalance =
+  const hasEnoughBalance =
     +tokenAmountIn <= +formatEther(currentState.balance ?? BigInt(0));
-  const isButtonDisabled = !tokenAmountIn || !isEnoughBalance;
+  const isButtonDisabled = !tokenAmountIn || !hasEnoughBalance;
 
   const getButtonLabel = () => {
     if (!tokenAmountIn) return 'Enter amount';
-    else if (!isEnoughBalance)
+    else if (!hasEnoughBalance)
       return `Insufficient ${currentState.inToken.symbol ?? 'pool tokens'} balance`;
-    else return currentState.buttonText;
+
+    return currentState.buttonText;
   };
 
   return (

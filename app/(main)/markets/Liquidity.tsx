@@ -255,8 +255,8 @@ export const Liquidity = ({ id }: { id: Address }) => {
   };
 
   const activeLiquidityOperationState = liquidityOperationState[liquidityOperation];
-  const isEnoughBalance = +amount <= +formatEther(activeLiquidityOperationState.balance);
-  const isButtonDisabled = !amount || !isEnoughBalance;
+  const hasEnoughBalance = +amount <= +formatEther(activeLiquidityOperationState.balance);
+  const isButtonDisabled = !amount || !hasEnoughBalance;
 
   const getButtonLabel = () => {
     const tokenSymbolText =
@@ -265,8 +265,9 @@ export const Liquidity = ({ id }: { id: Address }) => {
         : 'pool tokens';
 
     if (!amount) return 'Enter amount';
-    else if (!isEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
-    else return activeLiquidityOperationState.actionTitle;
+    else if (!hasEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
+
+    return activeLiquidityOperationState.actionTitle;
   };
 
   return (
