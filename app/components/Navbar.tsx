@@ -59,6 +59,11 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
+          <Link href="/leaderboard">
+            <Button variant="pastel" className="space-x-1 text-nowrap">
+              AI Leaderboard
+            </Button>
+          </Link>
           <Link href="/my-bets">
             <div className="relative">
               <Button
