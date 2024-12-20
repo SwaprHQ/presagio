@@ -265,7 +265,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
         : 'pool tokens';
 
     if (!amount) return 'Enter amount';
-    else if (!hasEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
+    if (!hasEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
 
     return activeLiquidityOperationState.actionTitle;
   };
@@ -328,9 +328,6 @@ export const Liquidity = ({ id }: { id: Address }) => {
       <TxButton
         disabled={isButtonDisabled}
         onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
-        size="lg"
-        variant="pastel"
-        width="full"
       >
         {getButtonLabel()}
       </TxButton>

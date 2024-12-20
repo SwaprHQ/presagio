@@ -272,12 +272,13 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
 
   const hasEnoughBalance =
     +tokenAmountIn <= +formatEther(currentState.balance ?? BigInt(0));
-  const isButtonDisabled = !tokenAmountIn || !hasEnoughBalance;
+  const isButtonDisabled = !tokenAmountIn || !hasEnoughBalance || currentState.isLoading;
 
   const getButtonLabel = () => {
     if (!tokenAmountIn) return 'Enter amount';
-    else if (!hasEnoughBalance)
+    if (!hasEnoughBalance)
       return `Insufficient ${currentState.inToken.symbol ?? 'pool tokens'} balance`;
+    if (currentState.isLoading) return 'Fetching price';
 
     return currentState.buttonText;
   };
@@ -372,21 +373,9 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
-          {currentState.isLoading ? (
-            <Button width="full" variant="pastel" size="lg" disabled>
-              Fetching price
-            </Button>
-          ) : (
-            <TxButton
-              disabled={isButtonDisabled}
-              onClick={openBetModal}
-              size="lg"
-              variant="pastel"
-              width="full"
-            >
-              {getButtonLabel()}
-            </TxButton>
-          )}
+          <TxButton disabled={isButtonDisabled} onClick={openBetModal}>
+            {getButtonLabel()}
+          </TxButton>
         </div>
       </div>
       <ConfirmTrade

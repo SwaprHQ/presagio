@@ -26,5 +26,9 @@ export const TxButton = ({ children, ...props }: ButtonProps) => {
     );
   }
 
-  return <Button {...props}>{children}</Button>;
+  return (
+    <Button size="lg" variant="pastel" width="full" {...props}>
+      {children}
+    </Button>
+  );
 };
