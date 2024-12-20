@@ -3,9 +3,9 @@
 import {
   TokenLogo,
   SwapInput,
-  ConnectButton,
   Spinner,
   succesApprovalTxToast,
+  TxButton,
   waitingTxToast,
 } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
@@ -50,7 +50,6 @@ import {
 } from 'wagmi/actions';
 import { ChainId } from '@/constants';
 import { cx } from 'class-variance-authority';
-import { useUnsupportedNetwork } from '@/hooks';
 
 enum LiquidityOperation {
   ADD = 'add',
@@ -63,8 +62,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
   const [isApproving, setIsApproving] = useState(false);
   const amountWei = parseFloat(amount) > 0 ? parseEther(amount) : BigInt(0);
   const { isModalOpen, closeModal, openModal } = useModal();
-  const { address, isDisconnected } = useAccount();
-  const unsupportedNetwork = useUnsupportedNetwork();
+  const { address } = useAccount();
   const { data } = useQuery<Pick<Query, 'fixedProductMarketMaker'>>({
     queryKey: ['getMarket', id],
   });
@@ -257,6 +255,20 @@ export const Liquidity = ({ id }: { id: Address }) => {
   };
 
   const activeLiquidityOperationState = liquidityOperationState[liquidityOperation];
+  const hasEnoughBalance = +amount <= +formatEther(activeLiquidityOperationState.balance);
+  const isButtonDisabled = !amount || !hasEnoughBalance;
+
+  const getButtonLabel = () => {
+    const tokenSymbolText =
+      liquidityOperation === LiquidityOperation.ADD
+        ? liquidityOperationState[liquidityOperation].inToken.symbol ?? 'pool tokens'
+        : 'pool tokens';
+
+    if (!amount) return 'Enter amount';
+    if (!hasEnoughBalance) return `Insufficient ${tokenSymbolText} balance`;
+
+    return activeLiquidityOperationState.actionTitle;
+  };
 
   return (
     <div className="space-y-4 py-2">
@@ -313,36 +325,13 @@ export const Liquidity = ({ id }: { id: Address }) => {
         outcomeTokenToReceive={outcomeTokenToReceive}
         market={marketModel}
       />
-      {isDisconnected ? (
-        <ConnectButton width="full" size="lg">
-          Connect
-        </ConnectButton>
-      ) : unsupportedNetwork ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Unsupported network
-        </Button>
-      ) : !amount ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Enter amount
-        </Button>
-      ) : +amount > +formatEther(activeLiquidityOperationState.balance) ? (
-        <Button width="full" variant="pastel" size="lg" disabled>
-          Insufficient{' '}
-          {liquidityOperation === LiquidityOperation.ADD
-            ? liquidityOperationState[liquidityOperation].inToken.symbol
-            : 'pool tokens'}{' '}
-          balance
-        </Button>
-      ) : (
-        <Button
-          width="full"
-          variant="pastel"
-          size="lg"
-          onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
-        >
-          {activeLiquidityOperationState.actionTitle}
-        </Button>
-      )}
+      <TxButton
+        disabled={isButtonDisabled}
+        onClick={() => openModal(ModalId.CONFIRM_LIQUIDITY)}
+      >
+        {getButtonLabel()}
+      </TxButton>
+
       <Dialog
         open={isModalOpen(ModalId.CONFIRM_LIQUIDITY)}
         onOpenChange={() => closeModal(ModalId.CONFIRM_LIQUIDITY)}
