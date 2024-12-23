@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes, PropsWithChildren } from 'react';
 import { Button, Icon, Popover, PopoverContent, PopoverTrigger } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
 import { cx } from 'class-variance-authority';
@@ -9,10 +9,11 @@ import { TokenLogo } from '../TokenLogo';
 interface SwapInputProps extends InputHTMLAttributes<HTMLInputElement> {
   title: string;
   selectedToken: Token | Outcome | null;
-  onTokenClick?: (outcome?: Outcome) => void;
-  tokenList: Array<Outcome> | null;
+  onTokenClick?: (asset?: Token | Outcome) => void;
+  tokenList: Array<Token | Outcome> | null;
 }
 
+//TODO create 2 different instances, 1 for token and other for outcomes
 export const SwapInput = ({
   title,
   children,
@@ -38,10 +39,36 @@ export const SwapInput = ({
           {...props}
         />
         {selectedToken instanceof Token && (
-          <Button className="flex-shrink-0" variant="pastel">
-            <TokenLogo address={selectedToken.address} size="xs" />
-            <p className="font-semibold">{selectedToken.symbol}</p>
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button className="flex-shrink-0" variant="pastel">
+                <TokenLogo address={selectedToken.address} size="xs" />
+                <p className="font-semibold">{selectedToken.symbol}</p>
+                {tokenList && tokenList[0] instanceof Token && (
+                  <Icon name="chevron-down" />
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="min-w-fit divide-y-2 divide-outline-base-em px-0 py-0">
+              {tokenList?.map(token => {
+                if (!(token instanceof Token)) return;
+
+                return (
+                  <div
+                    key={token.address}
+                    onClick={() => onTokenClick && onTokenClick(token)}
+                    className={cx(
+                      'flex cursor-pointer items-center justify-end space-x-2 px-3 py-2 font-semibold'
+                    )}
+                  >
+                    {selectedToken.equals(token) && <Icon name="tick-fill" />}
+                    <TokenLogo address={token.address} />
+                    <p>{token.symbol}</p>{' '}
+                  </div>
+                );
+              })}
+            </PopoverContent>
+          </Popover>
         )}
         {selectedToken instanceof Outcome && (
           <Popover>
@@ -57,11 +84,15 @@ export const SwapInput = ({
                 >
                   {selectedToken.symbol}
                 </p>
-                {tokenList && <Icon name="chevron-down" />}{' '}
+                {tokenList && tokenList[0] instanceof Outcome && (
+                  <Icon name="chevron-down" />
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="min-w-fit divide-y-2 divide-outline-base-em px-0 py-0">
               {tokenList?.map(outcome => {
+                if (!(outcome instanceof Outcome)) return;
+
                 return (
                   <div
                     key={outcome.index}

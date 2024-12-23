@@ -51,8 +51,8 @@ export enum SwapDirection {
 export type SwapState = {
   inToken: Token | Outcome;
   outToken: Token | Outcome;
-  changeInToken: (outcome?: Outcome) => void;
-  changeOutToken: (outcome?: Outcome) => void;
+  changeInToken: (outcome?: Token | Outcome) => void;
+  changeOutToken: (outcome?: Token | Outcome) => void;
   tokenPrice: string;
   isLoading: boolean;
   balance: bigint;
@@ -87,8 +87,8 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
   const [outcome, setOutcome] = useState<Outcome>(outcome0);
   const [swapDirection, setSwapDirection] = useState<SwapDirection>(SwapDirection.BUY);
 
-  const changeOutcome = (outcome?: Outcome) => {
-    outcome && setOutcome(outcome);
+  const changeOutcome = (outcome?: Token | Outcome) => {
+    outcome && outcome instanceof Outcome && setOutcome(outcome);
   };
 
   const amountWei = parseEther(tokenAmountIn);

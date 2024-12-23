@@ -3,6 +3,8 @@ import { Abi, Address, parseEther } from 'viem';
 import { gnosis } from 'viem/chains';
 import { UseReadContractParameters, useReadContract } from 'wagmi';
 
+export const MARKET_MAKER_FACTORY_ADDRESS = '0x9083A2B699c0a4AD06F63580BDE2635d26a3eeF0';
+
 export const useReadMarketContract = ({
   address,
   functionName,
