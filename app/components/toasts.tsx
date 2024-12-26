@@ -16,7 +16,7 @@ const AddressLink = ({ txHash }: { txHash: string }) => (
   </a>
 );
 
-export const succesApprovalTxToast = (txHash: string, token: Token | Outcome) => {
+export const successApprovalTxToast = (txHash: string, token: Token | Outcome) => {
   const symbol = token.symbol || '';
 
   successToast({

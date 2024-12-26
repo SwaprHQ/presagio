@@ -4,7 +4,7 @@ import {
   TokenLogo,
   SwapInput,
   Spinner,
-  succesApprovalTxToast,
+  successApprovalTxToast,
   TxButton,
   waitingTxToast,
 } from '@/app/components';
@@ -159,10 +159,12 @@ export const Liquidity = ({ id }: { id: Address }) => {
       address: id,
       functionName: 'removeFunding',
       args: [amountWei],
-    }).then(() => {
-      refetchFundingBalance();
-      closeModal(ModalId.CONFIRM_LIQUIDITY);
-    });
+    })
+      .catch(error => console.error(error))
+      .finally(() => {
+        refetchFundingBalance();
+        closeModal(ModalId.CONFIRM_LIQUIDITY);
+      });
   };
 
   const addFunding = () => {
@@ -171,11 +173,13 @@ export const Liquidity = ({ id }: { id: Address }) => {
       address: id,
       functionName: 'addFunding',
       args: [amountWei, []],
-    }).then(() => {
-      refetchCollateralBalance();
-      refetchFundingBalance();
-      closeModal(ModalId.CONFIRM_LIQUIDITY);
-    });
+    })
+      .catch(error => console.error(error))
+      .finally(() => {
+        refetchCollateralBalance();
+        refetchFundingBalance();
+        closeModal(ModalId.CONFIRM_LIQUIDITY);
+      });
   };
 
   const collateralToken = new Token(
@@ -201,7 +205,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
           hash: txHash,
         });
         refetchCollateralAllowence();
-        succesApprovalTxToast(txHash, collateralToken);
+        successApprovalTxToast(txHash, collateralToken);
       })
       .catch(approveTxErrorHandling)
       .finally(() => setIsApproving(false));

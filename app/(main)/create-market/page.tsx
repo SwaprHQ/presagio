@@ -10,42 +10,56 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  errorToast,
   Icon,
   Input,
+  successToast,
   Tag,
   VisuallyHidden,
 } from '@swapr/ui';
-import { ConnectButton, SwapInput, TokenLogo, TxButton } from '../../components';
+import {
+  successApprovalTxToast,
+  SwapInput,
+  TokenLogo,
+  TxButton,
+  waitingTxToast,
+} from '@/app/components';
 import { SDAI, WXDAI } from '@/constants';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Outcome, Token } from '@/entities';
-import { useReadBalanceOf } from '@/hooks/contracts/erc20';
 import { useAccount, useConfig, useWriteContract } from 'wagmi';
 import {
   formatDateTime,
   formatEtherWithFixedDecimals,
   formatValueWithFixedDecimals,
 } from '@/utils';
-import { erc20Abi, formatEther, parseEther } from 'viem';
+import { Abi, erc20Abi, formatEther, parseEther } from 'viem';
 import { getUnixTime, isPast } from 'date-fns';
-import { useUnsupportedNetwork } from '@/hooks';
-import { readContract, simulateContract, waitForTransactionReceipt } from 'wagmi/actions';
+import {
+  readContract,
+  simulateContract,
+  waitForTransactionReceipt,
+  WaitForTransactionReceiptErrorType,
+  WriteContractErrorType,
+} from 'wagmi/actions';
+import RealityABI from '@/abi/reality.json';
+import ConditionalTokensABI from '@/abi/conditionalTokens.json';
+import MarketMakerFactoryABI from '@/abi/marketMakerFactory.json';
 import {
   ORACLE_ADDRESS,
   REALITY_ETH_CONTRACT_ADDRESS,
   REALITY_ETH_TIMEOUT,
   SINGLE_SELECT_TEMPLATE_ID,
-} from '../../../hooks/contracts/realityeth';
-import { KLEROS_ARBITRATOR_ADDRESS } from '../../../hooks/contracts/kelros';
-import RealityABI from '@/abi/reality.json';
-import ConditionalTokensABI from '@/abi/conditionalTokens.json';
-import MarketMakerFactoryABI from '@/abi/marketMakerFactory.json';
+} from '@/hooks/contracts/realityeth';
+import { KLEROS_ARBITRATOR_ADDRESS } from '@/hooks/contracts/kleros';
 import {
   CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
   MARKET_MAKER_FACTORY_ADDRESS,
-} from '../../../hooks/contracts';
-import { calcDistributionHint } from '../../../utils/liquidity';
-import { ModalId, useModal } from '../../../context';
+} from '@/hooks/contracts';
+import { useReadBalanceOf } from '@/hooks/contracts/erc20';
+import { calcDistributionHint } from '@/utils/liquidity';
+import { ModalId, useModal, useTx } from '@/context';
+import Link from 'next/link';
 
 type InputOutcome = {
   name: string;
@@ -59,6 +73,7 @@ const defaultInputOutcomes: InputOutcome[] = [
 const tokenList = [WXDAI, SDAI];
 
 const LP_FEE = parseEther('0.02');
+
 const getDefaultDateTime = () => {
   const now = new Date();
 
@@ -67,8 +82,8 @@ const getDefaultDateTime = () => {
 };
 
 export default function CreateMarketPage() {
-  const { address, isDisconnected } = useAccount();
-  const { openModal } = useModal();
+  const { address } = useAccount();
+  const { openModal, closeModal } = useModal();
 
   const [question, setQuestion] = useState('');
   const [category, setCategory] = useState('');
@@ -76,7 +91,6 @@ export default function CreateMarketPage() {
   const [outcomes, setOutcomes] = useState<InputOutcome[]>(defaultInputOutcomes);
   const [closingDate, setClosingDate] = useState(getDefaultDateTime());
   const [marketToken, setMarketToken] = useState<Token>(SDAI);
-  const unsupportedNetwork = useUnsupportedNetwork();
 
   const [percentagesError, setPercentagesError] = useState<Record<number, string> | null>(
     null
@@ -90,7 +104,7 @@ export default function CreateMarketPage() {
   });
 
   useEffect(() => {
-    if (!question) setError('Enter market quesiton');
+    if (!question) setError('Enter market question');
     else if (outcomes.findIndex(outcome => !outcome.name) !== -1)
       setError('Enter outcome names');
     else if (!category) setError('Enter category');
@@ -174,6 +188,16 @@ export default function CreateMarketPage() {
   };
 
   const buttonLabel = getButtonLabel();
+
+  const onCreationConclusion = () => {
+    setQuestion('');
+    setCategory('');
+    setAmount('');
+    setOutcomes(defaultInputOutcomes);
+    setClosingDate(getDefaultDateTime());
+    setMarketToken(SDAI);
+    closeModal(ModalId.CONFIRM_MARKET_CREATION);
+  };
 
   return (
     <main className="mt-12 flex w-full flex-col items-center px-6">
@@ -289,6 +313,7 @@ export default function CreateMarketPage() {
         token={marketToken}
         outcomes={outcomes}
         category={category}
+        onConclude={onCreationConclusion}
       />
     </main>
   );
@@ -308,6 +333,7 @@ const ConfirmCreation = ({
   token,
   outcomes,
   category,
+  onConclude,
 }: {
   category: string;
   question: string;
@@ -315,6 +341,7 @@ const ConfirmCreation = ({
   closingDate: string;
   token: Token;
   outcomes: InputOutcome[];
+  onConclude: () => void;
 }) => {
   const { writeContractAsync } = useWriteContract();
   const config = useConfig();
@@ -324,29 +351,45 @@ const ConfirmCreation = ({
   const { isModalOpen, closeModal } = useModal();
   const [step, setStep] = useState<string>(STEPS.ASK_QUESTION);
   const [isCreating, setIsCreating] = useState(false);
+  const { submitTx } = useTx();
 
-  const createMarket = async () => {
-    setIsCreating(true);
-    const questionId = await askQuestion();
-    if (!questionId) return;
-    setStep(STEPS.PREPARE_CONDITION);
-    const conditionId = await prepareCondition(questionId);
-    if (!conditionId) return;
-    setStep(STEPS.ALLOW_TOKEN);
-    await approveToken();
-    setStep(STEPS.CREATE_MARKET);
-    await deployMarket(conditionId);
-    setIsCreating(false);
+  const txErrorHandling = (e: Error) => {
+    const error = e as WriteContractErrorType | WaitForTransactionReceiptErrorType;
+    const errorMessage =
+      error.cause?.toString().split('\n').at(0) ||
+      'Something went wrong with the transaction.';
+
+    errorToast({
+      children: <div className="font-normal">{errorMessage}</div>,
+    });
   };
 
-  const askQuestion = async (): Promise<string | null> => {
-    const questionText = formatRealitioQuestion(
+  const createMarket = async () => {
+    try {
+      setIsCreating(true);
+      const questionId = await askQuestion();
+      setStep(STEPS.PREPARE_CONDITION);
+      const conditionId = await prepareCondition(questionId);
+      setStep(STEPS.ALLOW_TOKEN);
+      await approveToken();
+      setStep(STEPS.CREATE_MARKET);
+      await deployMarket(conditionId);
+    } catch (error) {
+      console.log(error);
+      setStep(STEPS.ASK_QUESTION);
+    } finally {
+      setIsCreating(false);
+      onConclude();
+    }
+  };
+
+  const askQuestion = async (): Promise<string> => {
+    const questionText = formatRealityQuestion(
       question,
       outcomes.map(({ name }) => name),
       category
     );
 
-    // When the question is open to answer
     const openingTime = getUnixTime(closingDate);
 
     const writeContractParams: any = {
@@ -363,73 +406,68 @@ const ConfirmCreation = ({
       ],
     };
 
-    try {
-      const { result: questionId } = await simulateContract(config, writeContractParams);
+    const { result: simulatedQuestionId } = await simulateContract(
+      config,
+      writeContractParams
+    ).catch(error => {
+      errorToast({
+        children: <div className="font-normal">Question already exists.</div>,
+      });
+      throw error;
+    });
 
-      await writeContractAsync(writeContractParams)
-        .then(async txHash => {
-          console.log(txHash);
-          await waitForTransactionReceipt(config, {
-            hash: txHash,
-          });
-        }) // .catch(approveTxErrorHandling)
-        // .finally(() => setIsApproving(false));
-        .catch(e => {
-          console.error(e);
-          throw e;
+    await writeContractAsync(writeContractParams)
+      .then(async txHash => {
+        waitingTxToast(txHash);
+
+        await waitForTransactionReceipt(config, {
+          hash: txHash,
         });
-      console.log('questionId', questionId);
+      })
+      .catch(error => {
+        txErrorHandling(error);
+        throw error;
+      });
 
-      return questionId;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return simulatedQuestionId;
   };
 
-  const prepareCondition = async (questionId: string): Promise<string | null> => {
-    try {
-      const conditionId = await readContract(config, {
-        abi: ConditionalTokensABI,
-        address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-        functionName: 'getConditionId',
-        args: [ORACLE_ADDRESS, questionId, BigInt(outcomes.length)],
-      });
+  const prepareCondition = async (questionId: string): Promise<string> => {
+    const conditionId = (await readContract(config, {
+      abi: ConditionalTokensABI,
+      address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
+      functionName: 'getConditionId',
+      args: [ORACLE_ADDRESS, questionId, BigInt(outcomes.length)],
+    })) as string;
 
-      // use subgraph instead
-      const outcomeSlotsCounts = await readContract(config, {
-        abi: ConditionalTokensABI,
-        address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-        functionName: 'getOutcomeSlotCount',
-        args: [conditionId],
-      });
+    const outcomeSlotsCounts = await readContract(config, {
+      abi: ConditionalTokensABI,
+      address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
+      functionName: 'getOutcomeSlotCount',
+      args: [conditionId],
+    });
 
-      const conditionExists = outcomeSlotsCounts !== BigInt(0);
-      console.log('conditionExists', conditionExists);
+    const conditionExists = outcomeSlotsCounts !== BigInt(0);
+    if (conditionExists) return conditionId;
 
-      await writeContractAsync({
-        abi: ConditionalTokensABI,
-        address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
-        functionName: 'prepareCondition',
-        args: [ORACLE_ADDRESS, questionId, BigInt(outcomes.length)],
-      })
-        .then(async txHash => {
-          console.log(txHash);
-          await waitForTransactionReceipt(config, {
-            hash: txHash,
-          });
-        }) // .catch(approveTxErrorHandling)
-        // .finally(() => setIsApproving(false));
-        .catch(e => {
-          console.error(e);
-
-          // need to catch it
-          throw e;
+    await writeContractAsync({
+      abi: ConditionalTokensABI,
+      address: CONDITIONAL_TOKEN_CONTRACT_ADDRESS,
+      functionName: 'prepareCondition',
+      args: [ORACLE_ADDRESS, questionId, BigInt(outcomes.length)],
+    })
+      .then(async txHash => {
+        waitingTxToast(txHash);
+        await waitForTransactionReceipt(config, {
+          hash: txHash,
         });
-      return conditionId as string;
-    } catch (e) {
-      return null;
-    }
+      })
+      .catch(error => {
+        txErrorHandling(error);
+        throw error;
+      });
+
+    return conditionId;
   };
 
   const approveToken = async () => {
@@ -442,14 +480,16 @@ const ConfirmCreation = ({
       args: [MARKET_MAKER_FACTORY_ADDRESS, initialFunds],
     })
       .then(async txHash => {
-        console.log(txHash);
+        waitingTxToast(txHash);
         await waitForTransactionReceipt(config, {
           hash: txHash,
         });
-      }) // .catch(approveTxErrorHandling)
-      // .finally(() => setIsApproving(false));
-      .catch(e => {
-        console.error(e);
+
+        successApprovalTxToast(txHash, token);
+      })
+      .catch(error => {
+        txErrorHandling(error);
+        throw error;
       });
   };
 
@@ -460,8 +500,8 @@ const ConfirmCreation = ({
       outcomes.map(({ percentage }) => percentage)
     );
 
-    await writeContractAsync({
-      abi: MarketMakerFactoryABI,
+    const writeContractParams: any = {
+      abi: MarketMakerFactoryABI as Abi,
       address: MARKET_MAKER_FACTORY_ADDRESS,
       functionName: 'create2FixedProductMarketMaker',
       args: [
@@ -473,16 +513,32 @@ const ConfirmCreation = ({
         initialFunds,
         distributionHint,
       ],
-    })
-      .then(async txHash => {
-        console.log(txHash);
-        await waitForTransactionReceipt(config, {
-          hash: txHash,
-        });
-      }) // .catch(approveTxErrorHandling)
-      // .finally(() => setIsApproving(false));
-      .catch(e => {
-        console.error(e);
+    };
+
+    const { result: simulatedMarketAddress } = await simulateContract(
+      config,
+      writeContractParams
+    ).catch(error => {
+      console.error(error);
+      return { result: '' };
+    });
+
+    await submitTx(writeContractParams);
+
+    if (Boolean(simulatedMarketAddress))
+      successToast({
+        children: (
+          <p>
+            Your market was created succefully.{' '}
+            <Link
+              href={`/markets?id=${simulatedMarketAddress}`}
+              target="_blank"
+              className="inline-block underline"
+            >
+              View market
+            </Link>
+          </p>
+        ),
       });
   };
 
@@ -642,23 +698,24 @@ const OutcomeInput = ({
         onChange={onPercentageInputChange}
         onBlur={onInputBlur}
         message={error && error}
+        type="number"
       />
     </div>
   );
 };
 
 /**
+ * Format the market info into reality.eth question text
+ * Current parsing is for template id = 2 only
  * @see https://realitio.github.io/docs/html/contracts.html#templates
  */
 
-function formatRealitioQuestion(
+function formatRealityQuestion(
   question: string,
   outcomes: string[],
   category: string,
   language = 'en'
 ): string {
-  /** Current parsing is for template id = 2 only */
-
   // Escape characters for JSON troubles on Reality.eth.
   question = question.replace(/"/g, '\\"');
 
