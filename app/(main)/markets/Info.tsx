@@ -4,25 +4,25 @@ import { Icon, IconButton } from '@swapr/ui';
 import { trackEvent } from 'fathom-client';
 
 import { FA_EVENTS } from '@/analytics';
-import { GNOSIS_SCAN_URL, KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
+import { KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
 import { FixedProductMarketMaker } from '@/queries/omen';
-import { shortenAddress } from '@/utils';
+import { getExplorerUrl, shortenAddress } from '@/utils';
 
 interface InfoProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
 }
 export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
   const [clipboardIcon, setClipboardIcon] = useState<'copy' | 'tick'>('copy');
-  const id = fixedProductMarketMaker.id;
+  const address = fixedProductMarketMaker.id;
   const questionId = fixedProductMarketMaker.question?.id;
 
   return (
     <>
       <div className="flex items-center space-x-1 py-4">
-        <span>{shortenAddress(id)}</span>
+        <span>{shortenAddress(address)}</span>
         <IconButton
           onClick={() => {
-            navigator.clipboard.writeText(id);
+            navigator.clipboard.writeText(address);
             setClipboardIcon('tick');
 
             setTimeout(() => {
@@ -35,7 +35,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
         />
       </div>
       <a
-        href={`${GNOSIS_SCAN_URL}/address/${id}`}
+        href={getExplorerUrl(address, false)}
         target="_blank"
         className="flex items-center space-x-1 py-4"
         onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.CONTRACT)}
