@@ -6,7 +6,7 @@ import { trackEvent } from 'fathom-client';
 import { FA_EVENTS } from '@/analytics';
 import { KLEROS_URL, REALITY_QUESTION_URL } from '@/constants';
 import { FixedProductMarketMaker } from '@/queries/omen';
-import { getExplorerUrl, shortenAddress } from '@/utils';
+import { getExplorerAddressUrl, shortenAddress } from '@/utils';
 
 interface InfoProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
@@ -35,7 +35,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
         />
       </div>
       <a
-        href={getExplorerUrl(address, false)}
+        href={getExplorerAddressUrl(address)}
         target="_blank"
         className="flex items-center space-x-1 py-4"
         onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.INFO.CONTRACT)}

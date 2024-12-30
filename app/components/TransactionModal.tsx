@@ -16,7 +16,7 @@ import {
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
 import Image from 'next/image';
-import { getExplorerUrl } from '@/utils';
+import { getExplorerTxUrl } from '@/utils';
 
 interface TransactionModalProps {
   isLoading: boolean;
@@ -103,7 +103,7 @@ export const TransactionModal = ({
         </DialogBody>
         {txHash && (
           <DialogFooter>
-            <a href={getExplorerUrl(txHash)} target="_blank" className="w-full">
+            <a href={getExplorerTxUrl(txHash)} target="_blank" className="w-full">
               <Button
                 width="full"
                 colorScheme={isLoading ? 'primary' : isError ? 'error' : 'success'}

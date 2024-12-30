@@ -1,12 +1,12 @@
 'use client';
 
-import { getExplorerUrl, shortenAddress } from '@/utils';
+import { getExplorerTxUrl, shortenAddress } from '@/utils';
 import { successToast, toast } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
 import { Spinner } from './Spinner';
 
 const AddressLink = ({ txHash }: { txHash: string }) => (
-  <a href={getExplorerUrl(txHash)} target="_blank" className="inline-block underline">
+  <a href={getExplorerTxUrl(txHash)} target="_blank" className="inline-block underline">
     {shortenAddress(txHash)}
   </a>
 );

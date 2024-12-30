@@ -6,7 +6,7 @@ import { Address, formatEther, isAddress } from 'viem';
 import {
   calcSellAmountInCollateral,
   formatValueWithFixedDecimals,
-  getExplorerUrl,
+  getExplorerAddressUrl,
   shortenAddress,
 } from '@/utils';
 import { TabBody, TabGroup, TabHeader, Tag } from '@swapr/ui';
@@ -265,7 +265,7 @@ export default function ProfilePage() {
           <Avatar address={address} className="size-14" />
           <div>
             <AddressLink
-              href={getExplorerUrl(address, false)}
+              href={getExplorerAddressUrl(address)}
               address={address}
               isAIAgent={isAIAgent}
               className="text-xl font-semibold md:text-2xl"

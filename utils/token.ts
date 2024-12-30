@@ -1,7 +1,11 @@
 import { GNOSIS_SCAN_URL } from '@/constants';
 
-export const getExplorerUrl = (txHash: string, isTx: boolean = true) => {
-  return `${GNOSIS_SCAN_URL}/${isTx ? 'tx' : 'address'}/${txHash}`;
+export const getExplorerAddressUrl = (address: string) => {
+  return `${GNOSIS_SCAN_URL}/address/${address}`;
+};
+
+export const getExplorerTxUrl = (txHash: string) => {
+  return `${GNOSIS_SCAN_URL}/tx/${txHash}`;
 };
 
 export const shortenAddress = (address: string) =>
