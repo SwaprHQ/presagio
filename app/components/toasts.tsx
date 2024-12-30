@@ -1,17 +1,12 @@
 'use client';
 
-import { shortenAddress } from '@/utils';
+import { getExplorerTxUrl, shortenAddress } from '@/utils';
 import { successToast, toast } from '@swapr/ui';
-import { GNOSIS_SCAN_URL } from '@/constants';
 import { Outcome, Token } from '@/entities';
 import { Spinner } from './Spinner';
 
 const AddressLink = ({ txHash }: { txHash: string }) => (
-  <a
-    href={`${GNOSIS_SCAN_URL}/tx/${txHash}`}
-    target="_blank"
-    className="inline-block underline"
-  >
+  <a href={getExplorerTxUrl(txHash)} target="_blank" className="inline-block underline">
     {shortenAddress(txHash)}
   </a>
 );
