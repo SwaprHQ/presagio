@@ -16,27 +16,39 @@ export type OrderFilter = {
 
 export const orderFilters: OrderFilter[] = [
   {
-    name: 'New',
-    key: 'new',
-    orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
-    orderDirection: OrderDirection.Desc,
-  },
-  {
     name: 'Most active',
     key: 'active',
     orderBy: FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume,
     orderDirection: OrderDirection.Desc,
   },
   {
+    name: 'New',
+    key: 'new',
+    orderBy: FixedProductMarketMaker_OrderBy.CreationTimestamp,
+    orderDirection: OrderDirection.Desc,
+  },
+  {
     name: 'High volume',
-    key: 'high',
+    key: 'high-volume',
     orderBy: FixedProductMarketMaker_OrderBy.UsdVolume,
     orderDirection: OrderDirection.Desc,
   },
   {
     name: 'Low volume',
-    key: 'low',
+    key: 'low-volume',
     orderBy: FixedProductMarketMaker_OrderBy.UsdVolume,
+    orderDirection: OrderDirection.Asc,
+  },
+  {
+    name: 'High liquidity',
+    key: 'high-liquidity',
+    orderBy: FixedProductMarketMaker_OrderBy.ScaledCollateralVolume,
+    orderDirection: OrderDirection.Desc,
+  },
+  {
+    name: 'Low liquidity',
+    key: 'low-liquidity',
+    orderBy: FixedProductMarketMaker_OrderBy.ScaledCollateralVolume,
     orderDirection: OrderDirection.Asc,
   },
   {
