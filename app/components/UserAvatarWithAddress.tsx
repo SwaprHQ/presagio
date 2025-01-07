@@ -5,15 +5,17 @@ import { Avatar } from '@/app/components';
 import { Address } from 'viem';
 import { twMerge } from 'tailwind-merge';
 
+import { AiAgent } from '../types';
+
 interface UserAvatarWithAddressProps {
   address: Address;
-  isAIAgent: boolean;
+  aiAgent?: AiAgent;
   className?: string;
 }
 
 export const UserAvatarWithAddress = ({
   address,
-  isAIAgent,
+  aiAgent,
   className,
 }: UserAvatarWithAddressProps) => {
   return (
@@ -26,7 +28,7 @@ export const UserAvatarWithAddress = ({
       <Avatar address={address} />
       <AddressLink
         address={address}
-        isAIAgent={isAIAgent}
+        aiAgent={aiAgent}
         href={`/profile?address=${address}`}
       />
     </div>

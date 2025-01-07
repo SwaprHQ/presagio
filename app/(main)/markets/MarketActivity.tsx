@@ -23,6 +23,8 @@ import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
 
+import { AiAgent } from '@/app/types';
+
 const txTypeHumanWords: Record<TransactionType, string[]> = {
   [TransactionType.Add]: ['added', 'to'],
   [TransactionType.Remove]: ['removed', 'from'],
@@ -48,8 +50,9 @@ export const MarketActivity = ({ id }: { id: string }) => {
 
   const getIsAIAgent = useMemo(() => {
     return (address: string) => {
-      if (!aiAgentsList?.length) return false;
-      return aiAgentsList.some(
+      if (!aiAgentsList?.length) return undefined;
+
+      return aiAgentsList.find(
         aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
       );
     };
@@ -93,7 +96,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
         ) : (
           <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-semibold md:overflow-x-auto">
             {marketTransactions?.map(transaction => {
-              const isAIAgent = getIsAIAgent(transaction.user.id);
+              const aiAgent = getIsAIAgent(transaction.user.id);
               const isLiquidityEvent = transaction.fpmmType === FpmmType.Liquidity;
 
               if (isLiquidityEvent)
@@ -101,7 +104,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
                   <LiquidityEventRow
                     key={transaction.id}
                     transaction={transaction}
-                    isAIAgent={isAIAgent}
+                    aiAgent={aiAgent as AiAgent | undefined}
                   />
                 );
 
@@ -120,7 +123,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
                   <TradeRow
                     key={transaction.id}
                     activity={activity}
-                    isAIAgent={isAIAgent}
+                    aiAgent={aiAgent as AiAgent | undefined}
                   />
                 );
               }
@@ -177,10 +180,10 @@ const CollateralAmountWithLogo = ({
 
 interface TradeRowProps {
   activity: MergedTradeTransaction;
-  isAIAgent: boolean;
+  aiAgent?: AiAgent;
 }
 
-const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
+const TradeRow = ({ activity, aiAgent }: TradeRowProps) => {
   const creatorAddress = activity?.creator?.id ?? 'unknown';
   const outcomes = activity.fpmm.outcomes;
   const outcomeIndex = activity.outcomeIndex;
@@ -200,10 +203,7 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <UserAvatarWithAddress
-          address={creatorAddress as Address}
-          isAIAgent={isAIAgent}
-        />
+        <UserAvatarWithAddress address={creatorAddress as Address} aiAgent={aiAgent} />
         {activity.transactionType && (
           <p className="text-text-low-em">
             {txTypeHumanWords[activity.transactionType][0]}
@@ -238,12 +238,12 @@ const TradeRow = ({ activity, isAIAgent }: TradeRowProps) => {
 
 interface LiquidityEventRowProps {
   transaction: FpmmTransaction;
-  isAIAgent: boolean;
+  aiAgent?: AiAgent;
 }
 
 const FPMMContractAddress = '0x9083a2b699c0a4ad06f63580bde2635d26a3eef0';
 
-const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) => {
+const LiquidityEventRow = ({ transaction, aiAgent }: LiquidityEventRowProps) => {
   const creatorAddress =
     transaction.user.id === FPMMContractAddress
       ? transaction.fpmm.creator
@@ -252,10 +252,7 @@ const LiquidityEventRow = ({ transaction, isAIAgent }: LiquidityEventRowProps) =
   return (
     <RowWrapper>
       <div className="flex items-center space-x-1.5">
-        <UserAvatarWithAddress
-          address={creatorAddress as Address}
-          isAIAgent={isAIAgent}
-        />
+        <UserAvatarWithAddress address={creatorAddress as Address} aiAgent={aiAgent} />
         <p className="lowercase text-text-low-em">
           {txTypeHumanWords[transaction.transactionType][0]}
         </p>

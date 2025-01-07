@@ -10,9 +10,11 @@ import { Address } from 'viem';
 import { mainnet } from 'viem/chains';
 import { useEnsName } from 'wagmi';
 
+import { AiAgent } from '../types';
+
 interface AddressLinkProps extends ComponentProps<typeof Link> {
   address: Address;
-  isAIAgent: boolean;
+  aiAgent?: AiAgent;
   className?: string;
   href: string;
   iconSize?: number;
@@ -20,7 +22,7 @@ interface AddressLinkProps extends ComponentProps<typeof Link> {
 
 export const AddressLink = ({
   address,
-  isAIAgent,
+  aiAgent,
   className,
   href,
   iconSize = 16,
@@ -32,20 +34,28 @@ export const AddressLink = ({
     config: mainnetConfigForENS,
   });
 
+  const isAiAgent = !!aiAgent;
+
+  const getLinkText = () => {
+    if (isAiAgent) return aiAgent.label;
+
+    return ensName || shortenAddress(address);
+  };
+
   return (
     <div className="flex items-center space-x-2 text-sm md:text-base">
       <Link
         href={href}
         className={twMerge(
           'hover:underline',
-          isAIAgent ? 'text-text-primary-main' : 'text-text-high-em',
+          isAiAgent ? 'text-text-primary-main' : 'text-text-high-em',
           className
         )}
         {...props}
       >
-        {ensName || shortenAddress(address)}
+        {getLinkText()}
       </Link>
-      {isAIAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
+      {isAiAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
     </div>
   );
 };
