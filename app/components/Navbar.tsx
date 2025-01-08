@@ -58,7 +58,7 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
-          <Link href="/leaderboard">
+          <Link href="/leaderboard/agents">
             <Button variant="pastel" className="space-x-2 text-nowrap">
               <Icon name="bar-graph-fill" className="text-[16px] text-text-med-em" />
               <p className="hidden md:block">Agents</p>
