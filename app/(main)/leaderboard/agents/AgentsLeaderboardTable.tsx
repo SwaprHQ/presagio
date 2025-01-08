@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 
 import { useState } from 'react';
@@ -24,11 +23,13 @@ export default function AgentsLeaderboardTable() {
   const [sortKey, setSortKey] = useState('profitLoss');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const { data: agentsLeaderboardData, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['getAgentsLeaderboardData'],
     queryFn: getAgentsLeaderboardData,
     staleTime: twelve_hours_in_ms,
   });
+
+  const agentsLeaderboardData = data ?? [];
 
   const handleSort = (key: any) => {
     if (key === sortKey) {
@@ -100,11 +101,11 @@ export default function AgentsLeaderboardTable() {
             <TableCell
               className={twMerge(
                 'text-right',
-                parseFloat(agent.profit_loss) >= 0.01 && 'text-text-success-main',
-                parseFloat(agent.profit_loss) <= -0.01 && 'text-text-danger-main'
+                agent.profit_loss >= 0.01 && 'text-text-success-main',
+                agent.profit_loss <= -0.01 && 'text-text-danger-main'
               )}
             >
-              {parseFloat(agent.profit_loss).toLocaleString('en-US', {
+              {agent.profit_loss.toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD',
               })}

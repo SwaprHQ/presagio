@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client';
 
 import { Skeleton } from '@/app/components';
@@ -20,7 +19,7 @@ export default function AgentsLeaderboardHeader() {
     <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
       <StatsCard
         title="Total tx volume"
-        value={agentsTotalsData[0].total_volume.toLocaleString('en-US', {
+        value={agentsTotalsData?.total_volume.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
         })}
@@ -29,19 +28,19 @@ export default function AgentsLeaderboardHeader() {
       />
       <StatsCard
         title="Total tx count"
-        value={agentsTotalsData[0].total_bets}
+        value={agentsTotalsData?.total_bets.toString()}
         symbol="tx"
         isLoading={false}
       />
       <StatsCard
         title="Avg success rate"
-        value={agentsTotalsData[0].avg_success_rate}
+        value={agentsTotalsData?.avg_success_rate.toString()}
         symbol="%"
         isLoading={false}
       />
       <StatsCard
         title="Total Profit/loss"
-        value={parseFloat(agentsTotalsData[0].total_profit_loss).toLocaleString('en-US', {
+        value={agentsTotalsData?.total_profit_loss.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
         })}
@@ -58,9 +57,9 @@ const StatsCard = ({
   symbol,
   isLoading,
 }: {
-  title: string;
-  value: string;
-  symbol: string;
+  title?: string;
+  value?: string;
+  symbol?: string;
   isLoading?: boolean;
 }) => {
   return (
