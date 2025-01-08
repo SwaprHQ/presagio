@@ -28,7 +28,7 @@ import {
   getConditionMarket,
   getMarketUserTrades,
 } from '@/queries/omen';
-import { getAgentsLeaderboardData } from '@/queries/dune';
+import { getAgentsLeaderboardData, getAgentsTotalsData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 
@@ -36,11 +36,20 @@ export default function AIAgentsLeaderboardTable() {
   const [sortKey, setSortKey] = useState('profitLoss');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+  const twelve_hours_in_ms = 12 * 60 * 60 * 1000;
+
   const { data: agentsLeaderboardData, isLoading } = useQuery({
-    queryKey: ['getAIAgents'],
+    queryKey: ['getAgentsLeaderboardData'],
     queryFn: getAgentsLeaderboardData,
-    staleTime: 12 * 60 * 60 * 1000, // 12 hours
+    staleTime: twelve_hours_in_ms,
   });
+
+  const { data: agentsTotalsData, isLoading: isAgentsTotalsDataLoading } = useQuery({
+    queryKey: ['getAgentsTotalsData'],
+    queryFn: getAgentsTotalsData,
+    staleTime: twelve_hours_in_ms,
+  });
+  console.log('agentsTotalsData:', agentsTotalsData);
 
   const handleSort = (key: SortKey) => {
     if (key === sortKey) {
@@ -77,22 +86,41 @@ export default function AIAgentsLeaderboardTable() {
     </TableHead>
   );
 
-  if (isLoading) return <LoadingLeaderBoardTable />;
+  if (isLoading || isAgentsTotalsDataLoading) return <LoadingLeaderBoardTable />;
 
   return (
     <>
       <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
         <StatsCard
           title="Total tx volume"
-          value={'89,122'}
-          symbol="usd"
+          value={agentsTotalsData[0].total_volume.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          })}
+          symbol="USD"
           isLoading={false}
         />
-        <StatsCard title="Total tx count" value={'8126'} symbol="tx" isLoading={false} />
-        <StatsCard title="Avg success rate" value={'45'} symbol="%" isLoading={false} />
+        <StatsCard
+          title="Total tx count"
+          value={agentsTotalsData[0].total_bets}
+          symbol="tx"
+          isLoading={false}
+        />
+        <StatsCard
+          title="Avg success rate"
+          value={agentsTotalsData[0].avg_success_rate}
+          symbol="%"
+          isLoading={false}
+        />
         <StatsCard
           title="Total Profit/loss"
-          value={'3,321.00'}
+          value={parseFloat(agentsTotalsData[0].total_profit_loss).toLocaleString(
+            'en-US',
+            {
+              style: 'currency',
+              currency: 'USD',
+            }
+          )}
           symbol="usd"
           isLoading={false}
         />
@@ -173,13 +201,13 @@ const StatsCard = ({
   return (
     <div className="w-full space-y-2 rounded-16 bg-surface-surface-0 p-6 font-semibold text-text-low-em ring-1 ring-outline-base-em">
       <div className="text-xs font-bold uppercase">{title}</div>
-      <div className="flex space-x-1.5 text-2xl">
+      <div className="flex items-center space-x-1.5 text-2xl">
         {isLoading ? (
           <Skeleton className="h-9 w-12" />
         ) : (
           <span className="text-text-high-em">{value}</span>
         )}
-        <span className="uppercase">{symbol}</span>
+        <span className="text-xl uppercase">{symbol}</span>
       </div>
     </div>
   );
