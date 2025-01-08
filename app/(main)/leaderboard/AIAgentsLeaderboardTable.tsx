@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/app/components/ui/Table';
 import { Button, Icon } from '@swapr/ui';
-import { Skeleton, UserAvatarWithAddress } from '@/app/components';
+import { Avatar, Skeleton, UserAvatarWithAddress } from '@/app/components';
 import { Address, formatEther } from 'viem';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -28,176 +28,19 @@ import {
   getConditionMarket,
   getMarketUserTrades,
 } from '@/queries/omen';
+import { getAgentsLeaderboardData } from '@/queries/dune';
+import { twMerge } from 'tailwind-merge';
+import Link from 'next/link';
 
 export default function AIAgentsLeaderboardTable() {
   const [sortKey, setSortKey] = useState('profitLoss');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const { data, isLoading } = useQuery<UserBet[]>({
-    queryKey: ['getAiAgentsBets'],
-    queryFn: getAllAiAgentsBets,
+  const { data: agentsLeaderboardData, isLoading } = useQuery({
+    queryKey: ['getAIAgents'],
+    queryFn: getAgentsLeaderboardData,
+    staleTime: 12 * 60 * 60 * 1000, // 12 hours
   });
-
-  const aggregatedUserPositionsPerAddress = data?.userPositions?.reduce((acc, item) => {
-    const userId = item.user.id;
-    const newUser = !acc[userId];
-
-    if (newUser) {
-      acc[userId] = {
-        userId: userId,
-        positions: [item.position],
-      };
-    } else {
-      acc[userId].positions.push(item.position);
-    }
-
-    return acc;
-  }, {});
-
-  const fetchUserBets = async () => {
-    const results = await Promise.all(
-      Object.entries(aggregatedUserPositionsPerAddress).map(
-        async ([userId, userData]) => {
-          const userPositions = userData.positions;
-
-          const userBets = await Promise.allSettled(
-            userPositions.map(async (pos): Promise<UserBet | undefined> => {
-              try {
-                const position = new Position(pos);
-                const outcomeIndex = position.getOutcomeIndex();
-                const omenConditionData = await getConditionMarket({
-                  id: position.conditionId,
-                });
-                const omenCondition = omenConditionData?.conditions[0];
-                const market = new Market(omenCondition?.fixedProductMarketMakers[0]);
-
-                if (!market) return undefined;
-
-                const trades = await getMarketUserTrades({
-                  creator: userId.toLowerCase(),
-                  fpmm: market.fpmm.id,
-                  outcomeIndex_in: [outcomeIndex],
-                });
-
-                const volume = parseFloat(
-                  formatEther(
-                    tradesVolume({
-                      fpmmTrades: trades?.fpmmTrades,
-                    })
-                  )
-                );
-                return {
-                  ...pos,
-                  fpmm: market.fpmm,
-                  condition: position.condition,
-                  fpmmTrades: trades?.fpmmTrades || [],
-                  volume: volume,
-                };
-              } catch (error) {
-                console.error(error);
-              }
-            })
-          );
-
-          const validBets = userBets
-            .filter(
-              (result): result is PromiseFulfilledResult<UserBet> =>
-                result.status === 'fulfilled' &&
-                result.value !== undefined &&
-                result.value.fpmmTrades.length > 0
-            )
-            .map(result => result.value);
-
-          const totalVolume = validBets.reduce((acc, item) => {
-            return acc + item.volume;
-          }, 0);
-
-          const numberOfClosedBets = validBets.reduce((acc, userPosition) => {
-            const market = new Market(userPosition.fpmm);
-            if (market.isClosed && market.answer !== null) return acc + 1;
-            return acc;
-          }, 0);
-
-          const numberOfWonBets = validBets.reduce((acc, userPosition) => {
-            const position = new Position(userPosition);
-            const market = new Market(userPosition.fpmm);
-
-            if (market.answer !== null && market.isWinner(position.getOutcomeIndex())) {
-              return acc + 1;
-            }
-
-            return acc;
-          }, 0);
-
-          const successRate = ((numberOfWonBets / numberOfClosedBets) * 100).toFixed(0);
-
-          const spentAmount = validBets.reduce((acc, userPosition) => {
-            const market = new Market(userPosition.fpmm);
-            if (market.answer === null) return acc;
-            const amountSpentWei = tradesCollateralAmountSpent({
-              fpmmTrades: userPosition.fpmmTrades,
-            });
-
-            const amountSpent = parseFloat(formatEther(amountSpentWei));
-            return amountSpent + acc;
-          }, 0);
-
-          const amountWon = validBets.reduce((acc, userPosition) => {
-            const position = new Position(userPosition);
-            const market = new Market(userPosition.fpmm);
-
-            if (market.answer === null || market.isLoser(position.getOutcomeIndex()))
-              return acc;
-
-            const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
-              fpmmTrades: userPosition.fpmmTrades,
-            });
-
-            return winOutcomeBalancesInColleteralToken + acc;
-          }, 0);
-
-          const profitLoss = (amountWon - spentAmount).toFixed(2);
-
-          return {
-            userId,
-            userBets: validBets,
-            totalVolume,
-            profitLoss,
-            successRate,
-            numberOfBets: validBets.length,
-            numberOfWonBets,
-            ...userData,
-          };
-        }
-      )
-    );
-
-    return results.reduce((acc, userData) => {
-      acc[userData.userId] = userData;
-      return acc;
-    }, {});
-  };
-
-  const { data: aggregatedDataWithBets, isLoading: isAggregatedDataWithBetsLoading } =
-    useQuery({
-      queryKey: ['userBets', aggregatedUserPositionsPerAddress],
-      queryFn: fetchUserBets,
-      enabled: !!aggregatedUserPositionsPerAddress,
-      staleTime: 60 * 60 * 1000, // 1 hour
-      keepPreviousData: true,
-    });
-
-  const sortedAgentsData = useMemo(() => {
-    if (!aggregatedDataWithBets) return [];
-
-    return Object.entries(aggregatedDataWithBets).sort(([, a], [, b]) => {
-      const aValue = parseFloat(a[sortKey]);
-      const bValue = parseFloat(b[sortKey]);
-
-      if (isNaN(aValue) || isNaN(bValue)) return 0;
-      return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-    });
-  }, [aggregatedDataWithBets, sortKey, sortOrder]);
 
   const handleSort = (key: SortKey) => {
     if (key === sortKey) {
@@ -234,7 +77,7 @@ export default function AIAgentsLeaderboardTable() {
     </TableHead>
   );
 
-  if (isLoading || isAggregatedDataWithBetsLoading) return <LoadingLeaderBoardTable />;
+  if (isLoading) return <LoadingLeaderBoardTable />;
 
   return (
     <>
@@ -263,38 +106,50 @@ export default function AIAgentsLeaderboardTable() {
           <TableRow>
             <TableHead>Agent</TableHead>
             <SortableHeader sortKey="profitLoss">Profit/Loss</SortableHeader>
-            <SortableHeader sortKey="numberOfWonBets">Won bets</SortableHeader>
-            <SortableHeader sortKey="successRate">Success Rate</SortableHeader>
             <SortableHeader sortKey="totalVolume">Volume Traded</SortableHeader>
+            <SortableHeader sortKey="successRate">Success Rate</SortableHeader>
+            <SortableHeader sortKey="numberOfWonBets">Won bets</SortableHeader>
             <SortableHeader sortKey="numberOfBets">Total bets</SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedAgentsData.map(([agentId, agentData]) => (
-            <TableRow key={agentId}>
+          {agentsLeaderboardData.map(agent => (
+            <TableRow key={agent.address}>
               <TableCell>
-                <UserAvatarWithAddress address={agentId as Address} isAIAgent={false} />
+                <div className="flex w-fit flex-shrink-0 items-center space-x-2 text-sm md:text-base">
+                  <Avatar address={agent.address} />
+                  <Link
+                    href={`/profile?address=${agent.address}`}
+                    className="hover:underline"
+                  >
+                    {agent.label}
+                  </Link>
+                </div>
               </TableCell>
               <TableCell
-                className={`text-right ${parseFloat(agentData.profitLoss) >= 0 ? 'text-text-success-main' : 'text-text-danger-main'}`}
+                className={twMerge(
+                  'text-right',
+                  parseFloat(agent.profit_loss) >= 0.01 && 'text-text-success-main',
+                  parseFloat(agent.profit_loss) <= -0.01 && 'text-text-danger-main'
+                )}
               >
-                {parseFloat(agentData.profitLoss).toLocaleString('en-US', {
+                {parseFloat(agent.profit_loss).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',
                 })}
               </TableCell>
               <TableCell className="text-right">
-                {agentData.numberOfWonBets.toLocaleString()}
-              </TableCell>
-              <TableCell className="text-right">{agentData.successRate}%</TableCell>
-              <TableCell className="text-right">
-                {agentData.totalVolume.toLocaleString('en-US', {
+                {agent.total_volume.toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',
                 })}
               </TableCell>
+              <TableCell className="text-right">{agent.success_rate}%</TableCell>
               <TableCell className="text-right">
-                {agentData.numberOfBets.toLocaleString()}
+                {agent.total_wins.toLocaleString()}
+              </TableCell>
+              <TableCell className="text-right">
+                {agent.total_bets.toLocaleString()}
               </TableCell>
             </TableRow>
           ))}
