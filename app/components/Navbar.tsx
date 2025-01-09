@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import Link from 'next/link';
 import { FA_EVENTS } from '@/analytics';
-import { Button } from '@swapr/ui';
+import { Button, Icon } from '@swapr/ui';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
 import { APP_NAME } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +15,6 @@ import { useMemo } from 'react';
 
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';
-import Image from 'next/image';
 import BetsIcon from '@/app/components/ui/icons/BetsIcon';
 
 export const Navbar = () => {
@@ -59,6 +58,12 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
+          <Link href="/leaderboard/agents">
+            <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Icon name="bar-graph-fill" className="text-[16px] text-text-med-em" />
+              <p className="hidden md:block">Agents</p>
+            </Button>
+          </Link>
           <Link href="/my-bets">
             <div className="relative">
               <Button
@@ -67,7 +72,7 @@ export const Navbar = () => {
                 onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}
               >
                 <BetsIcon className="text-text-med-em" width={16} height={16} />
-                <p> My bets</p>
+                <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
                 <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
