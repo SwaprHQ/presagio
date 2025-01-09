@@ -45,10 +45,14 @@ type AgentsLeaderboard = {
   total_bets: number;
 };
 
-export const getAgentsLeaderboardData = async ({ page = 1, pageSize = 50 }) => {
+export const getAgentsLeaderboardData = async ({
+  page = 1,
+  pageSize = 50,
+  sort_by = 'profit_loss desc',
+}) => {
   const limit = pageSize;
   const offset = (page - 1) * pageSize;
-  const url = `https://api.dune.com/api/v1/query/${DUNE_AGENTS_LEADERBOARD_QUERY_ID}/results?limit=${limit}&offset=${offset}`;
+  const url = `https://api.dune.com/api/v1/query/${DUNE_AGENTS_LEADERBOARD_QUERY_ID}/results?limit=${limit}&offset=${offset}&sort_by=${sort_by}`;
 
   const headers = {
     'X-Dune-API-Key': DUNE_API_KEY,

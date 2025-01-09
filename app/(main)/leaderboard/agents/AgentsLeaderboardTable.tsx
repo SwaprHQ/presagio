@@ -21,13 +21,18 @@ const ITEMS_PER_PAGE = 100;
 const twelve_hours_in_ms = 12 * 60 * 60 * 1000;
 
 export default function AgentsLeaderboardTable() {
-  const [sortKey, setSortKey] = useState('profitLoss');
+  const [sortKey, setSortKey] = useState('profit_loss');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['getAgentsLeaderboardData', page, ITEMS_PER_PAGE],
-    queryFn: () => getAgentsLeaderboardData({ page, pageSize: ITEMS_PER_PAGE }),
+    queryKey: ['getAgentsLeaderboardData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
+    queryFn: () =>
+      getAgentsLeaderboardData({
+        page,
+        pageSize: ITEMS_PER_PAGE,
+        sort_by: `${sortKey} ${sortOrder}`,
+      }),
     staleTime: twelve_hours_in_ms,
   });
 
@@ -87,11 +92,11 @@ export default function AgentsLeaderboardTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Agent</TableHead>
-            <SortableHeader sortKey="profitLoss">Profit/Loss</SortableHeader>
-            <SortableHeader sortKey="totalVolume">Volume Traded</SortableHeader>
-            <SortableHeader sortKey="successRate">Success Rate</SortableHeader>
-            <SortableHeader sortKey="numberOfWonBets">Won bets</SortableHeader>
-            <SortableHeader sortKey="numberOfBets">Total bets</SortableHeader>
+            <SortableHeader sortKey="profit_loss">Profit/Loss</SortableHeader>
+            <SortableHeader sortKey="total_volume">Volume Traded</SortableHeader>
+            <SortableHeader sortKey="success_rate">Success Rate</SortableHeader>
+            <SortableHeader sortKey="total_wins">Won bets</SortableHeader>
+            <SortableHeader sortKey="total_bets">Total bets</SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
