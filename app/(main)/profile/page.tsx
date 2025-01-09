@@ -37,7 +37,7 @@ import { useEnsName } from 'wagmi';
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { mainnet } from 'viem/chains';
 
-import { AiAgent } from '@/app/types';
+import { AiAgent } from '@/types';
 
 export default function ProfilePage() {
   const searchParams = useSearchParams();

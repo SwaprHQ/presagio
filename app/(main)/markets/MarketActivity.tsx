@@ -23,7 +23,7 @@ import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
 
-import { AiAgent } from '@/app/types';
+import { AiAgent } from '@/types';
 
 const txTypeHumanWords: Record<TransactionType, string[]> = {
   [TransactionType.Add]: ['added', 'to'],

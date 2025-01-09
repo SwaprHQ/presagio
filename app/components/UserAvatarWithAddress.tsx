@@ -5,7 +5,7 @@ import { Avatar } from '@/app/components';
 import { Address } from 'viem';
 import { twMerge } from 'tailwind-merge';
 
-import { AiAgent } from '../types';
+import { AiAgent } from '@/types';
 
 interface UserAvatarWithAddressProps {
   address: Address;

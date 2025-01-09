@@ -10,7 +10,7 @@ import { Address } from 'viem';
 import { mainnet } from 'viem/chains';
 import { useEnsName } from 'wagmi';
 
-import { AiAgent } from '../types';
+import { AiAgent } from '@/types';
 
 interface AddressLinkProps extends ComponentProps<typeof Link> {
   address: Address;
