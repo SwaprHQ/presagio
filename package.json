@@ -10,7 +10,7 @@
     "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@duneanalytics/client-sdk": "^0.2.1",
+    "@duneanalytics/client-sdk": "0.2.4",
     "@fvictorio/newton-raphson-method": "^1.0.5",
     "@lifi/widget": "^3.7.0",
     "@radix-ui/react-scroll-area": "^1.0.5",

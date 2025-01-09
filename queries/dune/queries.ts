@@ -1,7 +1,7 @@
 import { LatestResultArgs, ParameterType, RunQueryArgs } from '@duneanalytics/client-sdk';
 import { Address } from 'viem';
 import { duneClient } from '@/utils';
-import { Categories } from '@/constants';
+import { Categories, DUNE_API_KEY } from '@/constants';
 
 const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
 const DUNE_AGENTS_LEADERBOARD_QUERY_ID = 4537160;
@@ -35,24 +35,49 @@ export const getOpenMarkets = async () => {
   return duneResult.result?.rows;
 };
 
-export const getAgentsLeaderboardData = async () => {
-  const options: RunQueryArgs = {
-    queryId: DUNE_AGENTS_LEADERBOARD_QUERY_ID,
+type AgentsLeaderboard = {
+  address: Address;
+  label: string;
+  total_volume: number;
+  profit_loss: number;
+  success_rate: number;
+  total_wins: number;
+  total_bets: number;
+};
+
+export const getAgentsLeaderboardData = async ({ page = 1, pageSize = 50 }) => {
+  const limit = pageSize;
+  const offset = (page - 1) * pageSize;
+  const url = `https://api.dune.com/api/v1/query/${DUNE_AGENTS_LEADERBOARD_QUERY_ID}/results?limit=${limit}&offset=${offset}`;
+
+  const headers = {
+    'X-Dune-API-Key': DUNE_API_KEY,
   };
 
-  const duneResult = await duneClient.getLatestResult(options);
+  try {
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
 
-  return (
-    duneResult.result?.rows?.map(row => ({
-      address: row.address as Address,
-      label: row.label as string,
-      total_volume: row.total_volume as number,
-      profit_loss: row.profit_loss as number,
-      success_rate: row.success_rate as number,
-      total_wins: row.total_wins as number,
-      total_bets: row.total_bets as number,
-    })) ?? []
-  );
+    const data = await response.json();
+
+    return {
+      data: data.result?.rows as AgentsLeaderboard[],
+      totalRows: data.result?.metadata?.total_row_count ?? 0,
+    };
+  } catch (error) {
+    console.error('Failed to fetch Dune results:', error);
+    return null;
+  }
+};
+
+type AgentsLeaderboardTotals = {
+  total_bets: number;
+  total_wins: number;
+  total_profit_loss: number;
+  avg_success_rate: number;
+  total_volume: number;
 };
 
 export const getAgentsTotalsData = async () => {
@@ -64,13 +89,5 @@ export const getAgentsTotalsData = async () => {
 
   const firstRow = duneResult.result?.rows?.[0];
 
-  return firstRow
-    ? {
-        total_bets: firstRow.total_bets as number,
-        total_wins: firstRow.total_wins as number,
-        total_profit_loss: firstRow.total_profit_loss as number,
-        avg_success_rate: firstRow.avg_success_rate as number,
-        total_volume: firstRow.total_volume as number,
-      }
-    : null;
+  return firstRow ? (firstRow as AgentsLeaderboardTotals) : null;
 };
