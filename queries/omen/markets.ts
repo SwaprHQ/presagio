@@ -427,15 +427,23 @@ const getMarkets = async (
     fpmm => !marketHasDangerousKeyword(fpmm)
   );
 
+  /**
+   * The Graph doesn't allow multiple values in the orderBy parameter (at least for now).
+   *
+   * This fn applies a secondary sort criterion if we get a primary sort result that
+   * has multiple markets with the same sorted value (for example, the same volume
+   * or same liq).
+   * This fn ONLY SORTS a given page results. (as we also apply a first and skip parameter
+   * values to the query result)
+   */
   const sortedResults = filteredResults.sort((a, b) => {
-    if (b[params.orderBy as PrimaryOrderBy] !== a[params.orderBy as PrimaryOrderBy]) {
-      return (
-        Number(b[params.orderBy as PrimaryOrderBy]) -
-        Number(a[params.orderBy as PrimaryOrderBy])
-      );
+    const orderBy = params.orderBy as PrimaryOrderBy;
+
+    if (b[orderBy] !== a[orderBy]) {
+      return Number(b[orderBy]) - Number(a[orderBy]);
     }
 
-    if (params.orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume) {
+    if (orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume) {
       return Number(b.usdVolume) - Number(a.usdVolume);
     }
 
