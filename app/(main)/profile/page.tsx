@@ -276,7 +276,7 @@ export default function ProfilePage() {
             <AddressLink
               href={getExplorerAddressUrl(address)}
               address={address}
-              aiAgent={aiAgent as AiAgent | undefined}
+              aiAgent={aiAgent}
               className="text-xl font-semibold md:text-2xl"
               iconSize={24}
               target="_blank"

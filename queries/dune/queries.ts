@@ -1,6 +1,7 @@
 import { LatestResultArgs, ParameterType, RunQueryArgs } from '@duneanalytics/client-sdk';
 import { duneClient } from '@/utils';
 import { Categories } from '@/constants';
+import { AiAgent } from '@/types';
 
 const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
 
@@ -16,7 +17,7 @@ export const getAIAgents = async () => {
 
   const duneResult = await duneClient.getLatestResult(options);
 
-  return duneResult.result?.rows;
+  return duneResult.result?.rows as AiAgent[];
 };
 
 export const getOpenMarkets = async () => {

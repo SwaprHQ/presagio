@@ -104,7 +104,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
                   <LiquidityEventRow
                     key={transaction.id}
                     transaction={transaction}
-                    aiAgent={aiAgent as AiAgent | undefined}
+                    aiAgent={aiAgent}
                   />
                 );
 
@@ -120,11 +120,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
                 };
 
                 return (
-                  <TradeRow
-                    key={transaction.id}
-                    activity={activity}
-                    aiAgent={aiAgent as AiAgent | undefined}
-                  />
+                  <TradeRow key={transaction.id} activity={activity} aiAgent={aiAgent} />
                 );
               }
 
