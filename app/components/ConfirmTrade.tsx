@@ -33,7 +33,7 @@ import {
 } from 'wagmi/actions';
 import { config } from '@/providers/chain-config';
 import { SVGProps, useEffect, useState } from 'react';
-import { succesApprovalTxToast, waitingTxToast } from './toasts';
+import { successApprovalTxToast, waitingTxToast } from './toasts';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -115,7 +115,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesApprovalTxToast(txHash, inToken);
+        successApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
@@ -139,7 +139,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesApprovalTxToast(txHash, inToken);
+        successApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
@@ -152,10 +152,12 @@ export const ConfirmTrade = ({
       address: marketId,
       functionName: 'buy',
       args: [amountWei, outcomeIndex, tokenAmountOut],
-    }).then(() => {
-      closeBetModal();
-      onSwap();
-    });
+    })
+      .catch(error => console.error(error))
+      .finally(() => {
+        closeBetModal();
+        onSwap();
+      });
   };
 
   const submitSellBet = async () => {
@@ -169,10 +171,12 @@ export const ConfirmTrade = ({
       address: marketId,
       functionName: 'sell',
       args: [roundedAmountOut, outcomeIndex, maxSellAmount],
-    }).then(() => {
-      closeBetModal();
-      onSwap();
-    });
+    })
+      .catch(error => console.error(error))
+      .finally(() => {
+        closeBetModal();
+        onSwap();
+      });
   };
 
   const confirmState = {
