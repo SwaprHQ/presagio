@@ -1,6 +1,7 @@
 import { gql, request } from 'graphql-request';
 import {
   FixedProductMarketMaker_Filter,
+  FixedProductMarketMaker_OrderBy,
   FpmmTrade_Filter,
   FpmmTransaction_Filter,
   Query,
@@ -126,8 +127,9 @@ const marketDataFragment = gql`
     }
     outcomes
     outcomeTokenMarginalPrices
-    usdVolume
     resolutionTimestamp
+    usdRunningDailyVolume
+    usdVolume
     currentAnswer
     currentAnswerTimestamp
     fee
@@ -406,6 +408,12 @@ const getMarket = async (params: QueryFixedProductMarketMakerArgs) => {
   return !hasDangerousKeywords ? response : null;
 };
 
+type PrimaryOrderBy =
+  | FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume
+  | FixedProductMarketMaker_OrderBy.CreationTimestamp
+  | FixedProductMarketMaker_OrderBy.UsdVolume
+  | FixedProductMarketMaker_OrderBy.ScaledCollateralVolume
+  | FixedProductMarketMaker_OrderBy.OpeningTimestamp;
 const getMarkets = async (
   params: QueryFixedProductMarketMakersArgs & FixedProductMarketMaker_Filter
 ) => {
@@ -419,7 +427,28 @@ const getMarkets = async (
     fpmm => !marketHasDangerousKeyword(fpmm)
   );
 
-  return { fixedProductMarketMakers: filteredResults };
+  /**
+   * The Graph doesn't allow to order by multiple fields.
+   *
+   * This fn applies a secondary sort criteria if we get a primary sort result that
+   * has multiple markets with the same sorted value.
+   * This fn only sorts a given page results.
+   */
+  const sortedResults = filteredResults.sort((a, b) => {
+    const orderBy = params.orderBy as PrimaryOrderBy;
+
+    if (b[orderBy] !== a[orderBy]) {
+      return Number(b[orderBy]) - Number(a[orderBy]);
+    }
+
+    if (orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume) {
+      return Number(b.usdVolume) - Number(a.usdVolume);
+    }
+
+    return Number(b.usdRunningDailyVolume) - Number(a.usdRunningDailyVolume);
+  });
+
+  return { fixedProductMarketMakers: sortedResults };
 };
 
 const getAccountMarkets = async (
