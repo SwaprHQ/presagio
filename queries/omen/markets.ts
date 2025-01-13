@@ -428,13 +428,11 @@ const getMarkets = async (
   );
 
   /**
-   * The Graph doesn't allow multiple values in the orderBy parameter (at least for now).
+   * The Graph doesn't allow to order by multiple fields.
    *
-   * This fn applies a secondary sort criterion if we get a primary sort result that
-   * has multiple markets with the same sorted value (for example, the same volume
-   * or same liq).
-   * This fn ONLY SORTS a given page results. (as we also apply a first and skip parameter
-   * values to the query result)
+   * This fn applies a secondary sort criteria if we get a primary sort result that
+   * has multiple markets with the same sorted value.
+   * This fn only sorts a given page results.
    */
   const sortedResults = filteredResults.sort((a, b) => {
     const orderBy = params.orderBy as PrimaryOrderBy;
