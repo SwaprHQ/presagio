@@ -20,9 +20,24 @@ import { TWELVE_HOURS_IN_MS } from '@/utils';
 
 const ITEMS_PER_PAGE = 100;
 
+enum SortOrder {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+const SortKey = {
+  PROFIT_LOSS: 'profit_loss',
+  TOTAL_VOLUME: 'total_volume',
+  SUCCESS_RATE: 'success_rate',
+  TOTAL_WINS: 'total_wins',
+  TOTAL_POSITIONS: 'total_positions',
+} as const;
+
+type SortKeyType = (typeof SortKey)[keyof typeof SortKey];
+
 export default function AgentsLeaderboardTable() {
-  const [sortKey, setSortKey] = useState('profit_loss');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortKey, setSortKey] = useState<SortKeyType>(SortKey.PROFIT_LOSS);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.DESC);
   const [page, setPage] = useState(1);
 
   const { data, isLoading } = useQuery({
@@ -45,12 +60,12 @@ export default function AgentsLeaderboardTable() {
     }
   };
 
-  const handleSort = (key: any) => {
+  const handleSort = (key: SortKeyType) => {
     if (key === sortKey) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC);
     } else {
       setSortKey(key);
-      setSortOrder('desc');
+      setSortOrder(SortOrder.DESC);
     }
   };
 
@@ -59,7 +74,7 @@ export default function AgentsLeaderboardTable() {
     sortKey: key,
   }: {
     children: React.ReactNode;
-    sortKey: string;
+    sortKey: SortKeyType;
   }) => (
     <TableHead>
       <div className="flex justify-end">
@@ -71,7 +86,7 @@ export default function AgentsLeaderboardTable() {
           {children}
           {key === sortKey && (
             <Icon
-              name={sortOrder === 'asc' ? 'chevron-up' : 'chevron-down'}
+              name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
               className="ml-2 h-4 w-4"
             />
           )}
@@ -92,11 +107,11 @@ export default function AgentsLeaderboardTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Agent</TableHead>
-            <SortableHeader sortKey="profit_loss">Profit/Loss</SortableHeader>
-            <SortableHeader sortKey="total_volume">Volume Traded</SortableHeader>
-            <SortableHeader sortKey="success_rate">Success Rate</SortableHeader>
-            <SortableHeader sortKey="total_wins">Won bets</SortableHeader>
-            <SortableHeader sortKey="total_positions">Total bets</SortableHeader>
+            <SortableHeader sortKey={SortKey.PROFIT_LOSS}>Profit/Loss</SortableHeader>
+            <SortableHeader sortKey={SortKey.TOTAL_VOLUME}>Volume Traded</SortableHeader>
+            <SortableHeader sortKey={SortKey.SUCCESS_RATE}>Success Rate</SortableHeader>
+            <SortableHeader sortKey={SortKey.TOTAL_WINS}>Won bets</SortableHeader>
+            <SortableHeader sortKey={SortKey.TOTAL_POSITIONS}>Total bets</SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -160,22 +175,30 @@ const PaginationControls = ({
   totalPages: number;
   handlePageChange: (newPage: number) => void;
 }) => {
-  const showFirstPage = page > 2;
-  const showLastPage = page < totalPages - 1;
   const pageNumbers = [];
 
-  if (showFirstPage) {
-    pageNumbers.push(1);
-    if (page > 3) pageNumbers.push('...');
-  }
+  // If we have 5 or fewer pages, show all of them
+  if (totalPages <= 5) {
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+  } else {
+    const showFirstPage = page > 2;
+    const showLastPage = page < totalPages - 1;
 
-  for (let i = Math.max(1, page - 1); i <= Math.min(totalPages, page + 1); i++) {
-    pageNumbers.push(i);
-  }
+    if (showFirstPage) {
+      pageNumbers.push(1);
+      if (page > 3) pageNumbers.push('...');
+    }
 
-  if (showLastPage) {
-    if (page < totalPages - 2) pageNumbers.push('...');
-    pageNumbers.push(totalPages);
+    for (let i = Math.max(1, page - 1); i <= Math.min(totalPages, page + 1); i++) {
+      pageNumbers.push(i);
+    }
+
+    if (showLastPage) {
+      if (page < totalPages - 2) pageNumbers.push('...');
+      pageNumbers.push(totalPages);
+    }
   }
 
   return (
