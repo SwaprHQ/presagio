@@ -16,9 +16,9 @@ import { useQuery } from '@tanstack/react-query';
 import { getAgentsLeaderboardData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
+import { TWELVE_HOURS_IN_MS } from '@/utils';
 
 const ITEMS_PER_PAGE = 100;
-const twelve_hours_in_ms = 12 * 60 * 60 * 1000;
 
 export default function AgentsLeaderboardTable() {
   const [sortKey, setSortKey] = useState('profit_loss');
@@ -33,7 +33,7 @@ export default function AgentsLeaderboardTable() {
         pageSize: ITEMS_PER_PAGE,
         sort_by: `${sortKey} ${sortOrder}`,
       }),
-    staleTime: twelve_hours_in_ms,
+    staleTime: TWELVE_HOURS_IN_MS,
   });
 
   const agentsLeaderboardData = data?.data ?? [];
@@ -96,7 +96,7 @@ export default function AgentsLeaderboardTable() {
             <SortableHeader sortKey="total_volume">Volume Traded</SortableHeader>
             <SortableHeader sortKey="success_rate">Success Rate</SortableHeader>
             <SortableHeader sortKey="total_wins">Won bets</SortableHeader>
-            <SortableHeader sortKey="total_bets">Total bets</SortableHeader>
+            <SortableHeader sortKey="total_positions">Total bets</SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -136,7 +136,7 @@ export default function AgentsLeaderboardTable() {
                 {agent.total_wins.toLocaleString()}
               </TableCell>
               <TableCell className="text-right">
-                {agent.total_bets.toLocaleString()}
+                {agent.total_positions.toLocaleString()}
               </TableCell>
             </TableRow>
           ))}

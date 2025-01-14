@@ -1,42 +1,39 @@
 'use client';
 
-import { Skeleton } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { getAgentsTotalsData } from '@/queries/dune';
+import { TWELVE_HOURS_IN_MS } from '@/utils';
+import { StatsCard } from '@/app/components';
 
 export default function AgentsLeaderboardHeader() {
-  const twelve_hours_in_ms = 12 * 60 * 60 * 1000;
-
   const { data: agentsTotalsData, isLoading } = useQuery({
     queryKey: ['getAgentsTotalsData'],
     queryFn: getAgentsTotalsData,
-    staleTime: twelve_hours_in_ms,
+    staleTime: TWELVE_HOURS_IN_MS,
   });
-
-  if (isLoading) return <LoadingLeaderBoardHeader />;
 
   return (
     <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
       <StatsCard
-        title="Total tx volume"
+        title="Total volume"
         value={agentsTotalsData?.total_volume.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
         })}
+        isLoading={isLoading}
         symbol="USD"
-        isLoading={false}
       />
       <StatsCard
-        title="Total tx count"
-        value={agentsTotalsData?.total_bets.toString()}
+        title="Total positions"
+        value={agentsTotalsData?.total_positions.toString()}
         symbol="tx"
-        isLoading={false}
+        isLoading={isLoading}
       />
       <StatsCard
         title="Avg success rate"
         value={agentsTotalsData?.avg_success_rate.toString()}
         symbol="%"
-        isLoading={false}
+        isLoading={isLoading}
       />
       <StatsCard
         title="Total Profit/loss"
@@ -45,45 +42,8 @@ export default function AgentsLeaderboardHeader() {
           currency: 'USD',
         })}
         symbol="usd"
-        isLoading={false}
+        isLoading={isLoading}
       />
     </div>
   );
 }
-
-const StatsCard = ({
-  title,
-  value,
-  symbol,
-  isLoading,
-}: {
-  title?: string;
-  value?: string;
-  symbol?: string;
-  isLoading?: boolean;
-}) => {
-  return (
-    <div className="w-full space-y-2 rounded-16 bg-surface-surface-0 p-6 font-semibold text-text-low-em ring-1 ring-outline-base-em">
-      <div className="text-xs font-bold uppercase">{title}</div>
-      <div className="flex items-center space-x-1.5 text-2xl">
-        {isLoading ? (
-          <Skeleton className="h-9 w-12" />
-        ) : (
-          <span className="text-text-high-em">{value}</span>
-        )}
-        <span className="text-xl uppercase">{symbol}</span>
-      </div>
-    </div>
-  );
-};
-
-const LoadingLeaderBoardHeader = () => (
-  <div className="w-full space-y-12">
-    <div className="hidden w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 md:grid lg:grid-cols-4">
-      <Skeleton className="h-28 w-full" />
-      <Skeleton className="h-28 w-full" />
-      <Skeleton className="h-28 w-full" />
-      <Skeleton className="h-28 w-full" />
-    </div>
-  </div>
-);

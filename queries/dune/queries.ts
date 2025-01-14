@@ -4,8 +4,6 @@ import { duneClient } from '@/utils';
 import { Categories, DUNE_API_KEY } from '@/constants';
 
 const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
-const DUNE_AGENTS_LEADERBOARD_QUERY_ID = 4537160;
-const DUNE_AGENTS_TOTALS_QUERY_ID = 4537552;
 
 const marketCategories = Object.values(Categories).join(',');
 
@@ -38,12 +36,15 @@ export const getOpenMarkets = async () => {
 type AgentsLeaderboard = {
   address: Address;
   label: string;
-  total_volume: number;
   profit_loss: number;
+  total_returns: number;
+  total_volume: number;
   success_rate: number;
   total_wins: number;
-  total_bets: number;
+  total_positions: number;
 };
+
+const DUNE_AGENTS_LEADERBOARD_QUERY_ID = 4565681;
 
 export const getAgentsLeaderboardData = async ({
   page = 1,
@@ -77,12 +78,15 @@ export const getAgentsLeaderboardData = async ({
 };
 
 type AgentsLeaderboardTotals = {
-  total_bets: number;
+  total_positions: number;
+  total_returns: number;
   total_wins: number;
-  total_profit_loss: number;
-  avg_success_rate: number;
   total_volume: number;
+  avg_success_rate: number;
+  total_profit_loss: number;
 };
+
+const DUNE_AGENTS_TOTALS_QUERY_ID = 4537552;
 
 export const getAgentsTotalsData = async () => {
   const options: RunQueryArgs = {
