@@ -57,14 +57,14 @@ export const BetsListPanel = ({
   return (
     <TabPanel className="space-y-4">
       {isLoading && <LoadingBets />}
-      {hasNextPage && page && setPage && (
-        <Pagination isFinalPage={false} page={page} setPage={setPage} />
-      )}
       {!isLoading &&
         bets.length > 0 &&
         bets.map((userBet: UserBet) => (
           <CardComponent userBet={userBet} key={userBet.id} />
         ))}
+      {page && (page !== 1 || hasNextPage) && setPage && (
+        <Pagination isFinalPage={!hasNextPage} page={page} setPage={setPage} />
+      )}
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
           <p className="text-center">{emptyText}</p>

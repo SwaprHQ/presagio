@@ -7,7 +7,7 @@ import { UserBet, UserBetsManager } from '@/entities';
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TabBody, TabGroup, TabHeader } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 import { BetsListPanel, BetsListTab } from '@/app/components';
@@ -62,6 +62,14 @@ export default function MyBetsPage() {
     () => userBetsManager.getUnredeemedBets(),
     [userBetsManager]
   );
+
+  useEffect(() => {
+    return () => {
+      searchParams.delete('page');
+      router.replace(`/my-bets?${searchParams.toString()}`);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
