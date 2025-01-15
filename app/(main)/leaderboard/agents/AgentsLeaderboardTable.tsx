@@ -36,14 +36,21 @@ const SortKey = {
 
 type SortKeyType = (typeof SortKey)[keyof typeof SortKey];
 
+const defaultSort = SortKey.PROFIT_LOSS;
+const defaultOrder = SortOrder.DESC;
+
 export default function AgentsLeaderboardTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialPage = Number(searchParams.get('page')) || 1;
 
-  const [sortKey, setSortKey] = useState<SortKeyType>(SortKey.PROFIT_LOSS);
-  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.DESC);
+  const initialPage = Number(searchParams.get('page')) || 1;
+  const initialSortKey = (searchParams.get('sort') as SortKeyType) || defaultSort;
+  const initialSortOrder =
+    (searchParams.get('order')?.toLowerCase() as SortOrder) || defaultOrder;
+
   const [page, setPage] = useState(initialPage);
+  const [sortKey, setSortKey] = useState<SortKeyType>(initialSortKey);
+  const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
 
   const { data, isLoading } = useQuery({
     queryKey: ['getAgentsLeaderboardData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
@@ -59,34 +66,62 @@ export default function AgentsLeaderboardTable() {
   const agentsLeaderboardData = data?.data ?? [];
   const totalPages = Math.ceil((data?.totalRows ?? 0) / ITEMS_PER_PAGE);
 
-  const updateURL = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    newPage === 1 ? params.delete('page') : params.set('page', newPage.toString());
+  const updateURL = (params: {
+    page?: number;
+    sort?: SortKeyType;
+    order?: SortOrder;
+  }) => {
+    const urlParams = new URLSearchParams(searchParams.toString());
 
-    const newParams = params.toString() ? `?${params.toString()}` : '';
-    router.replace(`/leaderboard/agents${newParams}`);
+    if (params.page === 1) {
+      urlParams.delete('page');
+    } else if (params.page) {
+      urlParams.set('page', params.page.toString());
+    }
+
+    if (params.sort === defaultSort && params.order === defaultOrder) {
+      urlParams.delete('sort');
+      urlParams.delete('order');
+    } else {
+      if (params.sort) urlParams.set('sort', params.sort);
+      if (params.order) urlParams.set('order', params.order);
+    }
+
+    const queryString = urlParams.toString();
+    const newParams = queryString ? `?${queryString}` : '';
+    const url = `/leaderboard/agents${newParams}`;
+    router.replace(url);
   };
 
+  // Sync state with URL
   useEffect(() => {
-    const urlPage = Number(searchParams.get('page')) || 1;
-    if (page !== urlPage) setPage(urlPage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setPage(Number(searchParams.get('page')) || 1);
+    setSortKey((searchParams.get('sort') as SortKeyType) || defaultSort);
+    setSortOrder((searchParams.get('order')?.toLowerCase() as SortOrder) || defaultOrder);
   }, [searchParams]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
-      updateURL(newPage);
+      updateURL({ page: newPage });
     }
   };
 
   const handleSort = (key: SortKeyType) => {
+    let order = sortOrder;
     if (key === sortKey) {
-      setSortOrder(sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC);
+      order = sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC;
     } else {
-      setSortKey(key);
-      setSortOrder(SortOrder.DESC);
+      order = defaultOrder;
     }
+
+    setSortKey(key);
+    setSortOrder(order);
+    updateURL({
+      sort: key,
+      order: order,
+      page: 1, // Reset to first page when sorting changes
+    });
   };
 
   if (isLoading) return <LoadingLeaderBoardTable />;
