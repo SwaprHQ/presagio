@@ -128,11 +128,11 @@ export default function AgentsLeaderboardTable() {
           {agentsLeaderboardData.map(agent => (
             <TableRow key={agent.address}>
               <TableCell>
-                <div className="flex w-fit flex-shrink-0 items-center space-x-2 text-sm md:text-base">
+                <div className="flex w-64 items-center space-x-2 text-sm md:text-base">
                   <Avatar address={agent.address} />
                   <Link
                     href={`/profile?address=${agent.address}`}
-                    className="hover:underline"
+                    className="truncate hover:underline"
                   >
                     {agent.label}
                   </Link>
