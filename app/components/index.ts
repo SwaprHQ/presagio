@@ -19,5 +19,6 @@ export * from './AddressLink';
 export * from './EmbedMarketModal';
 export * from './LifiWidgetPopover';
 export * from './toasts';
+export * from './Pagination';
 export * from './Spinner';
 export * from './TxButton';
