@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAgentsLeaderboardData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
-import { formatValueWithFixedDecimals, TWELVE_HOURS_IN_MS } from '@/utils';
+import { formatValueWithFixedDecimals, THREE_HOURS_IN_MS } from '@/utils';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -48,7 +48,7 @@ export default function AgentsLeaderboardTable() {
         pageSize: ITEMS_PER_PAGE,
         sort_by: `${sortKey} ${sortOrder}`,
       }),
-    staleTime: TWELVE_HOURS_IN_MS,
+    staleTime: THREE_HOURS_IN_MS,
   });
 
   const agentsLeaderboardData = data?.data ?? [];
