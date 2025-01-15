@@ -1,6 +1,5 @@
 import { PropsWithChildren, useMemo, useState } from 'react';
 
-import { cx } from 'class-variance-authority';
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -15,10 +14,10 @@ import {
   getMarketTradesAndTransactions,
 } from '@/queries/omen';
 import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@/utils';
-import { Button, Icon, Tag } from '@swapr/ui';
+import { Tag } from '@swapr/ui';
 import { Outcome } from '@/entities';
 
-import { Skeleton, TokenLogo, UserAvatarWithAddress } from '@/app/components';
+import { Pagination, Skeleton, TokenLogo, UserAvatarWithAddress } from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
@@ -130,25 +129,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
         )}
       </div>
       {showPaginationButtons && (
-        <div className="flex w-full items-center justify-between bg-surface-surface-1 p-4">
-          <Button
-            variant="pastel"
-            onClick={() => setPage(page - 1)}
-            className={cx('space-x-2', { invisible: page === 1 })}
-          >
-            <Icon name="chevron-left" />
-            <p>Prev</p>
-          </Button>
-          <p className="font-semibold text-text-med-em">Page {page}</p>
-          <Button
-            variant="pastel"
-            onClick={() => setPage(page + 1)}
-            className={cx('space-x-2', { invisible: !hasMoreMarkets })}
-          >
-            <p>Next</p>
-            <Icon name="chevron-right" />
-          </Button>
-        </div>
+        <Pagination isFinalPage={!hasMoreMarkets} page={page} setPage={setPage} />
       )}
     </div>
   );
