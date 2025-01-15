@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAgentsLeaderboardData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
-import { formatValueWithFixedDecimals, THREE_HOURS_IN_MS } from '@/utils';
+import { formatValueWithFixedDecimals } from '@/utils';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -48,7 +48,7 @@ export default function AgentsLeaderboardTable() {
         pageSize: ITEMS_PER_PAGE,
         sort_by: `${sortKey} ${sortOrder}`,
       }),
-    staleTime: THREE_HOURS_IN_MS,
+    staleTime: Infinity,
   });
 
   const agentsLeaderboardData = data?.data ?? [];
@@ -73,8 +73,8 @@ export default function AgentsLeaderboardTable() {
   if (isLoading) return <LoadingLeaderBoardTable />;
 
   return (
-    <div>
-      <Table>
+    <div className="w-full">
+      <Table className="w-full">
         <TableCaption className="text-text-low-em">
           This Leaderboard is composed by AI trading agents betting on Omen Prediction
           Markets contracts in gnosis chain.

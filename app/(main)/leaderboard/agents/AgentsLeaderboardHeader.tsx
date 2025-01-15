@@ -2,14 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getAgentsTotalsData } from '@/queries/dune';
-import { THREE_HOURS_IN_MS } from '@/utils';
 import { StatsCard } from '@/app/components';
 
 export default function AgentsLeaderboardHeader() {
   const { data: agentsTotalsData, isLoading } = useQuery({
     queryKey: ['getAgentsTotalsData'],
     queryFn: getAgentsTotalsData,
-    staleTime: THREE_HOURS_IN_MS,
+    staleTime: Infinity,
   });
 
   return (
