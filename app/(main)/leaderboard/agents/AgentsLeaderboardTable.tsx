@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAgentsLeaderboardData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
-import { TWELVE_HOURS_IN_MS } from '@/utils';
+import { formatValueWithFixedDecimals, TWELVE_HOURS_IN_MS } from '@/utils';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -61,6 +61,7 @@ export default function AgentsLeaderboardTable() {
   };
 
   const handleSort = (key: SortKeyType) => {
+    console.log('handleSort key:', key);
     if (key === sortKey) {
       setSortOrder(sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC);
     } else {
@@ -68,32 +69,6 @@ export default function AgentsLeaderboardTable() {
       setSortOrder(SortOrder.DESC);
     }
   };
-
-  const SortableHeader = ({
-    children,
-    sortKey: key,
-  }: {
-    children: React.ReactNode;
-    sortKey: SortKeyType;
-  }) => (
-    <TableHead>
-      <div className="flex justify-end">
-        <Button
-          variant="ghost"
-          onClick={() => handleSort(key)}
-          className="h-8 text-nowrap text-sm font-bold text-text-low-em"
-        >
-          {children}
-          {key === sortKey && (
-            <Icon
-              name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
-              className="ml-2 h-4 w-4"
-            />
-          )}
-        </Button>
-      </div>
-    </TableHead>
-  );
 
   if (isLoading) return <LoadingLeaderBoardTable />;
 
@@ -107,11 +82,46 @@ export default function AgentsLeaderboardTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Agent</TableHead>
-            <SortableHeader sortKey={SortKey.PROFIT_LOSS}>Profit/Loss</SortableHeader>
-            <SortableHeader sortKey={SortKey.TOTAL_VOLUME}>Volume Traded</SortableHeader>
-            <SortableHeader sortKey={SortKey.SUCCESS_RATE}>Success Rate</SortableHeader>
-            <SortableHeader sortKey={SortKey.TOTAL_WINS}>Won bets</SortableHeader>
-            <SortableHeader sortKey={SortKey.TOTAL_POSITIONS}>Total bets</SortableHeader>
+            <SortableHeader
+              handleSort={handleSort}
+              sortOrder={sortOrder}
+              sortKey={sortKey}
+              headerKey={SortKey.PROFIT_LOSS}
+            >
+              Profit/Loss
+            </SortableHeader>
+            <SortableHeader
+              handleSort={handleSort}
+              sortOrder={sortOrder}
+              sortKey={sortKey}
+              headerKey={SortKey.TOTAL_VOLUME}
+            >
+              Volume Traded
+            </SortableHeader>
+            <SortableHeader
+              handleSort={handleSort}
+              sortOrder={sortOrder}
+              sortKey={sortKey}
+              headerKey={SortKey.SUCCESS_RATE}
+            >
+              Success Rate
+            </SortableHeader>
+            <SortableHeader
+              handleSort={handleSort}
+              sortOrder={sortOrder}
+              sortKey={sortKey}
+              headerKey={SortKey.TOTAL_WINS}
+            >
+              Won bets
+            </SortableHeader>
+            <SortableHeader
+              handleSort={handleSort}
+              sortOrder={sortOrder}
+              headerKey={SortKey.TOTAL_POSITIONS}
+              sortKey={sortKey}
+            >
+              Total bets
+            </SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,7 +141,7 @@ export default function AgentsLeaderboardTable() {
               <TableCell
                 className={twMerge(
                   'text-right',
-                  agent.profit_loss >= 0.01 && 'text-text-success-main',
+                  agent.profit_loss >= 0 && 'text-text-success-main',
                   agent.profit_loss <= -0.01 && 'text-text-danger-main'
                 )}
               >
@@ -141,10 +151,7 @@ export default function AgentsLeaderboardTable() {
                 })}
               </TableCell>
               <TableCell className="text-right">
-                {agent.total_volume.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                })}
+                ${formatValueWithFixedDecimals(agent.total_volume, 2)}
               </TableCell>
               <TableCell className="text-right">{agent.success_rate}%</TableCell>
               <TableCell className="text-right">
@@ -165,6 +172,43 @@ export default function AgentsLeaderboardTable() {
     </div>
   );
 }
+
+export const SortableHeader = ({
+  children,
+  headerKey,
+  sortKey,
+  handleSort,
+  sortOrder,
+}: {
+  children: React.ReactNode;
+  sortKey: SortKeyType;
+  headerKey: SortKeyType;
+  handleSort: (key: SortKeyType) => void;
+  sortOrder: SortOrder;
+}) => {
+  console.log('sortKey', sortKey);
+  console.log('headerKey', headerKey);
+
+  return (
+    <TableHead>
+      <div className="flex justify-end">
+        <Button
+          variant="ghost"
+          onClick={() => handleSort(headerKey)}
+          className="h-8 text-nowrap text-sm font-bold text-text-low-em"
+        >
+          {children}
+          {headerKey === sortKey && (
+            <Icon
+              name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
+              className="ml-2 h-4 w-4"
+            />
+          )}
+        </Button>
+      </div>
+    </TableHead>
+  );
+};
 
 const PaginationControls = ({
   page,
