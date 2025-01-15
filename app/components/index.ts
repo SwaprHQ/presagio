@@ -21,3 +21,4 @@ export * from './LifiWidgetPopover';
 export * from './toasts';
 export * from './Spinner';
 export * from './TxButton';
+export * from './StatsCard';

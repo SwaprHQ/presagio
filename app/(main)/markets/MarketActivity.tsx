@@ -237,11 +237,11 @@ interface LiquidityEventRowProps {
   aiAgent?: AiAgent;
 }
 
-const FPMMContractAddress = '0x9083a2b699c0a4ad06f63580bde2635d26a3eef0';
+const FPMM_CONTRACT_ADDRESS = '0x9083a2b699c0a4ad06f63580bde2635d26a3eef0';
 
 const LiquidityEventRow = ({ transaction, aiAgent }: LiquidityEventRowProps) => {
   const creatorAddress =
-    transaction.user.id === FPMMContractAddress
+    transaction.user.id === FPMM_CONTRACT_ADDRESS
       ? transaction.fpmm.creator
       : transaction.user.id;
 
