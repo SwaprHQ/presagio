@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -36,9 +37,13 @@ const SortKey = {
 type SortKeyType = (typeof SortKey)[keyof typeof SortKey];
 
 export default function AgentsLeaderboardTable() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialPage = Number(searchParams.get('page')) || 1;
+
   const [sortKey, setSortKey] = useState<SortKeyType>(SortKey.PROFIT_LOSS);
   const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.DESC);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(initialPage);
 
   const { data, isLoading } = useQuery({
     queryKey: ['getAgentsLeaderboardData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
@@ -54,14 +59,28 @@ export default function AgentsLeaderboardTable() {
   const agentsLeaderboardData = data?.data ?? [];
   const totalPages = Math.ceil((data?.totalRows ?? 0) / ITEMS_PER_PAGE);
 
+  const updateURL = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    newPage === 1 ? params.delete('page') : params.set('page', newPage.toString());
+
+    const newParams = params.toString() ? `?${params.toString()}` : '';
+    router.replace(`/leaderboard/agents${newParams}`);
+  };
+
+  useEffect(() => {
+    const urlPage = Number(searchParams.get('page')) || 1;
+    if (page !== urlPage) setPage(urlPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
+      updateURL(newPage);
     }
   };
 
   const handleSort = (key: SortKeyType) => {
-    console.log('handleSort key:', key);
     if (key === sortKey) {
       setSortOrder(sortOrder === SortOrder.ASC ? SortOrder.DESC : SortOrder.ASC);
     } else {
@@ -185,30 +204,25 @@ export const SortableHeader = ({
   headerKey: SortKeyType;
   handleSort: (key: SortKeyType) => void;
   sortOrder: SortOrder;
-}) => {
-  console.log('sortKey', sortKey);
-  console.log('headerKey', headerKey);
-
-  return (
-    <TableHead>
-      <div className="flex justify-end">
-        <Button
-          variant="ghost"
-          onClick={() => handleSort(headerKey)}
-          className="h-8 text-nowrap text-sm font-bold text-text-low-em"
-        >
-          {children}
-          {headerKey === sortKey && (
-            <Icon
-              name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
-              className="ml-2 h-4 w-4"
-            />
-          )}
-        </Button>
-      </div>
-    </TableHead>
-  );
-};
+}) => (
+  <TableHead>
+    <div className="flex justify-end">
+      <Button
+        variant="ghost"
+        onClick={() => handleSort(headerKey)}
+        className="h-8 text-nowrap text-sm font-bold text-text-low-em"
+      >
+        {children}
+        {headerKey === sortKey && (
+          <Icon
+            name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
+            className="ml-2 h-4 w-4"
+          />
+        )}
+      </Button>
+    </div>
+  </TableHead>
+);
 
 const PaginationControls = ({
   page,
