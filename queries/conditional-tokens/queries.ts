@@ -10,12 +10,13 @@ import {
 import { gql, request } from 'graphql-request';
 
 const getUserPositionsQuery = gql`
-  query OmenGetMyMarkets($id: ID!) {
+  query OmenGetMyMarkets($id: ID!, $first: Int, $skip: Int) {
     userPositions(
       where: { user_: { id: $id } }
       orderBy: position__createTimestamp
       orderDirection: desc
-      first: 999
+      first: $first
+      skip: $skip
     ) {
       id
       balance

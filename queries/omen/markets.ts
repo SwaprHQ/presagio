@@ -490,10 +490,23 @@ const sortByNewestBet = (a: UserBet, b: UserBet) => {
   );
 };
 
-const getUserBets = async (address?: string) => {
+interface GetUserBetsArgs {
+  address?: string;
+  itemsPerPage?: number;
+  page?: number;
+}
+const getUserBets = async ({
+  address,
+  itemsPerPage = 999,
+  page = 1,
+}: GetUserBetsArgs) => {
   if (!address) return [];
 
-  const userPositionsData = await getUserPositions({ id: address.toLowerCase() });
+  const userPositionsData = await getUserPositions({
+    id: address.toLowerCase(),
+    first: itemsPerPage,
+    skip: (page - 1) * itemsPerPage,
+  });
   const userPositions = userPositionsData?.userPositions ?? [];
 
   const userBets = await Promise.allSettled(
