@@ -37,6 +37,8 @@ import { useEnsName } from 'wagmi';
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { mainnet } from 'viem/chains';
 
+import { AiAgent } from '@/types';
+
 export default function ProfilePage() {
   const searchParams = useSearchParams();
 
@@ -107,9 +109,15 @@ export default function ProfilePage() {
     staleTime: Infinity,
   });
 
-  const isAIAgent =
-    aiAgentsList?.some(aiAgent => String(aiAgent.address).toLowerCase() === address) ??
-    false;
+  const getIsAIAgent = useMemo(() => {
+    return (address: string) => {
+      if (!aiAgentsList?.length) return undefined;
+
+      return aiAgentsList.find(
+        aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
+      );
+    };
+  }, [aiAgentsList]);
 
   const spentAmountInUSD = useMemo(
     () =>
@@ -257,6 +265,7 @@ export default function ProfilePage() {
       : '-';
 
   const isLoadingStats = userPositions === undefined || isLoadingTokenPrices;
+  const aiAgent = getIsAIAgent(address);
 
   return (
     <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
@@ -267,7 +276,7 @@ export default function ProfilePage() {
             <AddressLink
               href={getExplorerAddressUrl(address)}
               address={address}
-              isAIAgent={isAIAgent}
+              aiAgent={aiAgent}
               className="text-xl font-semibold md:text-2xl"
               iconSize={24}
               target="_blank"
