@@ -6,15 +6,19 @@ import { UserPosition } from '@/queries/conditional-tokens/types';
 import { PropsWithChildren, ReactNode } from 'react';
 import { TabPanel, TabStyled } from '@swapr/ui';
 import { UserBet } from '@/entities';
+import { Pagination } from './Pagination';
 
 export interface BetsListPanelProps {
-  emptyText?: string;
   bets: UserBet[];
-  isLoading: boolean;
-  unredeemed?: boolean;
   CardComponent?: React.ComponentType<{
     userBet: UserBet;
   }>;
+  emptyText?: string;
+  hasNextPage?: boolean;
+  isLoading: boolean;
+  page?: number;
+  setPage?: (page: number) => void;
+  unredeemed?: boolean;
 }
 
 interface BetsListTabProps {
@@ -42,14 +46,20 @@ export const BetsListTab = ({ children, bets }: BetsListTabProps) => {
 };
 
 export const BetsListPanel = ({
-  emptyText = '',
   bets,
-  isLoading,
   CardComponent = MyBetsCardBet,
+  emptyText = '',
+  hasNextPage,
+  isLoading,
+  page,
+  setPage,
 }: BetsListPanelProps) => {
   return (
     <TabPanel className="space-y-4">
       {isLoading && <LoadingBets />}
+      {hasNextPage && page && setPage && (
+        <Pagination isFinalPage={false} page={page} setPage={setPage} />
+      )}
       {!isLoading &&
         bets.length > 0 &&
         bets.map((userBet: UserBet) => (

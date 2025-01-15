@@ -7,17 +7,41 @@ import { UserBet, UserBetsManager } from '@/entities';
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { TabBody, TabGroup, TabHeader } from '@swapr/ui';
 import { useAccount } from 'wagmi';
 import { BetsListPanel, BetsListTab } from '@/app/components';
+import { useRouter } from 'next/navigation';
+
+const ITEMS_PER_PAGE = 50;
 
 export default function MyBetsPage() {
   const { address } = useAccount();
+  const router = useRouter();
+
+  const searchParams =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams('/my-bets');
+
+  const [page, setPage] = useState(
+    Number(searchParams.get('page')?.toLocaleLowerCase() || '1')
+  );
 
   const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
-    queryFn: async () => await getUserBets(address),
+    queryFn: async () => await getUserBets({ address }),
+    enabled: !!address,
+  });
+
+  const { data: nextPagePositions } = useQuery<UserBet[]>({
+    queryKey: ['getUserBetsNextPage', address, page],
+    queryFn: async () =>
+      await getUserBets({
+        address,
+        itemsPerPage: ITEMS_PER_PAGE,
+        page: page + 1,
+      }),
     enabled: !!address,
   });
 
@@ -42,6 +66,13 @@ export default function MyBetsPage() {
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
 
+  const handlePageChange = (newPage: number) => {
+    searchParams.set('page', newPage.toString());
+    setPage(newPage);
+
+    router.replace(`/my-bets?${searchParams.toString()}`);
+  };
+
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
@@ -55,7 +86,13 @@ export default function MyBetsPage() {
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
-              <BetsListPanel bets={userPositionsComplete ?? []} isLoading={isLoading} />
+              <BetsListPanel
+                bets={userPositionsComplete ?? []}
+                hasNextPage={!!nextPagePositions?.length}
+                isLoading={isLoading}
+                page={page}
+                setPage={handlePageChange}
+              />
               <BetsListPanel
                 emptyText="No active bets"
                 bets={filterActiveBets}

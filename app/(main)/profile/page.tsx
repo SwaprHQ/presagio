@@ -1,8 +1,8 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Address, formatEther, isAddress } from 'viem';
+import { useRouter } from 'next/navigation';
 import {
   calcSellAmountInCollateral,
   formatValueWithFixedDecimals,
@@ -37,12 +37,26 @@ import { useEnsName } from 'wagmi';
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { mainnet } from 'viem/chains';
 
-import { AiAgent } from '@/types';
-
+const ITEMS_PER_PAGE = 100;
 export default function ProfilePage() {
-  const searchParams = useSearchParams();
+  const router = useRouter();
+  const searchParams =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : new URLSearchParams('/profile');
 
   const address = searchParams.get('address')?.toLocaleLowerCase();
+
+  const [page, setPage] = useState(
+    Number(searchParams.get('page')?.toLocaleLowerCase() || '1')
+  );
+
+  const handlePageChange = (newPage: number) => {
+    searchParams.set('page', newPage.toString());
+    setPage(newPage);
+
+    router.replace(`/profile?${searchParams.toString()}`);
+  };
 
   const { data: ensName } = useEnsName({
     address: address as Address,
@@ -60,8 +74,20 @@ export default function ProfilePage() {
   });
 
   const { data: userPositions, isLoading } = useQuery<UserBet[]>({
-    queryKey: ['getUserBets', address],
-    queryFn: async () => await getUserBets(address),
+    queryKey: ['getUserBets', address, page],
+    queryFn: async () =>
+      await getUserBets({ address, page, itemsPerPage: ITEMS_PER_PAGE }),
+    enabled: !!address,
+  });
+
+  const { data: nextPagePositions } = useQuery<UserBet[]>({
+    queryKey: ['getUserBetsNextPage', address, page],
+    queryFn: async () =>
+      await getUserBets({
+        address,
+        itemsPerPage: ITEMS_PER_PAGE,
+        page: page + 1,
+      }),
     enabled: !!address,
   });
 
@@ -330,7 +356,10 @@ export default function ProfilePage() {
           <ProfileBetsListPanel
             emptyText="No bets"
             bets={userPositions ?? []}
+            hasNextPage={!!nextPagePositions?.length}
             isLoading={isLoading}
+            page={page}
+            setPage={handlePageChange}
           />
           <ProfileBetsListPanel
             emptyText="No active bets"
@@ -349,7 +378,7 @@ export default function ProfilePage() {
 }
 
 const ProfileBetsListPanel = (props: BetsListPanelProps) => (
-  <BetsListPanel {...props} CardComponent={ProfileCardBet} />
+  <BetsListPanel CardComponent={ProfileCardBet} {...props} />
 );
 
 const StatsCard = ({
