@@ -10,7 +10,7 @@
     "graphql": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@duneanalytics/client-sdk": "^0.2.1",
+    "@duneanalytics/client-sdk": "0.2.4",
     "@fvictorio/newton-raphson-method": "^1.0.5",
     "@lifi/widget": "^3.7.0",
     "@radix-ui/react-scroll-area": "^1.0.5",
@@ -35,7 +35,7 @@
     "react-dom": "^18",
     "react-syntax-highlighter": "^15.5.0",
     "recharts": "^2.12.7",
-    "tailwind-merge": "^2.5.2",
+    "tailwind-merge": "^2.5.4",
     "viem": "2.x",
     "wagmi": "^2.5.7"
   },

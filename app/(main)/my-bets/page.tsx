@@ -26,7 +26,7 @@ export default function MyBetsPage() {
 
   const pageParam = Number(searchParams.get('page')?.toLocaleLowerCase() || '1');
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(pageParam);
 
   const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],

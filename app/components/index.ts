@@ -22,3 +22,4 @@ export * from './toasts';
 export * from './SimplePagination';
 export * from './Spinner';
 export * from './TxButton';
+export * from './StatsCard';
