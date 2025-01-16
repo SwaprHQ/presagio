@@ -1,13 +1,11 @@
 'use client';
 
-import { LoadingCardBet, MyBetsCardBet } from '@/app/components/CardBet';
+import { LoadingCardBet, MyBetsCardBet, SimplePagination } from '@/app/components';
 import { UserPosition } from '@/queries/conditional-tokens/types';
 
 import { PropsWithChildren, ReactNode } from 'react';
 import { TabPanel, TabStyled } from '@swapr/ui';
 import { UserBet } from '@/entities';
-import { Pagination } from './Pagination';
-
 export interface BetsListPanelProps {
   bets: UserBet[];
   CardComponent?: React.ComponentType<{
@@ -62,9 +60,7 @@ export const BetsListPanel = ({
         bets.map((userBet: UserBet) => (
           <CardComponent userBet={userBet} key={userBet.id} />
         ))}
-      {page && (page !== 1 || hasNextPage) && setPage && (
-        <Pagination isFinalPage={!hasNextPage} page={page} setPage={setPage} />
-      )}
+      <SimplePagination isFinalPage={!hasNextPage} page={page} setPage={setPage} />
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
           <p className="text-center">{emptyText}</p>

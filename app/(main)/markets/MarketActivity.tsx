@@ -17,7 +17,12 @@ import { formatDateTimeWithYear, formatEtherWithFixedDecimals, timeAgo } from '@
 import { Tag } from '@swapr/ui';
 import { Outcome } from '@/entities';
 
-import { Pagination, Skeleton, TokenLogo, UserAvatarWithAddress } from '@/app/components';
+import {
+  SimplePagination,
+  Skeleton,
+  TokenLogo,
+  UserAvatarWithAddress,
+} from '@/app/components';
 import { getAIAgents } from '@/queries/dune';
 import { Address } from 'viem';
 import { OUTCOME_TAG_COLORS_SCHEME } from '@/constants';
@@ -85,7 +90,6 @@ export const MarketActivity = ({ id }: { id: string }) => {
   });
 
   const hasMoreMarkets = tradesNextPage && tradesNextPage.fpmmTrades.length !== 0;
-  const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
     <div>
@@ -128,9 +132,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
           </div>
         )}
       </div>
-      {showPaginationButtons && (
-        <Pagination isFinalPage={!hasMoreMarkets} page={page} setPage={setPage} />
-      )}
+      <SimplePagination isFinalPage={!hasMoreMarkets} page={page} setPage={setPage} />
     </div>
   );
 };
