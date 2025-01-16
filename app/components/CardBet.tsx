@@ -144,10 +144,10 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
                 >
                   {position.getOutcome()}
                 </Tag>
-                <p className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+                <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
                   <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
                   <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
-                </p>
+                </div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
