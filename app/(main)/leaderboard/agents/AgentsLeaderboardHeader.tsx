@@ -1,13 +1,13 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getAgentsTotalsData } from '@/queries/dune';
+import { getAgentsTotalsTradeMetricsData } from '@/queries/dune';
 import { StatsCard } from '@/app/components';
 
 export default function AgentsLeaderboardHeader() {
   const { data: agentsTotalsData, isLoading } = useQuery({
-    queryKey: ['getAgentsTotalsData'],
-    queryFn: getAgentsTotalsData,
+    queryKey: ['getAgentsTotalsTradeMetricsData'],
+    queryFn: getAgentsTotalsTradeMetricsData,
     staleTime: Infinity,
   });
 

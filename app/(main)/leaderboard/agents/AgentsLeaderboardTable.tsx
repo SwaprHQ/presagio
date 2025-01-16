@@ -14,7 +14,7 @@ import {
 import { Button, Icon, IconButton } from '@swapr/ui';
 import { Avatar, Skeleton } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
-import { getAgentsLeaderboardData } from '@/queries/dune';
+import { getAgentsTradeMetricsData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 import { formatValueWithFixedDecimals } from '@/utils';
@@ -53,9 +53,9 @@ export default function AgentsLeaderboardTable() {
   const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['getAgentsLeaderboardData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
+    queryKey: ['getAgentsTradeMetricsData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
     queryFn: () =>
-      getAgentsLeaderboardData({
+      getAgentsTradeMetricsData({
         page,
         pageSize: ITEMS_PER_PAGE,
         sort_by: `${sortKey} ${sortOrder}`,

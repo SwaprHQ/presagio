@@ -10,14 +10,7 @@ import {
   shortenAddress,
 } from '@/utils';
 import { TabBody, TabGroup, TabHeader, Tag } from '@swapr/ui';
-import {
-  Market,
-  Position,
-  tradesCollateralAmountSpent,
-  tradesOutcomeBalance,
-  tradesVolume,
-  UserBet,
-} from '@/entities';
+import { Market, Position, UserBet } from '@/entities';
 import { getUser } from '@/queries/conditional-tokens';
 import { getUserBets } from '@/queries/omen';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -31,18 +24,23 @@ import {
   ProfileCardBet,
   StatsCard,
 } from '@/app/components';
-import { getAIAgents } from '@/queries/dune';
+import { getAIAgents, getOmenTradeMetrics } from '@/queries/dune';
 import { getTokenUSDPrice } from '@/queries/mobula';
 import { useEnsName } from 'wagmi';
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { mainnet } from 'viem/chains';
 
-import { AiAgent } from '@/types';
-
 export default function ProfilePage() {
   const searchParams = useSearchParams();
-
   const address = searchParams.get('address')?.toLocaleLowerCase();
+
+  const { data: tradeMetricsData, isLoading: isLoadingTradeMetrics } = useQuery({
+    queryKey: ['getOmenTradeMetrics', address],
+    queryFn: () => getOmenTradeMetrics({ pageSize: 1, filters: `address=${address}` }),
+    staleTime: Infinity,
+  });
+
+  const tradeMetrics = tradeMetricsData?.data[0];
 
   const { data: ensName } = useEnsName({
     address: address as Address,
@@ -119,51 +117,6 @@ export default function ProfilePage() {
     };
   }, [aiAgentsList]);
 
-  const spentAmountInUSD = useMemo(
-    () =>
-      userPositions?.reduce((acc, userPosition) => {
-        const market = new Market(userPosition.fpmm);
-
-        if (market.answer === null) return acc;
-
-        const amountSpentWei = tradesCollateralAmountSpent({
-          fpmmTrades: userPosition.fpmmTrades,
-        });
-
-        const amountSpent = parseFloat(formatEther(amountSpentWei));
-
-        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
-        const priceInUSD = tokenPrices[collateralTokenAddress];
-
-        if (!priceInUSD) return acc;
-
-        return amountSpent * priceInUSD + acc;
-      }, 0),
-    [tokenPrices, userPositions]
-  );
-
-  const winAmountInUSD = useMemo(
-    () =>
-      userPositions?.reduce((acc, userPosition) => {
-        const position = new Position(userPosition.position);
-        const market = new Market(userPosition.fpmm);
-
-        if (market.answer === null || market.isLoser(position.getOutcomeIndex()))
-          return acc;
-        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
-        const priceInUSD = tokenPrices[collateralTokenAddress];
-
-        if (!priceInUSD) return acc;
-
-        const winOutcomeBalancesInColleteralToken = tradesOutcomeBalance({
-          fpmmTrades: userPosition.fpmmTrades,
-        });
-
-        return winOutcomeBalancesInColleteralToken * priceInUSD + acc;
-      }, 0),
-    [tokenPrices, userPositions]
-  );
-
   const potentialWinAmountInUSD = useMemo(
     () =>
       userPositions?.reduce((acc, userPosition) => {
@@ -194,51 +147,6 @@ export default function ProfilePage() {
     [tokenPrices, userPositions]
   );
 
-  const totalVolumeInUSD = useMemo(
-    () =>
-      userPositions?.reduce((acc, userPosition) => {
-        const volumeTradedWei = tradesVolume({
-          fpmmTrades: userPosition.fpmmTrades,
-        });
-
-        const volumeTraded = parseFloat(formatEther(volumeTradedWei));
-
-        const collateralTokenAddress = userPosition.position.collateralTokenAddress;
-        const priceInUSD = tokenPrices[collateralTokenAddress];
-
-        if (!priceInUSD) return acc;
-
-        return volumeTraded * priceInUSD + acc;
-      }, 0),
-    [tokenPrices, userPositions]
-  );
-
-  const numberOfWonBets = useMemo(
-    () =>
-      userPositions?.reduce((acc, userPosition) => {
-        const position = new Position(userPosition.position);
-        const market = new Market(userPosition.fpmm);
-
-        if (market.answer !== null && market.isWinner(position.getOutcomeIndex()))
-          return acc + 1;
-
-        return acc;
-      }, 0),
-    [userPositions]
-  );
-
-  const numberOfClosedBets = useMemo(
-    () =>
-      userPositions?.reduce((acc, userPosition) => {
-        const market = new Market(userPosition.fpmm);
-
-        if (market.isClosed && market.answer !== null) return acc + 1;
-
-        return acc;
-      }, 0),
-    [userPositions]
-  );
-
   if (!address || !isAddress(address)) return null;
 
   const userFirstParticipationDate = userInfo?.user
@@ -248,20 +156,6 @@ export default function ProfilePage() {
   const positionValue =
     potentialWinAmountInUSD !== undefined
       ? formatValueWithFixedDecimals(potentialWinAmountInUSD, 2)
-      : '-';
-  const volumeTraded =
-    totalVolumeInUSD !== undefined
-      ? formatValueWithFixedDecimals(totalVolumeInUSD, 2)
-      : '-';
-  const successRate =
-    numberOfClosedBets !== undefined &&
-    numberOfClosedBets !== 0 &&
-    numberOfWonBets !== undefined
-      ? ((numberOfWonBets / numberOfClosedBets) * 100).toFixed(0)
-      : '-';
-  const profitLoss =
-    spentAmountInUSD !== undefined && winAmountInUSD !== undefined
-      ? (winAmountInUSD - spentAmountInUSD).toFixed(2)
       : '-';
 
   const isLoadingStats = userPositions === undefined || isLoadingTokenPrices;
@@ -296,26 +190,32 @@ export default function ProfilePage() {
       </div>
       <div className="grid w-full grid-cols-1 justify-between gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Positions value"
-          value={positionValue}
+          title="Profit/loss"
+          value={tradeMetrics?.profit_loss?.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          })}
           symbol="usd"
           isLoading={isLoadingStats}
         />
         <StatsCard
           title="Volume traded"
-          value={volumeTraded}
+          value={tradeMetrics?.total_volume.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          })}
           symbol="usd"
-          isLoading={isLoadingStats}
+          isLoading={isLoadingTradeMetrics}
         />
         <StatsCard
           title="Success rate"
-          value={successRate}
+          value={tradeMetrics?.success_rate?.toString()}
           symbol="%"
           isLoading={isLoadingStats}
         />
         <StatsCard
-          title="Profit/loss"
-          value={profitLoss}
+          title="Positions value"
+          value={positionValue}
           symbol="usd"
           isLoading={isLoadingStats}
         />
