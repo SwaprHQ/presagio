@@ -24,9 +24,9 @@ export default function MyBetsPage() {
       ? new URLSearchParams(window.location.search)
       : new URLSearchParams('/my-bets');
 
-  const [page, setPage] = useState(
-    Number(searchParams.get('page')?.toLocaleLowerCase() || '1')
-  );
+  const pageParam = Number(searchParams.get('page')?.toLocaleLowerCase() || '1');
+
+  const [page, setPage] = useState(1);
 
   const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
@@ -64,12 +64,8 @@ export default function MyBetsPage() {
   );
 
   useEffect(() => {
-    return () => {
-      searchParams.delete('page');
-      router.replace(`/my-bets?${searchParams.toString()}`);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    setPage(pageParam);
+  }, [pageParam]);
 
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;

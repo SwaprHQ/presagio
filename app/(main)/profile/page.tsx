@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Address, formatEther, isAddress } from 'viem';
 import { useRouter } from 'next/navigation';
 import {
@@ -264,14 +264,6 @@ export default function ProfilePage() {
       }, 0),
     [userPositions]
   );
-
-  useEffect(() => {
-    return () => {
-      searchParams.delete('page');
-      router.replace(`/profile?${searchParams.toString()}`);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!address || !isAddress(address)) return null;
 
