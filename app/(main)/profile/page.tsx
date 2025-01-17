@@ -196,7 +196,7 @@ export default function ProfilePage() {
             currency: 'USD',
           })}
           symbol="usd"
-          isLoading={isLoadingStats}
+          isLoading={isLoadingTradeMetrics}
         />
         <StatsCard
           title="Volume traded"
@@ -211,7 +211,7 @@ export default function ProfilePage() {
           title="Success rate"
           value={tradeMetrics?.success_rate?.toString()}
           symbol="%"
-          isLoading={isLoadingStats}
+          isLoading={isLoadingTradeMetrics}
         />
         <StatsCard
           title="Positions value"
