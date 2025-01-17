@@ -14,8 +14,10 @@ export const SimplePagination = ({
   isFinalPage,
   page,
   setPage,
-}: SimplePaginationProps) =>
-  page && (page !== 1 || !isFinalPage) && setPage ? (
+}: SimplePaginationProps) => {
+  if (!(page && (page !== 1 || !isFinalPage) && setPage)) return null;
+
+  return (
     <div className="flex w-full items-center justify-between p-4">
       <Button
         variant="pastel"
@@ -35,4 +37,5 @@ export const SimplePagination = ({
         <Icon name="chevron-right" />
       </Button>
     </div>
-  ) : null;
+  );
+};
