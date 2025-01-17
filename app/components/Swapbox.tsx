@@ -13,7 +13,7 @@ import { SwapInput } from './ui/SwapInput';
 import { useEffect, useState } from 'react';
 import { parseEther, Address, formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
-import { TxButton } from '.';
+import { DangerousWordInfo, TxButton } from '.';
 import { Outcome, Token } from '@/entities';
 import { FixedProductMarketMaker } from '@/queries/omen';
 import {
@@ -39,6 +39,7 @@ import { gnosis } from 'viem/chains';
 import { formatEtherWithFixedDecimals, formatValueWithFixedDecimals } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { getTokenUSDPrice } from '@/queries/mobula';
+import { marketHasDangerousKeyword } from '@/queries/omen/dangerousKeywords';
 import { useSlippage } from '@/context';
 
 const ONE_UNIT = '1';
@@ -283,6 +284,8 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
     return currentState.buttonText;
   };
 
+  const titleHasDangerousWords = marketHasDangerousKeyword(fixedProductMarketMaker);
+
   return (
     <>
       <div className="relative space-y-2 font-medium">
@@ -373,6 +376,7 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               </div>
             )}
           </div>
+          {titleHasDangerousWords && <DangerousWordInfo />}
           <TxButton disabled={isButtonDisabled} onClick={openBetModal}>
             {getButtonLabel()}
           </TxButton>
