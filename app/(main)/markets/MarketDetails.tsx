@@ -84,7 +84,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   </Tag>
                 </a>
                 <div className="flex items-center gap-2">
-                  {titleHasDangerousWords && <DangerousWordInfo small />}
+                  {titleHasDangerousWords && <DangerousWordInfo />}
                   {marketModel.isClosed ? (
                     <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
                       Market Closed

@@ -1,26 +1,12 @@
 'use client';
 
-import { cx } from 'class-variance-authority';
-
 import { Icon, Tooltip, TooltipContent, TooltipTrigger } from '@swapr/ui';
 
-interface DangerousWordInfoProps {
-  small?: boolean;
-}
-
-export const DangerousWordInfo = ({ small }: DangerousWordInfoProps) => (
+export const DangerousWordInfo = () => (
   <Tooltip>
     <TooltipTrigger>
-      <div
-        className={cx(
-          'flex items-center gap-1 rounded-12 border-2 border-text-danger-main bg-text-danger-em px-2 py-1.5 text-sm font-semibold text-outline-warning-base-em',
-          {
-            'rounded-6': small,
-          }
-        )}
-      >
+      <div className="flex items-center gap-1 rounded-6 border-2 border-text-danger-main bg-text-danger-em px-2 py-1.5 text-sm font-semibold text-outline-warning-base-em">
         <Icon name="warning" size={16} />
-        {!small && <p>Potentially inappropriate</p>}
       </div>
     </TooltipTrigger>
     <TooltipContent className="bg-surface-surface-0">
