@@ -83,16 +83,18 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                     {fixedProductMarketMaker.category}
                   </Tag>
                 </a>
-                {marketModel.isClosed ? (
-                  <div className="flex items-center gap-2">
-                    {titleHasDangerousWords && <DangerousWordInfo small />}
+                <div className="flex items-center gap-2">
+                  {titleHasDangerousWords && <DangerousWordInfo small />}
+                  {marketModel.isClosed ? (
                     <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
                       Market Closed
                     </Tag>
-                  </div>
-                ) : (
-                  <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
-                )}
+                  ) : (
+                    <p className="text-sm text-text-med-em">
+                      {remainingTime(closingDate)}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex space-x-4">
                 <MarketThumbnail
