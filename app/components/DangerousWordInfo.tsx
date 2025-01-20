@@ -24,7 +24,7 @@ export const DangerousWordInfo = ({ small }: DangerousWordInfoProps) => (
       </div>
     </TooltipTrigger>
     <TooltipContent className="bg-surface-surface-0">
-      <p>This market name contains words that may be considered inappropriate.</p>
+      <p>This market may be inappropriate to bet on.</p>
       <p>
         We <strong>do not endorse or control</strong> the creation of these markets.
       </p>
