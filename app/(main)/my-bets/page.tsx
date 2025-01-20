@@ -7,39 +7,45 @@ import { UserBet, UserBetsManager } from '@/entities';
 import { getUserBets } from '@/queries/omen';
 import { useQuery } from '@tanstack/react-query';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { TabBody, TabGroup, TabHeader } from '@swapr/ui';
 import { useAccount } from 'wagmi';
-import { BetsListPanel, BetsListTab } from '@/app/components';
+import { BetsListPanel, BetsListTab, ItemsPerPage } from '@/app/components';
 import { useRouter } from 'next/navigation';
 
-const ITEMS_PER_PAGE = 50;
+const DEFAULT_ITEMS_PER_PAGE = 25;
+const itemsPerPageOptions = [10, DEFAULT_ITEMS_PER_PAGE, 50, 100];
 
 export default function MyBetsPage() {
+  const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
+  const [isPageItemsPopoverOpen, setIsPageItemsPopoverOpen] = useState(false);
   const { address } = useAccount();
   const router = useRouter();
 
-  const searchParams =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search)
-      : new URLSearchParams('/my-bets');
+  const searchParams = useMemo(
+    () =>
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams('/profile'),
+    []
+  );
 
   const pageParam = Number(searchParams.get('page')?.toLocaleLowerCase() || '1');
 
   const [page, setPage] = useState(pageParam);
 
   const { data: userPositionsComplete, isLoading } = useQuery<UserBet[]>({
-    queryKey: ['getUserBets', address],
-    queryFn: async () => await getUserBets({ address }),
+    queryKey: ['getUserBets', address, itemsPerPage, page],
+    queryFn: async () => await getUserBets({ address, itemsPerPage, page }),
     enabled: !!address,
   });
 
   const { data: nextPagePositions } = useQuery<UserBet[]>({
-    queryKey: ['getUserBetsNextPage', address, page],
+    queryKey: ['getUserBetsNextPage', address, itemsPerPage, page],
     queryFn: async () =>
       await getUserBets({
         address,
-        itemsPerPage: ITEMS_PER_PAGE,
+        itemsPerPage,
         page: page + 1,
       }),
     enabled: !!address,
@@ -63,19 +69,26 @@ export default function MyBetsPage() {
     [userBetsManager]
   );
 
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      searchParams.set('page', newPage.toString());
+      setPage(newPage);
+
+      router.replace(`/profile?${searchParams.toString()}`);
+    },
+    [router, searchParams]
+  );
+
   useEffect(() => {
     setPage(pageParam);
   }, [pageParam]);
 
+  useEffect(() => {
+    if (page !== 1 && !isLoading && !userPositionsComplete?.length) handlePageChange(1);
+  }, [handlePageChange, isLoading, page, userPositionsComplete?.length]);
+
   if (!address) return <NoWalletConnectedPage />;
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
-
-  const handlePageChange = (newPage: number) => {
-    searchParams.set('page', newPage.toString());
-    setPage(newPage);
-
-    router.replace(`/my-bets?${searchParams.toString()}`);
-  };
 
   return (
     <div className="mt-12 w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
@@ -83,11 +96,21 @@ export default function MyBetsPage() {
         <h1 className="text-white mb-8 text-2xl font-semibold">My bets</h1>
         <div className="md:w-[760px]">
           <TabGroup>
-            <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
-              <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
-              <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
-              <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
+            <TabHeader className="justify-between overflow-x-auto md:overflow-x-visible">
+              <div className="flex gap-2">
+                <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
+                <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
+                <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
+                <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
+              </div>
+              <ItemsPerPage
+                isOpen={isPageItemsPopoverOpen}
+                label="Bets per page"
+                onChange={setItemsPerPage}
+                onOpenChange={setIsPageItemsPopoverOpen}
+                options={itemsPerPageOptions}
+                value={itemsPerPage}
+              />
             </TabHeader>
             <TabBody className="mt-8">
               <BetsListPanel

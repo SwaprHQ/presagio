@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Address, formatEther, isAddress } from 'viem';
 import { useRouter } from 'next/navigation';
 import {
@@ -28,6 +28,7 @@ import {
   BetsListPanel,
   BetsListPanelProps,
   BetsListTab,
+  ItemsPerPage,
   ProfileCardBet,
   StatsCard,
 } from '@/app/components';
@@ -37,13 +38,20 @@ import { useEnsName } from 'wagmi';
 import { mainnetConfigForENS } from '@/providers/chain-config';
 import { mainnet } from 'viem/chains';
 
-const ITEMS_PER_PAGE = 100;
+const DEFAULT_ITEMS_PER_PAGE = 25;
+const itemsPerPageOptions = [10, DEFAULT_ITEMS_PER_PAGE, 50, 100];
+
 export default function ProfilePage() {
+  const [itemsPerPage, setItemsPerPage] = useState(DEFAULT_ITEMS_PER_PAGE);
+  const [isPageItemsPopoverOpen, setIsPageItemsPopoverOpen] = useState(false);
   const router = useRouter();
-  const searchParams =
-    typeof window !== 'undefined'
-      ? new URLSearchParams(window.location.search)
-      : new URLSearchParams('/profile');
+  const searchParams = useMemo(
+    () =>
+      typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search)
+        : new URLSearchParams('/profile'),
+    []
+  );
 
   const address = searchParams.get('address')?.toLocaleLowerCase();
 
@@ -51,12 +59,15 @@ export default function ProfilePage() {
     Number(searchParams.get('page')?.toLocaleLowerCase() || '1')
   );
 
-  const handlePageChange = (newPage: number) => {
-    searchParams.set('page', newPage.toString());
-    setPage(newPage);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      searchParams.set('page', newPage.toString());
+      setPage(newPage);
 
-    router.replace(`/profile?${searchParams.toString()}`);
-  };
+      router.replace(`/profile?${searchParams.toString()}`);
+    },
+    [router, searchParams]
+  );
 
   const { data: ensName } = useEnsName({
     address: address as Address,
@@ -74,18 +85,17 @@ export default function ProfilePage() {
   });
 
   const { data: userPositions, isLoading } = useQuery<UserBet[]>({
-    queryKey: ['getUserBets', address, page],
-    queryFn: async () =>
-      await getUserBets({ address, page, itemsPerPage: ITEMS_PER_PAGE }),
+    queryKey: ['getUserBets', address, itemsPerPage, page],
+    queryFn: async () => await getUserBets({ address, page, itemsPerPage }),
     enabled: !!address,
   });
 
   const { data: nextPagePositions } = useQuery<UserBet[]>({
-    queryKey: ['getUserBetsNextPage', address, page],
+    queryKey: ['getUserBetsNextPage', address, itemsPerPage, page],
     queryFn: async () =>
       await getUserBets({
         address,
-        itemsPerPage: ITEMS_PER_PAGE,
+        itemsPerPage,
         page: page + 1,
       }),
     enabled: !!address,
@@ -265,6 +275,10 @@ export default function ProfilePage() {
     [userPositions]
   );
 
+  useEffect(() => {
+    if (page !== 1 && !isLoading && !userPositions?.length) handlePageChange(1);
+  }, [handlePageChange, isLoading, page, userPositions?.length]);
+
   if (!address || !isAddress(address)) return null;
 
   const userFirstParticipationDate = userInfo?.user
@@ -347,10 +361,20 @@ export default function ProfilePage() {
         />
       </div>
       <TabGroup className="w-full">
-        <TabHeader className="w-full overflow-x-auto border-t border-outline-base-em pt-6 md:overflow-x-visible">
-          <BetsListTab bets={userPositions ?? []}>All Bets</BetsListTab>
-          <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
-          <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
+        <TabHeader className="w-full justify-between overflow-x-auto border-t border-outline-base-em pt-6 md:overflow-x-visible">
+          <div className="flex gap-2">
+            <BetsListTab bets={userPositions ?? []}>All Bets</BetsListTab>
+            <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
+            <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
+          </div>
+          <ItemsPerPage
+            isOpen={isPageItemsPopoverOpen}
+            label="Bets per page"
+            onChange={setItemsPerPage}
+            onOpenChange={setIsPageItemsPopoverOpen}
+            options={itemsPerPageOptions}
+            value={itemsPerPage}
+          />
         </TabHeader>
         <TabBody className="mt-8 w-full">
           <ProfileBetsListPanel
