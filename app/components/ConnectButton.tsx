@@ -1,14 +1,13 @@
 'use client';
 
 import { ConnectKitButton } from 'connectkit';
-import Image from 'next/image';
-import { useBalance, useEnsAvatar } from 'wagmi';
+import { useBalance } from 'wagmi';
 
-import { ChainId } from '@/constants';
 import { Address, formatEther } from 'viem';
 import { Button, ButtonProps } from '@swapr/ui';
 import { PropsWithChildren } from 'react';
 import { cx } from 'class-variance-authority';
+import { Avatar } from '@/app/components/Avatar';
 
 interface CustomConnectButtonProps {
   address: Address;
@@ -20,16 +19,11 @@ interface CustomConnectButtonProps {
 
 const CustomConnectButton = ({
   address,
-  ensName,
   onClick,
   size,
   width,
+  ensName,
 }: CustomConnectButtonProps) => {
-  const { data: avatar } = useEnsAvatar({
-    name: ensName,
-    chainId: ChainId.MAINNET,
-  });
-
   const { data: balance } = useBalance({
     address: address,
   });
@@ -56,18 +50,10 @@ const CustomConnectButton = ({
         onClick={onClick}
         size={size}
         width={width}
-        className="rounded-20 !bg-surface-surface-0 shadow-3 !ring-0"
+        className="flex-shrink-0 rounded-20 !bg-surface-surface-0 shadow-3 !ring-0"
       >
-        {avatar && (
-          <Image
-            width={20}
-            height={20}
-            src={avatar}
-            alt={address}
-            className="rounded-100"
-          />
-        )}
-        <p className="text-text-high-em">{truncatedAddress(4)}</p>
+        <Avatar address={address} />
+        <p className="text-text-high-em">{ensName ? ensName : truncatedAddress(4)}</p>
       </Button>
     </div>
   );
