@@ -34,6 +34,10 @@ export default function MyBetsPage() {
     () => userBetsManager.getCompletedBets(),
     [userBetsManager]
   );
+
+  const filterWonBets = useMemo(() => userBetsManager.getWonBets(), [userBetsManager]);
+  const filterLostBets = useMemo(() => userBetsManager.getLostBets(), [userBetsManager]);
+
   const filterUnredeemedBets = useMemo(
     () => userBetsManager.getUnredeemedBets(),
     [userBetsManager]
@@ -49,10 +53,12 @@ export default function MyBetsPage() {
         <div className="md:w-[760px]">
           <TabGroup>
             <TabHeader className="overflow-x-auto md:overflow-x-visible">
-              <BetsListTab bets={userPositionsComplete ?? []}>All Bets</BetsListTab>
+              <BetsListTab bets={userPositionsComplete ?? []}>All</BetsListTab>
               <BetsListTab bets={filterActiveBets}>Active</BetsListTab>
               <BetsListTab bets={filterUnredeemedBets}>Unredeemed</BetsListTab>
               <BetsListTab bets={filterCompleteBets}>Complete</BetsListTab>
+              <BetsListTab bets={filterWonBets}>Won</BetsListTab>
+              <BetsListTab bets={filterLostBets}>Lost</BetsListTab>
             </TabHeader>
             <TabBody className="mt-8">
               <BetsListPanel bets={userPositionsComplete ?? []} isLoading={isLoading} />
@@ -69,6 +75,16 @@ export default function MyBetsPage() {
               <BetsListPanel
                 emptyText="No complete bets"
                 bets={filterCompleteBets}
+                isLoading={isLoading}
+              />
+              <BetsListPanel
+                emptyText="No won bets"
+                bets={filterWonBets}
+                isLoading={isLoading}
+              />
+              <BetsListPanel
+                emptyText="No lost bets"
+                bets={filterLostBets}
                 isLoading={isLoading}
               />
             </TabBody>
