@@ -8,7 +8,6 @@ export const FA_EVENTS = {
     MY_BETS: 'click/bets/my-bets',
     REDEEM: 'click/bets/redeem',
   },
-  DEVCONFLICT: 'click/devconflict-banner',
   FOOTER: {
     CONNECT: {
       DISCORD: 'click/footer/connect/discord',
