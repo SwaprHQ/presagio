@@ -2,7 +2,7 @@
 
 import { Icon, Tooltip, TooltipContent, TooltipTrigger } from '@swapr/ui';
 
-export const DangerousWordInfo = () => (
+export const DangerousWordsWarning = () => (
   <Tooltip>
     <TooltipTrigger>
       <div className="flex items-center gap-1 rounded-6 border-2 border-text-danger-main bg-text-danger-em px-2 py-1.5 text-sm font-semibold text-outline-warning-base-em">

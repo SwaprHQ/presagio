@@ -6,7 +6,7 @@ import {
   MarketThumbnail,
   Skeleton,
   TokenLogo,
-  DangerousWordInfo,
+  DangerousWordsWarning,
 } from '@/app/components';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
@@ -84,7 +84,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   </Tag>
                 </a>
                 <div className="flex items-center gap-2">
-                  {titleHasDangerousWords && <DangerousWordInfo />}
+                  {titleHasDangerousWords && <DangerousWordsWarning />}
                   {marketModel.isClosed ? (
                     <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
                       Market Closed
