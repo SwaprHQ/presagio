@@ -15,7 +15,6 @@ import {
 import { OMEN_SUBGRAPH_URL } from '@/constants';
 import { getUserPositions } from '../conditional-tokens';
 import { Market, Position, UserBet } from '@/entities';
-import { marketHasDangerousKeyword } from './dangerousKeywords';
 
 const getMarketQuery = gql`
   query GetMarket($id: ID!) {
@@ -393,20 +392,12 @@ const getMarketTransactions = async (
     params
   );
 
-const getMarket = async (params: QueryFixedProductMarketMakerArgs) => {
-  const response = await request<Pick<Query, 'fixedProductMarketMaker'>>(
+const getMarket = async (params: QueryFixedProductMarketMakerArgs) =>
+  request<Pick<Query, 'fixedProductMarketMaker'>>(
     OMEN_SUBGRAPH_URL,
     getMarketQuery,
     params
   );
-
-  if (!response.fixedProductMarketMaker) return null;
-  const hasDangerousKeywords = marketHasDangerousKeyword(
-    response.fixedProductMarketMaker
-  );
-
-  return !hasDangerousKeywords ? response : null;
-};
 
 type PrimaryOrderBy =
   | FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume
@@ -423,10 +414,6 @@ const getMarkets = async (
     params
   );
 
-  const filteredResults = response.fixedProductMarketMakers.filter(
-    fpmm => !marketHasDangerousKeyword(fpmm)
-  );
-
   /**
    * The Graph doesn't allow to order by multiple fields.
    *
@@ -434,7 +421,7 @@ const getMarkets = async (
    * has multiple markets with the same sorted value.
    * This fn only sorts a given page results.
    */
-  const sortedResults = filteredResults.sort((a, b) => {
+  const sortedResults = response.fixedProductMarketMakers?.sort((a, b) => {
     const orderBy = params.orderBy as PrimaryOrderBy;
 
     if (b[orderBy] !== a[orderBy]) {

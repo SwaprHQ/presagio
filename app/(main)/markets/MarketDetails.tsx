@@ -6,10 +6,12 @@ import {
   MarketThumbnail,
   Skeleton,
   TokenLogo,
+  DangerousWordsWarning,
 } from '@/app/components';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket } from '@/queries/omen';
+import { marketHasDangerousKeyword } from '@/queries/omen/dangerousKeywords';
 import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
 import { remainingTime } from '@/utils/dates';
 import { Address } from 'viem';
@@ -55,6 +57,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const fixedProductMarketMaker = data.fixedProductMarketMaker;
   const marketModel = new Market(fixedProductMarketMaker);
   const closingDate = new Date(+fixedProductMarketMaker.openingTimestamp * 1000);
+  const titleHasDangerousWords = marketHasDangerousKeyword(fixedProductMarketMaker);
 
   return (
     <>
@@ -80,13 +83,18 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                     {fixedProductMarketMaker.category}
                   </Tag>
                 </a>
-                {marketModel.isClosed ? (
-                  <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
-                    Market Closed
-                  </Tag>
-                ) : (
-                  <p className="text-sm text-text-med-em">{remainingTime(closingDate)}</p>
-                )}
+                <div className="flex items-center gap-2">
+                  {titleHasDangerousWords && <DangerousWordsWarning />}
+                  {marketModel.isClosed ? (
+                    <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                      Market Closed
+                    </Tag>
+                  ) : (
+                    <p className="text-sm text-text-med-em">
+                      {remainingTime(closingDate)}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex space-x-4">
                 <MarketThumbnail
