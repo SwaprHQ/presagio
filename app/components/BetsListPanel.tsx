@@ -1,20 +1,22 @@
 'use client';
 
-import { LoadingCardBet, MyBetsCardBet } from '@/app/components/CardBet';
+import { LoadingCardBet, MyBetsCardBet, SimplePagination } from '@/app/components';
 import { UserPosition } from '@/queries/conditional-tokens/types';
 
 import { PropsWithChildren, ReactNode } from 'react';
 import { TabPanel, TabStyled } from '@swapr/ui';
 import { UserBet } from '@/entities';
-
 export interface BetsListPanelProps {
-  emptyText?: string;
   bets: UserBet[];
-  isLoading: boolean;
-  unredeemed?: boolean;
   CardComponent?: React.ComponentType<{
     userBet: UserBet;
   }>;
+  emptyText?: string;
+  hasNextPage?: boolean;
+  isLoading: boolean;
+  page?: number;
+  setPage?: (page: number) => void;
+  unredeemed?: boolean;
 }
 
 interface BetsListTabProps {
@@ -42,10 +44,13 @@ export const BetsListTab = ({ children, bets }: BetsListTabProps) => {
 };
 
 export const BetsListPanel = ({
-  emptyText = '',
   bets,
-  isLoading,
   CardComponent = MyBetsCardBet,
+  emptyText = '',
+  hasNextPage,
+  isLoading,
+  page,
+  setPage,
 }: BetsListPanelProps) => {
   return (
     <TabPanel className="space-y-4">
@@ -55,6 +60,7 @@ export const BetsListPanel = ({
         bets.map((userBet: UserBet) => (
           <CardComponent userBet={userBet} key={userBet.id} />
         ))}
+      <SimplePagination isFinalPage={!hasNextPage} page={page} setPage={setPage} />
       {!isLoading && !bets.length && (
         <div className="space-y-4 rounded-12 border border-surface-surface-2 p-6">
           <p className="text-center">{emptyText}</p>

@@ -20,6 +20,7 @@ export * from './AddressLink';
 export * from './EmbedMarketModal';
 export * from './LifiWidgetPopover';
 export * from './toasts';
+export * from './SimplePagination';
 export * from './Spinner';
 export * from './TxButton';
 export * from './StatsCard';

@@ -34,7 +34,7 @@ export const Navbar = () => {
 
   const { data: userPositionsComplete } = useQuery<UserBet[]>({
     queryKey: ['getUserBets', address],
-    queryFn: async () => await getUserBets(address),
+    queryFn: async () => await getUserBets({ address }),
     enabled: !!address,
   });
 
