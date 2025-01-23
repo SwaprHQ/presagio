@@ -106,12 +106,10 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   {isMarketInvalid && (
                     <IconTooltip iconName="info">
                       <p>
-                        This market current answer is not final. The final answer will be
-                        determined by <strong>reality.eth</strong>.
+                        {`This market `}
+                        <strong>might have an invalid question or answer.</strong>
                       </p>
-                      <p>
-                        This market <strong>might be invalid.</strong>
-                      </p>
+                      <p>Funds might be lost by interacting with this market.</p>
                     </IconTooltip>
                   )}
                   {marketModel.isClosed ? (
