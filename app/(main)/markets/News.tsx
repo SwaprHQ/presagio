@@ -5,6 +5,7 @@ import Image from 'next/image';
 
 import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
+import { getMarketInsights, MarketInsights } from '@/queries/gnosisdev';
 
 interface NewsProps {
   id: string;
@@ -20,23 +21,10 @@ type NewsDetails = {
   ogImage?: string;
 };
 
-type MarketInsights = {
-  results: {
-    title: string;
-    url: string;
-  }[];
-};
-
 export const News = ({ id }: NewsProps) => {
   const { data: marketInsights, isLoading } = useQuery<MarketInsights>({
     queryKey: ['getMarketInsights', id],
-    queryFn: async () => {
-      const result = await fetch(
-        `https://labs-api.ai.gnosisdev.com/market-insights/?market_id=${id}`
-      );
-
-      return await result.json();
-    },
+    queryFn: () => getMarketInsights(id),
   });
 
   const news = marketInsights?.results;
