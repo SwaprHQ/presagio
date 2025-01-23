@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
-import { getMarketInsights, MarketInsights } from '@/queries/gnosisdev';
+import { getMarketInsights, MarketInsights } from '@/queries/gnosis-ai';
 
 interface NewsProps {
   id: string;

@@ -29,7 +29,7 @@ import { formatValueWithFixedDecimals } from '@/utils';
 import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
-import { getMarketValidity, MarketValidity } from '@/queries/gnosisdev';
+import { getMarketValidity, MarketValidity } from '@/queries/gnosis-ai';
 
 interface MarketDetailsProps {
   id: Address;
