@@ -6,7 +6,7 @@ import {
   MarketThumbnail,
   Skeleton,
   TokenLogo,
-  DangerousWordsWarning,
+  IconTooltip,
 } from '@/app/components';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ import { remainingTime } from '@/utils/dates';
 import { Address } from 'viem';
 import { Market } from '@/entities';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { HistorySection } from './HistorySection';
 import { News } from './News';
 import { Info } from './Info';
@@ -29,6 +29,7 @@ import { formatValueWithFixedDecimals } from '@/utils';
 import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
+import { getMarketValidity, MarketValidity } from '@/queries/gnosis-ai';
 
 interface MarketDetailsProps {
   id: Address;
@@ -49,6 +50,15 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
     queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
   });
+  const { data: marketValidity } = useQuery<MarketValidity>({
+    queryKey: ['getMarketValidity', id],
+    queryFn: () => getMarketValidity(id),
+  });
+
+  const isMarketInvalid = useMemo(
+    () => marketValidity?.invalid,
+    [marketValidity?.invalid]
+  );
 
   if (error) throw error;
   if (isLoading) return <LoadingMarketDetails />;
@@ -84,7 +94,24 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   </Tag>
                 </a>
                 <div className="flex items-center gap-2">
-                  {titleHasDangerousWords && <DangerousWordsWarning />}
+                  {titleHasDangerousWords && (
+                    <IconTooltip iconName="warning">
+                      <p>This market may be inappropriate to bet on.</p>
+                      <p>
+                        We <strong>do not endorse or control</strong> the creation of
+                        these markets.
+                      </p>
+                    </IconTooltip>
+                  )}
+                  {isMarketInvalid && (
+                    <IconTooltip iconName="info">
+                      <p>
+                        {`This market `}
+                        <strong>might have an invalid question or answer.</strong>
+                      </p>
+                      <p>Funds might be lost by interacting with this market.</p>
+                    </IconTooltip>
+                  )}
                   {marketModel.isClosed ? (
                     <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
                       Market Closed
