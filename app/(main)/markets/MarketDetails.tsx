@@ -7,6 +7,7 @@ import {
   Skeleton,
   TokenLogo,
   IconTooltip,
+  AiChat,
 } from '@/app/components';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
@@ -30,7 +31,6 @@ import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
 import { getQuestionValidity } from '@/queries/gnosis-ai';
-
 interface MarketDetailsProps {
   id: Address;
 }
@@ -214,6 +214,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
         </div>
       </div>
       <EmbedMarketModal id={id} />
+      <AiChat id={id} />
     </>
   );
 };
