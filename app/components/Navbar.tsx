@@ -54,7 +54,7 @@ export const Navbar = () => {
           <Logo />
           <div className="mx-3 md:ml-28"></div>
         </div>
-        <div className="flex h-10 items-center justify-end space-x-2 md:w-[488px]">
+        <div className="flex h-10 items-center justify-end space-x-2">
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
