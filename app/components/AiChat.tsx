@@ -66,7 +66,7 @@ export const AiChat = ({ id }: AiChatProps) => {
         <div className="flex flex-col items-end">
           <Dialog.Portal>
             <Dialog.Content
-              className="data-[state=open]:animate-grow fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 md:right-4 md:w-[420px]"
+              className="fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:right-4 md:w-[420px]"
               onInteractOutside={e => {
                 e.preventDefault();
               }}
