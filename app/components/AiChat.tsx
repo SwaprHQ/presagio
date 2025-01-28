@@ -10,6 +10,8 @@ import { cx } from 'class-variance-authority';
 import { Address } from 'viem';
 import { Icon, IconButton, Input, Tag } from '@swapr/ui';
 import { twMerge } from 'tailwind-merge';
+import { FA_EVENTS } from '@/analytics';
+import { trackEvent } from 'fathom-client';
 
 interface AiChatProps {
   id: Address;
@@ -100,6 +102,9 @@ export const AiChat = ({ id }: AiChatProps) => {
               <div className="absolute bottom-0 w-full rounded-b-16 px-4 pb-4 pt-2 backdrop-blur-md">
                 <div className="flex items-center justify-center">
                   <a
+                    onClick={() => {
+                      trackEvent(FA_EVENTS.MARKET.AI_CHAT.LEARN_MORE);
+                    }}
                     href={MARKETING_LINK}
                     className="mb-1 hover:underline"
                     target="_blank"
@@ -119,6 +124,9 @@ export const AiChat = ({ id }: AiChatProps) => {
 
           <Dialog.Trigger asChild>
             <button
+              onClick={() => {
+                trackEvent(FA_EVENTS.MARKET.AI_CHAT.OPEN(id));
+              }}
               className={twMerge(
                 'flex size-16 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-md transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em',
                 'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
