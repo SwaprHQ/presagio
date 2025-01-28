@@ -11,21 +11,9 @@ const config: Config = {
   theme: {
     extend: {
       keyframes: {
-        'fade-in': {
-          from: { opacity: '0' },
-          to: { opacity: '1' },
-        },
-        'fade-out': {
-          from: { opacity: '1' },
-          to: { opacity: '0' },
-        },
-        'slide-in-from-right': {
-          from: { transform: 'translateX(100%)' },
-          to: { transform: 'translateX(0)' },
-        },
-        'slide-out-to-right': {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(100%)' },
+        grow: {
+          '0%': { transform: 'scale(0.5)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
         },
         cityFlip: {
           '0%, 100%': { transform: 'translateY(0)', opacity: '1' },
@@ -33,11 +21,8 @@ const config: Config = {
         },
       },
       animation: {
-        'fade-in': 'fade-in 0.2s ease-out',
-        'fade-out': 'fade-out 0.2s ease-in',
-        'slide-in-from-right': 'slide-in-from-right 0.2s ease-out',
-        'slide-out-to-right': 'slide-out-to-right 0.2s ease-in',
         'city-flip': 'cityFlip 200ms ease-in-out',
+        grow: 'grow 0.2s ease-out',
       },
     },
   },

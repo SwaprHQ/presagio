@@ -66,7 +66,7 @@ export const AiChat = ({ id }: AiChatProps) => {
         <div className="flex flex-col items-end">
           <Dialog.Portal>
             <Dialog.Content
-              className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-right-1/2 data-[state=open]:slide-in-from-right-1/2 fixed bottom-28 right-0 w-full rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 md:right-4 md:w-[420px]"
+              className="data-[state=open]:animate-grow fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 md:right-4 md:w-[420px]"
               onInteractOutside={e => {
                 e.preventDefault();
               }}
