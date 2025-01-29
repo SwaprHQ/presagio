@@ -90,7 +90,7 @@ export const AiChat = ({ id }: AiChatProps) => {
                   </Dialog.Close>
                 </div>
               </div>
-              <ScrollArea className="h-[460px] md:h-[520px]">
+              <ScrollArea className="h-[460px] md:h-[536px]">
                 <div className="space-y-4 px-4 pb-24 pt-4">
                   {messages.map(message => (
                     <Message key={message.content.slice(20)} role={message.role}>
@@ -118,6 +118,9 @@ export const AiChat = ({ id }: AiChatProps) => {
                   className="w-full"
                   disabled
                 />
+                <p className="w-full text-center text-xs text-text-low-em">
+                  AI-generated, for reference only.
+                </p>
               </div>
             </Dialog.Content>
           </Dialog.Portal>
@@ -132,7 +135,7 @@ export const AiChat = ({ id }: AiChatProps) => {
                 'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
               )}
             >
-              <Image alt="ai stars" width={42} height={42} src={wizardSvg} />
+              <Image alt="ai wizard" width={42} height={42} src={wizardSvg} />
             </button>
           </Dialog.Trigger>
         </div>
