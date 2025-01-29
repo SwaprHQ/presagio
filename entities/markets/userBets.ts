@@ -1,7 +1,9 @@
+import { Market } from '@/entities/markets/market';
 import { MarketCondition } from '@/entities/markets/marketCondition';
 import { Position } from '@/entities/markets/position';
 import { Condition, UserPosition } from '@/queries/conditional-tokens/types';
 import { FixedProductMarketMaker, FpmmTrade } from '@/queries/omen';
+import { Position as ConditionalTokenPosition } from '@/queries/conditional-tokens/types';
 
 export interface UserBet extends UserPosition {
   fpmmTrades: FpmmTrade[];
@@ -26,6 +28,30 @@ export class UserBetsManager {
     return this.userPositions.filter(
       userPosition => userPosition.position.conditions[0].resolved
     );
+  }
+
+  getWonBets() {
+    return this.userPositions.filter(userPosition => {
+      if (!userPosition.position.conditions[0].resolved) return false;
+
+      const position = new Position(userPosition.position as ConditionalTokenPosition);
+      const outcomeIndex = position.getOutcomeIndex();
+      const market = new Market(userPosition.fpmm);
+
+      return market.isWinner(outcomeIndex);
+    });
+  }
+
+  getLostBets() {
+    return this.userPositions.filter(userPosition => {
+      if (!userPosition.position.conditions[0].resolved) return false;
+
+      const position = new Position(userPosition.position as ConditionalTokenPosition);
+      const outcomeIndex = position.getOutcomeIndex();
+      const market = new Market(userPosition.fpmm);
+
+      return market.isLoser(outcomeIndex);
+    });
   }
 
   getUnredeemedBets() {
