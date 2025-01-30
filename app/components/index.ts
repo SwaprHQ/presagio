@@ -22,4 +22,3 @@ export * from './toasts';
 export * from './Spinner';
 export * from './TxButton';
 export * from './StatsCard';
-export * from './AiChat';
