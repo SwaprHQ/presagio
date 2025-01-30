@@ -12,47 +12,92 @@ import { Icon, IconButton, Input, Tag } from '@swapr/ui';
 import { twMerge } from 'tailwind-merge';
 import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
+import { useQuery } from '@tanstack/react-query';
+import { useChat } from 'ai/react';
+import { getMarket, Query } from '../../../queries/omen';
 
 interface AiChatProps {
   id: Address;
 }
 
+const MARKET_CHAT_URL = process.env.NEXT_PUBLIC_MARKET_CHAT_URL!;
+
 const MARKETING_LINK =
   'https://swpr.notion.site/Presagio-AI-f4ccdfa867e949d3badf10705b7c90aa';
 
-type Role = 'user' | 'system';
+type Role = 'user' | 'assitant';
 
 interface Message {
   content: string;
   role: Role;
 }
 
-const mockMessages: Message[] = [
-  {
-    role: 'user',
-    content:
-      'Will Samsung announce the consumer release date for the Project Moohan XR headset by January 28, 2025?',
-  },
-  {
-    role: 'system',
-    content: `Based on the information provided, I'd say the odds are against it.
-    The market is showing a 34% chance of "Yes" and a 66% chance of "No",
-    indicating that the majority of predictors believe Samsung will not
-    announce the consumer release date by January 28, 2025. Considering
-    the Project Moohan XR headset was announced in December 2024, and the
-    exact consumer release date remains unspecified, it's possible that
-    Samsung might not be ready to make an official announcement just a
-    month later. Given the current odds and the lack of information on a
-    specific release date, I'd predict that Samsung will not announce the
-    consumer release date for the Project Moohan XR headset by January 28,
-    2025.
-    `,
-  },
+const waitingMessges = [
+  'Searching my old books for answers…',
+  'The oracle whisper… Not yet clear.',
+  'Consulting the tomes and the stars… Patience, seeker.',
+  'The ancient texts and omens are alignin… I see something!',
+  'I feel it in my beard… The answer nears!',
+  'Gathering acient knowledge… Coming is the answer.',
+  'The oracle stirs, the pages turn… soon, the answer.',
+  'I will show you the answer! If my internet allows…',
 ];
 
+const randomWaitingMessageIndex = Math.round(Math.random() * waitingMessges.length);
+
+const fetchMessages = async (id: Address) => {
+  const response = await fetch(`${MARKET_CHAT_URL}/api/market-chat?market_id=${id}`);
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
 export const AiChat = ({ id }: AiChatProps) => {
+  const [isOpen, setOpen] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = useState(mockMessages);
+
+  const {
+    data,
+    error: messagesError,
+    isFetched: isFetchedMessages,
+  } = useQuery({
+    queryKey: ['fetchMessages', id],
+    queryFn: () => fetchMessages(id),
+  });
+  const { data: market } = useQuery<Pick<Query, 'fixedProductMarketMaker'>>({
+    queryKey: ['getMarket', id],
+    queryFn: async () => getMarket({ id }),
+    staleTime: Infinity,
+  });
+
+  const {
+    messages,
+    error: chatError,
+    append,
+  } = useChat({
+    id,
+    body: {
+      marketId: id,
+    },
+    api: `${MARKET_CHAT_URL}/api/market-chat`,
+    initialMessages: data,
+  });
+
+  const title = market?.fixedProductMarketMaker?.title;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    if (signal.aborted) return;
+
+    if (isFetchedMessages && data?.length === 0 && title && isOpen) {
+      append({ role: 'user', content: title });
+    }
+
+    return () => controller.abort();
+  }, [append, data?.length, isFetchedMessages, isOpen, title]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -60,17 +105,18 @@ export const AiChat = ({ id }: AiChatProps) => {
     }
   }, [scrollAreaRef]);
 
+  const assistantMessages = messages.filter(({ role }) => role === 'assistant');
+  const noAssistantMessages =
+    messages.length === 1 &&
+    (assistantMessages.length === 0 || assistantMessages?.at(0)?.content.length === 0);
+  const hasError = messagesError || chatError;
+
   return (
-    <Dialog.Root modal>
+    <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)}>
       <div className="fixed bottom-10 flex w-full items-center justify-end px-2 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>
-            <Dialog.Content
-              className="data-[state=open]:animate-grow fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 md:right-4 md:w-[420px]"
-              onInteractOutside={e => {
-                e.preventDefault();
-              }}
-            >
+            <Dialog.Content className="fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:right-4 md:w-[420px]">
               <div className="border-b border-outline-low-em p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -91,12 +137,20 @@ export const AiChat = ({ id }: AiChatProps) => {
                 </div>
               </div>
               <ScrollArea className="h-[460px] md:h-[536px]">
-                <div className="space-y-4 px-4 pb-24 pt-4">
+                <div className="space-y-4 px-4 pb-32 pt-4">
                   {messages.map(message => (
-                    <Message key={message.content.slice(20)} role={message.role}>
+                    <Message key={message.content?.slice(20)} role={message.role}>
                       {message.content}
                     </Message>
                   ))}
+                  {noAssistantMessages && (
+                    <Message role="assistant">
+                      {waitingMessges.at(randomWaitingMessageIndex)}
+                    </Message>
+                  )}
+                  {hasError && (
+                    <Message role="assistant">Oops. Something went wrong.</Message>
+                  )}
                 </div>
               </ScrollArea>
               <div className="absolute bottom-0 w-full rounded-b-16 px-4 pb-4 pt-2 backdrop-blur-md">
@@ -114,7 +168,7 @@ export const AiChat = ({ id }: AiChatProps) => {
                   <Icon name="arrow-top-right" size={12} />
                 </div>
                 <Input
-                  placeholder="Ask follow up questions. Available soon"
+                  placeholder="Ask anything. Available soon."
                   className="w-full"
                   disabled
                 />
@@ -146,15 +200,15 @@ export const AiChat = ({ id }: AiChatProps) => {
 
 interface MessageProps {
   children: React.ReactNode;
-  role: Role;
+  role: string;
 }
 
 const Message = ({ children, role }: MessageProps) => {
-  const isSystem = role === 'system';
+  const isSystem = role === 'assistant';
   return (
     <div
       className={cx(
-        'rounded-20 p-2',
+        'rounded-20 p-4',
         isSystem ? 'bg-outline-primary-base-em' : 'bg-surface-surface-1'
       )}
     >
