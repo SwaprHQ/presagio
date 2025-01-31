@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { ScrollArea } from '@/app/components';
+import { MarkdownRenderer, ScrollArea } from '@/app/components';
 import aiStarsSvg from '@/public/ai-stars.svg';
 import wizardSvg from '@/public/pixel-wizard.svg';
 import { cx } from 'class-variance-authority';
@@ -198,22 +198,21 @@ export const AiChat = ({ id }: AiChatProps) => {
   );
 };
 
-interface MessageProps {
-  children: React.ReactNode;
+interface MessageProps extends PropsWithChildren {
   role: string;
 }
 
 const Message = ({ children, role }: MessageProps) => {
   const isSystem = role === 'assistant';
   return (
-    <div
+    <MarkdownRenderer
       className={cx(
-        'rounded-20 p-4',
+        'rounded-20 px-4 py-2',
         isSystem ? 'bg-outline-primary-base-em' : 'bg-surface-surface-1'
       )}
     >
       {children}
-    </div>
+    </MarkdownRenderer>
   );
 };
 
