@@ -5,8 +5,8 @@ import Image from 'next/image';
 
 import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
-import { getMarketInsights, MarketInsights } from '@/queries/gnosis-ai';
-import { FixedProductMarketMaker } from '../../../queries/omen';
+import { getQuestionInsights } from '@/queries/gnosis-ai';
+import { FixedProductMarketMaker } from '@/queries/omen';
 
 interface NewsProps {
   fixedProductMarketMaker: FixedProductMarketMaker;
@@ -25,13 +25,13 @@ type NewsDetails = {
 export const News = ({ fixedProductMarketMaker }: NewsProps) => {
   const { title, id } = fixedProductMarketMaker;
 
-  const { data: marketInsights, isLoading } = useQuery<MarketInsights>({
-    queryKey: ['getMarketInsights', id],
-    queryFn: () => getMarketInsights(title || ''),
+  const { data: questionInsights, isLoading } = useQuery({
+    queryKey: ['getQuestionInsights', id],
+    queryFn: () => getQuestionInsights(title || ''),
     enabled: Boolean(title),
   });
 
-  const news = marketInsights?.results;
+  const news = questionInsights?.results;
 
   if (isLoading)
     return Array.from({ length: 4 }).map((_, index) => (

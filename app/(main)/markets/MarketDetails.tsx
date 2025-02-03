@@ -29,7 +29,7 @@ import { formatValueWithFixedDecimals } from '@/utils';
 import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
-import { getMarketValidity, MarketValidity } from '@/queries/gnosis-ai';
+import { getQuestionValidity } from '@/queries/gnosis-ai';
 
 interface MarketDetailsProps {
   id: Address;
@@ -50,14 +50,15 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
     queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
   });
-  const { data: marketValidity } = useQuery<MarketValidity>({
-    queryKey: ['getMarketValidity', id],
-    queryFn: () => getMarketValidity(id),
+  const { data: questionValidity } = useQuery({
+    queryKey: ['getQuestionValidity', id],
+    queryFn: () => getQuestionValidity(data?.fixedProductMarketMaker?.title || ''),
+    enabled: Boolean(data?.fixedProductMarketMaker?.title),
   });
 
   const isMarketInvalid = useMemo(
-    () => marketValidity?.invalid,
-    [marketValidity?.invalid]
+    () => questionValidity?.invalid,
+    [questionValidity?.invalid]
   );
 
   if (error) throw error;
