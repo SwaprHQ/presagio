@@ -1,29 +1,29 @@
 const BASE_URL = 'https://labs-api.ai.gnosisdev.com';
 const ENDPOINTS = {
-  MARKET_INSIGHTS: '/market-insights',
-  MARKET_INVALID: '/market-invalid',
+  QUESTION_INSIGHTS: '/question-insights',
+  QUESTION_INVALID: '/question-invalid',
 };
 
-export type MarketInsights = {
+type QuestionInsights = {
   results: {
     title: string;
     url: string;
   }[];
 };
 
-export type MarketValidity = {
+type QuestionValidity = {
   created_at: string;
   invalid: boolean;
-  market_id: string;
+  question: string;
 };
 
-export const getMarketValidity = async (id: string) => {
+export const getQuestionValidity = async (question: string) => {
   try {
     const response = await fetch(
-      `${BASE_URL}${ENDPOINTS.MARKET_INVALID}/?market_id=${id}`
+      `${BASE_URL}${ENDPOINTS.QUESTION_INVALID}/?question=${question}`
     );
 
-    return await response.json();
+    return (await response.json()) as QuestionValidity;
   } catch (error) {
     console.error('Error checking market validity:', error);
 
@@ -31,15 +31,15 @@ export const getMarketValidity = async (id: string) => {
   }
 };
 
-export const getMarketInsights = async (id: string) => {
+export const getQuestionInsights = async (question: string) => {
   try {
     const response = await fetch(
-      `${BASE_URL}${ENDPOINTS.MARKET_INSIGHTS}/?market_id=${id}`
+      `${BASE_URL}${ENDPOINTS.QUESTION_INSIGHTS}/?question=${question}`
     );
 
-    return await response.json();
+    return (await response.json()) as QuestionInsights;
   } catch (error) {
-    console.error('Error checking market insights:', error);
+    console.error('Error checking question insights:', error);
 
     return null;
   }
