@@ -194,7 +194,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             {tab === Tabs.HISTORY && <HistorySection id={id} />}
             {tab === Tabs.NEWS && (
               <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
-                <News id={id} />
+                <News fixedProductMarketMaker={fixedProductMarketMaker} />
               </div>
             )}
             {tab === Tabs.INFO && (

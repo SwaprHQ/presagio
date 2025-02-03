@@ -6,9 +6,10 @@ import Image from 'next/image';
 import { FA_EVENTS } from '@/analytics';
 import { Skeleton } from '@/app/components';
 import { getMarketInsights, MarketInsights } from '@/queries/gnosis-ai';
+import { FixedProductMarketMaker } from '../../../queries/omen';
 
 interface NewsProps {
-  id: string;
+  fixedProductMarketMaker: FixedProductMarketMaker;
 }
 
 interface NewsArticleProps {
@@ -21,10 +22,13 @@ type NewsDetails = {
   ogImage?: string;
 };
 
-export const News = ({ id }: NewsProps) => {
+export const News = ({ fixedProductMarketMaker }: NewsProps) => {
+  const { title, id } = fixedProductMarketMaker;
+
   const { data: marketInsights, isLoading } = useQuery<MarketInsights>({
     queryKey: ['getMarketInsights', id],
-    queryFn: () => getMarketInsights(id),
+    queryFn: () => getMarketInsights(title || ''),
+    enabled: Boolean(title),
   });
 
   const news = marketInsights?.results;

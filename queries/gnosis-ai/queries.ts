@@ -1,6 +1,6 @@
 const BASE_URL = 'https://labs-api.ai.gnosisdev.com';
 const ENDPOINTS = {
-  MARKET_INSIGHTS: '/market-insights',
+  QUESTION_INSIGHTS: '/question-insights',
   MARKET_INVALID: '/market-invalid',
 };
 
@@ -31,10 +31,10 @@ export const getMarketValidity = async (id: string) => {
   }
 };
 
-export const getMarketInsights = async (id: string) => {
+export const getMarketInsights = async (question: string) => {
   try {
     const response = await fetch(
-      `${BASE_URL}${ENDPOINTS.MARKET_INSIGHTS}/?market_id=${id}`
+      `${BASE_URL}${ENDPOINTS.QUESTION_INSIGHTS}/?question=${question}`
     );
 
     return await response.json();
