@@ -226,9 +226,7 @@ const Message = ({ children, role }: MessageProps) => {
   );
 };
 
-export default AiChat;
-
-export const LoadingDots = () => {
+const LoadingDots = () => {
   return (
     <div className="flex items-center justify-center space-x-0.5" aria-label="Loading">
       <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main"></div>
@@ -237,3 +235,5 @@ export const LoadingDots = () => {
     </div>
   );
 };
+
+export default AiChat;
