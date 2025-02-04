@@ -23,7 +23,7 @@ interface AiChatProps {
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
 const MARKETING_LINK =
-  'https://swpr.notion.site/Presagio-AI-f4ccdfa867e949d3badf10705b7c90aa';
+  'https://swpr.notion.site/Presagio-AI-Predictor-Chatbot-Beta-Launch-f4ccdfa867e949d3badf10705b7c90aa';
 
 type Role = 'user' | 'assitant';
 
@@ -43,20 +43,21 @@ const waitingMessges = [
   'I will show you the answer! If my internet allows…',
 ];
 
-const randomWaitingMessageIndex = Math.round(Math.random() * waitingMessges.length);
+const randomWaitingMessageIndex = Math.round(Math.random() * (waitingMessges.length - 1));
 
 const fetchMessages = async (id: Address) => {
   const response = await fetch(
     `${PRESAGIO_CHAT_API_URL}/api/market-chat?market_id=${id}`
   );
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error('Presagio AI response was not ok');
   }
   return response.json();
 };
 
 export const AiChat = ({ id }: AiChatProps) => {
   const [isOpen, setOpen] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -94,12 +95,13 @@ export const AiChat = ({ id }: AiChatProps) => {
 
     if (signal.aborted) return;
 
-    if (isFetchedMessages && data?.length === 0 && title && isOpen) {
+    if (isFetchedMessages && data?.length === 0 && title && isOpen && !messageSent) {
+      setMessageSent(true);
       append({ role: 'user', content: title });
     }
 
     return () => controller.abort();
-  }, [append, data?.length, isFetchedMessages, isOpen, title]);
+  }, [append, data?.length, isFetchedMessages, messageSent, isOpen, title]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -119,6 +121,9 @@ export const AiChat = ({ id }: AiChatProps) => {
         <div className="flex flex-col items-end">
           <Dialog.Portal>
             <Dialog.Content className="fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:right-4 md:w-[420px]">
+              <Dialog.Description hidden={true}>
+                Presagio chatbot window
+              </Dialog.Description>
               <div className="border-b border-outline-low-em p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -140,8 +145,8 @@ export const AiChat = ({ id }: AiChatProps) => {
               </div>
               <ScrollArea className="h-[460px] md:h-[536px]">
                 <div className="space-y-4 px-4 pb-32 pt-4">
-                  {messages.map(message => (
-                    <Message key={message.content?.slice(20)} role={message.role}>
+                  {messages.map((message, index) => (
+                    <Message key={index} role={message.role}>
                       {message.content}
                     </Message>
                   ))}
