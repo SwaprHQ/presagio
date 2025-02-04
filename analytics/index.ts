@@ -31,7 +31,7 @@ export const FA_EVENTS = {
   MARKET: {
     AI_CHAT: {
       OPEN: (id: string) => `click/market/${id}/ai-chat/open`,
-      LEARN_MORE: 'click/market/ai-chat/learn-more',
+      GET_BETA_ACCESS: 'click/market/ai-chat/get-beta-access',
     },
   },
   MARKETS: {

@@ -162,13 +162,13 @@ export const AiChat = ({ id }: AiChatProps) => {
                 <div className="flex items-center justify-center">
                   <a
                     onClick={() => {
-                      trackEvent(FA_EVENTS.MARKET.AI_CHAT.LEARN_MORE);
+                      trackEvent(FA_EVENTS.MARKET.AI_CHAT.GET_BETA_ACCESS);
                     }}
                     href={MARKETING_LINK}
                     className="mb-1 hover:underline"
                     target="_blank"
                   >
-                    Learn more about Presagio AI
+                    Get beta access to Presagio AI ✨
                   </a>
                   <Icon name="arrow-top-right" size={12} />
                 </div>
