@@ -20,7 +20,7 @@ interface AiChatProps {
   id: Address;
 }
 
-const MARKET_CHAT_URL = process.env.NEXT_PUBLIC_MARKET_CHAT_URL!;
+const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
 const MARKETING_LINK =
   'https://swpr.notion.site/Presagio-AI-f4ccdfa867e949d3badf10705b7c90aa';
@@ -46,7 +46,9 @@ const waitingMessges = [
 const randomWaitingMessageIndex = Math.round(Math.random() * waitingMessges.length);
 
 const fetchMessages = async (id: Address) => {
-  const response = await fetch(`${MARKET_CHAT_URL}/api/market-chat?market_id=${id}`);
+  const response = await fetch(
+    `${PRESAGIO_CHAT_API_URL}/api/market-chat?market_id=${id}`
+  );
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -80,7 +82,7 @@ export const AiChat = ({ id }: AiChatProps) => {
     body: {
       marketId: id,
     },
-    api: `${MARKET_CHAT_URL}/api/market-chat`,
+    api: `${PRESAGIO_CHAT_API_URL}/api/market-chat`,
     initialMessages: data,
   });
 
@@ -144,16 +146,19 @@ export const AiChat = ({ id }: AiChatProps) => {
                     </Message>
                   ))}
                   {noAssistantMessages && (
-                    <Message role="assistant">
-                      {waitingMessges.at(randomWaitingMessageIndex)}
-                    </Message>
+                    <div className="space-y-1 rounded-20 bg-outline-primary-base-em px-4 py-2">
+                      <div className="flex items-center space-x-2">
+                        <p>{waitingMessges.at(randomWaitingMessageIndex)}</p>
+                        <LoadingDots />
+                      </div>
+                    </div>
                   )}
                   {hasError && (
                     <Message role="assistant">Oops. Something went wrong.</Message>
                   )}
                 </div>
               </ScrollArea>
-              <div className="absolute bottom-0 w-full rounded-b-16 px-4 pb-4 pt-2 backdrop-blur-md">
+              <div className="absolute bottom-0 w-full rounded-b-16 border-t border-surface-surface-1 bg-surface-surface-0 px-4 pb-4 pt-2">
                 <div className="flex items-center justify-center">
                   <a
                     onClick={() => {
@@ -185,7 +190,7 @@ export const AiChat = ({ id }: AiChatProps) => {
                 trackEvent(FA_EVENTS.MARKET.AI_CHAT.OPEN(id));
               }}
               className={twMerge(
-                'flex size-16 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-md transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em',
+                'flex size-16 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-sm transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em',
                 'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
               )}
             >
@@ -217,3 +222,13 @@ const Message = ({ children, role }: MessageProps) => {
 };
 
 export default AiChat;
+
+export const LoadingDots = () => {
+  return (
+    <div className="flex items-center justify-center space-x-0.5" aria-label="Loading">
+      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main"></div>
+      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main [animation-delay:0.2s]"></div>
+      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main [animation-delay:0.4s]"></div>
+    </div>
+  );
+};
