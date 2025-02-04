@@ -14,7 +14,7 @@ import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
 import { useQuery } from '@tanstack/react-query';
 import { useChat } from 'ai/react';
-import { getMarket, Query } from '../../../queries/omen';
+import { getMarket, Query } from '@/queries/omen';
 
 interface AiChatProps {
   id: Address;
@@ -43,8 +43,6 @@ const waitingMessges = [
   'I will show you the answer! If my internet allows…',
 ];
 
-const randomWaitingMessageIndex = Math.round(Math.random() * (waitingMessges.length - 1));
-
 const fetchMessages = async (id: Address) => {
   const response = await fetch(
     `${PRESAGIO_CHAT_API_URL}/api/market-chat?market_id=${id}`
@@ -59,6 +57,10 @@ export const AiChat = ({ id }: AiChatProps) => {
   const [isOpen, setOpen] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const randomWaitingMessageIndex = Math.round(
+    Math.random() * (waitingMessges.length - 1)
+  );
 
   const {
     data,
@@ -192,6 +194,7 @@ export const AiChat = ({ id }: AiChatProps) => {
           <Dialog.Trigger asChild>
             <button
               onClick={() => {
+                trackEvent(FA_EVENTS.MARKET.AI_CHAT.OPEN_GENEREAL);
                 trackEvent(FA_EVENTS.MARKET.AI_CHAT.OPEN(id));
               }}
               className={twMerge(

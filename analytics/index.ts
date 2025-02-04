@@ -30,6 +30,7 @@ export const FA_EVENTS = {
   },
   MARKET: {
     AI_CHAT: {
+      OPEN_GENEREAL: 'click/market/ai-chat/open-general',
       OPEN: (id: string) => `click/market/${id}/ai-chat/open`,
       GET_BETA_ACCESS: 'click/market/ai-chat/get-beta-access',
     },
