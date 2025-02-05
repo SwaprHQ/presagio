@@ -33,7 +33,10 @@ export const calcAddFundingOutcomeTokensReturned = (
   if (poolShareSupply && poolShareSupply === BigInt(0)) {
     return null;
   }
+
   const depositAmounts = calcAddFundingDepositedAmounts(addedFunds, poolBalances);
+
+  if (!depositAmounts) return null;
 
   const sendAmounts = depositAmounts.map(depositAmount => addedFunds - depositAmount);
   return sendAmounts;
@@ -65,17 +68,17 @@ export const calcDepositedTokens = (
  * @param addedFunds - the amount of collateral being added to the market maker as liquidity
  * @param poolBalances - the market maker's balances of outcome tokens
  * @returns array of BigInt values representing the deposited amounts
- * @throws error if any pool balance is zero
  * @see https://github.com/protofire/omen-exchange/blob/f35d30614e92baa50d0787cd8203668fdb59ee3b/app/src/util/tools/fpmm/liquidity/index.ts#L44
  */
 export const calcAddFundingDepositedAmounts = (
   addedFunds: bigint,
   poolBalances: bigint[]
-): bigint[] => {
+): bigint[] | null => {
   if (poolBalances.some(poolBalance => poolBalance === BigInt(0))) {
-    throw new Error(
+    console.error(
       'Invalid Pool Balances - you must provide a distribution hint for the desired weightings of the pool'
     );
+    return null;
   }
 
   const poolWeight = poolBalances.reduce((tokenABalance, tokenBBalance) =>

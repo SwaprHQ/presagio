@@ -133,7 +133,7 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
         conditionId: condition.id,
         collateralToken: collateralToken.address,
       })
-    );
+    ).catch(error => console.error(error));
     trackEvent(FA_EVENTS.BETS.REDEEM);
   };
 
