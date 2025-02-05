@@ -119,10 +119,10 @@ export const AiChat = ({ id }: AiChatProps) => {
 
   return (
     <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)}>
-      <div className="fixed bottom-10 flex w-full items-center justify-end px-2 md:px-6">
+      <div className="fixed bottom-4 flex w-full items-center justify-end px-2 md:bottom-10 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>
-            <Dialog.Content className="fixed bottom-28 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:right-4 md:w-[420px]">
+            <Dialog.Content className="fixed bottom-20 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]">
               <Dialog.Description hidden={true}>
                 Presagio chatbot window
               </Dialog.Description>
@@ -198,11 +198,17 @@ export const AiChat = ({ id }: AiChatProps) => {
                 trackEvent(FA_EVENTS.MARKET.AI_CHAT.OPEN(id));
               }}
               className={twMerge(
-                'flex size-16 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-sm transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em',
+                'flex size-12 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-sm transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em md:size-16',
                 'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
               )}
             >
-              <Image alt="ai wizard" width={42} height={42} src={wizardSvg} />
+              <Image
+                alt="ai wizard"
+                width={42}
+                height={42}
+                src={wizardSvg}
+                className="w-7 md:w-10"
+              />
             </button>
           </Dialog.Trigger>
         </div>
@@ -232,9 +238,9 @@ const Message = ({ children, role }: MessageProps) => {
 const LoadingDots = () => {
   return (
     <div className="flex items-center justify-center space-x-0.5" aria-label="Loading">
-      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main"></div>
-      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main [animation-delay:0.2s]"></div>
-      <div className="animate-loading-dot h-1 w-1 rounded-100 bg-surface-primary-main [animation-delay:0.4s]"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.2s]"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.4s]"></div>
     </div>
   );
 };
