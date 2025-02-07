@@ -25,7 +25,7 @@ const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 const MARKETING_LINK =
   'https://swpr.notion.site/Presagio-AI-Predictor-Chatbot-Beta-Launch-f4ccdfa867e949d3badf10705b7c90aa';
 
-type Role = 'user' | 'assitant';
+type Role = 'user' | 'assistant';
 
 interface Message {
   content: string;
@@ -56,7 +56,7 @@ const fetchMessages = async (id: Address) => {
 export const AiChat = ({ id }: AiChatProps) => {
   const [isOpen, setOpen] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [scrollAreaElement, setScrollAreaElement] = useState<HTMLDivElement | null>(null);
 
   const randomWaitingMessageIndex = Math.round(
     Math.random() * (waitingMessges.length - 1)
@@ -106,10 +106,11 @@ export const AiChat = ({ id }: AiChatProps) => {
   }, [append, data?.length, isFetchedMessages, messageSent, isOpen, title]);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    if (scrollAreaElement) {
+      console.log('Scrolling to bottom...');
+      scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
     }
-  }, [scrollAreaRef]);
+  }, [messages, isOpen, scrollAreaElement]);
 
   const assistantMessages = messages.filter(({ role }) => role === 'assistant');
   const noAssistantMessages =
@@ -145,7 +146,11 @@ export const AiChat = ({ id }: AiChatProps) => {
                   </Dialog.Close>
                 </div>
               </div>
-              <ScrollArea className="h-[460px] md:h-[536px]">
+              <ScrollArea
+                ref={setScrollAreaElement}
+                className="h-[460px] md:h-[536px]"
+                id="  "
+              >
                 <div className="space-y-4 px-4 pb-32 pt-4">
                   {messages.map((message, index) => (
                     <Message key={index} role={message.role}>
