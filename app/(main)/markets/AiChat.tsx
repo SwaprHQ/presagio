@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { Fragment, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { MarkdownRenderer, ScrollArea } from '@/app/components';
 import aiStarsSvg from '@/public/ai-stars.svg';
@@ -53,6 +53,17 @@ const fetchMessages = async (id: Address) => {
   return response.json();
 };
 
+function isJSON(message: string) {
+  try {
+    JSON.parse(message);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+const FULL_ANSWER_WAITING_TIME_MS = 2000;
+
 export const AiChat = ({ id }: AiChatProps) => {
   const [isOpen, setOpen] = useState(false);
   const [messageSent, setMessageSent] = useState(false);
@@ -87,6 +98,7 @@ export const AiChat = ({ id }: AiChatProps) => {
     },
     api: `${PRESAGIO_CHAT_API_URL}/api/market-chat`,
     initialMessages: data,
+    experimental_throttle: FULL_ANSWER_WAITING_TIME_MS,
   });
 
   const title = market?.fixedProductMarketMaker?.title;
@@ -117,6 +129,25 @@ export const AiChat = ({ id }: AiChatProps) => {
     messages.length === 1 &&
     (assistantMessages.length === 0 || assistantMessages?.at(0)?.content.length === 0);
   const hasError = messagesError || chatError;
+
+  const parsedMessages = messages.map(({ role, content }, index) => {
+    if (role === 'user' || index !== 1) return { role, content };
+
+    if (!isJSON(content)) return { role, content };
+
+    const contentJSON = JSON.parse(content) as {
+      reasoning: string;
+      outcome: string;
+      confidence: string;
+    };
+
+    return {
+      role,
+      content: contentJSON.reasoning,
+      outcome: contentJSON.outcome,
+      confidence: contentJSON.confidence,
+    };
+  });
 
   return (
     <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)}>
@@ -152,10 +183,20 @@ export const AiChat = ({ id }: AiChatProps) => {
                 id="  "
               >
                 <div className="space-y-4 px-4 pb-32 pt-4">
-                  {messages.map((message, index) => (
-                    <Message key={index} role={message.role}>
-                      {message.content}
-                    </Message>
+                  {parsedMessages.map((message, index) => (
+                    <Fragment key={index}>
+                      <Message role={message.role}>{message.content}</Message>
+                      <div className="flex space-x-4">
+                        {message.outcome && (
+                          <MessageCard title="Outcome">{message.outcome}</MessageCard>
+                        )}
+                        {message.confidence && (
+                          <MessageCard title="Confidence level">
+                            {message.confidence}%
+                          </MessageCard>
+                        )}
+                      </div>
+                    </Fragment>
                   ))}
                   {noAssistantMessages && (
                     <div className="space-y-1 rounded-20 bg-outline-primary-base-em px-4 py-2">
@@ -227,12 +268,14 @@ interface MessageProps extends PropsWithChildren {
 }
 
 const Message = ({ children, role }: MessageProps) => {
-  const isSystem = role === 'assistant';
+  const isAssistant = role === 'assistant';
   return (
     <MarkdownRenderer
       className={cx(
-        'rounded-20 px-4 py-2',
-        isSystem ? 'bg-outline-primary-base-em' : 'bg-surface-surface-1'
+        'w-[90%] rounded-20 px-4 py-2',
+        isAssistant
+          ? 'mr-auto bg-outline-primary-base-em'
+          : 'ml-auto bg-surface-surface-1'
       )}
     >
       {children}
@@ -246,6 +289,19 @@ const LoadingDots = () => {
       <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main"></div>
       <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.2s]"></div>
       <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.4s]"></div>
+    </div>
+  );
+};
+
+interface MessageCardProps extends PropsWithChildren {
+  title: string;
+}
+
+const MessageCard = ({ title, children }: MessageCardProps) => {
+  return (
+    <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-base-em p-4">
+      <p className="text-sm font-semibold uppercase text-text-low-em">{title}</p>
+      <p className="text-md font-semibold uppercase">{children}</p>
     </div>
   );
 };
