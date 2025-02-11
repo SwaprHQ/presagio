@@ -78,9 +78,11 @@ export const setupDuneQueryUrl = ({
 }: DuneUrlParams): string => {
   const limit = pageSize;
   const offset = (page - 1) * pageSize;
-  const filtersString = filters ? `&filters=${filters}` : '';
 
-  return `${baseUrl}/query/${queryId}/results?limit=${limit}&offset=${offset}&sort_by=${sortBy}${filtersString}`;
+  const encodedFilters = filters ? `&filters=${encodeURIComponent(filters)}` : '';
+  const encodedSortBy = encodeURIComponent(sortBy);
+
+  return `${baseUrl}/query/${queryId}/results?limit=${limit}&offset=${offset}&sort_by=${encodedSortBy}${encodedFilters}`;
 };
 
 interface PaginationParams {

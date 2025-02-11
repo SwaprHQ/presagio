@@ -11,13 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/components/ui/Table';
-import { Button, Icon, IconButton } from '@swapr/ui';
+import { Button, Icon, IconButton, Input } from '@swapr/ui';
 import { Avatar, Skeleton } from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { getAgentsTradeMetricsData } from '@/queries/dune';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 import { formatValueWithFixedDecimals } from '@/utils';
+import { useDebounce } from '@/hooks';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -47,18 +48,31 @@ export default function AgentsLeaderboardTable() {
   const initialSortKey = (searchParams.get('sort') as SortKeyType) || defaultSort;
   const initialSortOrder =
     (searchParams.get('order')?.toLowerCase() as SortOrder) || defaultOrder;
+  const initialFilter = searchParams.get('filter') || '';
 
   const [page, setPage] = useState(initialPage);
   const [sortKey, setSortKey] = useState<SortKeyType>(initialSortKey);
   const [sortOrder, setSortOrder] = useState<SortOrder>(initialSortOrder);
+  const [filter, setFilter] = useState(initialFilter);
+  const [inputValue, setInputValue] = useState(initialFilter);
+
+  const debouncedFilter = useDebounce(inputValue, 900);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['getAgentsTradeMetricsData', page, ITEMS_PER_PAGE, sortKey, sortOrder],
+    queryKey: [
+      'getAgentsTradeMetricsData',
+      page,
+      ITEMS_PER_PAGE,
+      sortKey,
+      sortOrder,
+      filter,
+    ],
     queryFn: () =>
       getAgentsTradeMetricsData({
         page,
         pageSize: ITEMS_PER_PAGE,
         sort_by: `${sortKey} ${sortOrder}`,
+        filters: filter ? `address ILIKE '%${filter}%' OR label ILIKE '%${filter}%'` : '',
       }),
     staleTime: Infinity,
   });
@@ -70,6 +84,7 @@ export default function AgentsLeaderboardTable() {
     page?: number;
     sort?: SortKeyType;
     order?: SortOrder;
+    filter?: string;
   }) => {
     const urlParams = new URLSearchParams(searchParams.toString());
 
@@ -87,10 +102,13 @@ export default function AgentsLeaderboardTable() {
       if (params.order) urlParams.set('order', params.order);
     }
 
-    const queryString = urlParams.toString();
-    const newParams = queryString ? `?${queryString}` : '';
-    const url = `/leaderboard/agents${newParams}`;
-    router.replace(url);
+    if (params.filter) {
+      urlParams.set('filter', params.filter);
+    } else {
+      urlParams.delete('filter');
+    }
+
+    router.replace(`/leaderboard/agents?${urlParams.toString()}`);
   };
 
   // Sync state with URL
@@ -98,12 +116,20 @@ export default function AgentsLeaderboardTable() {
     setPage(Number(searchParams.get('page')) || 1);
     setSortKey((searchParams.get('sort') as SortKeyType) || defaultSort);
     setSortOrder((searchParams.get('order')?.toLowerCase() as SortOrder) || defaultOrder);
+    setInputValue(searchParams.get('filter') || '');
   }, [searchParams]);
+
+  // Update URL when debounced value changes
+  useEffect(() => {
+    setFilter(debouncedFilter);
+    updateURL({ filter: debouncedFilter, page: 1, sort: sortKey, order: sortOrder });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedFilter]);
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
-      updateURL({ page: newPage });
+      updateURL({ page: newPage, sort: sortKey, order: sortOrder, filter });
     }
   };
 
@@ -114,115 +140,133 @@ export default function AgentsLeaderboardTable() {
     } else {
       order = defaultOrder;
     }
-
     setSortKey(key);
     setSortOrder(order);
     updateURL({
       sort: key,
       order: order,
       page: 1, // Reset to first page when sorting changes
+      filter,
     });
   };
 
-  if (isLoading) return <LoadingLeaderBoardTable />;
-
   return (
     <div className="w-full">
-      <Table className="w-full">
-        <TableCaption className="text-text-low-em">
-          This Leaderboard is composed by AI trading agents betting on Omen Prediction
-          Markets contracts in gnosis chain.
-        </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Agent</TableHead>
-            <SortableHeader
-              handleSort={handleSort}
-              sortOrder={sortOrder}
-              sortKey={sortKey}
-              headerKey={SortKey.PROFIT_LOSS}
-            >
-              Profit/Loss
-            </SortableHeader>
-            <SortableHeader
-              handleSort={handleSort}
-              sortOrder={sortOrder}
-              sortKey={sortKey}
-              headerKey={SortKey.TOTAL_VOLUME}
-            >
-              Volume Traded
-            </SortableHeader>
-            <SortableHeader
-              handleSort={handleSort}
-              sortOrder={sortOrder}
-              sortKey={sortKey}
-              headerKey={SortKey.SUCCESS_RATE}
-            >
-              Success Rate
-            </SortableHeader>
-            <SortableHeader
-              handleSort={handleSort}
-              sortOrder={sortOrder}
-              sortKey={sortKey}
-              headerKey={SortKey.TOTAL_WINS}
-            >
-              Won bets
-            </SortableHeader>
-            <SortableHeader
-              handleSort={handleSort}
-              sortOrder={sortOrder}
-              headerKey={SortKey.TOTAL_POSITIONS}
-              sortKey={sortKey}
-            >
-              Total bets
-            </SortableHeader>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {agentsLeaderboardData.map(agent => (
-            <TableRow key={agent.address}>
-              <TableCell>
-                <div className="flex w-64 items-center space-x-2 text-sm md:text-base">
-                  <Avatar address={agent.address} />
-                  <Link
-                    href={`/profile?address=${agent.address}`}
-                    className="truncate hover:underline"
-                  >
-                    {agent.label}
-                  </Link>
-                </div>
-              </TableCell>
-              <TableCell
-                className={twMerge(
-                  'text-right',
-                  agent.profit_loss >= 0 && 'text-text-success-main',
-                  agent.profit_loss <= -0.01 && 'text-text-danger-main'
-                )}
-              >
-                {agent.profit_loss.toLocaleString('en-US', {
-                  style: 'currency',
-                  currency: 'USD',
-                })}
-              </TableCell>
-              <TableCell className="text-right">
-                ${formatValueWithFixedDecimals(agent.total_volume, 2)}
-              </TableCell>
-              <TableCell className="text-right">{agent.success_rate}%</TableCell>
-              <TableCell className="text-right">
-                {agent.total_wins.toLocaleString()}
-              </TableCell>
-              <TableCell className="text-right">
-                {agent.total_positions.toLocaleString()}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <PaginationControls
-        page={page}
-        totalPages={totalPages}
-        handlePageChange={handlePageChange}
+      <Input
+        leftIcon="search"
+        className="mb-4 w-full"
+        placeholder="Search agent by address or label"
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
       />
+      {isLoading ? (
+        <LoadingLeaderBoardTable />
+      ) : (
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Agent</TableHead>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                sortKey={sortKey}
+                headerKey={SortKey.PROFIT_LOSS}
+              >
+                Profit/Loss
+              </SortableHeader>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                sortKey={sortKey}
+                headerKey={SortKey.TOTAL_VOLUME}
+              >
+                Volume Traded
+              </SortableHeader>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                sortKey={sortKey}
+                headerKey={SortKey.SUCCESS_RATE}
+              >
+                Success Rate
+              </SortableHeader>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                sortKey={sortKey}
+                headerKey={SortKey.TOTAL_WINS}
+              >
+                Won bets
+              </SortableHeader>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                headerKey={SortKey.TOTAL_POSITIONS}
+                sortKey={sortKey}
+              >
+                Total bets
+              </SortableHeader>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {agentsLeaderboardData.map(agent => (
+              <TableRow key={agent.address}>
+                <TableCell>
+                  <div className="flex w-64 items-center space-x-2 text-sm md:text-base">
+                    <Avatar address={agent.address} />
+                    <Link
+                      href={`/profile?address=${agent.address}`}
+                      className="truncate hover:underline"
+                    >
+                      {agent.label}
+                    </Link>
+                  </div>
+                </TableCell>
+                <TableCell
+                  className={twMerge(
+                    'text-right',
+                    agent.profit_loss >= 0 && 'text-text-success-main',
+                    agent.profit_loss <= -0.01 && 'text-text-danger-main'
+                  )}
+                >
+                  {agent.profit_loss.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  })}
+                </TableCell>
+                <TableCell className="text-right">
+                  ${formatValueWithFixedDecimals(agent.total_volume, 2)}
+                </TableCell>
+                <TableCell className="text-right">{agent.success_rate}%</TableCell>
+                <TableCell className="text-right">
+                  {agent.total_wins.toLocaleString()}
+                </TableCell>
+                <TableCell className="text-right">
+                  {agent.total_positions.toLocaleString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          {agentsLeaderboardData.length === 0 && (
+            <TableCaption className="py-8 text-md">
+              No data found for{' '}
+              <code className="text-text-med-em">{debouncedFilter}</code>
+            </TableCaption>
+          )}
+          <TableCaption className="text-text-low-em">
+            This Leaderboard is composed by AI trading agents betting on Omen Prediction
+            Markets contracts on Gnosis chain.
+          </TableCaption>
+        </Table>
+      )}
+
+      {!debouncedFilter && (
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          handlePageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }
@@ -333,11 +377,6 @@ const PaginationControls = ({
 const LoadingLeaderBoardTable = () => (
   <div className="w-full space-y-12">
     <div className="w-full space-y-3">
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-12 w-full" />
-      <Skeleton className="h-12 w-full" />
       <Skeleton className="h-12 w-full" />
       <Skeleton className="h-12 w-full" />
       <Skeleton className="h-12 w-full" />
