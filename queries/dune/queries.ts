@@ -140,6 +140,7 @@ type TradeMetrics = {
   success_rate: number;
   total_wins: number;
   total_positions: number;
+  ROI: number;
 };
 
 export const getAgentsTradeMetricsData = async ({
