@@ -10,7 +10,7 @@ export const Card = ({ children, className }: CardProps) => {
   return (
     <div
       className={cx(
-        'rounded-2xl rounded-12 bg-surface-surface-1 outline outline-outline-low-em hover:bg-surface-surface-2',
+        'rounded-12 bg-surface-surface-1 outline outline-outline-low-em hover:bg-surface-surface-2',
         className
       )}
     >
