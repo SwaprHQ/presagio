@@ -33,6 +33,7 @@ const SortKey = {
   SUCCESS_RATE: 'success_rate',
   TOTAL_WINS: 'total_wins',
   TOTAL_POSITIONS: 'total_positions',
+  ROI: 'ROI',
 } as const;
 
 type SortKeyType = (typeof SortKey)[keyof typeof SortKey];
@@ -206,13 +207,21 @@ export default function AgentsLeaderboardTable() {
               >
                 Total bets
               </SortableHeader>
+              <SortableHeader
+                handleSort={handleSort}
+                sortOrder={sortOrder}
+                headerKey={SortKey.ROI}
+                sortKey={sortKey}
+              >
+                ROI
+              </SortableHeader>
             </TableRow>
           </TableHeader>
           <TableBody>
             {agentsLeaderboardData.map(agent => (
               <TableRow key={agent.address}>
                 <TableCell>
-                  <div className="flex w-64 items-center space-x-2 text-sm md:text-base">
+                  <div className="flex w-48 items-center space-x-2 text-sm md:text-base">
                     <Avatar address={agent.address} />
                     <Link
                       href={`/profile?address=${agent.address}`}
@@ -244,6 +253,7 @@ export default function AgentsLeaderboardTable() {
                 <TableCell className="text-right">
                   {agent.total_positions.toLocaleString()}
                 </TableCell>
+                <TableCell className="text-right">{Math.round(agent.ROI)}%</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -295,7 +305,7 @@ export const SortableHeader = ({
         {headerKey === sortKey && (
           <Icon
             name={sortOrder === SortOrder.ASC ? 'chevron-up' : 'chevron-down'}
-            className="ml-2 h-4 w-4"
+            className="ml-1 h-4 w-4"
           />
         )}
       </Button>
