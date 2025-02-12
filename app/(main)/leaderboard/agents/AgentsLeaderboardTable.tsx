@@ -79,7 +79,6 @@ export default function AgentsLeaderboardTable() {
   });
 
   const agentsLeaderboardData = data?.data ?? [];
-  console.log('agentsLeaderboardData:', agentsLeaderboardData);
   const totalPages = Math.ceil((data?.totalRows ?? 0) / ITEMS_PER_PAGE);
 
   const updateURL = (params: {
