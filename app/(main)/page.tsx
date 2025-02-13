@@ -38,6 +38,7 @@ import { getOpenMarkets } from '@/queries/dune';
 import { Categories } from '@/constants';
 
 import { MarketsHighlight } from './MarketsHighlight';
+import { AiChatLanding } from '@/app/components';
 
 const DEFAULT_CATEGORIES = Object.values(Categories);
 const DEFAULT_CREATOR_OPTION = creatorFilters[0];
@@ -543,6 +544,7 @@ export default function HomePage() {
           />
         </div>
       )}
+      <AiChatLanding markets={markets} />
     </div>
   );
 }

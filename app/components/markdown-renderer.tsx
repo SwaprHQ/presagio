@@ -14,6 +14,7 @@ interface MarkdownStyles {
   paragraph: string;
   list: string;
   listItem: string;
+  a: string;
 }
 
 const markdownStyles: MarkdownStyles = {
@@ -25,6 +26,7 @@ const markdownStyles: MarkdownStyles = {
   paragraph: 'my-2',
   list: 'list-disc list-inside my-2',
   listItem: 'ml-4',
+  a: 'text-surface-primary-main hover:underline font-medium',
 };
 
 const components: Components = {
@@ -34,6 +36,11 @@ const components: Components = {
   p: ({ children }) => <p className={markdownStyles.paragraph}>{children}</p>,
   ul: ({ children }) => <ul className={markdownStyles.list}>{children}</ul>,
   li: ({ children }) => <li className={markdownStyles.listItem}>{children}</li>,
+  a: ({ children, href }) => (
+    <a className={markdownStyles.a} href={href as string}>
+      {children}
+    </a>
+  ),
 };
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({

@@ -30,7 +30,7 @@ import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
 import { getQuestionValidity } from '@/queries/gnosis-ai';
-import AiChat from './AiChat';
+import { AiChat } from './AiChat';
 
 interface MarketDetailsProps {
   id: Address;

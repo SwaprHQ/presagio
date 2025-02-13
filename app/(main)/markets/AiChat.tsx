@@ -305,5 +305,3 @@ const MessageCard = ({ title, children }: MessageCardProps) => {
     </div>
   );
 };
-
-export default AiChat;
