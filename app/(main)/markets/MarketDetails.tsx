@@ -30,7 +30,7 @@ import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
 import { getQuestionValidity } from '@/queries/gnosis-ai';
-import { AiChat } from './AiChat';
+import { AiChatMarket } from './AiChatMarket';
 
 interface MarketDetailsProps {
   id: Address;
@@ -215,7 +215,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
         </div>
       </div>
       <EmbedMarketModal id={id} />
-      <AiChat id={id} />
+      <AiChatMarket id={id} />
     </>
   );
 };
