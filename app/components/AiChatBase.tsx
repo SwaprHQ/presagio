@@ -14,24 +14,27 @@ import { trackEvent } from 'fathom-client';
 interface AiBaseProps extends PropsWithChildren {
   messages: any[];
   trackOnClickEvents: string[];
+  isChatOpen?: boolean;
 }
 
 const MARKETING_LINK =
   'https://swpr.notion.site/Presagio-AI-Predictor-Chatbot-Beta-Launch-f4ccdfa867e949d3badf10705b7c90aa';
 
-export const AiChatBase = ({ children, messages, trackOnClickEvents }: AiBaseProps) => {
-  const [isOpen, setOpen] = useState(false);
+export const AiChatBase = ({
+  children,
+  messages,
+  trackOnClickEvents,
+  isChatOpen,
+}: AiBaseProps) => {
+  const [isOpen, setOpen] = useState(isChatOpen);
   const [scrollAreaElement, setScrollAreaElement] = useState<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (scrollAreaElement) {
-      console.log('Scrolling to bottom...');
-      scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
-    }
+    if (scrollAreaElement) scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
   }, [messages, isOpen, scrollAreaElement]);
 
   return (
-    <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)}>
+    <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)} open={isOpen}>
       <div className="fixed bottom-4 flex w-full items-center justify-end px-2 md:bottom-10 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>

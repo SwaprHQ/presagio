@@ -10,6 +10,7 @@ import { getMarket, Query } from '@/queries/omen';
 
 interface AiChatMarketProps {
   id: Address;
+  isChatOpen?: boolean;
 }
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
@@ -46,7 +47,7 @@ function isJSON(message: string) {
 
 const FULL_ANSWER_WAITING_TIME_MS = 2000;
 
-export const AiChatMarket = ({ id }: AiChatMarketProps) => {
+export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
   const [messageSent, setMessageSent] = useState(false);
 
   const randomWaitingMessageIndex = Math.round(
@@ -128,7 +129,11 @@ export const AiChatMarket = ({ id }: AiChatMarketProps) => {
   ];
 
   return (
-    <AiChatBase messages={messages} trackOnClickEvents={trackOnClickEvents}>
+    <AiChatBase
+      messages={messages}
+      trackOnClickEvents={trackOnClickEvents}
+      isChatOpen={isChatOpen}
+    >
       <>
         {parsedMessages.map((message, index) => (
           <Fragment key={index}>
