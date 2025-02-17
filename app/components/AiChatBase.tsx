@@ -95,18 +95,28 @@ export const AiChatBase = ({
               onClick={() => {
                 trackOnClickEvents.map(event => trackEvent(event));
               }}
-              className={twMerge(
-                'flex size-12 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-sm transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em md:size-16',
-                'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
-              )}
+              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-low-em md:size-16"
             >
-              <Image
-                alt="ai wizard"
-                width={42}
-                height={42}
-                src={wizardSvg}
-                className="w-7 md:w-10"
+              <span
+                className={twMerge(
+                  'animate-border-rotate group-hover:animate-border-rotate-fast bg-gradient-border duration-900 absolute inset-0 rounded-100 border-0',
+                  isOpen && 'animate-border-rotate-slow'
+                )}
               />
+              <div
+                className={twMerge(
+                  'relative flex h-full w-full items-center justify-center rounded-100 bg-surface-white hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em dark:bg-surface-black',
+                  isOpen && 'bg-outline-primary-base-em shadow-2'
+                )}
+              >
+                <Image
+                  alt="ai wizard"
+                  width={42}
+                  height={42}
+                  src={wizardSvg}
+                  className="w-7 md:w-10"
+                />
+              </div>
             </button>
           </Dialog.Trigger>
         </div>
