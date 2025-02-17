@@ -28,6 +28,11 @@ export const FA_EVENTS = {
     ROUTE_FAILED: 'click/lifi-widget/route-failed',
     ROUTE_SUCCESS: 'click/lifi-widget/route-success',
   },
+  AI_CHAT: {
+    LANDING: {
+      OPEN: 'click/ai-chat/landing/open',
+    },
+  },
   MARKET: {
     AI_CHAT: {
       OPEN_GENEREAL: 'click/market/ai-chat/open-general',

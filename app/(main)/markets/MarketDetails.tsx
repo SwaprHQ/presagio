@@ -16,7 +16,7 @@ import { IconButton, Tag, ToggleGroup, ToggleGroupOption } from '@swapr/ui';
 import { remainingTime } from '@/utils/dates';
 import { Address } from 'viem';
 import { Market } from '@/entities';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { HistorySection } from './HistorySection';
 import { News } from './News';
@@ -30,7 +30,7 @@ import { MarketNotFound } from './MarketNotFound';
 import { Liquidity } from './Liquidity';
 import { UserLiquidity } from './UserLiquidity';
 import { getQuestionValidity } from '@/queries/gnosis-ai';
-import AiChat from './AiChat';
+import { AiChatMarket } from './AiChatMarket';
 
 interface MarketDetailsProps {
   id: Address;
@@ -47,6 +47,9 @@ enum Tabs {
 export const MarketDetails = ({ id }: MarketDetailsProps) => {
   const [tab, setTab] = useState<Tabs>(Tabs.BET);
   const { openModal } = useModal();
+  const searchParams = useSearchParams();
+  const chatOpen = searchParams.get('chatOpen') === 'true';
+
   const { data, error, isLoading } = useQuery({
     queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
@@ -215,7 +218,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
         </div>
       </div>
       <EmbedMarketModal id={id} />
-      <AiChat id={id} />
+      <AiChatMarket id={id} isChatOpen={chatOpen} />
     </>
   );
 };
