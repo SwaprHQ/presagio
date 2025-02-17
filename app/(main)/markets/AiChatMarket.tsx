@@ -134,30 +134,28 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
       trackOnClickEvents={trackOnClickEvents}
       isChatOpen={isChatOpen}
     >
-      <>
-        {parsedMessages.map((message, index) => (
-          <Fragment key={index}>
-            <Message role={message.role}>{message.content}</Message>
-            <div className="flex space-x-4">
-              {message.outcome && (
-                <MessageCard title="Outcome">{message.outcome}</MessageCard>
-              )}
-              {message.confidence && (
-                <MessageCard title="Confidence level">{message.confidence}%</MessageCard>
-              )}
-            </div>
-          </Fragment>
-        ))}
-        {noAssistantMessages && (
-          <div className="space-y-1 rounded-20 bg-outline-primary-base-em px-4 py-2">
-            <div className="flex items-center space-x-2">
-              <p>{waitingMessges.at(randomWaitingMessageIndex)}</p>
-              <LoadingDots />
-            </div>
+      {parsedMessages.map((message, index) => (
+        <Fragment key={index}>
+          <Message role={message.role}>{message.content}</Message>
+          <div className="flex space-x-4">
+            {message.outcome && (
+              <MessageCard title="Outcome">{message.outcome}</MessageCard>
+            )}
+            {message.confidence && (
+              <MessageCard title="Confidence level">{message.confidence}%</MessageCard>
+            )}
           </div>
-        )}
-        {hasError && <Message role="assistant">Oops. Something went wrong.</Message>}
-      </>
+        </Fragment>
+      ))}
+      {noAssistantMessages && (
+        <div className="space-y-1 rounded-20 bg-outline-primary-base-em px-4 py-2">
+          <div className="flex items-center space-x-2">
+            <p>{waitingMessges.at(randomWaitingMessageIndex)}</p>
+            <LoadingDots />
+          </div>
+        </div>
+      )}
+      {hasError && <Message role="assistant">Oops. Something went wrong.</Message>}
     </AiChatBase>
   );
 };

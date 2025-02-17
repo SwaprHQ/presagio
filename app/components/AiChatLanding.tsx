@@ -19,11 +19,11 @@ export const AiChatLanding = ({ markets }: AiChatLandingProps) => {
   const wizardMessages = [
     {
       role: 'assistant',
-      content: "We're not live yet, but you can have a glimpse",
+      content: 'Have a glimpse of upcoming prediction chat',
     },
     {
       role: 'assistant',
-      content: 'Try it right now, click on the market bellow 👇',
+      content: 'Try it now, click on the market bellow 👇',
     },
   ];
 
@@ -56,20 +56,20 @@ interface MessageMarketCardProps {
 
 const MessageMarketCard = ({ id, title }: MessageMarketCardProps) => {
   return (
-    <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-base-em p-2 hover:bg-outline-primary-low-em">
+    <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-base-em hover:bg-outline-primary-low-em">
       <Link key={id} href={`markets?id=${id}&chatOpen=true`}>
-        <div className="flex space-x-3">
+        <div className="flex space-x-3 p-2">
           {id && (
             <MarketThumbnail
               width={140}
               height={140}
-              className="size-[100px] rounded-8"
+              className="size-[100px] rounded-12"
               marketId={id}
             />
           )}
-          {title && <div className="">{title}</div>}
+          {title && <div className="hover:underline">{title}</div>}
         </div>
-        <div className="mt-1.5 flex items-center justify-center space-x-1 rounded-8 bg-outline-primary-low-em p-1">
+        <div className="mt-1.5 flex items-center justify-center space-x-1 rounded-b-20 bg-outline-primary-low-em p-1">
           <p>Open market</p>
           <Icon name="arrow-top-right" />
         </div>
