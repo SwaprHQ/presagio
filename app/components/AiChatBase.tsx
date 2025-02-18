@@ -35,7 +35,7 @@ export const AiChatBase = ({
 
   return (
     <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)} open={isOpen}>
-      <div className="fixed bottom-4 flex w-full items-center justify-end px-2 md:bottom-10 md:px-6">
+      <div className="fixed bottom-4 right-2 flex w-full items-center justify-end px-2 md:bottom-10 md:right-0 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>
             <Dialog.Content className="fixed bottom-20 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]">
@@ -95,12 +95,12 @@ export const AiChatBase = ({
               onClick={() => {
                 trackOnClickEvents.map(event => trackEvent(event));
               }}
-              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-low-em md:size-16"
+              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-med-em duration-500 hover:scale-105 md:size-16"
             >
               <span
                 className={twMerge(
                   'absolute inset-0 animate-border-rotate rounded-100 border-0 bg-gradient-border group-hover:animate-border-rotate-fast',
-                  isOpen && 'animate-border-rotate-slow'
+                  isOpen && 'animate-none bg-outline-primary-low-em'
                 )}
               />
               <div
