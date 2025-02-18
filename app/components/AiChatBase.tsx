@@ -99,13 +99,13 @@ export const AiChatBase = ({
             >
               <span
                 className={twMerge(
-                  'animate-border-rotate group-hover:animate-border-rotate-fast bg-gradient-border duration-900 absolute inset-0 rounded-100 border-0',
+                  'absolute inset-0 animate-border-rotate rounded-100 border-0 bg-gradient-border group-hover:animate-border-rotate-fast',
                   isOpen && 'animate-border-rotate-slow'
                 )}
               />
               <div
                 className={twMerge(
-                  'relative flex h-full w-full items-center justify-center rounded-100 bg-surface-white hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em dark:bg-surface-black',
+                  'relative flex h-full w-full items-center justify-center rounded-100 bg-surface-white focus:bg-outline-primary-base-em dark:bg-surface-black',
                   isOpen && 'bg-outline-primary-base-em shadow-2'
                 )}
               >

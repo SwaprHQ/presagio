@@ -12,9 +12,9 @@ const config: Config = {
     extend: {
       backgroundImage: {
         'gradient-border': `linear-gradient(90deg, 
-          var(--outline-primary-low-em) 40%, 
-          var(--outline-primary-med-em) 88%, 
-          var(--outline-warning-med-em) 100%)`,
+          #4c21b612 56%, 
+          var(--outline-warning-med-em) 63%, 
+          #5a27da30 100%)`,
       },
       keyframes: {
         grow: {
