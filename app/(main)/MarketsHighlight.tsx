@@ -1,11 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {
-  FixedProductMarketMaker,
-  FixedProductMarketMaker_OrderBy,
-  getMarket,
-} from '@/queries/omen';
+import { FixedProductMarketMaker } from '@/queries/omen';
 import { MarketThumbnail, OutcomeBar, TokenLogo } from '@/app/components';
 import { formatEtherWithFixedDecimals, remainingTime } from '@/utils';
 import {
@@ -17,6 +13,8 @@ import {
   CarouselSelector,
 } from '../components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { FA_EVENTS } from '@/analytics';
+import { trackEvent } from 'fathom-client';
 
 interface MarketsHighlightProps {
   markets: any[];
@@ -55,6 +53,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
   return (
     <CarouselItem key={market.id}>
       <Link
+        onClick={() => trackEvent(FA_EVENTS.MARKETS.CAROUSEL)}
         href={`/markets?id=${market.id}`}
         className="flex min-h-[600px] w-auto flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
       >

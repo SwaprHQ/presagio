@@ -41,6 +41,7 @@ export const FA_EVENTS = {
     },
   },
   MARKETS: {
+    CAROUSEL: 'click/markets/carousel',
     CATEGORY: (category: string) => `click/markets/category-${category}`,
     DETAILS: {
       EMBED: {
