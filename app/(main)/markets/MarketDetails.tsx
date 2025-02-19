@@ -175,7 +175,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
               <ToggleGroup
                 value={tab}
                 onChange={setTab}
-                className="w-full justify-around md:w-full"
+                className="w-full justify-around overflow-auto md:w-full"
               >
                 {Object.values(Tabs).map(tab => (
                   <div className="w-full" key={tab}>
