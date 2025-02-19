@@ -1,9 +1,12 @@
 'use client';
 
-import { useQueries } from '@tanstack/react-query';
 import Link from 'next/link';
-import { FixedProductMarketMaker, getMarket } from '@/queries/omen';
-import { OutcomeBar, TokenLogo } from '@/app/components';
+import {
+  FixedProductMarketMaker,
+  FixedProductMarketMaker_OrderBy,
+  getMarket,
+} from '@/queries/omen';
+import { MarketThumbnail, OutcomeBar, TokenLogo } from '@/app/components';
 import { formatEtherWithFixedDecimals, remainingTime } from '@/utils';
 import {
   Carousel,
@@ -14,28 +17,13 @@ import {
   CarouselSelector,
 } from '../components/Carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import { highlightedMarketsList } from '@/market-highlight.config';
-import defaultHighlightImage from '@/public/assets/highlights/default.png';
-import Image from 'next/image';
-import { useState } from 'react';
 
-export const MarketsHighlight = () => {
-  const { data: markets, isLoading } = useQueries({
-    queries: Object.keys(highlightedMarketsList).map(id => ({
-      queryKey: ['getMarket', id],
-      queryFn: async () => getMarket({ id }),
-    })),
-    combine: results => {
-      return {
-        data: results
-          .map(result => result.data?.fixedProductMarketMaker)
-          .filter((market): market is FixedProductMarketMaker => !!market),
-        isLoading: results.some(result => result.isPending),
-      };
-    },
-  });
+interface MarketsHighlightProps {
+  markets: any[];
+}
 
-  if (markets.length === 0 || isLoading) return null;
+export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
+  const randomMarkets = markets.sort(() => 0.5 - Math.random()).slice(0, 3);
 
   return (
     <Carousel
@@ -53,7 +41,7 @@ export const MarketsHighlight = () => {
         <CarouselNext />
       </div>
       <CarouselContent className="pb-2">
-        {markets.map(market => (
+        {randomMarkets.map(market => (
           <HighlightCarouselItem key={market.id} market={market} />
         ))}
       </CarouselContent>
@@ -62,7 +50,6 @@ export const MarketsHighlight = () => {
 };
 
 const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) => {
-  const [image, setImage] = useState(highlightedMarketsList[market.id].image);
   const closingDate = new Date(+market.openingTimestamp * 1000);
 
   return (
@@ -86,13 +73,14 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
             </p>
           </div>
         </div>
-        <Image
-          className="h-44 w-full rounded-e-0 rounded-t-20 md:h-full md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
-          src={image}
+        <MarketThumbnail
           priority
-          alt="Market highlight"
+          width={200}
+          height={200}
+          className="h-44 w-full rounded-e-0 rounded-t-20 md:h-full md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
+          marketId={market.id}
           style={{ objectFit: 'cover', objectPosition: 'top' }}
-          onError={() => setImage(defaultHighlightImage)}
+          alt="Market highlight"
         />
       </Link>
     </CarouselItem>

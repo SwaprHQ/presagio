@@ -276,7 +276,7 @@ export default function HomePage() {
 
   return (
     <div className="mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      <MarketsHighlight />
+      <MarketsHighlight markets={markets ?? []} />
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (

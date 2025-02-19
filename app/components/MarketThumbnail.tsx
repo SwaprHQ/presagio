@@ -8,6 +8,7 @@ import request from 'graphql-request';
 
 interface MarketThumbnailProps extends Omit<ImageProps, 'src' | 'alt'> {
   marketId: string;
+  alt?: string;
 }
 
 type OmenThumbnailMapping = { omenThumbnailMapping: { image_hash: string } };
@@ -37,6 +38,6 @@ export const MarketThumbnail = ({ marketId, ...props }: MarketThumbnailProps) =>
 
   if (!ipfsHash) return null;
   return (
-    <Image {...props} src={`https://ipfs.io/ipfs/${ipfsHash}`} alt="Thumbnail image" />
+    <Image src={`https://ipfs.io/ipfs/${ipfsHash}`} alt="Thumbnail image" {...props} />
   );
 };
