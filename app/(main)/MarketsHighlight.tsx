@@ -35,12 +35,12 @@ export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
       opts={{ loop: true }}
       className="group relative mb-6 w-full"
     >
-      <CarouselSelector className="absolute bottom-0 left-0 right-0 z-50 mx-auto mb-6" />
-      <div className="absolute bottom-0 right-0 z-50 mb-4 mr-6 flex space-x-2 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100">
+      <CarouselSelector className="absolute bottom-3 left-0 right-0 z-50 mx-auto mb-6 md:bottom-0" />
+      <div className="absolute bottom-2 right-0 z-50 mb-4 mr-6 flex space-x-2 opacity-0 transition duration-300 ease-in-out group-hover:opacity-100">
         <CarouselPrevious />
         <CarouselNext />
       </div>
-      <CarouselContent className="pb-2">
+      <CarouselContent className="relative pb-2">
         {randomMarkets.map(market => (
           <HighlightCarouselItem key={market.id} market={market} />
         ))}
@@ -56,7 +56,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
     <CarouselItem key={market.id}>
       <Link
         href={`/markets?id=${market.id}`}
-        className="flex h-auto min-h-[400px] w-full flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
+        className="flex min-h-[600px] w-auto flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
       >
         <div className="m-0 flex w-full max-w-2xl flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
           <div className="flex flex-col space-y-4">
@@ -77,7 +77,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
           priority
           width={200}
           height={200}
-          className="h-44 w-full rounded-e-0 rounded-t-20 md:h-full md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
+          className="h-full w-full rounded-e-0 rounded-t-20 bg-outline-primary-low-em md:w-1/2 md:rounded-e-20 md:rounded-s-0 2xl:w-2/5"
           marketId={market.id}
           style={{ objectFit: 'cover', objectPosition: 'top' }}
           alt="Market highlight"
