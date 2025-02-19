@@ -98,7 +98,7 @@ export const AiChatBase = ({
               onClick={() => {
                 trackOnClickEvents.map(event => trackEvent(event));
               }}
-              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-med-em duration-500 hover:scale-105 md:size-16"
+              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-med-em duration-500 hover:scale-105 md:size-14"
             >
               <span
                 className={twMerge(
@@ -117,7 +117,7 @@ export const AiChatBase = ({
                   width={42}
                   height={42}
                   src={wizardSvg}
-                  className="w-7 md:w-10"
+                  className="w-7 md:w-9"
                 />
               </div>
             </button>
