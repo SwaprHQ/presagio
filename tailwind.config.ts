@@ -10,6 +10,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      backgroundImage: {
+        'gradient-border': `linear-gradient(90deg, 
+          #4c21b612 56%, 
+          var(--outline-warning-med-em) 63%, 
+          #5a27da30 100%)`,
+      },
       keyframes: {
         grow: {
           '0%': { transform: 'scale(0.5)', opacity: '0' },
@@ -23,11 +29,17 @@ const config: Config = {
           '0%, 100%': { opacity: '0.2' },
           '20%': { opacity: '1' },
         },
+        'border-rotate': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
       },
       animation: {
         'loading-dot': 'loading-dot 1.4s infinite ease-in-out',
         'city-flip': 'cityFlip 200ms ease-in-out',
         grow: 'grow 0.2s ease-out',
+        'border-rotate-fast': 'border-rotate 0.7s linear infinite',
+        'border-rotate': 'border-rotate 5s linear infinite',
       },
     },
   },

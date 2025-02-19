@@ -34,11 +34,14 @@ export const AiChatBase = ({
   }, [messages, isOpen, scrollAreaElement]);
 
   return (
-    <Dialog.Root modal onOpenChange={isOpen => setOpen(isOpen)} open={isOpen}>
-      <div className="fixed bottom-4 flex w-full items-center justify-end px-2 md:bottom-10 md:px-6">
+    <Dialog.Root onOpenChange={isOpen => setOpen(isOpen)} open={isOpen} modal>
+      <div className="fixed bottom-4 right-2 flex w-full items-center justify-end px-2 md:bottom-10 md:right-0 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>
-            <Dialog.Content className="fixed bottom-20 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]">
+            <Dialog.Content
+              className="fixed bottom-20 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]"
+              onInteractOutside={event => event.preventDefault()}
+            >
               <Dialog.Description hidden={true}>
                 Presagio chatbot window
               </Dialog.Description>
@@ -95,18 +98,28 @@ export const AiChatBase = ({
               onClick={() => {
                 trackOnClickEvents.map(event => trackEvent(event));
               }}
-              className={twMerge(
-                'flex size-12 items-center justify-center rounded-100 bg-transparent shadow-1 outline-outline-primary-low-em backdrop-blur-sm transition-colors duration-700 hover:bg-outline-primary-base-em focus:bg-outline-primary-base-em md:size-16',
-                'data-[state=open]:bg-outline-primary-base-em data-[state=open]:shadow-2'
-              )}
+              className="group relative flex size-12 items-center justify-center rounded-100 p-0.5 shadow-1 outline-outline-primary-med-em duration-500 hover:scale-105 md:size-14"
             >
-              <Image
-                alt="ai wizard"
-                width={42}
-                height={42}
-                src={wizardSvg}
-                className="w-7 md:w-10"
+              <span
+                className={twMerge(
+                  'absolute inset-0 animate-border-rotate rounded-100 border-0 bg-gradient-border group-hover:animate-border-rotate-fast',
+                  isOpen && 'animate-none bg-outline-primary-low-em'
+                )}
               />
+              <div
+                className={twMerge(
+                  'relative flex h-full w-full items-center justify-center rounded-100 bg-surface-white focus:bg-outline-primary-base-em dark:bg-surface-black',
+                  isOpen && 'bg-outline-primary-base-em shadow-2'
+                )}
+              >
+                <Image
+                  alt="ai wizard"
+                  width={42}
+                  height={42}
+                  src={wizardSvg}
+                  className="w-7 md:w-9"
+                />
+              </div>
             </button>
           </Dialog.Trigger>
         </div>
