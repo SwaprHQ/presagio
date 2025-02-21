@@ -17,7 +17,7 @@ import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
 
 interface MarketsHighlightProps {
-  markets: any[];
+  markets: FixedProductMarketMaker[];
 }
 
 export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
