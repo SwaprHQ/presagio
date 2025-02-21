@@ -15,7 +15,7 @@ const getUserPositionsQuery = gql`
       where: { user_: { id: $id } }
       orderBy: position__createTimestamp
       orderDirection: desc
-      first: 100
+      first: 500
     ) {
       id
       balance
