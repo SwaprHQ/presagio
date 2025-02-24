@@ -1,23 +1,22 @@
 'use client';
 
-import { AddressLink } from '@/app/components/AddressLink';
-import { Avatar } from '@/app/components';
+import { Avatar, LabelWithLink } from '@/app/components';
 import { Address } from 'viem';
 import { twMerge } from 'tailwind-merge';
 
 import { AiAgent } from '@/types';
 
-interface UserAvatarWithAddressProps {
+interface UserAvatarWithLabelProps {
   address: Address;
   aiAgent?: AiAgent;
   className?: string;
 }
 
-export const UserAvatarWithAddress = ({
+export const UserAvatarWithLabel = ({
   address,
   aiAgent,
   className,
-}: UserAvatarWithAddressProps) => {
+}: UserAvatarWithLabelProps) => {
   return (
     <div
       className={twMerge(
@@ -26,10 +25,11 @@ export const UserAvatarWithAddress = ({
       )}
     >
       <Avatar address={address} />
-      <AddressLink
+      <LabelWithLink
         address={address}
         aiAgent={aiAgent}
         href={`/profile?address=${address}`}
+        className="w-24 truncate"
       />
     </div>
   );
