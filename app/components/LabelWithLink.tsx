@@ -12,7 +12,7 @@ import { useEnsName } from 'wagmi';
 
 import { AiAgent } from '@/types';
 
-interface AddressLinkProps extends ComponentProps<typeof Link> {
+interface LabelWithLinkProps extends ComponentProps<typeof Link> {
   address: Address;
   aiAgent?: AiAgent;
   className?: string;
@@ -20,14 +20,14 @@ interface AddressLinkProps extends ComponentProps<typeof Link> {
   iconSize?: number;
 }
 
-export const AddressLink = ({
+export const LabelWithLink = ({
   address,
   aiAgent,
   className,
   href,
   iconSize = 16,
   ...props
-}: AddressLinkProps) => {
+}: LabelWithLinkProps) => {
   const { data: ensName } = useEnsName({
     address: address,
     chainId: mainnet.id,
@@ -36,16 +36,13 @@ export const AddressLink = ({
 
   const isAiAgent = !!aiAgent;
 
-  const getLinkText = () => {
-    if (isAiAgent) return aiAgent.label;
-
-    return ensName || shortenAddress(address);
-  };
+  const label = isAiAgent ? aiAgent.label : ensName || shortenAddress(address);
 
   return (
     <div className="flex items-center space-x-2 text-sm md:text-base">
       <Link
         href={href}
+        title={label}
         className={twMerge(
           'hover:underline',
           isAiAgent ? 'text-text-primary-main' : 'text-text-high-em',
@@ -53,7 +50,7 @@ export const AddressLink = ({
         )}
         {...props}
       >
-        {getLinkText()}
+        {label}
       </Link>
       {isAiAgent && <Image src="/ai.svg" alt="ai" width={iconSize} height={iconSize} />}
     </div>

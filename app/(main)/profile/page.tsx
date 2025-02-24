@@ -16,7 +16,7 @@ import { getUserBets } from '@/queries/omen';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { fromUnixTime, format } from 'date-fns';
 import {
-  AddressLink,
+  LabelWithLink,
   Avatar,
   BetsListPanel,
   BetsListPanelProps,
@@ -167,7 +167,7 @@ export default function ProfilePage() {
         <div className="flex items-center space-x-4">
           <Avatar address={address} className="size-14" />
           <div>
-            <AddressLink
+            <LabelWithLink
               href={getExplorerAddressUrl(address)}
               address={address}
               aiAgent={aiAgent}
