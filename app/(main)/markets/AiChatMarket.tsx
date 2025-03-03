@@ -125,6 +125,9 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
     FA_EVENTS.MARKET.AI_CHAT.OPEN(id),
   ];
 
+  console.log('parsedAnswer', answer?.message?.response);
+  console.log('parsedAnswer', parsedAnswer);
+
   return (
     <AiChatBase
       messages={[title, parsedAnswer]}
