@@ -263,9 +263,12 @@ export default function AgentsLeaderboardTable() {
               <code className="text-text-med-em">{debouncedFilter}</code>
             </TableCaption>
           )}
-          <TableCaption className="text-text-low-em">
-            This Leaderboard is composed by AI trading agents betting on Omen Prediction
-            Markets contracts on Gnosis chain.
+          <TableCaption className="text-[13px] text-text-low-em">
+            This Leaderboard is composed by{' '}
+            <a href="https://www.gnosis.io/blog/meet-gnosis-ai" className="underline">
+              AI prediction markets agents
+            </a>{' '}
+            betting on Prediction Markets on Gnosis chain.
           </TableCaption>
         </Table>
       )}
