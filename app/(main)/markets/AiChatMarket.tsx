@@ -1,11 +1,10 @@
 'use client';
 
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AiChatBase, Message, MessageCard } from '@/app/components';
 import { Address } from 'viem';
 import { FA_EVENTS } from '@/analytics';
 import { useQuery } from '@tanstack/react-query';
-import { useChat } from 'ai/react';
 import { getMarket, Query } from '@/queries/omen';
 
 interface AiChatMarketProps {
@@ -26,10 +25,19 @@ const waitingMessges = [
   'I will show you the answer! If my internet allows…',
 ];
 
-const fetchMessages = async (id: Address) => {
-  const response = await fetch(
-    `${PRESAGIO_CHAT_API_URL}/api/market-chat?market_id=${id}`
-  );
+const fetchPrediction = async (id: Address) => {
+  const response = await fetch(`${PRESAGIO_CHAT_API_URL}/api/prediction?market_id=${id}`);
+  if (!response.ok) {
+    throw new Error('Presagio AI response was not ok');
+  }
+  return response.json();
+};
+
+const createPrediction = async (id: Address) => {
+  const response = await fetch(`${PRESAGIO_CHAT_API_URL}/api/prediction`, {
+    method: 'POST',
+    body: JSON.stringify({ marketId: id }),
+  });
   if (!response.ok) {
     throw new Error('Presagio AI response was not ok');
   }
@@ -45,10 +53,9 @@ function isJSON(message: string) {
   return true;
 }
 
-const FULL_ANSWER_WAITING_TIME_MS = 2000;
-
 export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
-  const [messageSent, setMessageSent] = useState(false);
+  const [answer, setAnswer] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const randomWaitingMessageIndex = Math.round(
     Math.random() * (waitingMessges.length - 1)
@@ -56,72 +63,62 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
 
   const {
     data,
-    error: messagesError,
-    isFetched: isFetchedMessages,
+    error: predictionError,
+    isFetched: isFetchedPrediction,
   } = useQuery({
-    queryKey: ['fetchMessages', id],
-    queryFn: () => fetchMessages(id),
+    queryKey: ['fetchPrediction', id],
+    queryFn: () => fetchPrediction(id),
   });
+
   const { data: market } = useQuery<Pick<Query, 'fixedProductMarketMaker'>>({
     queryKey: ['getMarket', id],
     queryFn: async () => getMarket({ id }),
     staleTime: Infinity,
   });
 
-  const {
-    messages,
-    error: chatError,
-    append,
-  } = useChat({
-    id,
-    body: {
-      marketId: id,
-    },
-    api: `${PRESAGIO_CHAT_API_URL}/api/market-chat`,
-    initialMessages: data,
-    experimental_throttle: FULL_ANSWER_WAITING_TIME_MS,
-  });
+  useEffect(() => {
+    (async () => {
+      if (data) {
+        setAnswer(data);
+        return;
+      }
+
+      if (!data && isFetchedPrediction) {
+        try {
+          const prediction = await createPrediction(id);
+          setAnswer(prediction);
+        } catch (e) {
+          setError('Failed to fetch prediction');
+          console.error(e);
+        }
+      }
+    })();
+  }, [data, id, isFetchedPrediction]);
 
   const title = market?.fixedProductMarketMaker?.title;
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
+  const hasError = predictionError || error;
 
-    if (signal.aborted) return;
+  const parseAnswer = () => {
+    if (!answer?.message?.response) return null;
+    if (!isJSON(answer.message.response))
+      return { role: answer.role, content: answer.message.response };
 
-    if (isFetchedMessages && data?.length === 0 && title && !messageSent) {
-      setMessageSent(true);
-      append({ role: 'user', content: title });
-    }
-
-    return () => controller.abort();
-  }, [append, data?.length, isFetchedMessages, messageSent, title]);
-
-  const assistantMessages = messages.filter(({ role }) => role === 'assistant');
-  const noAssistantMessages =
-    messages.length === 1 &&
-    (assistantMessages.length === 0 || assistantMessages?.at(0)?.content.length === 0);
-  const hasError = messagesError || chatError;
-
-  const parsedMessages = messages.map(({ role, content }, index) => {
-    if (role === 'user' || index !== 1) return { role, content };
-
-    if (!isJSON(content)) return { role, content };
-
-    const contentJSON = JSON.parse(content) as {
+    const contentJSON = JSON.parse(answer.message.response) as {
       reasoning: string;
       outcome: string;
       confidence: string;
     };
 
     return {
-      role,
+      role: answer.role,
       content: contentJSON.reasoning,
       outcome: contentJSON.outcome,
       confidence: contentJSON.confidence,
     };
-  });
+  };
+
+  const parsedAnswer = isFetchedPrediction ? parseAnswer() : null;
 
   const trackOnClickEvents = [
     FA_EVENTS.MARKET.AI_CHAT.OPEN_GENEREAL,
@@ -130,24 +127,27 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
 
   return (
     <AiChatBase
-      messages={messages}
+      messages={[title, parsedAnswer]}
       trackOnClickEvents={trackOnClickEvents}
       isChatOpen={isChatOpen}
     >
-      {parsedMessages.map((message, index) => (
-        <Fragment key={index}>
-          <Message role={message.role}>{message.content}</Message>
+      <Message role={'user'}>{title}</Message>
+      {parsedAnswer && (
+        <>
+          <Message role={parsedAnswer.role}>{parsedAnswer.content}</Message>
           <div className="flex space-x-4">
-            {message.outcome && (
-              <MessageCard title="Outcome">{message.outcome}</MessageCard>
+            {parsedAnswer.outcome && (
+              <MessageCard title="Outcome">{parsedAnswer.outcome}</MessageCard>
             )}
-            {message.confidence && (
-              <MessageCard title="Confidence level">{message.confidence}%</MessageCard>
+            {parsedAnswer.confidence && (
+              <MessageCard title="Confidence level">
+                {parsedAnswer.confidence}%
+              </MessageCard>
             )}
           </div>
-        </Fragment>
-      ))}
-      {noAssistantMessages && (
+        </>
+      )}
+      {!parsedAnswer && (
         <div className="space-y-1 rounded-20 bg-outline-primary-base-em px-4 py-2">
           <div className="flex items-center space-x-2">
             <p>{waitingMessges.at(randomWaitingMessageIndex)}</p>
