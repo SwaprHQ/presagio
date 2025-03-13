@@ -192,7 +192,7 @@ export const MyBetsCardBet = ({ userBet }: { userBet: UserBet }) => {
         conditionId: condition.id,
         collateralToken: userBet.position.collateralTokenAddress,
       })
-    );
+    ).catch(error => console.error(error));
     trackEvent(FA_EVENTS.BETS.REDEEM);
   };
 
