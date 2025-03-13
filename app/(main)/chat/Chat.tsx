@@ -19,7 +19,7 @@ const fetchChat = async (
     credentials: 'include',
   });
   if (!response.ok) {
-    throw new Error('Presagio AI response was not ok');
+    throw new Error('Failed to fetch chat');
   }
   return response.json();
 };
@@ -106,7 +106,7 @@ const ChatMessages = ({
   const parsedMessages = messages.map(msg => parseAnswer(msg));
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md flex h-[calc(100vh-208px)] w-full max-w-3xl flex-col items-center space-y-4">
+    <div className="shadow-md flex h-[calc(100vh-208px)] w-full max-w-3xl flex-col items-center space-y-4">
       <ScrollArea>
         <div className="w-full space-y-4">
           {parsedMessages.map((msg, index) => {
