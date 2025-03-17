@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
 
 interface SessionContextType {
   isLoggedIn: boolean;
@@ -17,6 +18,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const { address: walletAddress } = useAccount();
 
   const refreshSession = async () => {
     try {
@@ -40,9 +42,31 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const logout = async () => {
+    try {
+      await fetch(process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (error) {}
+  };
+
   useEffect(() => {
     refreshSession();
   }, []);
+
+  useEffect(() => {
+    const logoutAndCleanSession = async () => {
+      await logout();
+      setIsLoggedIn(false);
+      setAddress(null);
+      setUserId(null);
+    };
+
+    if (isLoggedIn && walletAddress !== address) {
+      logoutAndCleanSession();
+    }
+  }, [walletAddress, address, isLoggedIn]);
 
   return (
     <SessionContext.Provider
