@@ -43,12 +43,7 @@ export default function NewChat() {
     }
   };
 
-  if (!isLoggedIn)
-    return !isConnected ? (
-      <div>Connect wallet</div>
-    ) : (
-      <Button onClick={connect}>Sign In</Button>
-    );
+  if (!isLoggedIn) return null;
 
   return (
     <div className="mx-auto max-w-2xl p-4">

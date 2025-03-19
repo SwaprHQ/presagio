@@ -2,6 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import {
+  Button,
   ButtonLink,
   Icon,
   IconButton,
@@ -15,11 +16,15 @@ import { useShowClientUI } from '@/hooks';
 import Link from 'next/link';
 import { useAccount } from 'wagmi';
 import { cx } from 'class-variance-authority';
+import { useAuth } from '../../hooks/useAuth';
+import { useSession } from '../../context/SessionContext';
 
 export const SettingsPopover = () => {
   const { setTheme, theme } = useTheme();
   const showClientUI = useShowClientUI();
   const { address } = useAccount();
+  const { connect, disconnect } = useAuth();
+  const { isLoggedIn } = useSession();
 
   if (!showClientUI) {
     return null;
@@ -33,7 +38,7 @@ export const SettingsPopover = () => {
       <PopoverContent className="max-w-lg px-4">
         <div className={address && 'space-y-3 divide-y divide-outline-base-em'}>
           {address && (
-            <div>
+            <div className="space-y-2">
               <ButtonLink
                 size="sm"
                 variant="pastel"
@@ -47,6 +52,29 @@ export const SettingsPopover = () => {
                 </div>
                 <Icon size={14} name="chevron-right" />
               </ButtonLink>
+              {isLoggedIn ? (
+                <Button
+                  size="sm"
+                  variant="pastel"
+                  width="full"
+                  className="items-center justify-between"
+                  onClick={disconnect}
+                >
+                  <span>Sign out</span>
+                  <Icon size={14} name="chevron-right" />
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="pastel"
+                  width="full"
+                  className="items-center justify-between"
+                  onClick={connect}
+                >
+                  <span>Sign in</span>
+                  <Icon size={14} name="chevron-right" />
+                </Button>
+              )}
             </div>
           )}
           <div className={cx('space-y-2', { 'pt-3': !!address })}>
