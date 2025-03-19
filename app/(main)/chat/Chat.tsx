@@ -1,13 +1,11 @@
 'use client';
 
 import { Message, MessageCard, ScrollArea } from '@/app/components';
-import { useAuth } from '@/hooks/useAuth';
 import { useSession } from '@/context/SessionContext';
 import { Button, Input } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
-import { useAccount } from 'wagmi';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -35,9 +33,6 @@ function isJSON(message: string) {
 
 const Chat = ({ chatId }: { chatId: string }) => {
   const { isLoggedIn } = useSession();
-  const { isConnected } = useAccount();
-  const { connect } = useAuth();
-
   const { data: chat, isLoading } = useQuery({
     queryKey: ['chat', chatId],
     queryFn: () => {
@@ -45,15 +40,9 @@ const Chat = ({ chatId }: { chatId: string }) => {
     },
     enabled: !!chatId && isLoggedIn,
   });
+  if (!isLoggedIn) return null;
 
   if (!chatId) return <div>Chat ID is missing</div>;
-
-  if (!isLoggedIn)
-    return !isConnected ? (
-      <div>Connect wallet</div>
-    ) : (
-      <Button onClick={connect}>Sign In</Button>
-    );
 
   if (isLoading) return <div>Loading...</div>;
 

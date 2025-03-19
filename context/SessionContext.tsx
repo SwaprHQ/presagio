@@ -9,6 +9,7 @@ interface SessionContextType {
   userId: string | null;
   loading: boolean;
   refreshSession: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const SessionContext = createContext<SessionContextType | undefined>(undefined);
@@ -43,12 +44,10 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    try {
-      await fetch(process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-    } catch (error) {}
+    await fetch(process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
   };
 
   useEffect(() => {
@@ -57,10 +56,14 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const logoutAndCleanSession = async () => {
-      await logout();
-      setIsLoggedIn(false);
-      setAddress(null);
-      setUserId(null);
+      try {
+        await logout();
+        setIsLoggedIn(false);
+        setAddress(null);
+        setUserId(null);
+      } catch (e) {
+        console.error(e);
+      }
     };
 
     if (isLoggedIn && walletAddress !== address) {
@@ -70,7 +73,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionContext.Provider
-      value={{ isLoggedIn, address, userId, loading, refreshSession }}
+      value={{ isLoggedIn, address, userId, loading, refreshSession, logout }}
     >
       {children}
     </SessionContext.Provider>

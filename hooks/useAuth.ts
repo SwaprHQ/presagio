@@ -7,7 +7,7 @@ export function useAuth() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { disconnect } = useDisconnect();
-  const { refreshSession } = useSession();
+  const { refreshSession, logout } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,7 +64,6 @@ export function useAuth() {
       return { address };
     } catch (err) {
       setError((err as Error).message);
-      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -75,19 +74,14 @@ export function useAuth() {
       setIsLoading(true);
       setError(null);
 
-      await fetch(process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      disconnect();
+      await logout();
       await refreshSession();
     } catch (err) {
       setError((err as Error).message);
-      throw err;
     } finally {
       setIsLoading(false);
     }
-  }, [disconnect, refreshSession]);
+  }, [logout, refreshSession]);
 
   return {
     connect,
