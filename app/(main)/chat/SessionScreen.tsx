@@ -2,9 +2,9 @@
 
 import { Button } from '@swapr/ui';
 import { useSession } from '@/context/SessionContext';
-import { useAuth } from '../../../hooks/useAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { useAccount } from 'wagmi';
-import { ConnectButton } from '../../components';
+import { ConnectButton } from '@/app/components';
 
 export default function SessionScreen() {
   const { isLoggedIn, loading } = useSession();
