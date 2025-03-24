@@ -10,7 +10,7 @@ export default function MainLayout({
   return (
     <Suspense>
       <Providers>
-        <div className="min-h-screen bg-surface-surface-bg">
+        <div className="min-h-screen bg-surface-surface-2">
           <Navbar />
           {children}
           <Footer />
