@@ -2,7 +2,7 @@
 
 import { Message, MessageCard, ScrollArea } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
-import { Button, Input } from '@swapr/ui';
+import { Button, IconButton, Input } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
@@ -40,17 +40,15 @@ const Chat = ({ chatId }: { chatId: string }) => {
     },
     enabled: !!chatId && isLoggedIn,
   });
-  if (!isLoggedIn) return null;
 
-  if (!chatId) return <div>Chat ID is missing</div>;
+  if (!chatId) return <div className="text-lg font-semibold">Chat ID is missing</div>;
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return <div className="text-lg font-semibold">Fetching your chat...</div>;
 
-  return chat ? (
-    <ChatMessages initialMessages={chat.messages} id={chat.id} />
-  ) : (
-    <div>Chat not found</div>
-  );
+  if (chat) return <ChatMessages initialMessages={chat.messages} id={chat.id} />;
+
+  return <div className="text-lg font-semibold">Chat not found</div>;
 };
 
 const ChatMessages = ({
@@ -60,13 +58,13 @@ const ChatMessages = ({
   initialMessages: AiMessage[];
   id: string;
 }) => {
-  const { messages, error, setInput, input, isLoading, reload, handleSubmit } = useChat({
+  const { messages, error, setInput, input, isLoading, handleSubmit } = useChat({
     initialMessages,
     id,
     body: {
       id,
     },
-    fetch: (input, init) => {
+    fetch: (_, init) => {
       return fetch(`${PRESAGIO_CHAT_API_URL}/api/chat/${id}`, {
         ...init,
         method: 'PUT',
@@ -95,9 +93,9 @@ const ChatMessages = ({
   const parsedMessages = messages.map(msg => parseAnswer(msg));
 
   return (
-    <div className="shadow-md flex h-[calc(100vh-208px)] w-full max-w-3xl flex-col items-center space-y-4">
-      <ScrollArea>
-        <div className="w-full space-y-4">
+    <div className="flex w-full flex-col items-center overflow-auto">
+      <ScrollArea className="w-full">
+        <div className="mx-auto mb-6 w-full max-w-4xl space-y-4">
           {parsedMessages.map((msg, index) => {
             const content = msg.content as
               | string
@@ -125,29 +123,34 @@ const ChatMessages = ({
           )}
         </div>
       </ScrollArea>
-      <div className="absolute bottom-10 flex w-full max-w-3xl space-x-3 py-4">
-        <Input
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="Ask anything"
-          disabled={isLoading}
-          className="w-full"
-          onKeyDown={event => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
+      <div className="flex w-full max-w-2xl space-x-3 pb-28 md:pb-36">
+        <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
+          <textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Ask me about the future..."
+            disabled={isLoading}
+            className="h-20 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold" //try field-sizing-content with tailwindcss@4
+            onKeyDown={event => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
 
-              if (isLoading) {
-                console.error('Please wait for the model to finish its response!');
-              } else {
-                handleSubmit();
+                if (isLoading) {
+                  console.error('Please wait for the model to finish its response!');
+                } else {
+                  handleSubmit();
+                }
               }
-            }
-          }}
-        />
-        <Button onClick={isLoading ? undefined : handleSubmit} disabled={isLoading}>
-          Send
-        </Button>
+            }}
+          />
+          <IconButton
+            onClick={isLoading ? undefined : handleSubmit}
+            disabled={isLoading}
+            name="arrow-up"
+            variant="pastel"
+            className="size-10 rounded-100"
+          />
+        </div>
       </div>
     </div>
   );

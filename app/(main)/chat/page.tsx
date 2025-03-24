@@ -20,7 +20,7 @@ export default function ChatPage() {
     );
 
   return (
-    <main className="flex w-full flex-col items-center px-6">
+    <main className="flex h-full w-full flex-col items-center px-4">
       <Chat chatId={id} />
     </main>
   );
