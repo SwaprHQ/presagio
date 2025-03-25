@@ -2,10 +2,12 @@
 
 import { Message, MessageCard, ScrollArea } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
-import { Button, IconButton, Input } from '@swapr/ui';
+import { IconButton } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
+import wizardSvg from '@/public/pixel-wizard.svg';
+import Image from 'next/image';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -30,6 +32,14 @@ function isJSON(message: string) {
   }
   return true;
 }
+type JSONMessage = {
+  content: {
+    reasoning: string;
+    outcome: string;
+    confidence: string;
+  };
+  role: 'system' | 'assistant' | 'data';
+};
 
 const Chat = ({ chatId }: { chatId: string }) => {
   const { isLoggedIn } = useSession();
@@ -73,16 +83,11 @@ const ChatMessages = ({
     },
   });
 
-  const parseAnswer = (message: AiMessage) => {
+  const parseAnswer = (message: AiMessage): JSONMessage | AiMessage => {
     if (typeof message.content !== 'string' || message.role === 'user') return message;
     if (!isJSON(message.content)) return message;
-    console.log('message', message);
 
-    const contentJSON = JSON.parse(message.content) as {
-      reasoning: string;
-      outcome: string;
-      confidence: string;
-    };
+    const contentJSON = JSON.parse(message.content);
 
     return {
       role: message.role,
@@ -93,17 +98,24 @@ const ChatMessages = ({
   const parsedMessages = messages.map(msg => parseAnswer(msg));
 
   return (
-    <div className="flex w-full flex-col items-center overflow-auto">
+    <div className="mt-4 flex h-full w-full flex-col items-center justify-between overflow-auto">
       <ScrollArea className="w-full">
-        <div className="mx-auto mb-6 w-full max-w-4xl space-y-4">
+        <div className="mx-auto mb-6 w-full max-w-3xl space-y-4">
           {parsedMessages.map((msg, index) => {
-            const content = msg.content as
-              | string
-              | { reasoning: string; outcome: string; confidence: string };
+            const content = msg.content;
             return typeof content === 'object' ? (
               <div className="space-y-2" key={index}>
-                <Message role={msg.role}>{content.reasoning}</Message>
-                <div className="flex space-x-4">
+                <div className="flex space-x-3">
+                  <Image
+                    alt="ai wizard"
+                    width={28}
+                    height={28}
+                    src={wizardSvg}
+                    className="w-7 self-start md:w-9"
+                  />
+                  <Message role={msg.role}>{content.reasoning}</Message>
+                </div>
+                <div className="ml-12 flex space-x-4">
                   <MessageCard title="Outcome">{content.outcome}</MessageCard>
                   <MessageCard title="Confidence level">
                     {content.confidence}%
@@ -123,7 +135,7 @@ const ChatMessages = ({
           )}
         </div>
       </ScrollArea>
-      <div className="flex w-full max-w-2xl space-x-3 pb-28 md:pb-36">
+      <div className="flex w-full max-w-3xl space-x-3 pb-28">
         <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
           <textarea
             value={input}

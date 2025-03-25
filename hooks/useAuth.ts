@@ -1,12 +1,12 @@
 import { useState, useCallback } from 'react';
 import { SiweMessage } from 'siwe';
-import { useAccount, useSignMessage, useDisconnect } from 'wagmi';
+import { useAccount, useSignMessage } from 'wagmi';
 import { useSession } from '@/context/SessionContext';
+import { ChainId } from '../constants';
 
 export function useAuth() {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const { disconnect } = useDisconnect();
   const { refreshSession, logout } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,10 +32,10 @@ export function useAuth() {
       const message = new SiweMessage({
         domain: window.location.host,
         address,
-        statement: 'Sign in with Ethereum to PM Chatbot',
+        statement: 'Sign in to Presagio',
         uri: window.location.origin,
         version: '1',
-        chainId: 1,
+        chainId: ChainId.GNOSIS,
         nonce,
       });
 
