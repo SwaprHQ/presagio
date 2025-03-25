@@ -21,6 +21,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@swapr/ui';
+import Image from 'next/image';
+import SidebarExpandIcon from './icons/SidebarExpand';
+import SidebarCollapseIcon from './icons/SidebarCollapse';
+import SidebarIcon from './icons/Sidebar';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -273,14 +277,15 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="sm"
-      className={cx('h-7 w-7', className)}
+      className={cx('h-8 w-8', className)}
       onClick={(event: any) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      {open ? <Icon name="arrow-left" /> : <Icon name="menu" />}
+      <SidebarIcon />
+      {/* {open ? <SidebarCollapseIcon /> : <SidebarExpandIcon />} */}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

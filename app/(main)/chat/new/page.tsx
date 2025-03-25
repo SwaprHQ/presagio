@@ -2,85 +2,113 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, IconButton, Input } from '@swapr/ui';
+import { IconButton } from '@swapr/ui';
 import { useSession } from '../../../../context/SessionContext';
-import { useAccount } from 'wagmi';
-import { useAuth } from '../../../../hooks/useAuth';
-import { Textarea } from '../../../components/ui/Textarea';
+import { useMutation } from '@tanstack/react-query';
+import Image from 'next/image';
+import wizardSvg from '@/public/pixel-wizard.svg';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
+const createChat = async (message: string): Promise<{ chatId: string }> => {
+  const response = await fetch(PRESAGIO_CHAT_API_URL + '/api/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) {
+    const errorMessage = await response.json();
+    console.log(errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+};
+
 export default function NewChat() {
-  const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState('');
   const router = useRouter();
-  const { isLoggedIn } = useSession();
-  const { isConnected } = useAccount();
-  const { connect } = useAuth();
+  const { isLoggedIn, loading } = useSession();
 
-  const handleSubmit = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(PRESAGIO_CHAT_API_URL + '/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ message: input }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const chat = await response.json();
-
-      setIsLoading(false);
+  const mutation = useMutation({
+    mutationFn: createChat,
+    onSuccess: chat => {
       setInput('');
       router.push('/chat?id=' + chat.chatId);
-    } catch (error) {
+    },
+    onError: error => {
       console.error('Error:', error);
-    }
-  };
+    },
+  });
 
-  if (!isLoggedIn) return null;
+  const submit = () => mutation.mutate(input);
+
+  if (!isLoggedIn || loading) return null;
+
+  const errorMessage =
+    mutation?.error?.message === 'Invalid question'
+      ? "Sorry but what you are trying to ask can't be answered with a prediciton."
+      : 'Somthing went wrong in my research. Please try again.';
 
   return (
     <div className="mx-auto mt-80 w-full max-w-2xl p-4">
       <div className="space-y-10">
         <div className="space-y-2">
-          <p className="text-2xl font-bold">Hello, I&apos;m Presagio</p>
+          <div className="flex space-x-3">
+            <Image
+              alt="ai wizard"
+              width={28}
+              height={28}
+              src={wizardSvg}
+              className="w-7 md:w-9"
+            />
+            <p className="text-2xl font-bold">Hello, I&apos;m the wizard</p>
+          </div>
           <p className="text-lg font-bold text-text-low-em">
-            Get insights powered by AI with confidence predictions markets.
+            Get predicitons powered by our AI wizard.
           </p>
         </div>
-        <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
-          <textarea
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Ask me about the future..."
-            disabled={isLoading}
-            className="h-24 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold" //try field-sizing-content with tailwindcss@4
-            onKeyDown={event => {
-              if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
+        <div>
+          <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
+            <textarea
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              placeholder="Ask me about the future..."
+              disabled={mutation.isPending}
+              className="h-24 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold" //try field-sizing-content with tailwindcss@4
+              onKeyDown={event => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault();
 
-                if (isLoading) {
-                  console.error('Please wait for the model to finish its response!');
-                } else {
-                  handleSubmit();
+                  if (mutation.isPending) {
+                    console.error('Please wait for the model to finish its response!');
+                  } else {
+                    submit();
+                  }
                 }
-              }
-            }}
-          />
-          <IconButton
-            onClick={isLoading ? undefined : handleSubmit}
-            disabled={isLoading}
-            name="arrow-up"
-            variant="pastel"
-            className="size-10 rounded-100"
-          />
+              }}
+            />
+            <IconButton
+              onClick={mutation.isPending ? undefined : submit}
+              disabled={mutation.isPending}
+              name="arrow-up"
+              variant="pastel"
+              className="size-10 rounded-100"
+            />
+          </div>
+          {mutation.isPending && (
+            <p className="text-md text-text-med-em">
+              Await fellow internaut, let me research thorugh my books to find your
+              answer...
+            </p>
+          )}
+          {mutation.isError && (
+            <p className="text-md text-text-danger-main">{errorMessage}</p>
+          )}
         </div>
       </div>
     </div>

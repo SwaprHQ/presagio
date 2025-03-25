@@ -16,10 +16,8 @@ export default function SessionScreen() {
   if (loading) return null;
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col items-center space-y-10 p-10 pt-20">
-      <p className="text-center text-xl font-semibold">
-        Sign in to access chat functionalities
-      </p>
+    <div className="mx-auto flex h-[calc(100vh-208px)] w-full max-w-md flex-col items-center space-y-10 p-10 pt-80">
+      <p className="text-center text-xl font-semibold">Sign in to access chat</p>
       {isConnected ? (
         <Button onClick={connect} width="full">
           Sign message

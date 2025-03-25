@@ -45,9 +45,14 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         className="bg-transaparent absolute top-[80px] h-screen border-transparent"
         {...props}
       >
+        <SidebarMenu>
+          <ButtonLink variant="outline" size="sm" href="/chat/new">
+            New chat
+          </ButtonLink>
+        </SidebarMenu>
         <SidebarHeader>
           <SidebarMenu>
-            <p className="truncate p-2 !text-lg font-semibold">Previous chats</p>
+            <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent></SidebarContent>
@@ -60,9 +65,14 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         className="bg-transaparent absolute top-[80px] h-screen border-transparent"
         {...props}
       >
+        <SidebarMenu>
+          <ButtonLink variant="outline" size="sm" href="/chat/new">
+            New chat
+          </ButtonLink>
+        </SidebarMenu>
         <SidebarHeader>
           <SidebarMenu>
-            <p className="truncate p-2 !text-lg font-semibold">Previous chats</p>
+            <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
           </SidebarMenu>
         </SidebarHeader>
         <SidebarContent>
@@ -86,7 +96,7 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
           </ButtonLink>
         </SidebarMenu>
         <SidebarMenu>
-          <p className="truncate p-2 !text-lg font-semibold">Previous chats</p>
+          <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
@@ -94,7 +104,7 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
           {chats.length ? (
             chats.map(({ id, title }) => (
               <SidebarMenuItem key={id}>
-                <SidebarMenuButton asChild size="lg" className="!text-md">
+                <SidebarMenuButton asChild size="lg">
                   <a href={`/chat?id=${id}`}>
                     <Icon name="chevron-right" />
                     <span>{title}</span>

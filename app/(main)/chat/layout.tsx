@@ -10,12 +10,16 @@ import SignedIn from './SignedIn';
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider className="h-[calc(100vh-208px)]">
-      <ChatSidebar />
+      <SignedIn>
+        <ChatSidebar />
+      </SignedIn>
       <SidebarInset>
-        <SidebarTrigger className="absolute top-0 z-10 m-3" />
+        <SignedIn>
+          <SidebarTrigger className="absolute top-0 z-10 m-3" />
+        </SignedIn>
+        <SessionScreen />
         {children}
       </SidebarInset>
-      <SessionScreen />
     </SidebarProvider>
   );
 }
