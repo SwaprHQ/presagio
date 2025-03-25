@@ -55,7 +55,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
       <Link
         onClick={() => trackEvent(FA_EVENTS.MARKETS.CAROUSEL)}
         href={`/markets?id=${market.id}`}
-        className="flex min-h-[600px] w-auto flex-col-reverse justify-between rounded-20 bg-surface-primary-main bg-gradient-to-b from-surface-surface-0 to-surface-surface-1 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
+        className="flex min-h-[600px] w-auto flex-col-reverse justify-between rounded-20 bg-gradient-to-b from-surface-surface-1 to-surface-surface-3 shadow-2 ring-1 ring-outline-base-em md:h-72 md:min-h-fit md:flex-row 2xl:h-96"
       >
         <div className="m-0 flex w-full max-w-2xl flex-col space-y-8 p-4 md:mx-6 md:my-8 md:mr-10 md:p-0 lg:mx-8 lg:mr-28">
           <div className="flex flex-col space-y-4">
@@ -67,7 +67,7 @@ const HighlightCarouselItem = ({ market }: { market: FixedProductMarketMaker }) 
           <OutcomeBar market={market} />
           <div className="flex items-center space-x-1">
             <TokenLogo address={market.collateralToken} className="size-3" />
-            <p className="text-xs font-semibold text-text-med-em md:text-base">
+            <p className="text-xs font-semibold text-text-med-em md:text-sm">
               {formatEtherWithFixedDecimals(market.collateralVolume, 2)} Vol
             </p>
           </div>

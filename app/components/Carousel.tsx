@@ -197,9 +197,7 @@ const CarouselSelector = React.forwardRef<
         <button
           className={cx(
             'size-2 rounded-100',
-            index === selected
-              ? 'bg-surface-primary-accent-3'
-              : 'bg-surface-primary-accent-2'
+            index === selected ? 'bg-surface-primary-med-em' : 'bg-surface-primary-low-em'
           )}
           key={index}
           onClick={() => {
@@ -218,7 +216,7 @@ CarouselSelector.displayName = 'CarouselSelector';
 const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof IconButton>, 'name'>
->(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
+>(({ className, variant = 'secondary', size = 'xs', ...props }, ref) => {
   const { scrollPrev, canScrollPrev, api } = useCarousel();
 
   const nodes = api?.slideNodes() ?? [];
@@ -244,7 +242,7 @@ CarouselPrevious.displayName = 'CarouselPrevious';
 const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   Omit<React.ComponentProps<typeof IconButton>, 'name'>
->(({ className, variant = 'outline', size = 'sm', ...props }, ref) => {
+>(({ className, variant = 'secondary', size = 'xs', ...props }, ref) => {
   const { scrollNext, canScrollNext, api } = useCarousel();
 
   const nodes = api?.slideNodes() ?? [];
