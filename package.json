@@ -15,7 +15,7 @@
     "@lifi/widget": "^3.7.0",
     "@radix-ui/react-dialog": "^1.1.5",
     "@radix-ui/react-scroll-area": "^1.0.5",
-    "@swapr/ui": "1.0.0-beta.2",
+    "@swapr/ui": "1.0.0-beta.4",
     "@tanstack/react-query": "^5.36.2",
     "@types/react-syntax-highlighter": "^15.5.13",
     "ai": "^4.1.11",
