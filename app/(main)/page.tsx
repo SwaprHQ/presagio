@@ -295,9 +295,7 @@ export default function HomePage() {
               All
             </ToggleGroupOption>
             {marketCategories?.map(marketCategory => {
-              const categoryOption = openMarkets?.length
-                ? Object.keys(marketCategory)[0]
-                : marketCategory;
+              const categoryOption = Object.keys(marketCategory)[0];
 
               return (
                 <ToggleGroupOption
@@ -331,7 +329,7 @@ export default function HomePage() {
             onOpenChange={setCreatorFilterPopoverOpen}
           >
             <PopoverTrigger asChild>
-              <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Button variant="secondary">
                 <p>{selectedCreatorOption.name}</p>
                 <Icon name="chevron-down" />
               </Button>
@@ -363,7 +361,7 @@ export default function HomePage() {
             </PopoverContent>
           </Popover>
         ) : (
-          <Button variant="pastel" className="space-x-2 text-nowrap">
+          <Button variant="secondary">
             <p>{selectedCreatorOption.name}</p>
             <Icon name="chevron-down" />
           </Button>
@@ -374,7 +372,7 @@ export default function HomePage() {
             onOpenChange={setTokenFilterPopoverOpen}
           >
             <PopoverTrigger asChild>
-              <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Button variant="secondary">
                 <p>{selectedTokenOption.name}</p>
                 <Icon name="chevron-down" />
               </Button>
@@ -401,7 +399,7 @@ export default function HomePage() {
             </PopoverContent>
           </Popover>
         ) : (
-          <Button variant="pastel" className="space-x-2 text-nowrap">
+          <Button variant="secondary">
             <p>{selectedTokenOption.name}</p>
             <Icon name="chevron-down" />
           </Button>
@@ -412,7 +410,7 @@ export default function HomePage() {
             onOpenChange={setOrderFilterPopoverOpen}
           >
             <PopoverTrigger asChild>
-              <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Button variant="secondary">
                 <p>{selectedOrderOption.name}</p>
                 <Icon name="chevron-down" />
               </Button>
@@ -439,7 +437,7 @@ export default function HomePage() {
             </PopoverContent>
           </Popover>
         ) : (
-          <Button variant="pastel" className="space-x-2 text-nowrap">
+          <Button variant="secondary">
             <p>{selectedOrderOption.name}</p>
             <Icon name="chevron-down" />
           </Button>
@@ -451,7 +449,7 @@ export default function HomePage() {
             onOpenChange={setStateFilterPopoverOpen}
           >
             <PopoverTrigger asChild>
-              <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Button variant="secondary">
                 <p>{selectedStateOption.name}</p>
                 <Icon name="chevron-down" />
               </Button>
@@ -478,7 +476,7 @@ export default function HomePage() {
             </PopoverContent>
           </Popover>
         ) : (
-          <Button variant="pastel" className="space-x-2 text-nowrap">
+          <Button variant="secondary">
             <p>{selectedStateOption.name}</p>
             <Icon name="chevron-down" />
           </Button>
@@ -503,7 +501,7 @@ export default function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="text-bold w-full space-y-4 rounded-12 bg-surface-surface-1 px-6 py-10 text-center text-md">
+        <div className="space-y-4 py-16 text-center">
           <p>No market found for current search</p>
         </div>
       )}
@@ -511,7 +509,7 @@ export default function HomePage() {
         <div className="flex w-full justify-end space-x-4">
           <IconButton
             name="chevron-left"
-            variant="pastel"
+            variant="secondary"
             onClick={() => handleNextPage(page - 1)}
             disabled={page === 1}
           />
@@ -538,7 +536,7 @@ export default function HomePage() {
           </div>
           <IconButton
             name="chevron-right"
-            variant="pastel"
+            variant="secondary"
             onClick={() => handleNextPage(page + 1)}
             disabled={!hasMoreMarkets}
           />
