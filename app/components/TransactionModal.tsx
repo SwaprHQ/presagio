@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
   Icon,
-  IconBadge,
   VisuallyHidden,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
@@ -72,7 +71,13 @@ export const TransactionModal = ({
               <>
                 {txHash && !isError && (
                   <>
-                    <IconBadge name="tick" colorScheme="success" />
+                    <div className="rounded-100 bg-surface-success-base-em p-4">
+                      <Icon
+                        name="tick"
+                        size={38}
+                        className="text-surface-success-high-em"
+                      />
+                    </div>
                     <div className="flex flex-col items-center space-y-2">
                       <p className="text-center text-2xl font-semibold text-text-high-em">
                         Transaction successful!
@@ -86,7 +91,13 @@ export const TransactionModal = ({
                 )}
                 {isError && (
                   <>
-                    <IconBadge name="exclamation" colorScheme="error" />
+                    <div className="rounded-100 bg-surface-danger-base-em p-4">
+                      <Icon
+                        name="exclamation"
+                        size={38}
+                        className="text-surface-danger-high-em"
+                      />
+                    </div>
                     <div className="flex flex-col items-center space-y-2">
                       <p className="text-2xl font-semibold text-text-high-em">
                         There was an error.

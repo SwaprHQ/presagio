@@ -4,7 +4,7 @@ import { ConnectKitButton } from 'connectkit';
 import { useBalance } from 'wagmi';
 
 import { Address, formatEther } from 'viem';
-import { Button, ButtonProps } from '@swapr/ui';
+import { Button, ButtonProps, Icon } from '@swapr/ui';
 import { PropsWithChildren } from 'react';
 import { cx } from 'class-variance-authority';
 import { Avatar } from '@/app/components/Avatar';
@@ -41,19 +41,23 @@ const CustomConnectButton = ({
   return (
     <div
       className={cx(
-        'flex items-center justify-center text-nowrap rounded-20 bg-surface-surface-2 p-0.5 md:space-x-3',
+        'flex items-center justify-center text-nowrap rounded-20 border border-outline-low-em bg-surface-surface-2 p-0.5 md:space-x-3',
         balance && 'md:pl-4'
       )}
     >
-      {balance && <p className="hidden md:block">{formattedBalance(balance)}</p>}
+      {balance && (
+        <p className="hidden font-mono text-sm md:block">{formattedBalance(balance)}</p>
+      )}
       <Button
         onClick={onClick}
+        variant="secondary"
         size={size}
         width={width}
-        className="flex-shrink-0 rounded-20 !bg-surface-surface-0 shadow-3 !ring-0"
+        className="flex-shrink-0 rounded-20 shadow-3 !ring-0"
       >
         <Avatar address={address} />
         <p className="text-text-high-em">{ensName ? ensName : truncatedAddress(4)}</p>
+        <Icon name="chevron-down" className="text-text-med-em" />
       </Button>
     </div>
   );
@@ -72,7 +76,7 @@ export const ConnectButton = ({
   size,
   width,
   children,
-  variant = 'pastel',
+  variant = 'secondary',
   colorScheme,
 }: ConnectButtonProps) => {
   return (

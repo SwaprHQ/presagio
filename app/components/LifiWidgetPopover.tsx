@@ -39,7 +39,7 @@ export const LifiWidgetPopover = () => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="pastel"
+          variant="secondary"
           className="space-x-2 text-nowrap"
           onClick={() => trackEvent(FA_EVENTS.LIFI_WIDGET.OPEN)}
         >

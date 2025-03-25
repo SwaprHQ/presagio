@@ -48,7 +48,7 @@ export const Navbar = () => {
   const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
-    <nav className="h-20 bg-surface-surface-bg px-6 py-5">
+    <nav className="bg-surface-surface-bg h-20 px-6 py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Logo />
@@ -59,7 +59,7 @@ export const Navbar = () => {
             <LifiWidgetPopover />
           </div>
           <Link href="/leaderboard/agents">
-            <Button variant="pastel" className="space-x-2 text-nowrap">
+            <Button variant="secondary" className="space-x-2 text-nowrap">
               <Icon name="bar-graph-fill" className="text-[16px] text-text-med-em" />
               <p className="hidden md:block">Agents</p>
             </Button>
@@ -67,7 +67,7 @@ export const Navbar = () => {
           <Link href="/my-bets">
             <div className="relative">
               <Button
-                variant="pastel"
+                variant="secondary"
                 className="space-x-1.5 text-nowrap"
                 onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}
               >
@@ -75,8 +75,8 @@ export const Navbar = () => {
                 <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
-                <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
-                  <p className="text-xs font-semibold text-text-neutral-alt-white">
+                <div className="absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border border-surface-success-high-em bg-surface-success-low-em p-1">
+                  <p className="text-2xs font-semibold text-text-success-med-em">
                     {unredeemedBetsNumber}
                   </p>
                 </div>

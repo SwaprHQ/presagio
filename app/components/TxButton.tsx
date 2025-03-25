@@ -20,14 +20,14 @@ export const TxButton = ({ children, ...props }: ButtonProps) => {
 
   if (unsupportedNetwork) {
     return (
-      <Button width="full" variant="pastel" size="lg" disabled>
+      <Button width="full" variant="secondary" size="lg" disabled>
         Unsupported network
       </Button>
     );
   }
 
   return (
-    <Button size="lg" variant="pastel" width="full" {...props}>
+    <Button size="lg" variant="secondary" width="full" {...props}>
       {children}
     </Button>
   );
