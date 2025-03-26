@@ -45,7 +45,7 @@ export const LabelWithLink = ({
         title={label}
         className={twMerge(
           'hover:underline',
-          isAiAgent ? 'text-text-primary-main' : 'text-text-high-em',
+          isAiAgent ? 'text-text-primary-high-em' : 'text-text-high-em',
           className
         )}
         {...props}

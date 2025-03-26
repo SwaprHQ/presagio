@@ -310,7 +310,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
             {!!balance && (
               <Button
                 variant="ghost"
-                className="text-text-primary-main text-sm font-semibold"
+                className="text-sm font-semibold text-text-primary-high-em"
                 onClick={activeLiquidityOperationState.setMaxBalance}
               >
                 Use MAX

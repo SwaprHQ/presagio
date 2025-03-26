@@ -118,9 +118,9 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                       setClipboardIcon('copy');
                     }, 3000);
                   }}
-                  variant="pastel"
+                  variant="secondary"
                   name={clipboardIcon}
-                  size="sm"
+                  size="xs"
                 />
               </div>
               <SyntaxHighlighter
@@ -140,10 +140,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                 <div className="w-28">
                   <Popover open={isThemePopoverOpen} onOpenChange={setThemePopoverOpen}>
                     <PopoverTrigger asChild>
-                      <Button
-                        variant="pastel"
-                        className="w-full justify-between text-nowrap"
-                      >
+                      <Button variant="secondary" className="w-full justify-between">
                         <p>{selectedTheme.name}</p>
                         <Icon name="chevron-down" />
                       </Button>
@@ -153,7 +150,7 @@ export const EmbedMarketModal = ({ id }: EmbedMarketModalProps) => {
                         <div
                           key={option.name}
                           onClick={() => setSelectTheme(option)}
-                          className="flex cursor-pointer items-center justify-start space-x-2 px-3 py-2 font-semibold"
+                          className="flex cursor-pointer items-center justify-start space-x-2 rounded-4 px-3 py-2 font-medium hover:bg-surface-surface-1"
                         >
                           <Icon
                             className={cx({
