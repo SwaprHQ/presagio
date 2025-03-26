@@ -285,50 +285,56 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
 
   return (
     <>
-      <div className="relative space-y-2 font-medium">
-        <SwapInput
-          title="You Swap"
-          value={tokenAmountIn}
-          onChange={event => {
-            setTokenAmountIn(event.target.value);
-          }}
-          onTokenClick={currentState.changeInToken}
-          selectedToken={currentState.inToken}
-          tokenList={outcomeList}
-        >
-          <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
-            <p className="text-text-low-em">
-              Balance:{' '}
-              {currentState.balance
-                ? formatEtherWithFixedDecimals(currentState.balance)
-                : 0}
-            </p>
-            {!!currentState.balance && (
-              <Button
-                variant="ghost"
-                className="text-sm font-semibold text-text-primary-main"
-                onClick={maxBalance}
-              >
-                Use MAX
-              </Button>
-            )}
-          </div>
-        </SwapInput>
-        <IconButton
-          name="swap-vertical"
-          variant="outline"
-          className="absolute left-[calc(50%_-_20px)] top-[100px]"
-          onClick={currentState.onSwitchButtonClick}
-        />
-        <SwapInput
-          title="To Receive"
-          value={formattedTokenOutAmount}
-          selectedToken={currentState.outToken}
-          onTokenClick={currentState.changeOutToken}
-          tokenList={outcomeList}
-          readOnly
-          type="text"
-        />
+      <div className="space-y-2 font-medium">
+        <div className="relative space-y-2">
+          <SwapInput
+            title="You Swap"
+            value={tokenAmountIn}
+            onChange={event => {
+              setTokenAmountIn(event.target.value);
+            }}
+            onTokenClick={currentState.changeInToken}
+            selectedToken={currentState.inToken}
+            tokenList={outcomeList}
+          >
+            <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
+              <p className="text-text-low-em">
+                Balance:{' '}
+                <span className="font-mono">
+                  {currentState.balance
+                    ? formatEtherWithFixedDecimals(currentState.balance)
+                    : 0}
+                </span>
+              </p>
+              {!!currentState.balance && (
+                <Button
+                  variant="ghost"
+                  className="text-text-primary-med-em"
+                  onClick={maxBalance}
+                  size="xs"
+                >
+                  Max
+                </Button>
+              )}
+            </div>
+          </SwapInput>
+          <IconButton
+            name="swap-vertical"
+            variant="tertiary"
+            size="xs"
+            className="absolute left-[calc(50%_-_20px)] top-[calc(50%_-_6px)] rounded-100"
+            onClick={currentState.onSwitchButtonClick}
+          />
+          <SwapInput
+            title="To Receive"
+            value={formattedTokenOutAmount}
+            selectedToken={currentState.outToken}
+            onTokenClick={currentState.changeOutToken}
+            tokenList={outcomeList}
+            readOnly
+            type="text"
+          />
+        </div>
         <div className="space-y-4">
           <div className="px-3 py-1">
             <div className="flex items-center justify-between">
@@ -340,15 +346,15 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
                   className={
                     currentState.outToken instanceof Outcome
                       ? currentState.outToken.index === 0
-                        ? 'text-text-success-main'
-                        : 'text-text-danger-main'
+                        ? 'text-text-success-high-em'
+                        : 'text-text-danger-high-em'
                       : ''
                   }
                 >
                   {currentState.tokenPrice} {currentState.outToken.symbol}
                 </p>
                 {formattedPriceInUSD && (
-                  <p className="text-text-low-em">(≈ ${formattedPriceInUSD})</p>
+                  <p className="font-mono text-text-low-em">(≈ ${formattedPriceInUSD})</p>
                 )}
               </div>
             </div>
@@ -363,11 +369,13 @@ export const Swapbox = ({ fixedProductMarketMaker }: SwapboxProps) => {
               <div className="flex items-center justify-between">
                 <p className="text-text-low-em">Potential profit</p>
                 <div className="flex items-center space-x-1">
-                  <p className="text-text-success-main">
+                  <p className="text-text-success-high-em">
                     {formattedPotentialProfit} {collateralToken.symbol}
                   </p>
                   {potentialProfitInUSD && (
-                    <p className="text-text-low-em">(≈ ${potentialProfitInUSD})</p>
+                    <p className="font-mono text-text-low-em">
+                      (≈ ${potentialProfitInUSD})
+                    </p>
                   )}
                 </div>
               </div>
@@ -410,10 +418,13 @@ const SlippageSettings = () => {
           <div className="flex items-center text-text-low-em">
             <p className="text-xs font-bold">Slippage tolerance</p>
           </div>
-          <ToggleGroup value={slippage} onChange={updateSlippage}>
-            <ToggleGroupOption value={0.0001}>0.01%</ToggleGroupOption>
-            <ToggleGroupOption value={0.001}>0.1%</ToggleGroupOption>
-            <ToggleGroupOption value={0.01}>1%</ToggleGroupOption>
+          <ToggleGroup
+            value={slippage.toString()}
+            onChange={value => updateSlippage(parseFloat(value))}
+          >
+            <ToggleGroupOption value="0.0001">0.01%</ToggleGroupOption>
+            <ToggleGroupOption value="0.001">0.1%</ToggleGroupOption>
+            <ToggleGroupOption value="0.01">1%</ToggleGroupOption>
           </ToggleGroup>
         </div>
       </PopoverContent>

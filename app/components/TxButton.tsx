@@ -27,7 +27,7 @@ export const TxButton = ({ children, ...props }: ButtonProps) => {
   }
 
   return (
-    <Button size="lg" variant="secondary" width="full" {...props}>
+    <Button size="lg" variant="primary" width="full" {...props}>
       {children}
     </Button>
   );

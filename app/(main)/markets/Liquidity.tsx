@@ -310,7 +310,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
             {!!balance && (
               <Button
                 variant="ghost"
-                className="text-sm font-semibold text-text-primary-main"
+                className="text-text-primary-main text-sm font-semibold"
                 onClick={activeLiquidityOperationState.setMaxBalance}
               >
                 Use MAX
@@ -435,8 +435,8 @@ const TokensToReceiveTable = ({
             <div className="flex justify-between px-4 py-3 text-md">
               <p
                 className={cx('uppercase', {
-                  'text-text-success-main': outcomeTokenToReceive.index === 0,
-                  'text-text-danger-main': outcomeTokenToReceive.index === 1,
+                  'text-text-success-high-em': outcomeTokenToReceive.index === 0,
+                  'text-text-danger-high-em': outcomeTokenToReceive.index === 1,
                 })}
               >
                 {market.outcomes[outcomeTokenToReceive.index].name}
@@ -450,8 +450,8 @@ const TokensToReceiveTable = ({
           <div className="flex justify-between px-4 py-3 text-md" key={index}>
             <p
               className={cx('uppercase', {
-                'text-text-success-main': index === 0,
-                'text-text-danger-main': index === 1,
+                'text-text-success-high-em': index === 0,
+                'text-text-danger-high-em': index === 1,
               })}
             >
               {market.outcomes[index].name}

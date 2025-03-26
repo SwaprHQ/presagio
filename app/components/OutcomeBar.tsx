@@ -151,7 +151,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         />
       </div>
 
-      <div className="flex h-4 justify-between text-sm font-semibold">
+      <div className="flex h-4 justify-between text-sm font-medium">
         {hasOutcomePercentages && (
           <>
             <p

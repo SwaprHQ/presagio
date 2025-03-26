@@ -2,6 +2,7 @@
 
 import {
   Button,
+  ButtonColorScheme,
   Dialog,
   DialogBody,
   DialogClose,
@@ -117,8 +118,14 @@ export const TransactionModal = ({
             <a href={getExplorerTxUrl(txHash)} target="_blank" className="w-full">
               <Button
                 width="full"
-                colorScheme={isLoading ? 'primary' : isError ? 'error' : 'success'}
-                variant="pastel"
+                colorScheme={
+                  (isLoading
+                    ? 'main'
+                    : isError
+                      ? 'error'
+                      : 'success') as ButtonColorScheme
+                }
+                variant="light"
                 size="lg"
               >
                 <p>View in explorer</p>
