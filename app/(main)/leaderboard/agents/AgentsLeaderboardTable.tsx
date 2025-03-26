@@ -234,8 +234,8 @@ export default function AgentsLeaderboardTable() {
                 <TableCell
                   className={twMerge(
                     'text-right',
-                    agent.profit_loss >= 0 && 'text-text-success-main',
-                    agent.profit_loss <= -0.01 && 'text-text-danger-main'
+                    agent.profit_loss >= 0 && 'text-text-success-high-em',
+                    agent.profit_loss <= -0.01 && 'text-text-danger-high-em'
                   )}
                 >
                   {agent.profit_loss.toLocaleString('en-US', {

@@ -28,7 +28,7 @@ export const SettingsPopover = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <IconButton name="settings-fill" variant="pastel" />
+        <IconButton size="sm" name="settings-fill" variant="secondary" />
       </PopoverTrigger>
       <PopoverContent className="max-w-lg px-4">
         <div className={address && 'space-y-3 divide-y divide-outline-base-em'}>
@@ -36,7 +36,7 @@ export const SettingsPopover = () => {
             <div>
               <ButtonLink
                 size="sm"
-                variant="pastel"
+                variant="secondary"
                 as={Link}
                 href={`/profile?address=${address}`}
                 className="items-center justify-between"

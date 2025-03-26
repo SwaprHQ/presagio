@@ -82,8 +82,8 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             <BackButton />
             <IconButton
               name="code"
-              variant="pastel"
-              size="sm"
+              variant="secondary"
+              size="xs"
               onClick={() => {
                 trackEvent(FA_EVENTS.MARKETS.DETAILS.EMBED.ID);
                 openModal(ModalId.EMBED_MARKET);
@@ -94,7 +94,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             <div className="space-y-4 p-5">
               <div className="flex items-center justify-between">
                 <a href={`/?c=${fixedProductMarketMaker.category?.toLocaleLowerCase()}`}>
-                  <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                  <Tag className="w-fit capitalize" size="xs" colorScheme="secondary">
                     {fixedProductMarketMaker.category}
                   </Tag>
                 </a>
@@ -111,14 +111,14 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   {isMarketInvalid && (
                     <IconTooltip iconName="info">
                       <p>
-                        {`This market `}
+                        This market{' '}
                         <strong>might have an invalid question or answer.</strong>
                       </p>
                       <p>Funds might be lost by interacting with this market.</p>
                     </IconTooltip>
                   )}
                   {marketModel.isClosed ? (
-                    <Tag className="w-fit capitalize" size="sm" colorScheme="quaternary">
+                    <Tag className="w-fit capitalize" size="sm" colorScheme="secondary">
                       Market Closed
                     </Tag>
                   ) : (
@@ -135,7 +135,9 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                   className="size-20 flex-shrink-0 rounded-8"
                   marketId={fixedProductMarketMaker.id}
                 />
-                <h1 className="text-xl font-semibold">{fixedProductMarketMaker.title}</h1>
+                <h1 className="text-normal text-md font-medium">
+                  {fixedProductMarketMaker.title}
+                </h1>
               </div>
               <div className="!mt-7 space-y-4">
                 <OutcomeBar market={fixedProductMarketMaker} />
@@ -146,7 +148,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                       size="xs"
                       className="size-4"
                     />
-                    <p>
+                    <p className="font-mono">
                       {formatValueWithFixedDecimals(
                         fixedProductMarketMaker.scaledCollateralVolume,
                         2
@@ -160,7 +162,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                       size="xs"
                       className="size-4"
                     />
-                    <p>
+                    <p className="font-mono">
                       {formatValueWithFixedDecimals(
                         fixedProductMarketMaker.scaledLiquidityMeasure,
                         2
@@ -174,7 +176,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
             <div className="px-4 pb-2">
               <ToggleGroup
                 value={tab}
-                onChange={setTab}
+                onChange={(value: string) => setTab(value as Tabs)}
                 className="w-full justify-around overflow-auto md:w-full"
               >
                 {Object.values(Tabs).map(tab => (
@@ -264,10 +266,9 @@ const BackButton = () => {
 
   return (
     <IconButton
-      className="text-text-med-em hover:bg-surface-surface-4"
       name="arrow-left"
-      variant="pastel"
-      size="sm"
+      variant="secondary"
+      size="xs"
       onClick={() => {
         const hasPreviousPage = window.history.length > 2;
 

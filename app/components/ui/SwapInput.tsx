@@ -23,7 +23,7 @@ export const SwapInput = ({
 }: SwapInputProps) => {
   return (
     <div className="space-y-1 rounded-16 bg-surface-surface-1 p-4">
-      <div className="text-xs font-semibold uppercase text-text-low-em">{title}</div>
+      <div className="text-xs font-medium uppercase text-text-low-em">{title}</div>
       <div className="flex w-full space-x-2">
         <input
           min={0}
@@ -34,25 +34,25 @@ export const SwapInput = ({
           onKeyDown={evt =>
             ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()
           }
-          className="w-full overflow-hidden overscroll-none bg-transparent text-3xl caret-text-primary-main outline-none placeholder:text-text-disabled"
+          className="placeholder:text-text-disabled w-full overflow-hidden overscroll-none bg-transparent text-2xl caret-text-primary-med-em outline-none"
           {...props}
         />
         {selectedToken instanceof Token && (
-          <Button className="flex-shrink-0" variant="pastel">
+          <Button className="flex-shrink-0" variant="secondary">
             <TokenLogo address={selectedToken.address} size="xs" />
-            <p className="font-semibold">{selectedToken.symbol}</p>
+            <p className="font-medium">{selectedToken.symbol}</p>
           </Button>
         )}
         {selectedToken instanceof Outcome && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button className="flex-shrink-0" variant="pastel">
+              <Button className="flex-shrink-0" variant="secondary">
                 <p
                   className={cx(
-                    'text-nowrap font-semibold',
+                    'text-nowrap font-medium',
                     selectedToken.index === 0
-                      ? 'text-text-success-main'
-                      : 'text-text-danger-main'
+                      ? 'text-text-success-high-em'
+                      : 'text-text-danger-high-em'
                   )}
                 >
                   {selectedToken.symbol}
@@ -67,10 +67,10 @@ export const SwapInput = ({
                     key={outcome.index}
                     onClick={() => onTokenClick && onTokenClick(outcome)}
                     className={cx(
-                      'flex cursor-pointer items-center justify-end space-x-2 px-3 py-2 font-semibold',
+                      'flex cursor-pointer items-center justify-end space-x-2 px-3 py-2 font-medium',
                       outcome.index === 0
-                        ? 'text-text-success-main'
-                        : 'text-text-danger-main'
+                        ? 'text-text-success-high-em'
+                        : 'text-text-danger-high-em'
                     )}
                   >
                     {selectedToken.equals(outcome) && <Icon name="tick-fill" />}

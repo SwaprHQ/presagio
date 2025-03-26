@@ -19,7 +19,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
   return (
     <div className="h-fit w-full max-w-96 rounded-12 border border-outline-base-em bg-surface-surface-0">
       <div className="space-y-3 p-4">
-        <a href={APP_URL} target="_blank" className="text-text-primary-main">
+        <a href={APP_URL} target="_blank" className="text-text-primary-high-em">
           {APP_NAME}
         </a>
         <div className="h-16">
@@ -30,7 +30,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
               className="size-12 flex-shrink-0 rounded-8"
               marketId={fixedProductMarketMaker.id}
             />
-            <p className="line-clamp-3 text-[13px] font-semibold">
+            <p className="line-clamp-3 text-[13px] text-sm font-medium text-text-high-em">
               {fixedProductMarketMaker.title}
             </p>
           </a>
@@ -41,7 +41,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
 
         <div className="flex flex-wrap items-center justify-between gap-2">
           <a
-            className="flex h-fit select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-2 px-3 py-2 text-sm font-bold text-text-high-em hover:bg-surface-surface-3"
+            className="flex h-fit select-none items-center justify-center space-x-2 rounded-12 bg-surface-surface-4 px-3 py-2 text-sm font-bold text-text-high-em hover:bg-surface-surface-3"
             href={marketUrl}
             target="_blank"
           >

@@ -131,7 +131,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
             'flex h-3 items-center rounded-s-8 px-2',
             isWinnerOutcome0 && 'rounded-e-8',
             isWinnerOutcome1 && 'hidden',
-            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-success-accent-2'
+            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-success-low-em'
           )}
           style={{
             width: `${outcome0percentage ?? '50'}%`,
@@ -143,7 +143,7 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
             'flex h-3 items-center rounded-e-8 px-2',
             isWinnerOutcome1 && 'rounded-s-8',
             isWinnerOutcome0 && 'hidden',
-            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-accent-2'
+            isMarketInvalid ? 'bg-outline-med-em' : 'bg-surface-danger-low-em'
           )}
           style={{
             width: `${outcome1percentage ?? 50}%`,
@@ -151,16 +151,16 @@ export const OutcomeBar = ({ market }: OutcomeBarProps) => {
         />
       </div>
 
-      <div className="flex h-4 justify-between text-sm font-semibold">
+      <div className="flex h-4 justify-between text-sm font-medium">
         {hasOutcomePercentages && (
           <>
             <p
-              className={`w-full uppercase ${isWinnerOutcome0 || isMarketPending || !isMarketClosed ? 'text-text-success-main' : 'text-text-low-em'}`}
+              className={`w-full uppercase ${isWinnerOutcome0 || isMarketPending || !isMarketClosed ? 'text-text-success-high-em' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome0, outcome0percentage)}
             </p>
             <p
-              className={`w-full text-right uppercase ${isWinnerOutcome1 || isMarketPending || !isMarketClosed ? 'text-text-danger-main' : 'text-text-low-em'}`}
+              className={`w-full text-right uppercase ${isWinnerOutcome1 || isMarketPending || !isMarketClosed ? 'text-text-danger-high-em' : 'text-text-low-em'}`}
             >
               {getOutcomeSymbolAndPercentage(outcome1, outcome1percentage)}
             </p>

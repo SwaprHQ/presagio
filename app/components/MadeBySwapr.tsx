@@ -21,7 +21,7 @@ export const MadeBySwapr = () => {
         <p className="flex items-center">
           Made with ☕️ in{' '}
           <span className="ml-1 inline-block overflow-hidden">
-            <span key={currentIndex} className="animate-city-flip inline-block">
+            <span key={currentIndex} className="inline-block animate-city-flip">
               {cities[currentIndex]}
             </span>
           </span>
@@ -35,7 +35,7 @@ export const MadeBySwapr = () => {
           <div>
             <SwaprIcon />
           </div>
-          <p className="font-semibold text-text-primary-main">Swapr</p>
+          <p className="font-semibold text-text-primary-high-em">Swapr</p>
         </a>
       </div>
     </div>

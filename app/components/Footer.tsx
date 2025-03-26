@@ -26,7 +26,7 @@ export const Footer = () => (
                   href={`/?c=${category}`}
                   onClick={() => trackEvent(FA_EVENTS.FOOTER.MARKET_CATEGORY(category))}
                 >
-                  <p className="hover:text-text-primary-main">{category}</p>
+                  <p className="hover:text-text-primary-high-em">{category}</p>
                 </a>
               </li>
             ))}
@@ -41,7 +41,7 @@ export const Footer = () => (
                 target="_blank"
                 onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.DISCORD)}
               >
-                <p className="hover:text-text-primary-main">Discord</p>
+                <p className="hover:text-text-primary-high-em">Discord</p>
               </a>
             </li>
             <li className="text-md capitalize">
@@ -50,7 +50,7 @@ export const Footer = () => (
                 target="_blank"
                 onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.GITHUB)}
               >
-                <p className="hover:text-text-primary-main">Github</p>
+                <p className="hover:text-text-primary-high-em">Github</p>
               </a>
             </li>
             <li className="text-md capitalize">
@@ -59,7 +59,7 @@ export const Footer = () => (
                 target="_blank"
                 onClick={() => trackEvent(FA_EVENTS.FOOTER.CONNECT.X)}
               >
-                <p className="hover:text-text-primary-main">X</p>
+                <p className="hover:text-text-primary-high-em">X</p>
               </a>
             </li>
           </ul>

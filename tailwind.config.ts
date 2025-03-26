@@ -10,6 +10,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        os2: ['OpenSauceTwo', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains-mono)', 'ui-monospace', 'SFMono-Regular'],
+      },
       backgroundImage: {
         'gradient-border': `linear-gradient(90deg, 
           #4c21b612 56%, 
