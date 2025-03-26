@@ -21,9 +21,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@swapr/ui';
-import Image from 'next/image';
-import SidebarExpandIcon from './icons/SidebarExpand';
-import SidebarCollapseIcon from './icons/SidebarCollapse';
 import SidebarIcon from './icons/Sidebar';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
@@ -183,7 +180,7 @@ const Sidebar = React.forwardRef<
       return (
         <div
           className={cx(
-            'bg-sidebar text-sidebar-foreground flex h-full w-[--sidebar-width] flex-col',
+            'flex h-full w-[--sidebar-width] flex-col border-surface-surface-2 bg-surface-surface-0',
             className
           )}
           ref={ref}
@@ -200,7 +197,7 @@ const Sidebar = React.forwardRef<
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
-            className="bg-sidebar text-sidebar-foreground w-[--sidebar-width] p-0 [&>button]:hidden"
+            className="w-[--sidebar-width] border-surface-surface-2 bg-surface-surface-0 p-0 [&>button]:hidden"
             style={
               {
                 '--sidebar-width': SIDEBAR_WIDTH_MOBILE,
@@ -221,7 +218,7 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="text-sidebar-foreground group peer hidden md:block"
+        className="group peer hidden border-surface-surface-2 bg-surface-surface-0 md:block"
         data-state={state}
         data-collapsible={state === 'collapsed' ? collapsible : ''}
         data-variant={variant}
@@ -240,7 +237,7 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cx(
-            'fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex',
+            'fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] border-surface-surface-2 transition-[left,right,width] duration-200 ease-linear md:flex',
             side === 'left'
               ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
               : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -254,7 +251,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow flex h-full w-full flex-col group-data-[variant=floating]:border"
+            className="group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow flex h-full w-full flex-col border-surface-surface-2 bg-surface-surface-0 group-data-[variant=floating]:border group-data-[variant=floating]:border-surface-surface-2"
           >
             {children}
           </div>
