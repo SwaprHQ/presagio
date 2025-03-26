@@ -6,8 +6,6 @@ import { IconButton } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
-import wizardSvg from '@/public/pixel-wizard.svg';
-import Image from 'next/image';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -105,17 +103,8 @@ const ChatMessages = ({
             const content = msg.content;
             return typeof content === 'object' ? (
               <div className="space-y-2" key={index}>
-                <div className="flex space-x-3">
-                  <Image
-                    alt="ai wizard"
-                    width={28}
-                    height={28}
-                    src={wizardSvg}
-                    className="w-7 self-start md:w-9"
-                  />
-                  <Message role={msg.role}>{content.reasoning}</Message>
-                </div>
-                <div className="ml-12 flex space-x-4">
+                <Message role={msg.role}>{content.reasoning}</Message>
+                <div className="flex space-x-4">
                   <MessageCard title="Outcome">{content.outcome}</MessageCard>
                   <MessageCard title="Confidence level">
                     {content.confidence}%

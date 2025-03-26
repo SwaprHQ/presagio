@@ -39,59 +39,11 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
     enabled: !!userId && isLoggedIn,
   });
 
-  if (isLoading)
-    return (
-      <Sidebar
-        className="bg-transaparent absolute top-[80px] h-screen border-transparent"
-        {...props}
-      >
-        <SidebarMenu>
-          <ButtonLink variant="outline" size="sm" href="/chat/new">
-            New chat
-          </ButtonLink>
-        </SidebarMenu>
-        <SidebarHeader>
-          <SidebarMenu>
-            <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent></SidebarContent>
-      </Sidebar>
-    );
-
-  if (!chats) {
-    return (
-      <Sidebar
-        className="bg-transaparent absolute top-[80px] h-screen border-transparent"
-        {...props}
-      >
-        <SidebarMenu>
-          <ButtonLink variant="outline" size="sm" href="/chat/new">
-            New chat
-          </ButtonLink>
-        </SidebarMenu>
-        <SidebarHeader>
-          <SidebarMenu>
-            <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            <p className="truncate p-2 !text-md">No chats found</p>
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-    );
-  }
-
   return (
-    <Sidebar
-      className="bg-transaparent absolute top-[80px] h-screen border-transparent"
-      {...props}
-    >
+    <Sidebar className="absolute top-[80px] h-screen" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <ButtonLink variant="outline" size="sm" href="/chat/new">
+          <ButtonLink variant="outline" size="sm" href="/chat/new" className="mt-2">
             New chat
           </ButtonLink>
         </SidebarMenu>
@@ -100,24 +52,34 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarMenu>
-          {chats.length ? (
-            chats.map(({ id, title }) => (
-              <SidebarMenuItem key={id}>
-                <SidebarMenuButton asChild size="lg">
-                  <a href={`/chat?id=${id}`}>
-                    <Icon name="chevron-right" />
-                    <span>{title}</span>
-                  </a>
-                </SidebarMenuButton>
+        {isLoading ? (
+          <SidebarMenu>
+            <p className="truncate p-2 !text-md font-semibold">Previous chats</p>
+          </SidebarMenu>
+        ) : chats ? (
+          <SidebarMenu>
+            {chats.length ? (
+              chats.map(({ id, title }) => (
+                <SidebarMenuItem key={id}>
+                  <SidebarMenuButton asChild size="lg">
+                    <a href={`/chat?id=${id}`}>
+                      <Icon name="chevron-right" />
+                      <span>{title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))
+            ) : (
+              <SidebarMenuItem>
+                <p className="truncate !text-lg font-semibold">No chats yet</p>
               </SidebarMenuItem>
-            ))
-          ) : (
-            <SidebarMenuItem>
-              <p className="truncate !text-lg font-semibold">No chats yet</p>
-            </SidebarMenuItem>
-          )}
-        </SidebarMenu>
+            )}
+          </SidebarMenu>
+        ) : (
+          <SidebarMenu>
+            <p className="truncate p-2 !text-md">No chats found</p>
+          </SidebarMenu>
+        )}
       </SidebarContent>
     </Sidebar>
   );
