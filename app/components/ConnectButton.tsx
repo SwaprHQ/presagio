@@ -50,7 +50,7 @@ const CustomConnectButton = ({
       )}
       <Button
         onClick={onClick}
-        variant="secondary"
+        variant="tertiary"
         size={size}
         width={width}
         className="flex-shrink-0 rounded-20 shadow-3 !ring-0"
