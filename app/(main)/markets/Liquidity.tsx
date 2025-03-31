@@ -283,9 +283,9 @@ export const Liquidity = ({ id }: { id: Address }) => {
         {Object.values(LiquidityOperation).map(tab => (
           <div key={tab}>
             <ToggleGroupOption
-              size="md"
+              size="sm"
               value={tab}
-              className="flex justify-center font-semibold capitalize"
+              className="flex justify-center font-medium capitalize"
             >
               {tab}
             </ToggleGroupOption>
@@ -310,10 +310,11 @@ export const Liquidity = ({ id }: { id: Address }) => {
             {!!balance && (
               <Button
                 variant="ghost"
-                className="text-sm font-semibold text-text-primary-high-em"
+                size="xs"
+                className="font-medium text-text-primary-high-em"
                 onClick={activeLiquidityOperationState.setMaxBalance}
               >
-                Use MAX
+                Max
               </Button>
             )}
           </div>
@@ -337,30 +338,33 @@ export const Liquidity = ({ id }: { id: Address }) => {
         onOpenChange={() => closeModal(ModalId.CONFIRM_LIQUIDITY)}
       >
         <DialogContent>
-          <DialogHeader className="text-center">
-            <DialogClose position="left">
-              <Icon name="arrow-left" />
-            </DialogClose>
+          <DialogHeader>
+            <DialogClose name="arrow-left" />
             <DialogTitle>Confirm liquidity</DialogTitle>
             <VisuallyHidden asChild>
               <DialogDescription />
             </VisuallyHidden>
           </DialogHeader>
           <DialogBody className="space-y-2">
-            <div className="flex flex-col items-center space-y-1 rounded-16 bg-surface-surface-1 py-4">
-              <p className="text-xs font-semibold uppercase text-text-low-em">
-                Total depoist
+            <div className="flex flex-col items-center space-y-1 rounded-16 bg-surface-surface-2 py-4">
+              <p className="text-sm font-medium uppercase text-text-low-em">
+                Total deposit
               </p>
               {activeLiquidityOperationState.inToken ? (
-                <div className="flex items-center space-x-2 text-2xl font-semibold">
-                  <TokenLogo address={activeLiquidityOperationState.inToken.address} />
-                  <p>{amount}</p>
-                  <p className="text-text-low-em">
+                <div>
+                  <div className="font- flex items-center space-x-2">
+                    <p className="text-2xl">{amount}</p>
+                    <TokenLogo
+                      address={activeLiquidityOperationState.inToken.address}
+                      size="xs"
+                    />
+                  </div>
+                  <p className="text-center text-text-med-em">
                     {activeLiquidityOperationState.inToken.symbol}
                   </p>
                 </div>
               ) : (
-                <p className="text-2xl font-semibold">
+                <p className="font-medium">
                   {amount} <span className="text-text-low-em">Pool tokens</span>
                 </p>
               )}
@@ -377,7 +381,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
               <Button
                 width="full"
                 colorScheme="success"
-                variant="pastel"
+                variant="secondary"
                 onClick={approveToken}
                 size="lg"
                 disabled={isApproving}
@@ -393,8 +397,6 @@ export const Liquidity = ({ id }: { id: Address }) => {
             )}
             <Button
               width="full"
-              colorScheme="success"
-              variant="pastel"
               onClick={activeLiquidityOperationState.action}
               disabled={!activeLiquidityOperationState.isAllowed}
               size="lg"
