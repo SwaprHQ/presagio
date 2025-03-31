@@ -31,7 +31,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
           }}
           variant="ghost"
           name={clipboardIcon}
-          size="sm"
+          size="xs"
         />
       </div>
       <a
@@ -52,7 +52,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
         >
           <p>
             <span>
-              Answer oracle by <span className="font-bold">reality.eth</span>
+              Answer oracle by <span className="font-semibold">reality.eth</span>
             </span>
           </p>
           <Icon name="arrow-top-right" size={16} />
@@ -66,7 +66,7 @@ export const Info = ({ fixedProductMarketMaker }: InfoProps) => {
       >
         <p>
           <span>
-            Dispute resolution by <span className="font-bold">kleros.io</span>
+            Dispute resolution by <span className="font-semibold">kleros.io</span>
           </span>
         </p>
         <Icon name="arrow-top-right" size={16} />
