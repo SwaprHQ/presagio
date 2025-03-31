@@ -94,7 +94,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
         {isLoading ? (
           <LoadingMarketActivity />
         ) : (
-          <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-semibold md:overflow-x-auto">
+          <div className="w-full divide-y divide-outline-base-em overflow-x-scroll border-t border-outline-base-em text-base font-medium md:overflow-x-auto">
             {marketTransactions?.map(transaction => {
               const aiAgent = getIsAIAgent(transaction.user.id);
               const isLiquidityEvent = transaction.fpmmType === FpmmType.Liquidity;
@@ -132,16 +132,16 @@ export const MarketActivity = ({ id }: { id: string }) => {
       {showPaginationButtons && (
         <div className="flex w-full items-center justify-between bg-surface-surface-1 p-4">
           <Button
-            variant="pastel"
+            variant="secondary"
             onClick={() => setPage(page - 1)}
             className={cx('space-x-2', { invisible: page === 1 })}
           >
             <Icon name="chevron-left" />
             <p>Prev</p>
           </Button>
-          <p className="font-semibold text-text-med-em">Page {page}</p>
+          <p className="text-sm font-medium text-text-med-em">Page {page}</p>
           <Button
-            variant="pastel"
+            variant="secondary"
             onClick={() => setPage(page + 1)}
             className={cx('space-x-2', { invisible: !hasMoreMarkets })}
           >
@@ -169,7 +169,7 @@ const CollateralAmountWithLogo = ({
     </p>
     <TokenLogo
       address={collateralTokenAddress}
-      className="h-[13px] w-[13px] opacity-60 hover:scale-110 hover:opacity-100"
+      className="h-[13px] w-[13px] opacity-60 hover:opacity-100"
     />
   </div>
 );
@@ -208,7 +208,7 @@ const TradeRow = ({ activity, aiAgent }: TradeRowProps) => {
         <Tag
           size="xs"
           colorScheme={
-            outcome ? OUTCOME_TAG_COLORS_SCHEME[outcome.index as 0 | 1] : 'quaternary'
+            outcome ? OUTCOME_TAG_COLORS_SCHEME[outcome.index as 0 | 1] : 'secondary'
           }
           className="w-fit space-x-1 text-sm uppercase"
         >

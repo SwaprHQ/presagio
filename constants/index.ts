@@ -81,5 +81,5 @@ export const GITHUB_URL =
 export const OUTCOME_TAG_COLORS_SCHEME: Record<number, TagProps['colorScheme']> = {
   0: 'success',
   1: 'danger',
-  [Market.INVALID_ANSWER]: 'quaternary',
+  [Market.INVALID_ANSWER]: 'secondary',
 };
