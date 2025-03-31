@@ -46,14 +46,16 @@ export const AiChatBase = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Image alt="ai stars" width={14} height={14} src={aiStarsSvg} />
-                    <Dialog.DialogTitle className="font-semibold">
+                    <Dialog.DialogTitle className="font-medium">
                       Ask Wizard
                     </Dialog.DialogTitle>
-                    <Tag colorScheme="info">Experimental</Tag>
+                    <Tag size="xs" colorScheme="info">
+                      Experimental
+                    </Tag>
                   </div>
                   <Dialog.Close asChild>
                     <IconButton
-                      size="sm"
+                      size="xs"
                       className="rotate-90"
                       variant="ghost"
                       name="arrow-double-right"
@@ -159,8 +161,8 @@ interface MessageCardProps extends PropsWithChildren {
 export const MessageCard = ({ title, children }: MessageCardProps) => {
   return (
     <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-base-em p-4">
-      <p className="text-sm font-semibold uppercase text-text-low-em">{title}</p>
-      <p className="text-md font-semibold uppercase">{children}</p>
+      <p className="text-sm font-medium uppercase text-text-low-em">{title}</p>
+      <p className="text-md font-medium uppercase">{children}</p>
     </div>
   );
 };
