@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
-import { VariantProps, cva, cx } from 'class-variance-authority';
+import { cva, cx } from 'class-variance-authority';
 
 import { useIsMobile } from '@/hooks/useMobile';
 import {
@@ -14,7 +14,7 @@ import {
 } from '@/app/components/ui/Sheet';
 import {
   Button,
-  Icon,
+  ButtonLink,
   Input,
   Tooltip,
   TooltipContent,
@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from '@swapr/ui';
 import SidebarIcon from './icons/Sidebar';
+import { Skeleton } from '../Skeleton';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -380,21 +381,6 @@ const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<'div
 );
 SidebarFooter.displayName = 'SidebarFooter';
 
-// const SidebarSeparator = React.forwardRef<
-//   React.ElementRef<typeof Separator>,
-//   React.ComponentProps<typeof Separator>
-// >(({ className, ...props }, ref) => {
-//   return (
-//     <Separator
-//       ref={ref}
-//       data-sidebar="separator"
-//       className={cx('bg-sidebar-border mx-2 w-auto', className)}
-//       {...props}
-//     />
-//   );
-// });
-// SidebarSeparator.displayName = 'SidebarSeparator';
-
 const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentProps<'div'>>(
   ({ className, ...props }, ref) => {
     return (
@@ -530,61 +516,49 @@ const sidebarMenuButtonVariants = cva(
 
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<'button'> & {
+  React.ComponentProps<typeof ButtonLink> & {
     asChild?: boolean;
-    isActive?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-  } & VariantProps<typeof sidebarMenuButtonVariants>
->(
-  (
-    {
-      asChild = false,
-      isActive = false,
-      variant = 'default',
-      size = 'default',
-      tooltip,
-      className,
-      ...props
-    },
-    ref
-  ) => {
-    const Comp = asChild ? Slot : 'button';
-    const { isMobile, state } = useSidebar();
-
-    const button = (
-      <Comp
-        ref={ref}
-        data-sidebar="menu-button"
-        data-size={size}
-        data-active={isActive}
-        className={cx(sidebarMenuButtonVariants({ variant, size }), className)}
-        {...props}
-      />
-    );
-
-    if (!tooltip) {
-      return button;
-    }
-
-    if (typeof tooltip === 'string') {
-      tooltip = {
-        children: tooltip,
-      };
-    }
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== 'collapsed' || isMobile}
-          {...tooltip}
-        />
-      </Tooltip>
-    );
   }
-);
+>(({ asChild = false, size, active, tooltip, className, ...props }, ref) => {
+  const Comp = asChild ? Slot : ButtonLink;
+  const { isMobile, state } = useSidebar();
+
+  const button = (
+    <Comp
+      ref={ref}
+      data-sidebar="menu-button"
+      data-size={size}
+      data-active={active}
+      className={className}
+      size={size}
+      active={active}
+      {...props}
+    />
+  );
+
+  if (!tooltip) {
+    return button;
+  }
+
+  if (typeof tooltip === 'string') {
+    tooltip = {
+      children: tooltip,
+    };
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== 'collapsed' || isMobile}
+        {...tooltip}
+      />
+    </Tooltip>
+  );
+});
 SidebarMenuButton.displayName = 'SidebarMenuButton';
 
 const SidebarMenuAction = React.forwardRef<
@@ -638,40 +612,40 @@ const SidebarMenuBadge = React.forwardRef<HTMLDivElement, React.ComponentProps<'
 );
 SidebarMenuBadge.displayName = 'SidebarMenuBadge';
 
-// const SidebarMenuSkeleton = React.forwardRef<
-//   HTMLDivElement,
-//   React.ComponentProps<'div'> & {
-//     showIcon?: boolean;
-//   }
-// >(({ className, showIcon = false, ...props }, ref) => {
-//   // Random width between 50 to 90%.
-//   const width = React.useMemo(() => {
-//     return `${Math.floor(Math.random() * 40) + 50}%`;
-//   }, []);
+const SidebarMenuSkeleton = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<'div'> & {
+    showIcon?: boolean;
+  }
+>(({ className, showIcon = false, ...props }, ref) => {
+  // Random width between 50 to 90%.
+  const width = React.useMemo(() => {
+    return `${Math.floor(Math.random() * 40) + 50}%`;
+  }, []);
 
-//   return (
-//     <div
-//       ref={ref}
-//       data-sidebar="menu-skeleton"
-//       className={cx('rounded-md flex h-8 items-center gap-2 px-2', className)}
-//       {...props}
-//     >
-//       {showIcon && (
-//         <Skeleton className="rounded-md size-4" data-sidebar="menu-skeleton-icon" />
-//       )}
-//       <Skeleton
-//         className="h-4 max-w-[--skeleton-width] flex-1"
-//         data-sidebar="menu-skeleton-text"
-//         style={
-//           {
-//             '--skeleton-width': width,
-//           } as React.CSSProperties
-//         }
-//       />
-//     </div>
-//   );
-// });
-// SidebarMenuSkeleton.displayName = 'SidebarMenuSkeleton';
+  return (
+    <div
+      ref={ref}
+      data-sidebar="menu-skeleton"
+      className={cx('rounded-md flex h-8 items-center gap-2 px-2', className)}
+      {...props}
+    >
+      {showIcon && (
+        <Skeleton className="rounded-md size-4" data-sidebar="menu-skeleton-icon" />
+      )}
+      <Skeleton
+        className="h-4 max-w-[--skeleton-width] flex-1"
+        data-sidebar="menu-skeleton-text"
+        style={
+          {
+            '--skeleton-width': width,
+          } as React.CSSProperties
+        }
+      />
+    </div>
+  );
+});
+SidebarMenuSkeleton.displayName = 'SidebarMenuSkeleton';
 
 const SidebarMenuSub = React.forwardRef<HTMLUListElement, React.ComponentProps<'ul'>>(
   ({ className, ...props }, ref) => (

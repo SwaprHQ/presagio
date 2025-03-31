@@ -6,11 +6,7 @@ import { Address } from 'viem';
 import { FA_EVENTS } from '@/analytics';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket, Query } from '@/queries/omen';
-import { useAuth } from '@/hooks/useAuth';
-import { useSession } from '@/context/SessionContext';
-import { Button } from '@swapr/ui';
-import { useRouter } from 'next/navigation';
-import { useAccount } from 'wagmi';
+import { isJSON } from '@/utils/json';
 
 interface AiChatMarketProps {
   id: Address;
@@ -49,21 +45,7 @@ const createPrediction = async (id: Address) => {
   return response.json();
 };
 
-function isJSON(message: string) {
-  try {
-    JSON.parse(message);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
-
 export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
-  const { isConnected } = useAccount();
-  const { connect } = useAuth();
-  const { isLoggedIn } = useSession();
-  const router = useRouter();
-
   const [answer, setAnswer] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -135,31 +117,13 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
     FA_EVENTS.MARKET.AI_CHAT.OPEN(id),
   ];
 
-  const startChat = async () => {
-    try {
-      const createChatResponse = await fetch(
-        process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/chat',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ marketId: id, message: title }),
-        }
-      );
-      const chat = await createChatResponse.json();
-      router.push('/chat?id=' + chat.chatId);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <AiChatBase
       messages={[title, parsedAnswer]}
       trackOnClickEvents={trackOnClickEvents}
       isChatOpen={isChatOpen}
+      id={id}
+      marketTitle={title}
     >
       <Message role={'user'}>{title}</Message>
       {parsedAnswer && (
@@ -186,16 +150,6 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
         </div>
       )}
       {hasError && <Message role="assistant">Oops. Something went wrong.</Message>}
-
-      {!isLoggedIn ? (
-        !isConnected ? (
-          <div>Connect wallet</div>
-        ) : (
-          <Button onClick={connect}>Sign In</Button>
-        )
-      ) : (
-        <Button onClick={startChat}>Start chat</Button>
-      )}
     </AiChatBase>
   );
 };

@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import Chat from './Chat';
-import { useSession } from '../../../context/SessionContext';
+import { useSession } from '@/context/SessionContext';
 
 export default function ChatPage() {
   const searchParams = useSearchParams();
@@ -15,7 +15,7 @@ export default function ChatPage() {
   if (!id)
     return (
       <main className="mt-12 flex w-full flex-col items-center px-6">
-        <div>Chat not found</div>
+        <div className="pt-64 text-lg font-semibold">Chat ID missing</div>
       </main>
     );
 

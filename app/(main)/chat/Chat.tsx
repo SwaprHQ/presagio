@@ -1,11 +1,12 @@
 'use client';
 
-import { Message, MessageCard, ScrollArea } from '@/app/components';
+import { Message, MessageCard, ScrollArea, Spinner } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
 import { IconButton } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
+import { isJSON } from '@/utils/json';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -22,14 +23,6 @@ const fetchChat = async (
   return response.json();
 };
 
-function isJSON(message: string) {
-  try {
-    JSON.parse(message);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
 type JSONMessage = {
   content: {
     reasoning: string;
@@ -39,7 +32,14 @@ type JSONMessage = {
   role: 'system' | 'assistant' | 'data';
 };
 
-const Chat = ({ chatId }: { chatId: string }) => {
+type ChatProps = { chatId: string };
+
+type ChatMessageProps = {
+  initialMessages: AiMessage[];
+  id: string;
+};
+
+const Chat = ({ chatId }: ChatProps) => {
   const { isLoggedIn } = useSession();
   const { data: chat, isLoading } = useQuery({
     queryKey: ['chat', chatId],
@@ -49,23 +49,22 @@ const Chat = ({ chatId }: { chatId: string }) => {
     enabled: !!chatId && isLoggedIn,
   });
 
-  if (!chatId) return <div className="text-lg font-semibold">Chat ID is missing</div>;
+  if (!chatId)
+    return <div className="pt-64 text-lg font-semibold">Chat ID is missing</div>;
 
   if (isLoading)
-    return <div className="text-lg font-semibold">Fetching your chat...</div>;
+    return (
+      <div className="pt-64">
+        <Spinner className="h-5 w-5 animate-spin" />
+      </div>
+    );
 
   if (chat) return <ChatMessages initialMessages={chat.messages} id={chat.id} />;
 
-  return <div className="text-lg font-semibold">Chat not found</div>;
+  return <div className="pt-64 text-lg font-semibold">Chat not found</div>;
 };
 
-const ChatMessages = ({
-  initialMessages,
-  id,
-}: {
-  initialMessages: AiMessage[];
-  id: string;
-}) => {
+const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
   const { messages, error, setInput, input, isLoading, handleSubmit } = useChat({
     initialMessages,
     id,

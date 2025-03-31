@@ -22,7 +22,6 @@ const createChat = async (message: string): Promise<{ chatId: string }> => {
 
   if (!response.ok) {
     const errorMessage = await response.json();
-    console.log(errorMessage);
     throw new Error(errorMessage);
   }
 
@@ -49,10 +48,11 @@ export default function NewChat() {
 
   if (!isLoggedIn || loading) return null;
 
-  const errorMessage =
-    mutation?.error?.message === 'Invalid question'
-      ? "Sorry but what you are trying to ask can't be answered with a prediciton."
-      : 'Somthing went wrong in my research. Please try again.';
+  const isInvalidQuestion = mutation?.error?.message === 'Invalid question';
+
+  const errorMessage = isInvalidQuestion
+    ? 'Sorry but your question is an invalid prediction question.'
+    : 'Somthing went wrong in my research. Please try again.';
 
   return (
     <div className="mx-auto mt-80 w-full max-w-2xl p-4">
@@ -66,13 +66,13 @@ export default function NewChat() {
               src={wizardSvg}
               className="w-7 md:w-9"
             />
-            <p className="text-2xl font-bold">Hello, I&apos;m the wizard</p>
+            <p className="text-2xl font-bold">Hello, I&apos;m Wizard</p>
           </div>
           <p className="text-lg font-bold text-text-low-em">
             Get predicitons powered by our AI wizard.
           </p>
         </div>
-        <div>
+        <div className="space-y-2">
           <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
             <textarea
               value={input}
@@ -108,6 +108,12 @@ export default function NewChat() {
           )}
           {mutation.isError && (
             <p className="text-md text-text-danger-main">{errorMessage}</p>
+          )}
+          {isInvalidQuestion && (
+            <p className="text-md text-text-med-em">
+              <strong>Tip:</strong> Ask a question about a future event, only answerable
+              with Yes or No.
+            </p>
           )}
         </div>
       </div>
