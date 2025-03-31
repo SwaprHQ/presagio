@@ -18,7 +18,7 @@ export default function MarketsPage() {
     );
 
   return (
-    <main className="mt-12 flex w-full flex-col items-center px-6">
+    <main className="mb-32 mt-12 flex w-full flex-col items-center px-6">
       <MarketDetails id={id} />
     </main>
   );
