@@ -4,22 +4,70 @@ interface BetsIconProps {
   height: number;
 }
 
-const BetsIcon = ({ className, width = 24, height = 24 }: BetsIconProps) => {
+const BetsIcon = ({ className, width = 32, height = 32 }: BetsIconProps) => {
   return (
     <svg
       width={width}
       height={height}
+      className={className}
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={className}
     >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M3 3C2.44772 3 2 3.44772 2 4C2 4.55228 2.44772 5 3 5H21C21.5523 5 22 4.55228 22 4C22 3.44772 21.5523 3 21 3H3ZM20 7H4.00003V19.882C4.00003 20.6253 4.78234 21.1088 5.44724 20.7764L7.55281 19.7236C7.83434 19.5828 8.16571 19.5828 8.44724 19.7236L11.5528 21.2764C11.8343 21.4172 12.1657 21.4172 12.4472 21.2764L15.5528 19.7236C15.8343 19.5828 16.1657 19.5828 16.4472 19.7236L18.5528 20.7764C19.2177 21.1088 20 20.6253 20 19.882V7ZM8.00003 10C7.44774 10 7.00003 10.4477 7.00003 11C7.00003 11.5523 7.44774 12 8.00003 12H14C14.5523 12 15 11.5523 15 11C15 10.4477 14.5523 10 14 10H8.00003ZM8.00003 13.5C7.44774 13.5 7.00003 13.9477 7.00003 14.5C7.00003 15.0523 7.44774 15.5 8.00003 15.5H16C16.5523 15.5 17 15.0523 17 14.5C17 13.9477 16.5523 13.5 16 13.5H8.00003Z"
-        fill="currentColor"
-      />
+      <g filter="url(#filter0_d_22_3)">
+        <path
+          d="M15.2628 3.49163H8.73736C8.32567 3.49163 7.99155 3.15751 7.99155 2.74581C7.99155 2.33412 8.32567 2 8.73736 2H15.2628C15.6755 2 16.0085 2.33412 16.0085 2.74581C16.0085 3.15751 15.6755 3.49163 15.2628 3.49163Z"
+          fill="currentColor"
+          fill-opacity="0.72"
+        />
+        <path
+          d="M6.21441 6.5866H17.7864C18.1982 6.5866 18.5323 6.25248 18.5323 5.84078C18.5323 5.42909 18.1982 5.09497 17.7864 5.09497H6.21441C5.80272 5.09497 5.4686 5.42909 5.4686 5.84078C5.4686 6.25248 5.80272 6.5866 6.21441 6.5866Z"
+          fill="currentColor"
+          fill-opacity="0.72"
+        />
+        <path
+          d="M17.2083 8.42871H6.79173C4.70145 8.42871 3 10.1302 3 12.2205V17.3477C3 19.4389 4.70145 21.1404 6.79173 21.1404H17.2083C19.2996 21.1404 21 19.4389 21 17.3477V12.2205C21 10.1302 19.2996 8.42871 17.2083 8.42871Z"
+          fill="currentColor"
+          fill-opacity="0.72"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_d_22_3"
+          x="1.66667"
+          y="2"
+          width="20.6667"
+          height="21.807"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset dy="1.33333" />
+          <feGaussianBlur stdDeviation="0.666667" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0"
+          />
+          <feBlend
+            mode="normal"
+            in2="BackgroundImageFix"
+            result="effect1_dropShadow_22_3"
+          />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="effect1_dropShadow_22_3"
+            result="shape"
+          />
+        </filter>
+      </defs>
     </svg>
   );
 };
