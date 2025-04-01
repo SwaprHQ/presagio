@@ -1,12 +1,13 @@
 'use client';
 
-import { Message, MessageCard, ScrollArea, Spinner } from '@/app/components';
+import { cn, MarkdownRenderer, MessageCard, ScrollArea, Spinner } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
 import { IconButton } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
 import { isJSON } from '@/utils/json';
+import { PropsWithChildren, useEffect, useState } from 'react';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -64,7 +65,29 @@ const Chat = ({ chatId }: ChatProps) => {
   return <div className="pt-64 text-lg font-semibold">Chat not found</div>;
 };
 
+interface MessageProps extends PropsWithChildren {
+  role: string;
+}
+
+const Message = ({ children, role }: MessageProps) => {
+  const isAssistant = role === 'assistant';
+  return (
+    <MarkdownRenderer
+      className={cn(
+        'w-fit max-w-[90%] rounded-20 px-4 py-2',
+        isAssistant
+          ? 'mr-auto bg-outline-primary-base-em'
+          : 'ml-auto bg-surface-surface-2'
+      )}
+    >
+      {children}
+    </MarkdownRenderer>
+  );
+};
+
 const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
+  const [scrollAreaElement, setScrollAreaElement] = useState<HTMLDivElement | null>(null);
+
   const { messages, error, setInput, input, isLoading, handleSubmit } = useChat({
     initialMessages,
     id,
@@ -79,6 +102,10 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
       });
     },
   });
+
+  useEffect(() => {
+    if (scrollAreaElement) scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
+  }, [messages, scrollAreaElement]);
 
   const parseAnswer = (message: AiMessage): JSONMessage | AiMessage => {
     if (typeof message.content !== 'string' || message.role === 'user') return message;
@@ -96,7 +123,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
 
   return (
     <div className="mt-4 flex h-full w-full flex-col items-center justify-between overflow-auto">
-      <ScrollArea className="w-full">
+      <ScrollArea ref={setScrollAreaElement} className="w-full">
         <div className="mx-auto mb-6 w-full max-w-3xl space-y-4">
           {parsedMessages.map((msg, index) => {
             const content = msg.content;

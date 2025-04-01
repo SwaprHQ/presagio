@@ -1,6 +1,6 @@
 'use client';
 
-import { ButtonLink } from '@swapr/ui';
+import { Button } from '@swapr/ui';
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +13,7 @@ import { useSession } from '@/context/SessionContext';
 import { useQuery } from '@tanstack/react-query';
 import { Spinner } from '@/app/components';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 interface Chat {
   id: string;
@@ -47,29 +48,31 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
     <Sidebar className="absolute top-[80px] h-screen" {...props}>
       <SidebarHeader className="mt-3 space-y-3">
         <SidebarMenu>
-          <ButtonLink variant="outline" size="sm" href="/chat/new">
-            New chat
-          </ButtonLink>
+          <Link href="/chat/new">
+            <Button variant="outline" size="sm" width="full">
+              New chat
+            </Button>
+          </Link>
         </SidebarMenu>
         {!isLoading && (
           <SidebarMenu>
-            <p className="truncate px-5 !text-md font-semibold">Previous chats</p>
+            <p className="truncate px-5 font-semibold">Previous chats</p>
           </SidebarMenu>
         )}
       </SidebarHeader>
       <SidebarContent>
         {isLoading ? (
           <Spinner className="mx-auto mt-4 h-5 w-5 animate-spin" />
-        ) : chats ? (
+        ) : (
           <SidebarMenu className="my-1">
-            {chats.length ? (
+            {chats?.length ? (
               chats.map(({ id, title }) => (
                 <SidebarMenuItem key={id} className="px-4">
                   <SidebarMenuButton
                     size="md"
                     width="full"
                     variant="ghost"
-                    className="justify-start overflow-hidden text-nowrap"
+                    className="justify-start overflow-hidden text-nowrap font-normal"
                     href={`/chat?id=${id}`}
                     active={chatId === id}
                   >
@@ -79,13 +82,9 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
               ))
             ) : (
               <SidebarMenuItem>
-                <p className="truncate !text-lg font-semibold">No chats found</p>
+                <p className="px-7 text-text-med-em">No chats yet</p>
               </SidebarMenuItem>
             )}
-          </SidebarMenu>
-        ) : (
-          <SidebarMenu>
-            <p className="truncate p-2 !text-md">No chats found</p>
           </SidebarMenu>
         )}
       </SidebarContent>

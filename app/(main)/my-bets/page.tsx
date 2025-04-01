@@ -47,7 +47,7 @@ export default function MyBetsPage() {
   if (!isLoading && userPositionsComplete?.length === 0) return <NoBetsPage />;
 
   return (
-    <div className="mb-32 mt-12 h-screen w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
+    <div className="mb-32 mt-12 min-h-screen w-full space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div>
         <h1 className="text-white mb-8 text-2xl font-semibold">My bets</h1>
         <div className="md:w-[760px]">

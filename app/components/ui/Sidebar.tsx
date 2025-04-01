@@ -14,7 +14,6 @@ import {
 } from '@/app/components/ui/Sheet';
 import {
   Button,
-  ButtonLink,
   Input,
   Tooltip,
   TooltipContent,
@@ -23,6 +22,7 @@ import {
 } from '@swapr/ui';
 import SidebarIcon from './icons/Sidebar';
 import { Skeleton } from '../Skeleton';
+import Link from 'next/link';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -516,25 +516,28 @@ const sidebarMenuButtonVariants = cva(
 
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<typeof ButtonLink> & {
+  React.ComponentProps<typeof Button> & {
+    href: string;
     asChild?: boolean;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   }
->(({ asChild = false, size, active, tooltip, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : ButtonLink;
+>(({ asChild = false, size, active, tooltip, className, href, ...props }, ref) => {
+  const Comp = asChild ? Slot : Button;
   const { isMobile, state } = useSidebar();
 
   const button = (
-    <Comp
-      ref={ref}
-      data-sidebar="menu-button"
-      data-size={size}
-      data-active={active}
-      className={className}
-      size={size}
-      active={active}
-      {...props}
-    />
+    <Link href={href}>
+      <Comp
+        ref={ref}
+        data-sidebar="menu-button"
+        data-size={size}
+        data-active={active}
+        className={className}
+        size={size}
+        active={active}
+        {...props}
+      />
+    </Link>
   );
 
   if (!tooltip) {
