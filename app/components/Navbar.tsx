@@ -83,8 +83,8 @@ export const Navbar = () => {
               )}
             </div>
           </Link>
-          <ConnectButton />
           <NetworkButton />
+          <ConnectButton />
           <SettingsPopover />
         </div>
       </div>

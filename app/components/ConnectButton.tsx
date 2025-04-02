@@ -76,7 +76,7 @@ export const ConnectButton = ({
   size,
   width,
   children,
-  variant = 'secondary',
+  variant = 'primary',
   colorScheme,
 }: ConnectButtonProps) => {
   return (

@@ -39,13 +39,13 @@ export const TransactionModal = ({
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader>
+          <DialogClose name="arrow-left" />
           <VisuallyHidden asChild>
             <DialogTitle>Transaction Modal</DialogTitle>
           </VisuallyHidden>
           <VisuallyHidden asChild>
             <DialogDescription />
           </VisuallyHidden>
-          <DialogClose />
         </DialogHeader>
         <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:max-w-[496px]">
           <div className="flex w-full flex-col items-center space-y-12">

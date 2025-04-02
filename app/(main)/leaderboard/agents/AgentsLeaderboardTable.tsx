@@ -355,7 +355,7 @@ const PaginationControls = ({
     <div className="mt-5 flex w-full items-center justify-center space-x-4">
       <IconButton
         name="chevron-left"
-        size="xs"
+        size="sm"
         variant="secondary"
         onClick={() => handlePageChange(page - 1)}
         disabled={page === 1}
@@ -369,8 +369,7 @@ const PaginationControls = ({
           ) : (
             <Button
               key={pageNum}
-              className="h-[42px] w-[42px] p-3"
-              variant={pageNum === page ? 'primary' : 'ghost'}
+              variant={pageNum === page ? 'light' : 'ghost'}
               onClick={() => handlePageChange(Number(pageNum))}
             >
               {pageNum}
@@ -380,7 +379,7 @@ const PaginationControls = ({
       </div>
       <IconButton
         name="chevron-right"
-        size="xs"
+        size="sm"
         variant="secondary"
         onClick={() => handlePageChange(page + 1)}
         disabled={page >= totalPages}

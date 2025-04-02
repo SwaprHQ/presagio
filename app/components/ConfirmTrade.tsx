@@ -5,13 +5,11 @@ import {
   DialogBody,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   errorToast,
   Icon,
-  VisuallyHidden,
 } from '@swapr/ui';
 import { SwapDirection, SwapState } from '.';
 import MarketABI from '@/abi/market.json';
@@ -33,7 +31,7 @@ import {
 } from 'wagmi/actions';
 import { config } from '@/providers/chain-config';
 import { SVGProps, useEffect, useState } from 'react';
-import { succesApprovalTxToast, waitingTxToast } from './toasts';
+import { successApprovalTxToast, waitingTxToast } from './toasts';
 
 const ROUNDING_PRECISON = 0.00000000001;
 
@@ -92,7 +90,7 @@ export const ConfirmTrade = ({
       'Error found on approve transaction submission.';
 
     errorToast({
-      children: <div className="font-normal">{errorMessage}</div>,
+      children: <div>{errorMessage}</div>,
     });
 
     setIsApproving(false);
@@ -115,7 +113,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesApprovalTxToast(txHash, inToken);
+        successApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
@@ -139,7 +137,7 @@ export const ConfirmTrade = ({
           hash: txHash,
         });
 
-        succesApprovalTxToast(txHash, inToken);
+        successApprovalTxToast(txHash, inToken);
 
         onApprove();
       })
@@ -216,7 +214,7 @@ export const ConfirmTrade = ({
                 <div className="flex items-center space-x-1">
                   <p>1 {swapState.inToken.symbol}</p>
                   <p>=</p>
-                  <p className="text-text-success-em">
+                  <p className="text-text-success-high-em">
                     {swapState.tokenPrice} {swapState.outToken.symbol}
                   </p>
                   <p className="font-mono text-text-low-em">(≈ $1)</p>

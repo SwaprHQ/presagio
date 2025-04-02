@@ -132,6 +132,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
       {showPaginationButtons && (
         <div className="flex w-full items-center justify-between bg-surface-surface-1 p-4">
           <Button
+            size="sm"
             variant="secondary"
             onClick={() => setPage(page - 1)}
             className={cx('space-x-2', { invisible: page === 1 })}
@@ -141,6 +142,7 @@ export const MarketActivity = ({ id }: { id: string }) => {
           </Button>
           <p className="text-sm font-medium text-text-med-em">Page {page}</p>
           <Button
+            size="sm"
             variant="secondary"
             onClick={() => setPage(page + 1)}
             className={cx('space-x-2', { invisible: !hasMoreMarkets })}

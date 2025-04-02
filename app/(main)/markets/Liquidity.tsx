@@ -4,7 +4,7 @@ import {
   TokenLogo,
   SwapInput,
   Spinner,
-  succesApprovalTxToast,
+  successApprovalTxToast,
   TxButton,
   waitingTxToast,
 } from '@/app/components';
@@ -20,7 +20,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  Icon,
   ToggleGroup,
   ToggleGroupOption,
   VisuallyHidden,
@@ -201,7 +200,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
           hash: txHash,
         });
         refetchCollateralAllowence();
-        succesApprovalTxToast(txHash, collateralToken);
+        successApprovalTxToast(txHash, collateralToken);
       })
       .catch(approveTxErrorHandling)
       .finally(() => setIsApproving(false));
@@ -283,7 +282,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
         {Object.values(LiquidityOperation).map(tab => (
           <div key={tab}>
             <ToggleGroupOption
-              size="sm"
+              size="xs"
               value={tab}
               className="flex justify-center font-medium capitalize"
             >
@@ -305,7 +304,9 @@ export const Liquidity = ({ id }: { id: Address }) => {
           <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
             <p className="text-text-low-em">
               Balance:{' '}
-              {formatEtherWithFixedDecimals(activeLiquidityOperationState.balance)}
+              <span className="font-mono">
+                {formatEtherWithFixedDecimals(activeLiquidityOperationState.balance)}
+              </span>
             </p>
             {!!balance && (
               <Button
@@ -429,12 +430,12 @@ const TokensToReceiveTable = ({
       </div>
       {liquidityOperation === LiquidityOperation.ADD ? (
         <>
-          <div className="flex justify-between px-4 py-3 text-md">
+          <div className="flex justify-between px-4 py-3">
             <p>Pool tokens</p>
             <p>{outAmount[0] || '-'}</p>
           </div>
           {outcomeTokenToReceive && outcomeTokenToReceive.value && (
-            <div className="flex justify-between px-4 py-3 text-md">
+            <div className="flex justify-between px-4 py-3">
               <p
                 className={cx('uppercase', {
                   'text-text-success-high-em': outcomeTokenToReceive.index === 0,
@@ -449,7 +450,7 @@ const TokensToReceiveTable = ({
         </>
       ) : (
         outAmount.map((balance, index) => (
-          <div className="flex justify-between px-4 py-3 text-md" key={index}>
+          <div className="flex justify-between px-4 py-3" key={index}>
             <p
               className={cx('uppercase', {
                 'text-text-success-high-em': index === 0,

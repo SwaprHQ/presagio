@@ -508,6 +508,7 @@ export default function HomePage() {
       {showClientUI && showPaginationButtons && (
         <div className="flex w-full justify-end space-x-4">
           <IconButton
+            size="sm"
             name="chevron-left"
             variant="secondary"
             onClick={() => handleNextPage(page - 1)}
@@ -515,26 +516,21 @@ export default function HomePage() {
           />
           <div className="flex space-x-2">
             {page > 1 && (
-              <Button
-                className="h-[42px] w-[42px] p-3"
-                variant="ghost"
-                onClick={() => handleNextPage(page - 1)}
-              >
+              <Button size="sm" variant="ghost" onClick={() => handleNextPage(page - 1)}>
                 {page - 1}
               </Button>
             )}
-            <Button className="h-[42px] w-[42px] p-3">{page}</Button>
+            <Button variant="light" size="sm">
+              {page}
+            </Button>
             {hasMoreMarkets && (
-              <Button
-                className="h-[42px] w-[42px] p-3"
-                variant="ghost"
-                onClick={() => handleNextPage(page + 1)}
-              >
+              <Button size="sm" variant="ghost" onClick={() => handleNextPage(page + 1)}>
                 {page + 1}
               </Button>
             )}
           </div>
           <IconButton
+            size="sm"
             name="chevron-right"
             variant="secondary"
             onClick={() => handleNextPage(page + 1)}

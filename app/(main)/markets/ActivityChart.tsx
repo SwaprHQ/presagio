@@ -146,7 +146,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
               </li>
             ))}
         </ul>
-        <p className="mt-3 text-xs text-text-low-em">{tradeTime}</p>
+        <p className="mt-3 font-mono text-xs text-text-low-em">{tradeTime}</p>
       </div>
     );
   };

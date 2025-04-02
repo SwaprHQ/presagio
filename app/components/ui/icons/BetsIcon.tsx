@@ -18,17 +18,17 @@ const BetsIcon = ({ className, width = 32, height = 32 }: BetsIconProps) => {
         <path
           d="M15.2628 3.49163H8.73736C8.32567 3.49163 7.99155 3.15751 7.99155 2.74581C7.99155 2.33412 8.32567 2 8.73736 2H15.2628C15.6755 2 16.0085 2.33412 16.0085 2.74581C16.0085 3.15751 15.6755 3.49163 15.2628 3.49163Z"
           fill="currentColor"
-          fill-opacity="0.72"
+          fillOpacity="0.72"
         />
         <path
           d="M6.21441 6.5866H17.7864C18.1982 6.5866 18.5323 6.25248 18.5323 5.84078C18.5323 5.42909 18.1982 5.09497 17.7864 5.09497H6.21441C5.80272 5.09497 5.4686 5.42909 5.4686 5.84078C5.4686 6.25248 5.80272 6.5866 6.21441 6.5866Z"
           fill="currentColor"
-          fill-opacity="0.72"
+          fillOpacity="0.72"
         />
         <path
           d="M17.2083 8.42871H6.79173C4.70145 8.42871 3 10.1302 3 12.2205V17.3477C3 19.4389 4.70145 21.1404 6.79173 21.1404H17.2083C19.2996 21.1404 21 19.4389 21 17.3477V12.2205C21 10.1302 19.2996 8.42871 17.2083 8.42871Z"
           fill="currentColor"
-          fill-opacity="0.72"
+          fillOpacity="0.72"
         />
       </g>
       <defs>
@@ -39,9 +39,9 @@ const BetsIcon = ({ className, width = 32, height = 32 }: BetsIconProps) => {
           width="20.6667"
           height="21.807"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
