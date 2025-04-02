@@ -57,9 +57,6 @@ export const Navbar = () => {
           <div className="mx-3 md:ml-28"></div>
         </div>
         <div className="flex h-10 items-center justify-end space-x-2">
-          <div className="hidden md:block">
-            <LifiWidgetPopover />
-          </div>
           <Link href="/chat/new">
             <Button variant="pastel" className="space-x-2 text-nowrap">
               <Image
@@ -97,6 +94,9 @@ export const Navbar = () => {
               )}
             </div>
           </Link>
+          <div className="hidden md:block">
+            <LifiWidgetPopover />
+          </div>
           <ConnectButton />
           <NetworkButton />
           <SettingsPopover />

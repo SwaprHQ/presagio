@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconButton } from '@swapr/ui';
-import { useSession } from '../../../../context/SessionContext';
+import { Button, IconButton } from '@swapr/ui';
+import { useSession } from '@/context/SessionContext';
 import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import wizardSvg from '@/public/pixel-wizard.svg';
+import { Spinner } from '@/app/components';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -51,11 +52,11 @@ export default function NewChat() {
   const isInvalidQuestion = mutation?.error?.message === 'Invalid question';
 
   const errorMessage = isInvalidQuestion
-    ? 'Sorry but your question is an invalid prediction question.'
-    : 'Somthing went wrong in my research. Please try again.';
+    ? 'Sorry but your question is not a valid prediction question.'
+    : 'Something went wrong in my research. Please try again.';
 
   return (
-    <div className="mx-auto mt-80 w-full max-w-2xl p-4">
+    <div className="mx-auto mt-32 w-full max-w-2xl p-4">
       <div className="space-y-10">
         <div className="space-y-2">
           <div className="flex space-x-3">
@@ -79,7 +80,9 @@ export default function NewChat() {
               onChange={e => setInput(e.target.value)}
               placeholder="Ask me about the future..."
               disabled={mutation.isPending}
-              className="h-24 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold" //try field-sizing-content with tailwindcss@4
+              required
+              autoFocus
+              className="h-24 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold"
               onKeyDown={event => {
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault();
@@ -92,13 +95,21 @@ export default function NewChat() {
                 }
               }}
             />
-            <IconButton
-              onClick={mutation.isPending ? undefined : submit}
-              disabled={mutation.isPending}
-              name="arrow-up"
-              variant="pastel"
-              className="size-10 rounded-100"
-            />
+            {mutation.isPending ? (
+              <Button variant="pastel" className="size-10 rounded-100">
+                <Spinner className="h-5 w-5 animate-spin" />
+              </Button>
+            ) : (
+              !!input && (
+                <IconButton
+                  onClick={mutation.isPending ? undefined : submit}
+                  disabled={mutation.isPending}
+                  name="arrow-up"
+                  variant="pastel"
+                  className="size-10 rounded-100"
+                />
+              )
+            )}
           </div>
           {mutation.isPending && (
             <p className="text-md text-text-med-em">

@@ -2,12 +2,12 @@
 
 import { cn, MarkdownRenderer, MessageCard, ScrollArea, Spinner } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
-import { IconButton } from '@swapr/ui';
+import { Button, IconButton } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
 import { isJSON } from '@/utils/json';
-import { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef } from 'react';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -86,7 +86,7 @@ const Message = ({ children, role }: MessageProps) => {
 };
 
 const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
-  const [scrollAreaElement, setScrollAreaElement] = useState<HTMLDivElement | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
 
   const { messages, error, setInput, input, isLoading, handleSubmit } = useChat({
     initialMessages,
@@ -104,8 +104,9 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
   });
 
   useEffect(() => {
-    if (scrollAreaElement) scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
-  }, [messages, scrollAreaElement]);
+    if (scrollAreaRef.current)
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+  }, [messages, scrollAreaRef.current]);
 
   const parseAnswer = (message: AiMessage): JSONMessage | AiMessage => {
     if (typeof message.content !== 'string' || message.role === 'user') return message;
@@ -123,7 +124,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
 
   return (
     <div className="mt-4 flex h-full w-full flex-col items-center justify-between overflow-auto">
-      <ScrollArea ref={setScrollAreaElement} className="w-full">
+      <ScrollArea ref={scrollAreaRef} className="w-full">
         <div className="mx-auto mb-6 w-full max-w-3xl space-y-4">
           {parsedMessages.map((msg, index) => {
             const content = msg.content;
@@ -156,10 +157,13 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Ask me about the future..."
-            disabled={isLoading}
-            className="h-20 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold" //try field-sizing-content with tailwindcss@4
+            autoFocus
+            onFocus={() => {
+              console.log('hello');
+            }}
+            className="h-20 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold"
             onKeyDown={event => {
-              if (event.key === 'Enter' && !event.shiftKey) {
+              if (event.key === 'Enter' && !event.shiftKey && !!input) {
                 event.preventDefault();
 
                 if (isLoading) {
@@ -170,13 +174,21 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
               }
             }}
           />
-          <IconButton
-            onClick={isLoading ? undefined : handleSubmit}
-            disabled={isLoading}
-            name="arrow-up"
-            variant="pastel"
-            className="size-10 rounded-100"
-          />
+          {isLoading ? (
+            <Button variant="pastel" className="size-10 rounded-100">
+              <Spinner className="h-5 w-5 animate-spin" />
+            </Button>
+          ) : (
+            !!input && (
+              <IconButton
+                onClick={isLoading ? undefined : handleSubmit}
+                disabled={isLoading}
+                name="arrow-up"
+                variant="pastel"
+                className="size-10 rounded-100"
+              />
+            )
+          )}
         </div>
       </div>
     </div>
