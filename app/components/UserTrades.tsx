@@ -210,8 +210,8 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
                   'w-full max-w-[464px] space-y-4 divide-y-2 divide-outline-base-em rounded-16 border border-outline-base-em bg-surface-surface-0 py-4 text-center',
                   isWinner &&
                     (index === 0
-                      ? 'bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-success-base-em'
-                      : 'bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-danger-base-em')
+                      ? 'border-surface-surface-2 bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-success-base-em'
+                      : 'border-surface-surface-2 bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-danger-base-em')
                 )}
               >
                 <div className="flex items-center space-x-2 divide-x-2 divide-outline-base-em px-4">
