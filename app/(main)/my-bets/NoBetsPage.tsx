@@ -15,7 +15,7 @@ export default function NoBetsPage() {
         <p className="text-text-low-em">Check out the markets and place a bet.</p>
       </div>
       <Link href="/">
-        <Button size="lg" className="mx-auto px-24" variant="solid" colorScheme="primary">
+        <Button size="lg" className="mx-auto px-24">
           Check markets
         </Button>
       </Link>

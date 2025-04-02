@@ -14,12 +14,7 @@ export default function NoWalletConnectedPage() {
           ones.
         </p>
       </div>
-      <ConnectButton
-        size="lg"
-        className="mx-auto px-24"
-        variant="solid"
-        colorScheme="primary"
-      >
+      <ConnectButton size="lg" className="mx-auto px-24">
         Connect Wallet
       </ConnectButton>
     </div>
