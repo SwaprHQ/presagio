@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
-  title: `DEV #### ${APP_NAME} - Where predictions meet AI agents`,
+  title: `${APP_NAME} - Where predictions meet AI agents`,
   description: 'Bet on prediction markets in Gnosis Chain, enhanced by AI.',
 };
 
