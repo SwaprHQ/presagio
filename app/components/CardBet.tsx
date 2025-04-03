@@ -85,13 +85,8 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
     <Card
       className={cx(
         'hover:ring-neutral-inverse-white-alpha-8 w-full bg-gradient-to-b from-neutral-inverse-white-alpha-4',
-        isWinner &&
-          'to-text-success-base-em hover:ring-4 hover:ring-text-success-base-em',
-        isLoser
-          ? market.isAnswerInvalid
-            ? ''
-            : 'to-text-danger-base-em hover:ring-4 hover:ring-text-danger-base-em'
-          : ''
+        isWinner && 'to-text-success-base-em',
+        isLoser ? (market.isAnswerInvalid ? '' : 'to-text-danger-base-em') : ''
       )}
     >
       <Link key={market.fpmm.id} href={`markets?id=${market.fpmm.id}`} className="block">
