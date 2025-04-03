@@ -3,18 +3,24 @@
 import Image from 'next/image';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { cn, MarkdownRenderer, ScrollArea } from '@/app/components';
+import { cn, ConnectButton, MarkdownRenderer, ScrollArea } from '@/app/components';
 import aiStarsSvg from '@/public/ai-stars.svg';
 import wizardSvg from '@/public/pixel-wizard.svg';
-import { Icon, IconButton, Input, Tag } from '@swapr/ui';
+import { Button, Icon, IconButton, Input, Tag } from '@swapr/ui';
 import { twMerge } from 'tailwind-merge';
 import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
+import { useRouter } from 'next/navigation';
+import { useAccount } from 'wagmi';
+import { useAuth } from '../../hooks/useAuth';
+import { useSession } from '../../context/SessionContext';
 
 interface AiBaseProps extends PropsWithChildren {
   messages: any[];
   trackOnClickEvents: string[];
   isChatOpen?: boolean;
+  id?: string;
+  marketTitle?: string | null;
 }
 
 const MARKETING_LINK =
@@ -25,13 +31,47 @@ export const AiChatBase = ({
   messages,
   trackOnClickEvents,
   isChatOpen,
+  id,
+  marketTitle,
 }: AiBaseProps) => {
   const [isOpen, setOpen] = useState(isChatOpen);
   const [scrollAreaElement, setScrollAreaElement] = useState<HTMLDivElement | null>(null);
 
+  const router = useRouter();
+  const { isConnected } = useAccount();
+  const { connect } = useAuth();
+  const { isLoggedIn } = useSession();
+
   useEffect(() => {
     if (scrollAreaElement) scrollAreaElement.scrollTop = scrollAreaElement.scrollHeight;
   }, [messages, isOpen, scrollAreaElement]);
+
+  const startChat = async () => {
+    if (!id || !marketTitle) router.push('/chat/new');
+
+    try {
+      const createChatResponse = await fetch(
+        process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL + '/api/chat',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ marketId: id, message: marketTitle }),
+        }
+      );
+
+      if (!createChatResponse.ok) {
+        throw new Error('Failed to create chat');
+      }
+
+      const chat = await createChatResponse.json();
+      router.push('/chat?id=' + chat.chatId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Dialog.Root onOpenChange={isOpen => setOpen(isOpen)} open={isOpen} modal>
@@ -78,11 +118,19 @@ export const AiChatBase = ({
                   </a>
                   <Icon name="arrow-top-right" size={12} />
                 </div>
-                <Input
-                  placeholder="Ask anything. Available soon."
-                  className="w-full"
-                  disabled
-                />
+                {!isConnected ? (
+                  <ConnectButton variant="solid" width="full">
+                    Connect to chat
+                  </ConnectButton>
+                ) : !isLoggedIn ? (
+                  <Button width="full" onClick={connect}>
+                    Sign in to chat
+                  </Button>
+                ) : (
+                  <Button width="full" onClick={startChat}>
+                    <p>Start chat</p>
+                  </Button>
+                )}
                 <p className="w-full text-center text-xs text-text-low-em">
                   AI-generated, for reference only.
                 </p>

@@ -162,7 +162,7 @@ export default function ProfilePage() {
   const aiAgent = getIsAIAgent(address);
 
   return (
-    <main className="mx-auto mt-12 max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
+    <main className="mx-auto mb-32 mt-12 min-h-screen max-w-5xl space-y-12 px-6 md:flex md:flex-col md:items-center">
       <div className="flex w-full flex-col justify-between space-y-4 rounded-32 bg-surface-surface-bg p-6 ring-1 ring-outline-low-em md:flex-row md:items-center md:space-y-0">
         <div className="flex items-center space-x-4">
           <Avatar address={address} className="size-14" />
