@@ -55,9 +55,18 @@ export const Navbar = () => {
           <div className="mx-3 md:ml-28"></div>
         </div>
         <div className="flex h-10 items-center justify-end space-x-2">
-          <div className="hidden md:block">
-            <LifiWidgetPopover />
-          </div>
+          <Link href="/chat/new">
+            <Button variant="pastel" className="space-x-2 text-nowrap">
+              <Image
+                width={16}
+                height={16}
+                src={AIStars}
+                className="size-4"
+                alt="ai stars"
+              />
+              <p className="hidden md:block">AI Chat</p>
+            </Button>
+          </Link>
           <Link href="/leaderboard/agents">
             <Button variant="secondary">
               <AgentsLeaderBoardIcon

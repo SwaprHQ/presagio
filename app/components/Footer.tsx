@@ -7,7 +7,7 @@ import { trackEvent } from 'fathom-client';
 import { FA_EVENTS } from '@/analytics';
 
 export const Footer = () => (
-  <div className="mt-32 border-t border-surface-surface-2 bg-surface-surface-0 px-6 md:px-10 lg:px-20 xl:px-40">
+  <div className="border-t border-surface-surface-2 bg-surface-surface-0 px-6 md:px-10 lg:px-20 xl:px-40">
     <div className="flex flex-col-reverse items-start justify-between py-10 md:flex-row">
       <div className="w-full space-y-12 md:w-fit">
         <div className="hidden space-y-2 md:block">

@@ -6,6 +6,7 @@ import { Address } from 'viem';
 import { FA_EVENTS } from '@/analytics';
 import { useQuery } from '@tanstack/react-query';
 import { getMarket, Query } from '@/queries/omen';
+import { isJSON } from '@/utils/json';
 
 interface AiChatMarketProps {
   id: Address;
@@ -43,15 +44,6 @@ const createPrediction = async (id: Address) => {
   }
   return response.json();
 };
-
-function isJSON(message: string) {
-  try {
-    JSON.parse(message);
-  } catch (e) {
-    return false;
-  }
-  return true;
-}
 
 export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
   const [answer, setAnswer] = useState<any>(null);
@@ -130,6 +122,8 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
       messages={[title, parsedAnswer]}
       trackOnClickEvents={trackOnClickEvents}
       isChatOpen={isChatOpen}
+      id={id}
+      marketTitle={title}
     >
       <Message role={'user'}>{title}</Message>
       {parsedAnswer && (

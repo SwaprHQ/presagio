@@ -10,6 +10,7 @@ import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { TxProvider, ModalProvider, SlippageProvider } from '@/context';
 import { useAnalytics } from '@/hooks';
 import { Toaster, TooltipProvider } from '@swapr/ui';
+import { SessionProvider } from '../context/SessionContext';
 
 const queryClient = new QueryClient();
 
@@ -21,14 +22,16 @@ export const Providers = ({ children }: PropsWithChildren) => {
       <QueryClientProvider client={queryClient}>
         <NextThemesProvider>
           <CustomConnectKitProvider>
-            <ModalProvider>
-              <Toaster position="top-right" toastOptions={{ duration: 7000 }} />
-              <TxProvider>
-                <TooltipProvider delayDuration={300}>
-                  <SlippageProvider>{children}</SlippageProvider>
-                </TooltipProvider>
-              </TxProvider>
-            </ModalProvider>
+            <SessionProvider>
+              <ModalProvider>
+                <Toaster position="top-right" toastOptions={{ duration: 7000 }} />
+                <TxProvider>
+                  <TooltipProvider delayDuration={300}>
+                    <SlippageProvider>{children}</SlippageProvider>
+                  </TooltipProvider>
+                </TxProvider>
+              </ModalProvider>
+            </SessionProvider>
           </CustomConnectKitProvider>
         </NextThemesProvider>
       </QueryClientProvider>
