@@ -84,9 +84,13 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
   return (
     <Card
       className={cx(
-        'hover:ring-neutral-inverse-white-alpha-8 w-full bg-gradient-to-b from-neutral-inverse-white-alpha-4',
-        isWinner && 'to-text-success-base-em',
-        isLoser ? (market.isAnswerInvalid ? '' : 'to-text-danger-base-em') : ''
+        'hover:ring-neutral-inverse-white-alpha-8 group w-full bg-gradient-to-b from-neutral-inverse-white-alpha-4',
+        isWinner && 'to-text-success-base-em hover:to-text-success-low-em',
+        isLoser
+          ? market.isAnswerInvalid
+            ? ''
+            : 'to-text-danger-base-em hover:to-text-danger-low-em'
+          : ''
       )}
     >
       <Link key={market.fpmm.id} href={`markets?id=${market.fpmm.id}`} className="block">
@@ -129,7 +133,7 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
           </div>
         </section>
       </Link>
-      <section className="flex items-center border-t border-outline-base-em p-4 md:h-[48px]">
+      <div className="flex items-center border-t border-outline-base-em p-4 group-hover:border-neutral-inverse-black-alpha-24 md:h-[48px]">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
             <div className="flex items-center space-x-1">
@@ -166,7 +170,7 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
           </div>
           {children}
         </div>
-      </section>
+      </div>
     </Card>
   );
 };
