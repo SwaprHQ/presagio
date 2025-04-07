@@ -1,10 +1,10 @@
-interface BetsIconProps {
+interface IconProps {
   className: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 }
 
-const BetsIcon = ({ className, width = 32, height = 32 }: BetsIconProps) => {
+export const BetsIcon = ({ className, width = 24, height = 24 }: IconProps) => {
   return (
     <svg
       width={width}
@@ -71,4 +71,3 @@ const BetsIcon = ({ className, width = 32, height = 32 }: BetsIconProps) => {
     </svg>
   );
 };
-export default BetsIcon;

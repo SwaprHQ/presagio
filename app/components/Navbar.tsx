@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';
-import BetsIcon from '@/app/components/ui/icons/BetsIcon';
+import { AgentsLeaderBoardIcon, BetsIcon } from '@/app/components/ui/icons/';
 
 export const Navbar = () => {
   const widgetEvents = useWidgetEvents();
@@ -60,7 +60,11 @@ export const Navbar = () => {
           </div>
           <Link href="/leaderboard/agents">
             <Button variant="secondary">
-              <Icon name="bar-graph-fill" className="text-[16px] text-text-med-em" />
+              <AgentsLeaderBoardIcon
+                className="text-text-med-em"
+                width={19}
+                height={19}
+              />
               <p className="hidden md:block">Agents</p>
             </Button>
           </Link>
@@ -71,7 +75,7 @@ export const Navbar = () => {
                 className="space-x-1.5 text-nowrap"
                 onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}
               >
-                <BetsIcon className="text-text-med-em" width={16} height={16} />
+                <BetsIcon className="text-text-med-em" width={19} height={19} />
                 <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
