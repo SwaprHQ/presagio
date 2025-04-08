@@ -29,16 +29,16 @@ export const FA_EVENTS = {
     ROUTE_SUCCESS: 'click/lifi-widget/route-success',
   },
   AI_CHAT: {
-    LANDING: {
-      OPEN: 'click/ai-chat/landing/open',
+    WIZARD: {
+      OPEN: 'click/ai-chat/wizard/open',
+      OPEN_LANDING: 'click/ai-chat/wizard/open/landing',
+      OPEN_MARKET: (id: string) => `click/ai-chat/wizard/open/${id}`,
     },
-  },
-  MARKET: {
-    AI_CHAT: {
-      OPEN_GENEREAL: 'click/market/ai-chat/open-general',
-      OPEN: (id: string) => `click/market/${id}/ai-chat/open`,
-      GET_BETA_ACCESS: 'click/market/ai-chat/get-beta-access',
-    },
+    NEW: 'click/ai-chat/new',
+    NAVBAR: 'click/ai-chat/navbar',
+    OPEN: (id: string) => `click/ai-chat/open/${id}`,
+    GET_BETA_ACCESS: 'click/ai-chat/get-beta-access',
+    CREATE: (id: string) => `create/ai-chat/${id}`,
   },
   MARKETS: {
     CAROUSEL: 'click/markets/carousel',

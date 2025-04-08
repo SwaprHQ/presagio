@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon, IconButton } from '@swapr/ui';
 import { useSession } from '@/context/SessionContext';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import wizardSvg from '@/public/pixel-wizard.svg';
 import { LoadingDots } from '@/app/(main)/markets/AiChatMarket';
+import { trackEvent } from 'fathom-client';
+import { FA_EVENTS } from '@/analytics';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -32,12 +34,15 @@ const createChat = async (message: string): Promise<{ chatId: string }> => {
 export default function NewChat() {
   const [input, setInput] = useState('');
   const router = useRouter();
-  const { isLoggedIn, loading } = useSession();
+  const { isLoggedIn, loading, userId } = useSession();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: createChat,
     onSuccess: chat => {
       setInput('');
+      queryClient.invalidateQueries({ queryKey: ['chats', userId] });
+      trackEvent(FA_EVENTS.AI_CHAT.CREATE(chat.chatId));
       router.push('/chat?id=' + chat.chatId);
     },
     onError: error => {
@@ -74,7 +79,7 @@ export default function NewChat() {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="flex w-full space-x-2 rounded-12 bg-neutral-inverse-white-alpha-12 p-3">
+          <div className="bg-neutral-inverse-white-alpha-12 flex w-full space-x-2 rounded-12 p-3">
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -96,7 +101,7 @@ export default function NewChat() {
               }}
             />
             {mutation.isPending ? (
-              <div className="flex size-8 items-center justify-center rounded-100 bg-surface-surface-white-smoke-4">
+              <div className="bg-surface-surface-white-smoke-4 flex size-8 items-center justify-center rounded-100">
                 <Icon size={16} name="spinner" className="animate-spin" />
               </div>
             ) : (
@@ -122,10 +127,10 @@ export default function NewChat() {
             </div>
           )}
           {mutation.isError && (
-            <p className="text-text-danger-main text-md">{errorMessage}</p>
+            <p className="text-md text-text-danger-main">{errorMessage}</p>
           )}
           {isInvalidQuestion && (
-            <p className="text-md text-text-primary-high-em">
+            <p className="text-text-primary-high-em text-md">
               <strong>Tip:</strong> Ask a question about a future event, only answerable
               with Yes or No.
             </p>

@@ -113,8 +113,8 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
   const parsedAnswer = isFetchedPrediction ? parseAnswer() : null;
 
   const trackOnClickEvents = [
-    FA_EVENTS.MARKET.AI_CHAT.OPEN_GENEREAL,
-    FA_EVENTS.MARKET.AI_CHAT.OPEN(id),
+    FA_EVENTS.AI_CHAT.WIZARD.OPEN,
+    FA_EVENTS.AI_CHAT.WIZARD.OPEN_MARKET(id),
   ];
 
   return (

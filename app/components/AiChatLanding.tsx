@@ -10,7 +10,7 @@ interface AiChatLandingProps {
   markets?: FixedProductMarketMaker[];
 }
 
-const trackOnClickEvents = [FA_EVENTS.AI_CHAT.LANDING.OPEN];
+const trackOnClickEvents = [FA_EVENTS.AI_CHAT.WIZARD.OPEN];
 
 const randomMarket = (markets: FixedProductMarketMaker[]) =>
   markets[Math.floor(Math.random() * markets.length)];
