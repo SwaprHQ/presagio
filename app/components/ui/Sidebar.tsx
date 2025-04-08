@@ -271,6 +271,7 @@ const SidebarTrigger = React.forwardRef<
 
   return (
     <IconButton
+      // @ts-ignore
       name="sidenav"
       ref={ref}
       data-sidebar="trigger"
