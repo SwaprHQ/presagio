@@ -252,7 +252,7 @@ const Sidebar = React.forwardRef<
         >
           <div
             data-sidebar="sidebar"
-            className="group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow flex h-full w-full flex-col border-surface-surface-2 bg-surface-surface-0 group-data-[variant=floating]:border group-data-[variant=floating]:border-surface-surface-2"
+            className="group-data-[variant=floating]:rounded-lg flex h-full w-full flex-col border-surface-surface-2 bg-surface-surface-1 group-data-[variant=floating]:border group-data-[variant=floating]:border-surface-surface-2 group-data-[variant=floating]:shadow"
           >
             {children}
           </div>
@@ -325,7 +325,7 @@ const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<'main
         ref={ref}
         className={cx(
           'bg-background relative flex w-full flex-1 flex-col',
-          'md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0',
+          'md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:shadow',
           className
         )}
         {...props}
@@ -344,7 +344,7 @@ const SidebarInput = React.forwardRef<
       ref={ref}
       data-sidebar="input"
       className={cx(
-        'bg-background shadow-none focus-visible:ring-sidebar-ring h-8 w-full focus-visible:ring-2',
+        'bg-background focus-visible:ring-sidebar-ring h-8 w-full shadow-none focus-visible:ring-2',
         className
       )}
       {...props}

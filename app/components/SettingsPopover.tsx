@@ -46,7 +46,7 @@ export const SettingsPopover = () => {
             <div className="space-y-2">
               <ButtonLink
                 size="sm"
-                variant="secondary"
+                variant="tertiary"
                 as={Link}
                 href={`/profile?address=${address}`}
                 className="items-center justify-between"
@@ -60,7 +60,7 @@ export const SettingsPopover = () => {
               {isLoggedIn ? (
                 <Button
                   size="sm"
-                  variant="pastel"
+                  variant="tertiary"
                   width="full"
                   className="items-center justify-between"
                   onClick={disconnect}
@@ -71,7 +71,7 @@ export const SettingsPopover = () => {
               ) : (
                 <Button
                   size="sm"
-                  variant="pastel"
+                  variant="tertiary"
                   width="full"
                   className="items-center justify-between"
                   onClick={connect}

@@ -6,7 +6,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { cn, ConnectButton, MarkdownRenderer, ScrollArea } from '@/app/components';
 import aiStarsSvg from '@/public/ai-stars.svg';
 import wizardSvg from '@/public/pixel-wizard.svg';
-import { Button, Icon, IconButton, Input, Tag } from '@swapr/ui';
+import { Button, Icon, IconButton, Tag } from '@swapr/ui';
 import { twMerge } from 'tailwind-merge';
 import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
@@ -121,9 +121,7 @@ export const AiChatBase = ({
                   <Icon name="arrow-top-right" size={12} />
                 </div>
                 {!isConnected ? (
-                  <ConnectButton variant="solid" width="full">
-                    Connect to chat
-                  </ConnectButton>
+                  <ConnectButton width="full">Connect to chat</ConnectButton>
                 ) : !isLoggedIn ? (
                   <Button width="full" onClick={connect}>
                     Sign in to chat
@@ -192,9 +190,7 @@ export const Message = ({ children, role }: MessageProps) => {
     <MarkdownRenderer
       className={cn(
         'w-[90%] rounded-20 px-4 py-2',
-        isAssistant
-          ? 'mr-auto bg-outline-primary-base-em'
-          : 'ml-auto bg-surface-surface-1'
+        isAssistant ? 'mr-auto bg-outline-primary-low-em' : 'ml-auto bg-surface-surface-1'
       )}
     >
       {children}
@@ -208,7 +204,7 @@ interface MessageCardProps extends PropsWithChildren {
 
 export const MessageCard = ({ title, children }: MessageCardProps) => {
   return (
-    <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-base-em p-4">
+    <div className="min-w-40 space-y-1 rounded-20 bg-outline-primary-low-em p-4">
       <p className="text-sm font-medium uppercase text-text-low-em">{title}</p>
       <p className="text-md font-medium uppercase">{children}</p>
     </div>

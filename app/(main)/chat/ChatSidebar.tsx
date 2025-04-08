@@ -49,14 +49,14 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
       <SidebarHeader className="mt-3 space-y-3">
         <SidebarMenu>
           <Link href="/chat/new">
-            <Button variant="outline" size="sm" width="full">
+            <Button variant="secondary" size="sm" width="full">
               New chat
             </Button>
           </Link>
         </SidebarMenu>
         {!isLoading && (
           <SidebarMenu>
-            <p className="truncate px-5 font-semibold">Previous chats</p>
+            <p className="truncate px-5 text-sm font-medium">Previous chats</p>
           </SidebarMenu>
         )}
       </SidebarHeader>

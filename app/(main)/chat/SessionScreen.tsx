@@ -28,7 +28,7 @@ export default function SessionScreen() {
           Sign message
         </Button>
       ) : (
-        <ConnectButton variant="solid" width="full" />
+        <ConnectButton width="full" />
       )}
     </div>
   );

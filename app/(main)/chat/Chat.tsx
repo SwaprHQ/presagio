@@ -50,8 +50,7 @@ const Chat = ({ chatId }: ChatProps) => {
     enabled: !!chatId && isLoggedIn,
   });
 
-  if (!chatId)
-    return <div className="pt-64 text-lg font-semibold">Chat ID is missing</div>;
+  if (!chatId) return <div className="pt-64 text-lg font-medium">Chat ID is missing</div>;
 
   if (isLoading)
     return (
@@ -62,7 +61,7 @@ const Chat = ({ chatId }: ChatProps) => {
 
   if (chat) return <ChatMessages initialMessages={chat.messages} id={chat.id} />;
 
-  return <div className="pt-64 text-lg font-semibold">Chat not found</div>;
+  return <div className="pt-64 text-lg font-medium">Chat not found</div>;
 };
 
 interface MessageProps extends PropsWithChildren {
@@ -76,8 +75,8 @@ const Message = ({ children, role }: MessageProps) => {
       className={cn(
         'w-fit max-w-[90%] rounded-20 px-4 py-2',
         isAssistant
-          ? 'mr-auto bg-outline-primary-base-em'
-          : 'ml-auto bg-surface-surface-2'
+          ? 'mr-auto bg-outline-primary-low-em'
+          : 'ml-auto bg-neutral-inverse-white-alpha-4 dark:bg-neutral-inverse-white-alpha-24'
       )}
     >
       {children}
@@ -152,7 +151,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
         </div>
       </ScrollArea>
       <div className="flex w-full max-w-3xl space-x-3 pb-28">
-        <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
+        <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-smoke-gray p-3">
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -161,7 +160,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             onFocus={() => {
               console.log('hello');
             }}
-            className="h-20 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold"
+            className="h-20 w-full resize-none bg-transparent outline-none placeholder:font-semibold"
             onKeyDown={event => {
               if (event.key === 'Enter' && !event.shiftKey && !!input) {
                 event.preventDefault();
@@ -175,7 +174,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             }}
           />
           {isLoading ? (
-            <Button variant="pastel" className="size-10 rounded-100">
+            <Button variant="secondary" className="size-10 rounded-100">
               <Spinner className="h-5 w-5 animate-spin" />
             </Button>
           ) : (
@@ -184,7 +183,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
                 onClick={isLoading ? undefined : handleSubmit}
                 disabled={isLoading}
                 name="arrow-up"
-                variant="pastel"
+                variant="secondary"
                 className="size-10 rounded-100"
               />
             )

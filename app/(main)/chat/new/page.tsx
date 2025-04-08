@@ -96,7 +96,7 @@ export default function NewChat() {
               }}
             />
             {mutation.isPending ? (
-              <Button variant="pastel" className="size-10 rounded-100">
+              <Button variant="secondary" className="size-10 rounded-100">
                 <Spinner className="h-5 w-5 animate-spin" />
               </Button>
             ) : (
@@ -105,7 +105,7 @@ export default function NewChat() {
                   onClick={mutation.isPending ? undefined : submit}
                   disabled={mutation.isPending}
                   name="arrow-up"
-                  variant="pastel"
+                  variant="secondary"
                   className="size-10 rounded-100"
                 />
               )
@@ -118,7 +118,7 @@ export default function NewChat() {
             </p>
           )}
           {mutation.isError && (
-            <p className="text-md text-text-danger-main">{errorMessage}</p>
+            <p className="text-text-danger-main text-md">{errorMessage}</p>
           )}
           {isInvalidQuestion && (
             <p className="text-md text-text-med-em">
