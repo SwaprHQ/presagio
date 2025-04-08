@@ -197,7 +197,7 @@ const CarouselSelector = React.forwardRef<
         <button
           className={cx(
             'size-2 rounded-100',
-            index === selected ? 'bg-surface-primary-med-em' : 'bg-surface-primary-low-em'
+            index === selected ? 'bg-surface-primary-med-em' : 'bg-surface-surface-1'
           )}
           key={index}
           onClick={() => {
