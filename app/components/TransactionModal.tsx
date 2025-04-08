@@ -15,7 +15,6 @@ import {
   VisuallyHidden,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
-import Image from 'next/image';
 import { getExplorerTxUrl } from '@/utils';
 
 interface TransactionModalProps {
@@ -51,13 +50,7 @@ export const TransactionModal = ({
           <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
               <>
-                <Image
-                  src="/spinner.svg"
-                  alt="spinner"
-                  width={56}
-                  height={56}
-                  className="animate-spin"
-                />
+                <Icon size={56} name="spinner" className="animate-spin" />
                 <div className="flex flex-col items-center space-y-2">
                   <p className="text-center text-2xl font-semibold text-text-high-em">
                     Transaction submitted

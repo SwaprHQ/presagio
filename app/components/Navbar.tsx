@@ -50,7 +50,7 @@ export const Navbar = () => {
   const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
-    <nav className="bg-surface-surface-bg h-20 px-6 py-5">
+    <nav className="h-20 border-b border-neutral-inverse-white-alpha-4 px-6 py-5 dark:border-neutral-inverse-white-alpha-12">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Logo />

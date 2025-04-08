@@ -1,9 +1,8 @@
 'use client';
 
 import { getExplorerTxUrl, shortenAddress } from '@/utils';
-import { successToast, toast } from '@swapr/ui';
+import { Icon, successToast, toast } from '@swapr/ui';
 import { Outcome, Token } from '@/entities';
-import { Spinner } from './Spinner';
 
 const AddressLink = ({ txHash }: { txHash: string }) => (
   <a
@@ -32,7 +31,7 @@ export const waitingTxToast = (txHash: string) =>
   toast({
     children: (
       <div className="flex items-center space-x-4">
-        <Spinner className="h-5 w-5 shrink-0 animate-spin" />
+        <Icon size={20} name="spinner" className="animate-spin" />
         <div>
           <p>Wating for transaction confirmation </p>
           <AddressLink txHash={txHash} />

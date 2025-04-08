@@ -3,7 +3,6 @@
 import {
   TokenLogo,
   SwapInput,
-  Spinner,
   successApprovalTxToast,
   TxButton,
   waitingTxToast,
@@ -20,6 +19,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  Icon,
   ToggleGroup,
   ToggleGroupOption,
   VisuallyHidden,
@@ -389,7 +389,8 @@ export const Liquidity = ({ id }: { id: Address }) => {
               >
                 {isApproving ? (
                   <div className="flex items-center space-x-2">
-                    <p>Approving</p> <Spinner className="h-5 w-5 animate-spin" />
+                    <p>Approving</p>{' '}
+                    <Icon size={20} name="spinner" className="animate-spin" />
                   </div>
                 ) : (
                   'Approve'
