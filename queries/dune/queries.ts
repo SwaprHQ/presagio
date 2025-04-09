@@ -1,37 +1,55 @@
-import { LatestResultArgs, ParameterType, RunQueryArgs } from '@duneanalytics/client-sdk';
 import { Address } from 'viem';
-import { duneClient } from '@/utils';
-import { Categories, DUNE_API_KEY } from '@/constants';
+import { DUNE_API_KEY } from '@/constants';
 import { AiAgent } from '@/types';
 
-const marketCategories = Object.values(Categories).join(',');
+const DUNE_API_BASE_URL = 'https://api.dune.com/api/v1';
 
 export const getAIAgents = async () => {
   const DUNE_AGENTS_INFO_QUERY_ID = 3582994;
+  const url = `${DUNE_API_BASE_URL}/query/${DUNE_AGENTS_INFO_QUERY_ID}/results`;
 
-  const options: LatestResultArgs = {
-    queryId: DUNE_AGENTS_INFO_QUERY_ID,
-    parameters: [{ type: ParameterType.NUMBER, value: '1', name: 'limit' }],
-  };
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'x-dune-api-key': DUNE_API_KEY,
+      'Content-Type': 'application/json',
+    },
+  });
 
-  const duneResult = await duneClient.getLatestResult(options);
+  console.log('response', response);
 
-  return duneResult.result?.rows as AiAgent[];
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch data from Dune: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+
+  return data.result?.rows as AiAgent[];
 };
 
 export const getOpenMarkets = async () => {
   const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
+  const url = `${DUNE_API_BASE_URL}/query/${DUNE_OPEN_MARKETS_INFO_QUERY_ID}/results`;
 
-  const options: RunQueryArgs = {
-    queryId: DUNE_OPEN_MARKETS_INFO_QUERY_ID,
-    filters: `category in (${marketCategories})`,
-    columns: ['category'],
-    sort_by: 'category asc',
-  };
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'x-dune-api-key': DUNE_API_KEY,
+      'Content-Type': 'application/json',
+    },
+  });
 
-  const duneResult = await duneClient.getLatestResult(options);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Open Markets from Dune: ${response.status} ${response.statusText}`
+    );
+  }
 
-  return duneResult.result?.rows;
+  const data = await response.json();
+
+  return data.result?.rows ?? [];
 };
 
 type TotalsTradeMetrics = {
@@ -45,18 +63,28 @@ type TotalsTradeMetrics = {
 
 export const getAgentsTotalsTradeMetricsData = async () => {
   const DUNE_AGENTS_TOTALS_QUERY_ID = 4537552;
+  const url = `${DUNE_API_BASE_URL}/query/${DUNE_AGENTS_TOTALS_QUERY_ID}/results`;
 
-  const options: RunQueryArgs = {
-    queryId: DUNE_AGENTS_TOTALS_QUERY_ID,
-  };
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'x-dune-api-key': DUNE_API_KEY,
+      'Content-Type': 'application/json',
+    },
+  });
 
-  const duneResult = await duneClient.getLatestResult(options);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch Agent Totals Trade Metrics from Dune: ${response.status} ${response.statusText}`
+    );
+  }
 
-  const firstRow = duneResult.result?.rows?.[0];
+  const data = await response.json();
+
+  const firstRow = data.result?.rows?.[0];
 
   return firstRow ? (firstRow as TotalsTradeMetrics) : null;
 };
-
 interface DuneUrlParams {
   queryId: number;
   page?: number;
@@ -65,8 +93,6 @@ interface DuneUrlParams {
   filters?: string;
   baseUrl?: string;
 }
-
-const DUNE_API_BASE_URL = 'https://api.dune.com/api/v1';
 
 export const setupDuneQueryUrl = ({
   queryId,
