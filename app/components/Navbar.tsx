@@ -15,9 +15,7 @@ import { useMemo } from 'react';
 
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';
-import BetsIcon from '@/app/components/ui/icons/BetsIcon';
-import AIStars from '@/public/ai-stars.svg';
-import Image from 'next/image';
+import { AgentsLeaderBoardIcon, BetsIcon } from '@/app/components/ui/icons/';
 
 export const Navbar = () => {
   const widgetEvents = useWidgetEvents();
@@ -50,7 +48,7 @@ export const Navbar = () => {
   const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
-    <nav className="h-20 bg-surface-surface-bg px-6 py-5">
+    <nav className="h-20 border-b border-neutral-inverse-white-alpha-4 px-6 py-5 dark:border-neutral-inverse-white-alpha-12">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Logo />
@@ -58,36 +56,39 @@ export const Navbar = () => {
         </div>
         <div className="flex h-10 items-center justify-end space-x-2">
           <Link href="/chat/new">
-            <Button variant="pastel" className="space-x-2 text-nowrap">
-              <Image
-                width={16}
-                height={16}
-                src={AIStars}
-                className="size-4"
+            <Button variant="secondary" className="space-x-2 text-nowrap">
+              <Icon
+                name="stars"
+                size={16}
                 alt="ai stars"
+                className="text-text-primary-med-em"
               />
               <p className="hidden md:block">AI Chat</p>
             </Button>
           </Link>
           <Link href="/leaderboard/agents">
-            <Button variant="pastel" className="space-x-2 text-nowrap">
-              <Icon name="bar-graph-fill" className="text-[16px] text-text-med-em" />
+            <Button variant="secondary">
+              <AgentsLeaderBoardIcon
+                className="text-text-med-em"
+                width={19}
+                height={19}
+              />
               <p className="hidden md:block">Agents</p>
             </Button>
           </Link>
           <Link href="/my-bets">
             <div className="relative">
               <Button
-                variant="pastel"
+                variant="secondary"
                 className="space-x-1.5 text-nowrap"
                 onClick={() => trackEvent(FA_EVENTS.BETS.MY_BETS)}
               >
-                <BetsIcon className="text-text-med-em" width={16} height={16} />
+                <BetsIcon className="text-text-med-em" width={19} height={19} />
                 <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
-                <div className="absolute -right-2 -top-1 flex size-5 items-center justify-center rounded-100 border-2 border-surface-surface-bg bg-surface-success-main p-1 text-text-white">
-                  <p className="text-xs font-semibold text-text-neutral-alt-white">
+                <div className="absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border border-surface-success-high-em bg-surface-success-low-em p-1">
+                  <p className="text-2xs font-semibold text-text-success-med-em">
                     {unredeemedBetsNumber}
                   </p>
                 </div>
@@ -97,8 +98,8 @@ export const Navbar = () => {
           <div className="hidden md:block">
             <LifiWidgetPopover />
           </div>
-          <ConnectButton />
           <NetworkButton />
+          <ConnectButton />
           <SettingsPopover />
         </div>
       </div>

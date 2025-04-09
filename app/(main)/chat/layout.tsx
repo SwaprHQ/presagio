@@ -15,7 +15,7 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
       </SignedIn>
       <SidebarInset>
         <SignedIn>
-          <SidebarTrigger className="absolute -left-[1px] top-0 z-10 rounded-l-0 bg-surface-surface-0" />
+          <SidebarTrigger className="absolute -left-[1px] top-0 z-10 rounded-l-0 bg-surface-surface-1" />
         </SignedIn>
         <SessionScreen />
         {children}

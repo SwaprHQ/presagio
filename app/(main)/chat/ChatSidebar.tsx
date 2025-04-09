@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@swapr/ui';
+import { Button, Icon } from '@swapr/ui';
 import {
   Sidebar,
   SidebarContent,
@@ -11,7 +11,6 @@ import {
 } from '@/app/components/ui/Sidebar';
 import { useSession } from '@/context/SessionContext';
 import { useQuery } from '@tanstack/react-query';
-import { Spinner } from '@/app/components';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -49,20 +48,20 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
       <SidebarHeader className="mt-3 space-y-3">
         <SidebarMenu>
           <Link href="/chat/new">
-            <Button variant="outline" size="sm" width="full">
+            <Button variant="neutral" size="sm" width="full">
               New chat
             </Button>
           </Link>
         </SidebarMenu>
         {!isLoading && (
           <SidebarMenu>
-            <p className="truncate px-5 font-semibold">Previous chats</p>
+            <p className="truncate px-5 text-sm font-medium">Previous chats</p>
           </SidebarMenu>
         )}
       </SidebarHeader>
       <SidebarContent>
         {isLoading ? (
-          <Spinner className="mx-auto mt-4 h-5 w-5 animate-spin" />
+          <Icon name="spinner" size={20} className="mx-auto mt-4 animate-spin" />
         ) : (
           <SidebarMenu className="my-1">
             {chats?.length ? (
@@ -72,7 +71,7 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                     size="md"
                     width="full"
                     variant="ghost"
-                    className="justify-start overflow-hidden text-nowrap font-normal"
+                    className="justify-start"
                     href={`/chat?id=${id}`}
                     active={chatId === id}
                   >

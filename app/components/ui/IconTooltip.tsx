@@ -12,10 +12,10 @@ export const iconTooltipStyles = cva(
     variants: {
       iconName: {
         info: [
-          'border-surface-info-main bg-surface-info-accent-2 text-surface-info-main',
+          'border-surface-info-high-em bg-surface-info-low-em text-surface-info-high-em',
         ],
         warning: [
-          'border-surface-warning-main bg-surface-warning-accent-2 text-surface-warning-main',
+          'border-surface-warning-high-em bg-surface-warning-low-em text-surface-warning-high-em',
         ],
       },
     },

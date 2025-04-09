@@ -1,8 +1,8 @@
 'use client';
 
-import { cn, MarkdownRenderer, MessageCard, ScrollArea, Spinner } from '@/app/components';
+import { cn, MarkdownRenderer, MessageCard, ScrollArea } from '@/app/components';
 import { useSession } from '@/context/SessionContext';
-import { Button, IconButton } from '@swapr/ui';
+import { IconButton, Icon } from '@swapr/ui';
 import { useChat } from '@ai-sdk/react';
 import { Message as AiMessage } from 'ai';
 import { useQuery } from '@tanstack/react-query';
@@ -50,19 +50,18 @@ const Chat = ({ chatId }: ChatProps) => {
     enabled: !!chatId && isLoggedIn,
   });
 
-  if (!chatId)
-    return <div className="pt-64 text-lg font-semibold">Chat ID is missing</div>;
+  if (!chatId) return <div className="pt-64 text-lg font-medium">Chat ID is missing</div>;
 
   if (isLoading)
     return (
       <div className="pt-64">
-        <Spinner className="h-5 w-5 animate-spin" />
+        <Icon size={20} name="spinner" className="animate-spin" />
       </div>
     );
 
   if (chat) return <ChatMessages initialMessages={chat.messages} id={chat.id} />;
 
-  return <div className="pt-64 text-lg font-semibold">Chat not found</div>;
+  return <div className="pt-64 text-lg font-medium">Chat not found</div>;
 };
 
 interface MessageProps extends PropsWithChildren {
@@ -76,8 +75,8 @@ const Message = ({ children, role }: MessageProps) => {
       className={cn(
         'w-fit max-w-[90%] rounded-20 px-4 py-2',
         isAssistant
-          ? 'mr-auto bg-outline-primary-base-em'
-          : 'ml-auto bg-surface-surface-2'
+          ? 'mr-auto bg-outline-primary-low-em'
+          : 'ml-auto bg-neutral-inverse-white-alpha-4 dark:bg-neutral-inverse-white-alpha-24'
       )}
     >
       {children}
@@ -123,9 +122,9 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
   const parsedMessages = messages.map(msg => parseAnswer(msg));
 
   return (
-    <div className="mt-4 flex h-full w-full flex-col items-center justify-between overflow-auto">
+    <div className="flex h-full w-full flex-col items-center justify-between overflow-auto">
       <ScrollArea ref={scrollAreaRef} className="w-full">
-        <div className="mx-auto mb-6 w-full max-w-3xl space-y-4">
+        <div className="mx-auto mb-6 mt-4 w-full max-w-3xl space-y-4">
           {parsedMessages.map((msg, index) => {
             const content = msg.content;
             return typeof content === 'object' ? (
@@ -152,7 +151,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
         </div>
       </ScrollArea>
       <div className="flex w-full max-w-3xl space-x-3 pb-28">
-        <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
+        <div className="flex w-full rounded-12 border border-outline-low-em bg-surface-surface-smoke-gray p-3">
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -161,7 +160,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             onFocus={() => {
               console.log('hello');
             }}
-            className="h-20 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold"
+            className="h-20 w-full resize-none bg-transparent outline-none placeholder:font-medium"
             onKeyDown={event => {
               if (event.key === 'Enter' && !event.shiftKey && !!input) {
                 event.preventDefault();
@@ -175,17 +174,18 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             }}
           />
           {isLoading ? (
-            <Button variant="pastel" className="size-10 rounded-100">
-              <Spinner className="h-5 w-5 animate-spin" />
-            </Button>
+            <div className="flex size-8 items-center justify-center rounded-100 bg-surface-surface-white-smoke-4">
+              <Icon size={16} name="spinner" className="animate-spin" />
+            </div>
           ) : (
             !!input && (
               <IconButton
-                onClick={isLoading ? undefined : handleSubmit}
+                size="sm"
+                onClick={handleSubmit}
                 disabled={isLoading}
                 name="arrow-up"
-                variant="pastel"
-                className="size-10 rounded-100"
+                variant="primary"
+                className="rounded-100"
               />
             )
           )}

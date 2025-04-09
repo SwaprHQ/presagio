@@ -234,8 +234,8 @@ export default function AgentsLeaderboardTable() {
                 <TableCell
                   className={twMerge(
                     'text-right',
-                    agent.profit_loss >= 0 && 'text-text-success-main',
-                    agent.profit_loss <= -0.01 && 'text-text-danger-main'
+                    agent.profit_loss >= 0 && 'text-text-success-high-em',
+                    agent.profit_loss <= -0.01 && 'text-text-danger-high-em'
                   )}
                 >
                   {agent.profit_loss.toLocaleString('en-US', {
@@ -302,7 +302,7 @@ export const SortableHeader = ({
       <Button
         variant="ghost"
         onClick={() => handleSort(headerKey)}
-        className="h-8 text-nowrap text-sm font-bold text-text-low-em"
+        className="h-8 text-nowrap text-sm font-semibold text-text-low-em"
       >
         {children}
         {headerKey === sortKey && (
@@ -352,10 +352,11 @@ const PaginationControls = ({
   }
 
   return (
-    <div className="mt-5 flex w-full justify-center space-x-4">
+    <div className="mt-5 flex w-full items-center justify-center space-x-4">
       <IconButton
         name="chevron-left"
-        variant="pastel"
+        size="sm"
+        variant="secondary"
         onClick={() => handlePageChange(page - 1)}
         disabled={page === 1}
       />
@@ -368,8 +369,7 @@ const PaginationControls = ({
           ) : (
             <Button
               key={pageNum}
-              className="h-[42px] w-[42px] p-3"
-              variant={pageNum === page ? 'solid' : 'ghost'}
+              variant={pageNum === page ? 'light' : 'ghost'}
               onClick={() => handlePageChange(Number(pageNum))}
             >
               {pageNum}
@@ -379,7 +379,8 @@ const PaginationControls = ({
       </div>
       <IconButton
         name="chevron-right"
-        variant="pastel"
+        size="sm"
+        variant="secondary"
         onClick={() => handlePageChange(page + 1)}
         disabled={page >= totalPages}
       />

@@ -1,10 +1,10 @@
 'use client';
 
-import { Button } from '@swapr/ui';
+import { Button, Icon } from '@swapr/ui';
 import { useSession } from '@/context/SessionContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useAccount } from 'wagmi';
-import { ConnectButton, Spinner } from '@/app/components';
+import { ConnectButton } from '@/app/components';
 
 export default function SessionScreen() {
   const { isLoggedIn, loading } = useSession();
@@ -16,7 +16,7 @@ export default function SessionScreen() {
   if (loading)
     return (
       <div className="mx-auto pt-64">
-        <Spinner className="h-5 w-5 animate-spin" />
+        <Icon size={20} name="spinner" className="animate-spin" />
       </div>
     );
 
@@ -28,7 +28,7 @@ export default function SessionScreen() {
           Sign message
         </Button>
       ) : (
-        <ConnectButton variant="solid" width="full" />
+        <ConnectButton width="full" />
       )}
     </div>
   );

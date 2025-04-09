@@ -33,7 +33,12 @@ export const SettingsPopover = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <IconButton name="settings-fill" variant="pastel" />
+        <IconButton
+          size="sm"
+          name="settings-fill"
+          variant="secondary"
+          className="size-[42px]"
+        />
       </PopoverTrigger>
       <PopoverContent className="max-w-lg px-4">
         <div className={address && 'space-y-3 divide-y divide-outline-base-em'}>
@@ -41,7 +46,7 @@ export const SettingsPopover = () => {
             <div className="space-y-2">
               <ButtonLink
                 size="sm"
-                variant="pastel"
+                variant="tertiary"
                 as={Link}
                 href={`/profile?address=${address}`}
                 className="items-center justify-between"
@@ -55,7 +60,7 @@ export const SettingsPopover = () => {
               {isLoggedIn ? (
                 <Button
                   size="sm"
-                  variant="pastel"
+                  variant="tertiary"
                   width="full"
                   className="items-center justify-between"
                   onClick={disconnect}
@@ -66,7 +71,7 @@ export const SettingsPopover = () => {
               ) : (
                 <Button
                   size="sm"
-                  variant="pastel"
+                  variant="tertiary"
                   width="full"
                   className="items-center justify-between"
                   onClick={connect}

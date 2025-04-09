@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-
-import { Manrope } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
 
 import './globals.css';
 import '@swapr/ui/colors.css';
@@ -8,7 +7,11 @@ import '@swapr/ui/colors.css';
 import { APP_NAME, APP_URL } from '@/constants';
 import { Suspense } from 'react';
 
-const manrope = Manrope({ subsets: ['latin'] });
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -23,7 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} text-base text-text-high-em antialiased`}>
+      <body
+        className={`font-os2 ${jetbrainsMono.variable} text-base text-text-high-em antialiased`}
+      >
         <Suspense>{children}</Suspense>
       </body>
     </html>

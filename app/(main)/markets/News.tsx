@@ -67,7 +67,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
 
   return (
     <a
-      className="flex cursor-pointer space-x-4 py-4"
+      className="flex cursor-pointer space-x-4 px-2 py-4 hover:rounded-6 hover:bg-surface-surface-1"
       href={url}
       target="_blank"
       rel="noopener noreferrer"
@@ -85,7 +85,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
         <Skeleton className="h-16 w-[88px] flex-shrink-0 rounded-4" />
       ) : null}
       <div className="flex flex-col space-y-1">
-        <p className="font-semibold">{title}</p>
+        <p className="font-medium">{title}</p>
         {publishDate && publishDate.toString() !== 'Invalid Date' ? (
           <p className="text-sm text-text-low-em">
             {format(publishDate, 'd MMM y, HH:mm')}

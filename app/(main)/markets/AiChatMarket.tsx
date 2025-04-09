@@ -154,12 +154,12 @@ export const AiChatMarket = ({ id, isChatOpen }: AiChatMarketProps) => {
   );
 };
 
-const LoadingDots = () => {
+export const LoadingDots = () => {
   return (
     <div className="flex items-center justify-center space-x-0.5" aria-label="Loading">
-      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main"></div>
-      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.2s]"></div>
-      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-main [animation-delay:0.4s]"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-med-em"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-med-em [animation-delay:0.2s]"></div>
+      <div className="h-1 w-1 animate-loading-dot rounded-100 bg-surface-primary-med-em [animation-delay:0.4s]"></div>
     </div>
   );
 };

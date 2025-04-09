@@ -84,23 +84,23 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
   return (
     <Card
       className={cx(
-        'w-full bg-gradient-to-b from-[#F1F1F1] dark:from-[#131313]',
-        isWinner && 'from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]',
+        'hover:ring-neutral-inverse-white-alpha-8 group w-full bg-gradient-to-b from-neutral-inverse-white-alpha-4',
+        isWinner && 'to-text-success-base-em hover:to-text-success-low-em',
         isLoser
           ? market.isAnswerInvalid
             ? ''
-            : 'from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]'
+            : 'to-text-danger-base-em hover:to-text-danger-low-em'
           : ''
       )}
     >
       <Link key={market.fpmm.id} href={`markets?id=${market.fpmm.id}`} className="block">
         <section className="flex min-h-[144px] flex-col space-y-4 p-4">
           <div className="flex items-center justify-between">
-            <Tag colorScheme="quaternary" size="sm" className="capitalize">
+            <Tag colorScheme="secondary" size="sm" className="capitalize">
               {market.fpmm.category}
             </Tag>
             <div className="flex items-center space-x-2">
-              <Tag colorScheme="quaternary" size="sm" className="capitalize">
+              <Tag colorScheme="secondary" size="sm" className="capitalize">
                 {market.getMarketStatus()}
               </Tag>
               <p className="text-sm text-text-low-em">
@@ -116,7 +116,7 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
               marketId={market.fpmm.id}
             />
             <div className="space-y-2">
-              <div className="flex-1 overflow-y-auto text-md font-semibold text-text-high-em md:text-xl">
+              <div className="flex-1 overflow-y-auto text-md font-medium text-text-high-em md:text-lg">
                 {market.fpmm.title}
               </div>
               {market.isClosed && (
@@ -133,36 +133,36 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
           </div>
         </section>
       </Link>
-      <section className="flex items-center border-t border-outline-base-em p-4 md:h-[48px]">
+      <div className="flex items-center border-t border-outline-base-em p-4 group-hover:border-neutral-inverse-black-alpha-24 md:h-[48px]">
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-4">
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">Bet:</p>{' '}
+              <p className="text-sm font-medium text-text-med-em">Bet:</p>{' '}
               <div className="flex items-center space-x-1.5">
                 <Tag
                   colorScheme={position.getOutcomeIndex() === 0 ? 'success' : 'danger'}
                 >
                   {position.getOutcome()}
                 </Tag>
-                <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+                <div className="flex items-center space-x-1 font-mono text-sm font-medium text-text-high-em">
                   <p>{formatEtherWithFixedDecimals(collateralAmountSpent, 2)}</p>
                   <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
                 </div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-semibold text-text-med-em">
+              <p className="text-sm font-medium text-text-med-em">
                 {resultAmountString}:
               </p>
-              <div className="flex items-center space-x-1 text-sm font-semibold text-text-high-em">
+              <div className="flex items-center space-x-1 font-mono text-sm font-medium text-text-high-em">
                 <p>{resultAmount}</p>
                 <TokenLogo address={market.fpmm.collateralToken} className="size-3" />
               </div>
             </div>
             {lastTradeTimestamp && (
               <div className="flex items-center space-x-1">
-                <p className="text-sm font-semibold text-text-med-em">Last bet:</p>
-                <p className="text-sm font-semibold text-text-high-em">
+                <p className="text-sm font-medium text-text-med-em">Last bet:</p>
+                <p className="font-mono text-sm font-medium text-text-high-em">
                   {formatDateTimeWithYear(lastTradeTimestamp)}
                 </p>
               </div>
@@ -170,7 +170,7 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
           </div>
           {children}
         </div>
-      </section>
+      </div>
     </Card>
   );
 };
@@ -199,7 +199,7 @@ export const MyBetsCardBet = ({ userBet }: { userBet: UserBet }) => {
   return (
     <CardBet userBet={userBet}>
       {canRedeem && (
-        <Button size="sm" colorScheme="success" variant="pastel" onClick={redeem}>
+        <Button size="sm" colorScheme="success" variant="light" onClick={redeem}>
           Reedem
         </Button>
       )}

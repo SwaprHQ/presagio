@@ -16,7 +16,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
 
   return (
     <Card>
-      <div className="flex h-[160px] flex-col justify-between p-4">
+      <div className="flex h-[180px] flex-col justify-between p-4">
         <div className="flex space-x-4">
           <MarketThumbnail
             width={40}
@@ -24,7 +24,7 @@ export const CardMarket = ({ market }: CardMarketProps) => {
             className="size-[40px] rounded-8 bg-outline-low-em"
             marketId={market.id}
           />
-          <ScrollArea className="h-[98px] flex-1 font-semibold text-text-high-em">
+          <ScrollArea className="h-[98px] flex-1 font-medium text-text-high-em">
             {market.title}
           </ScrollArea>
         </div>
@@ -34,12 +34,14 @@ export const CardMarket = ({ market }: CardMarketProps) => {
         <div className="flex w-full items-center justify-between space-x-4">
           <div className="flex items-center space-x-2">
             <TokenLogo address={market.collateralToken} size="xs" className="size-3.5" />
-            <p className="text-sm font-semibold text-text-med-em">
+            <p className="font-mono text-sm font-medium text-text-low-em">
               {formatValueWithFixedDecimals(market.scaledCollateralVolume, 2) ?? '-'}
               <span> Vol</span>
             </p>
           </div>
-          <p className="text-sm text-text-low-em">{remainingTime(closingDate)}</p>
+          <p className="text-sm font-medium text-text-low-em">
+            {remainingTime(closingDate)}
+          </p>
         </div>
       </div>
     </Card>

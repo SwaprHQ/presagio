@@ -2,6 +2,7 @@
 
 import {
   Button,
+  ButtonColorScheme,
   Dialog,
   DialogBody,
   DialogClose,
@@ -11,11 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
   Icon,
-  IconBadge,
   VisuallyHidden,
 } from '@swapr/ui';
 import { ModalId, useModal } from '@/context/ModalContext';
-import Image from 'next/image';
 import { getExplorerTxUrl } from '@/utils';
 
 interface TransactionModalProps {
@@ -39,25 +38,19 @@ export const TransactionModal = ({
     <Dialog open={isModalOpen(ModalId.WAITING_TRANSACTION)} onOpenChange={close}>
       <DialogContent>
         <DialogHeader>
+          <DialogClose name="arrow-left" />
           <VisuallyHidden asChild>
             <DialogTitle>Transaction Modal</DialogTitle>
           </VisuallyHidden>
           <VisuallyHidden asChild>
             <DialogDescription />
           </VisuallyHidden>
-          <DialogClose />
         </DialogHeader>
         <DialogBody className="mx-auto mb-8 w-full max-w-fit space-y-2 px-2 md:max-w-[496px]">
           <div className="flex w-full flex-col items-center space-y-12">
             {isLoading ? (
               <>
-                <Image
-                  src="/spinner.svg"
-                  alt="spinner"
-                  width={56}
-                  height={56}
-                  className="animate-spin"
-                />
+                <Icon size={56} name="spinner" className="animate-spin" />
                 <div className="flex flex-col items-center space-y-2">
                   <p className="text-center text-2xl font-semibold text-text-high-em">
                     Transaction submitted
@@ -72,7 +65,13 @@ export const TransactionModal = ({
               <>
                 {txHash && !isError && (
                   <>
-                    <IconBadge name="tick" colorScheme="success" />
+                    <div className="rounded-100 bg-surface-success-base-em p-4">
+                      <Icon
+                        name="tick"
+                        size={38}
+                        className="text-surface-success-high-em"
+                      />
+                    </div>
                     <div className="flex flex-col items-center space-y-2">
                       <p className="text-center text-2xl font-semibold text-text-high-em">
                         Transaction successful!
@@ -86,7 +85,13 @@ export const TransactionModal = ({
                 )}
                 {isError && (
                   <>
-                    <IconBadge name="exclamation" colorScheme="error" />
+                    <div className="rounded-100 bg-surface-danger-base-em p-4">
+                      <Icon
+                        name="exclamation"
+                        size={38}
+                        className="text-surface-danger-high-em"
+                      />
+                    </div>
                     <div className="flex flex-col items-center space-y-2">
                       <p className="text-2xl font-semibold text-text-high-em">
                         There was an error.
@@ -106,8 +111,14 @@ export const TransactionModal = ({
             <a href={getExplorerTxUrl(txHash)} target="_blank" className="w-full">
               <Button
                 width="full"
-                colorScheme={isLoading ? 'primary' : isError ? 'error' : 'success'}
-                variant="pastel"
+                colorScheme={
+                  (isLoading
+                    ? 'main'
+                    : isError
+                      ? 'error'
+                      : 'success') as ButtonColorScheme
+                }
+                variant="light"
                 size="lg"
               >
                 <p>View in explorer</p>

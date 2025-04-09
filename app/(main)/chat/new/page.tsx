@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, IconButton } from '@swapr/ui';
+import { Icon, IconButton } from '@swapr/ui';
 import { useSession } from '@/context/SessionContext';
 import { useMutation } from '@tanstack/react-query';
 import Image from 'next/image';
 import wizardSvg from '@/public/pixel-wizard.svg';
-import { Spinner } from '@/app/components';
+import { LoadingDots } from '@/app/(main)/markets/AiChatMarket';
 
 const PRESAGIO_CHAT_API_URL = process.env.NEXT_PUBLIC_PRESAGIO_CHAT_API_URL!;
 
@@ -74,7 +74,7 @@ export default function NewChat() {
           </p>
         </div>
         <div className="space-y-2">
-          <div className="flex w-full space-x-2 rounded-12 bg-surface-surface-3 p-3">
+          <div className="flex w-full space-x-2 rounded-12 bg-neutral-inverse-white-alpha-12 p-3">
             <textarea
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -96,32 +96,36 @@ export default function NewChat() {
               }}
             />
             {mutation.isPending ? (
-              <Button variant="pastel" className="size-10 rounded-100">
-                <Spinner className="h-5 w-5 animate-spin" />
-              </Button>
+              <div className="flex size-8 items-center justify-center rounded-100 bg-surface-surface-white-smoke-4">
+                <Icon size={16} name="spinner" className="animate-spin" />
+              </div>
             ) : (
               !!input && (
                 <IconButton
+                  size="sm"
                   onClick={mutation.isPending ? undefined : submit}
                   disabled={mutation.isPending}
                   name="arrow-up"
-                  variant="pastel"
-                  className="size-10 rounded-100"
+                  variant="primary"
+                  className="rounded-100"
                 />
               )
             )}
           </div>
           {mutation.isPending && (
-            <p className="text-md text-text-med-em">
-              Await fellow internaut, let me research thorugh my books to find your
-              answer...
-            </p>
+            <div className="flex items-center space-x-2">
+              <LoadingDots />
+              <p className="text-md text-text-med-em">
+                Await fellow internaut, let me research thorugh my books to find your
+                answer...
+              </p>
+            </div>
           )}
           {mutation.isError && (
-            <p className="text-md text-text-danger-main">{errorMessage}</p>
+            <p className="text-text-danger-main text-md">{errorMessage}</p>
           )}
           {isInvalidQuestion && (
-            <p className="text-md text-text-med-em">
+            <p className="text-md text-text-primary-high-em">
               <strong>Tip:</strong> Ask a question about a future event, only answerable
               with Yes or No.
             </p>

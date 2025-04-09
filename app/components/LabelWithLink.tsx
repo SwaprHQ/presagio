@@ -39,13 +39,13 @@ export const LabelWithLink = ({
   const label = isAiAgent ? aiAgent.label : ensName || shortenAddress(address);
 
   return (
-    <div className="flex items-center space-x-2 text-sm md:text-base">
+    <div className="flex w-fit max-w-20 items-center space-x-2 text-sm md:text-base">
       <Link
         href={href}
         title={label}
         className={twMerge(
           'hover:underline',
-          isAiAgent ? 'text-text-primary-main' : 'text-text-high-em',
+          isAiAgent ? '!w-fit! text-text-primary-high-em' : 'text-text-high-em',
           className
         )}
         {...props}

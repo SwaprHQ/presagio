@@ -19,11 +19,11 @@ export default function Error({
     <main className="mt-12 flex w-full flex-col items-center space-y-4 px-6">
       <h2 className="text-xl font-bold">Sorry, something went wrong!</h2>
       <div className="flex space-x-4">
-        <Button variant="pastel" onClick={() => reset()}>
+        <Button variant="secondary" onClick={() => reset()}>
           Try again
         </Button>
         <Link href="/">
-          <Button variant="pastel">Go to home page</Button>
+          <Button variant="secondary">Go to home page</Button>
         </Link>
       </div>
     </main>

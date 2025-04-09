@@ -6,7 +6,7 @@ import { Button } from '@swapr/ui';
 
 export default function NoBetsPage() {
   return (
-    <div className="mt-12 w-full items-center space-y-8 px-6 md:flex md:flex-col">
+    <div className="my-12 w-full items-center space-y-8 px-6 md:flex md:flex-col">
       <NoBetsImage className="mx-auto" />
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold text-text-high-em">
@@ -15,7 +15,7 @@ export default function NoBetsPage() {
         <p className="text-text-low-em">Check out the markets and place a bet.</p>
       </div>
       <Link href="/">
-        <Button size="lg" className="mx-auto px-24" variant="solid" colorScheme="primary">
+        <Button size="lg" className="mx-auto px-24">
           Check markets
         </Button>
       </Link>

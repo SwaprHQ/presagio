@@ -39,8 +39,7 @@ export const LifiWidgetPopover = () => {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant="pastel"
-          className="space-x-2 text-nowrap"
+          variant="secondary"
           onClick={() => trackEvent(FA_EVENTS.LIFI_WIDGET.OPEN)}
         >
           <p>Get {SDAI.symbol}</p>

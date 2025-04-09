@@ -138,15 +138,15 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
               <li
                 key={index}
                 className={cx({
-                  'text-text-danger-em': entry.dataKey === OUTCOME_1,
-                  'text-text-success-em': entry.dataKey === OUTCOME_0,
+                  'text-text-danger-med-em': entry.dataKey === OUTCOME_1,
+                  'text-text-success-med-em': entry.dataKey === OUTCOME_0,
                 })}
               >
                 {`${entry.name}: ${entry.value ? getPercent(entry.value, total) : '-'}`}
               </li>
             ))}
         </ul>
-        <p className="text-text-low-em">{tradeTime}</p>
+        <p className="mt-3 font-mono text-xs text-text-low-em">{tradeTime}</p>
       </div>
     );
   };
@@ -193,7 +193,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
           x="97%"
           y="90%"
           textAnchor="end"
-          className="fill-text-success-em font-semibold uppercase"
+          className="fill-text-success-high-em font-medium uppercase"
         >
           {getPercent(+lastDataPoint[OUTCOME_0], total)} -{' '}
           {marketModel.outcomes[OUTCOME_0].symbol}
@@ -202,7 +202,7 @@ export const ActivityChart = ({ id }: ActivityChartProps) => {
           x="97%"
           y="15%"
           textAnchor="end"
-          className="fill-text-danger-em font-semibold uppercase"
+          className="fill-text-danger-high-em font-medium uppercase"
         >
           {getPercent(+lastDataPoint[OUTCOME_1], total)} -{' '}
           {marketModel.outcomes[OUTCOME_1].symbol}

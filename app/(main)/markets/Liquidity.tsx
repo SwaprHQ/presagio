@@ -3,8 +3,7 @@
 import {
   TokenLogo,
   SwapInput,
-  Spinner,
-  succesApprovalTxToast,
+  successApprovalTxToast,
   TxButton,
   waitingTxToast,
 } from '@/app/components';
@@ -201,7 +200,7 @@ export const Liquidity = ({ id }: { id: Address }) => {
           hash: txHash,
         });
         refetchCollateralAllowence();
-        succesApprovalTxToast(txHash, collateralToken);
+        successApprovalTxToast(txHash, collateralToken);
       })
       .catch(approveTxErrorHandling)
       .finally(() => setIsApproving(false));
@@ -283,9 +282,9 @@ export const Liquidity = ({ id }: { id: Address }) => {
         {Object.values(LiquidityOperation).map(tab => (
           <div key={tab}>
             <ToggleGroupOption
-              size="md"
+              size="xs"
               value={tab}
-              className="flex justify-center font-semibold capitalize"
+              className="flex justify-center font-medium capitalize"
             >
               {tab}
             </ToggleGroupOption>
@@ -305,15 +304,18 @@ export const Liquidity = ({ id }: { id: Address }) => {
           <div className="flex min-h-8 items-center justify-end space-x-1.5 text-sm">
             <p className="text-text-low-em">
               Balance:{' '}
-              {formatEtherWithFixedDecimals(activeLiquidityOperationState.balance)}
+              <span className="font-mono">
+                {formatEtherWithFixedDecimals(activeLiquidityOperationState.balance)}
+              </span>
             </p>
             {!!balance && (
               <Button
                 variant="ghost"
-                className="text-sm font-semibold text-text-primary-main"
+                size="xs"
+                className="font-medium text-text-primary-high-em"
                 onClick={activeLiquidityOperationState.setMaxBalance}
               >
-                Use MAX
+                Max
               </Button>
             )}
           </div>
@@ -337,30 +339,33 @@ export const Liquidity = ({ id }: { id: Address }) => {
         onOpenChange={() => closeModal(ModalId.CONFIRM_LIQUIDITY)}
       >
         <DialogContent>
-          <DialogHeader className="text-center">
-            <DialogClose position="left">
-              <Icon name="arrow-left" />
-            </DialogClose>
+          <DialogHeader>
+            <DialogClose name="arrow-left" />
             <DialogTitle>Confirm liquidity</DialogTitle>
             <VisuallyHidden asChild>
               <DialogDescription />
             </VisuallyHidden>
           </DialogHeader>
           <DialogBody className="space-y-2">
-            <div className="flex flex-col items-center space-y-1 rounded-16 bg-surface-surface-1 py-4">
-              <p className="text-xs font-semibold uppercase text-text-low-em">
-                Total depoist
+            <div className="flex flex-col items-center space-y-1 rounded-16 bg-surface-surface-2 py-4">
+              <p className="text-sm font-medium uppercase text-text-low-em">
+                Total deposit
               </p>
               {activeLiquidityOperationState.inToken ? (
-                <div className="flex items-center space-x-2 text-2xl font-semibold">
-                  <TokenLogo address={activeLiquidityOperationState.inToken.address} />
-                  <p>{amount}</p>
-                  <p className="text-text-low-em">
+                <div>
+                  <div className="font- flex items-center space-x-2">
+                    <p className="text-2xl">{amount}</p>
+                    <TokenLogo
+                      address={activeLiquidityOperationState.inToken.address}
+                      size="xs"
+                    />
+                  </div>
+                  <p className="text-center text-text-med-em">
                     {activeLiquidityOperationState.inToken.symbol}
                   </p>
                 </div>
               ) : (
-                <p className="text-2xl font-semibold">
+                <p className="font-medium">
                   {amount} <span className="text-text-low-em">Pool tokens</span>
                 </p>
               )}
@@ -377,14 +382,15 @@ export const Liquidity = ({ id }: { id: Address }) => {
               <Button
                 width="full"
                 colorScheme="success"
-                variant="pastel"
+                variant="secondary"
                 onClick={approveToken}
                 size="lg"
                 disabled={isApproving}
               >
                 {isApproving ? (
                   <div className="flex items-center space-x-2">
-                    <p>Approving</p> <Spinner className="h-5 w-5 animate-spin" />
+                    <p>Approving</p>{' '}
+                    <Icon size={20} name="spinner" className="animate-spin" />
                   </div>
                 ) : (
                   'Approve'
@@ -393,8 +399,6 @@ export const Liquidity = ({ id }: { id: Address }) => {
             )}
             <Button
               width="full"
-              colorScheme="success"
-              variant="pastel"
               onClick={activeLiquidityOperationState.action}
               disabled={!activeLiquidityOperationState.isAllowed}
               size="lg"
@@ -427,16 +431,16 @@ const TokensToReceiveTable = ({
       </div>
       {liquidityOperation === LiquidityOperation.ADD ? (
         <>
-          <div className="flex justify-between px-4 py-3 text-md">
+          <div className="flex justify-between px-4 py-3">
             <p>Pool tokens</p>
             <p>{outAmount[0] || '-'}</p>
           </div>
           {outcomeTokenToReceive && outcomeTokenToReceive.value && (
-            <div className="flex justify-between px-4 py-3 text-md">
+            <div className="flex justify-between px-4 py-3">
               <p
                 className={cx('uppercase', {
-                  'text-text-success-main': outcomeTokenToReceive.index === 0,
-                  'text-text-danger-main': outcomeTokenToReceive.index === 1,
+                  'text-text-success-high-em': outcomeTokenToReceive.index === 0,
+                  'text-text-danger-high-em': outcomeTokenToReceive.index === 1,
                 })}
               >
                 {market.outcomes[outcomeTokenToReceive.index].name}
@@ -447,11 +451,11 @@ const TokensToReceiveTable = ({
         </>
       ) : (
         outAmount.map((balance, index) => (
-          <div className="flex justify-between px-4 py-3 text-md" key={index}>
+          <div className="flex justify-between px-4 py-3" key={index}>
             <p
               className={cx('uppercase', {
-                'text-text-success-main': index === 0,
-                'text-text-danger-main': index === 1,
+                'text-text-success-high-em': index === 0,
+                'text-text-danger-high-em': index === 1,
               })}
             >
               {market.outcomes[index].name}

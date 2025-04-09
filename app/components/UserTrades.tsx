@@ -210,8 +210,8 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
                   'w-full max-w-[464px] space-y-4 divide-y-2 divide-outline-base-em rounded-16 border border-outline-base-em bg-surface-surface-0 py-4 text-center',
                   isWinner &&
                     (index === 0
-                      ? 'bg-gradient-to-b from-[#F2f2F2] to-[#d0ffd6] dark:from-[#131313] dark:to-[#11301F]'
-                      : 'bg-gradient-to-b from-[#F2f2F2] to-[#f4cbc4] dark:from-[#131313] dark:to-[#301111]')
+                      ? 'border-surface-surface-2 bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-success-base-em'
+                      : 'border-surface-surface-2 bg-gradient-to-b from-neutral-inverse-white-alpha-4 to-text-danger-base-em')
                 )}
               >
                 <div className="flex items-center space-x-2 divide-x-2 divide-outline-base-em px-4">
@@ -223,23 +223,23 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
                     {outcome.symbol}
                   </Tag>
                   <div className="flex w-full flex-wrap items-center justify-between py-1 pl-2">
-                    <p className="font-semibold">
-                      <span className="text-text-low-em">Bet amount: </span>
-                      <span>
-                        {collateralSpent} {collateralToken.symbol}
-                      </span>
+                    <p className="space-x-1 font-medium">
+                      <span className="text-text-low-em">Bet amount:</span>
+                      <span className="font-mono">{collateralSpent}</span>
+                      <span className="text-sm">{collateralToken.symbol}</span>
                     </p>
-                    <div className="font-semibold">
+                    <div className="space-x-1 font-medium">
                       <span className="text-text-low-em">{resultString}: </span>
                       <div
                         className={cx(
-                          'inline-flex items-center',
-                          index === 0 ? 'text-text-success-em' : 'text-text-danger-em'
+                          'inline-flex items-center space-x-1',
+                          index === 0
+                            ? 'text-text-success-high-em'
+                            : 'text-text-danger-high-em'
                         )}
                       >
-                        <span>
-                          {resultAmount} {collateralToken.symbol}
-                        </span>
+                        <span className="font-mono">{resultAmount}</span>
+                        <span className="text-sm">{collateralToken.symbol}</span>
                         {!marketModel.isAnswerInvalid && isResolved && (
                           <Icon name={isWinner ? 'arrow-up' : 'arrow-down'} />
                         )}
@@ -250,15 +250,16 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
                 {!marketModel.isAnswerInvalid && canRedeem && (
                   <div className="space-y-4 px-4 pt-4">
                     <p className="px-6 font-semibold text-text-low-em">
-                      Congratulations! 🎉 You can now redeem {tradedBalance}{' '}
-                      {collateralToken.symbol} from your {formattedOutcomesTokensTraded}{' '}
+                      Congratulations! 🎉 You can now redeem{' '}
+                      <span className="font-mono">{tradedBalance}</span>{' '}
+                      {collateralToken.symbol} from your{' '}
+                      <span className="font-mono">{formattedOutcomesTokensTraded}</span>{' '}
                       shares of the winning outcome.
                     </p>
                     <Button
-                      colorScheme={index === 0 ? 'success' : 'error'}
-                      variant="pastel"
+                      colorScheme={index === 0 ? 'success' : 'danger'}
+                      variant="light"
                       width="full"
-                      size="lg"
                       className="space-x-2"
                       onClick={redeem}
                     >
@@ -277,19 +278,25 @@ export const UserTrades = ({ fixedProductMarketMaker }: UserTradesProps) => {
                   <div className="space-y-4 px-4 pt-4">
                     <p className="px-6 font-semibold text-text-low-em">
                       Since market is invalid, you can now redeem{' '}
-                      {formattedInvalidMarketColleteralToRedeem} {collateralToken.symbol}{' '}
-                      from your {formattedOutcomesTokensTraded} shares.
+                      <span className="font-mono">
+                        {formattedInvalidMarketColleteralToRedeem}
+                      </span>{' '}
+                      <span className="text-sm">{collateralToken.symbol}</span> from your{' '}
+                      <span className="font-mono">{formattedOutcomesTokensTraded}</span>{' '}
+                      shares.
                     </p>
                     <Button
-                      variant="pastel"
+                      variant="light"
                       width="full"
-                      size="lg"
                       className="space-x-2"
                       onClick={redeem}
                     >
                       <p>
-                        Redeem {formattedInvalidMarketColleteralToRedeem}{' '}
-                        {collateralToken.symbol}
+                        Redeem{' '}
+                        <span className="font-mono">
+                          {formattedInvalidMarketColleteralToRedeem}
+                        </span>
+                        <span className="text-sm"> {collateralToken.symbol}</span>
                       </p>
                       <TokenLogo
                         address={collateralToken.address}
