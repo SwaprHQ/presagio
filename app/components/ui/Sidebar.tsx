@@ -14,7 +14,7 @@ import {
 } from '@/app/components/ui/Sheet';
 import {
   Button,
-  IconButton,
+  Icon,
   Input,
   Tooltip,
   TooltipContent,
@@ -270,15 +270,11 @@ const SidebarTrigger = React.forwardRef<
   const { toggleSidebar } = useSidebar();
 
   return (
-    <IconButton
-      // @ts-ignore
-      name="sidenav"
+    <button
       ref={ref}
       data-sidebar="trigger"
-      variant="ghost"
-      size="sm"
       className={cx(
-        'bg-surface-surface-1 dark:bg-neutral-inverse-white-alpha-12 [&>svg]:h-4 [&>svg]:w-4',
+        'mt-4 rounded-8 bg-surface-surface-1 p-2 dark:bg-neutral-inverse-white-alpha-12 [&>svg]:h-4 [&>svg]:w-4',
         className
       )}
       onClick={(event: any) => {
@@ -287,8 +283,9 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
+      <Icon name="sidenav" />
       <span className="sr-only">Toggle Sidebar</span>
-    </IconButton>
+    </button>
   );
 });
 SidebarTrigger.displayName = 'SidebarTrigger';
