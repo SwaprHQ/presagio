@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { cn, ConnectButton, MarkdownRenderer, ScrollArea } from '@/app/components';
-import aiStarsSvg from '@/public/ai-stars.svg';
 import wizardSvg from '@/public/pixel-wizard.svg';
 import { Button, Icon, IconButton, Tag } from '@swapr/ui';
 import { twMerge } from 'tailwind-merge';
@@ -78,14 +77,19 @@ export const AiChatBase = ({
       <div className="fixed bottom-4 right-2 flex w-full items-center justify-end px-2 md:bottom-10 md:right-0 md:px-6">
         <div className="flex flex-col items-end">
           <Dialog.Portal>
-            <Dialog.Content className="fixed bottom-20 right-0 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]">
+            <Dialog.Content className="fixed bottom-20 right-0 z-50 w-full origin-bottom-right rounded-16 border border-outline-base-em bg-surface-surface-0 shadow-2 data-[state=open]:animate-grow md:bottom-28 md:right-4 md:w-[420px]">
               <Dialog.Description hidden={true}>
                 Presagio chatbot window
               </Dialog.Description>
               <div className="border-b border-outline-low-em p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Image alt="ai stars" width={14} height={14} src={aiStarsSvg} />
+                    <Icon
+                      name="stars"
+                      size={14}
+                      alt="ai stars"
+                      className="text-text-primary-med-em"
+                    />
                     <Dialog.DialogTitle className="font-medium">
                       Ask Wizard
                     </Dialog.DialogTitle>

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import Link from 'next/link';
 import { FA_EVENTS } from '@/analytics';
-import { Button } from '@swapr/ui';
+import { Button, Icon } from '@swapr/ui';
 import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
 import { APP_NAME } from '@/constants';
 import { useQuery } from '@tanstack/react-query';
@@ -16,8 +16,6 @@ import { useMemo } from 'react';
 import { NetworkButton } from './NetworkButton';
 import { trackEvent } from 'fathom-client';
 import { AgentsLeaderBoardIcon, BetsIcon } from '@/app/components/ui/icons/';
-import Image from 'next/image';
-import AIStarsSVG from '@/public/ai-stars.svg';
 
 export const Navbar = () => {
   const widgetEvents = useWidgetEvents();
@@ -59,12 +57,11 @@ export const Navbar = () => {
         <div className="flex h-10 items-center justify-end space-x-2">
           <Link href="/chat/new">
             <Button variant="secondary" className="space-x-2 text-nowrap">
-              <Image
-                width={16}
-                height={16}
-                src={AIStarsSVG}
-                className="size-4"
+              <Icon
+                name="stars"
+                size={16}
                 alt="ai stars"
+                className="text-text-primary-med-em"
               />
               <p className="hidden md:block">AI Chat</p>
             </Button>
