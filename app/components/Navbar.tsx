@@ -48,7 +48,7 @@ export const Navbar = () => {
   const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
-    <nav className="h-20 border-b border-neutral-inverse-white-alpha-4 px-6 py-5 dark:border-neutral-inverse-white-alpha-12">
+    <nav className="border-neutral-inverse-white-alpha-4 dark:border-neutral-inverse-white-alpha-12 h-20 border-b px-6 py-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <Logo />
@@ -56,7 +56,11 @@ export const Navbar = () => {
         </div>
         <div className="flex h-10 items-center justify-end space-x-2">
           <Link href="/chat/new">
-            <Button variant="secondary" className="space-x-2 text-nowrap">
+            <Button
+              variant="secondary"
+              className="space-x-2 text-nowrap"
+              onClick={() => trackEvent(FA_EVENTS.AI_CHAT.NAVBAR)}
+            >
               <Icon
                 name="stars"
                 size={16}
@@ -87,8 +91,8 @@ export const Navbar = () => {
                 <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
-                <div className="absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border border-surface-success-high-em bg-surface-success-low-em p-1">
-                  <p className="text-2xs font-semibold text-text-success-med-em">
+                <div className="border-surface-success-high-em bg-surface-success-low-em absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border p-1">
+                  <p className="text-text-success-med-em text-2xs font-semibold">
                     {unredeemedBetsNumber}
                   </p>
                 </div>

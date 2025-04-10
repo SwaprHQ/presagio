@@ -13,6 +13,8 @@ import { useSession } from '@/context/SessionContext';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { trackEvent } from 'fathom-client';
+import { FA_EVENTS } from '@/analytics';
 
 interface Chat {
   id: string;
@@ -48,7 +50,12 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
       <SidebarHeader className="mt-3 space-y-3">
         <SidebarMenu>
           <Link href="/chat/new">
-            <Button variant="neutral" size="sm" width="full">
+            <Button
+              variant="neutral"
+              size="sm"
+              width="full"
+              onClick={() => trackEvent(FA_EVENTS.AI_CHAT.NEW)}
+            >
               New chat
             </Button>
           </Link>
@@ -74,6 +81,7 @@ export function ChatSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) 
                     className="justify-start"
                     href={`/chat?id=${id}`}
                     active={chatId === id}
+                    onClick={() => trackEvent(FA_EVENTS.AI_CHAT.OPEN(id))}
                   >
                     <p className="truncate">{title}</p>
                   </SidebarMenuButton>

@@ -46,7 +46,10 @@ export const AiChatBase = ({
   }, [messages, isOpen, scrollAreaElement]);
 
   const startChat = async () => {
-    if (!id || !marketTitle) router.push('/chat/new');
+    if (!id || !marketTitle) {
+      trackEvent(FA_EVENTS.AI_CHAT.NEW);
+      router.push('/chat/new');
+    }
 
     try {
       const createChatResponse = await fetch(
@@ -66,6 +69,7 @@ export const AiChatBase = ({
       }
 
       const chat = await createChatResponse.json();
+      trackEvent(FA_EVENTS.AI_CHAT.CREATE(chat.chatId));
       router.push('/chat?id=' + chat.chatId);
     } catch (error) {
       console.error(error);
@@ -114,7 +118,7 @@ export const AiChatBase = ({
                 <div className="flex items-center justify-center">
                   <a
                     onClick={() => {
-                      trackEvent(FA_EVENTS.MARKET.AI_CHAT.GET_BETA_ACCESS);
+                      trackEvent(FA_EVENTS.AI_CHAT.GET_BETA_ACCESS);
                     }}
                     href={MARKETING_LINK}
                     className="mb-1 hover:underline"
