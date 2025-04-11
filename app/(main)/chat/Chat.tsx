@@ -76,7 +76,7 @@ const Message = ({ children, role }: MessageProps) => {
         'w-fit max-w-[90%] rounded-20 px-4 py-2',
         isAssistant
           ? 'mr-auto bg-outline-primary-low-em'
-          : 'ml-auto bg-neutral-inverse-white-alpha-4 dark:bg-neutral-inverse-white-alpha-24'
+          : 'bg-neutral-inverse-white-alpha-4 dark:bg-neutral-inverse-white-alpha-24 ml-auto'
       )}
     >
       {children}
@@ -150,8 +150,8 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
           )}
         </div>
       </ScrollArea>
-      <div className="flex w-full max-w-3xl space-x-3 pb-28">
-        <div className="flex w-full rounded-12 border border-outline-low-em bg-surface-surface-smoke-gray p-3">
+      <div className="flex w-full max-w-3xl flex-col space-y-1 pb-28">
+        <div className="bg-surface-surface-smoke-gray flex w-full rounded-12 border border-outline-low-em p-3">
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -174,7 +174,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             }}
           />
           {isLoading ? (
-            <div className="flex size-8 items-center justify-center rounded-100 bg-surface-surface-white-smoke-4">
+            <div className="bg-surface-surface-white-smoke-4 flex size-8 items-center justify-center rounded-100">
               <Icon size={16} name="spinner" className="animate-spin" />
             </div>
           ) : (
@@ -190,6 +190,9 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             )
           )}
         </div>
+        <p className="w-full text-center text-xs text-text-low-em">
+          AI-generated, for reference only.
+        </p>
       </div>
     </div>
   );
