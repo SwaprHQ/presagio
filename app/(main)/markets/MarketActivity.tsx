@@ -50,10 +50,11 @@ export const MarketActivity = ({ id }: { id: string }) => {
 
   const getIsAIAgent = useMemo(() => {
     return (address: string) => {
-      if (!aiAgentsList?.length) return undefined;
+      if (!aiAgentsList?.data?.length) return undefined;
 
-      return aiAgentsList.find(
-        aiAgent => String(aiAgent.address).toLowerCase() === address.toLowerCase()
+      return aiAgentsList.data.find(
+        (aiAgent: { address: string }) =>
+          String(aiAgent.address).toLowerCase() === address.toLowerCase()
       );
     };
   }, [aiAgentsList]);

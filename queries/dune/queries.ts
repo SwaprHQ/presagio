@@ -8,48 +8,21 @@ export const getAIAgents = async () => {
   const DUNE_AGENTS_INFO_QUERY_ID = 3582994;
   const url = `${DUNE_API_BASE_URL}/query/${DUNE_AGENTS_INFO_QUERY_ID}/results`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'x-dune-api-key': DUNE_API_KEY,
-      'Content-Type': 'application/json',
-    },
+  return fetchDuneQueryResults<AiAgent>({
+    queryId: DUNE_AGENTS_INFO_QUERY_ID,
+    url,
   });
-
-  console.log('response', response);
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch data from Dune: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const data = await response.json();
-
-  return data.result?.rows as AiAgent[];
 };
 
 export const getOpenMarkets = async () => {
   const DUNE_OPEN_MARKETS_INFO_QUERY_ID = 3781367;
   const url = `${DUNE_API_BASE_URL}/query/${DUNE_OPEN_MARKETS_INFO_QUERY_ID}/results`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'x-dune-api-key': DUNE_API_KEY,
-      'Content-Type': 'application/json',
-    },
+  const result = await fetchDuneQueryResults({
+    queryId: DUNE_OPEN_MARKETS_INFO_QUERY_ID,
+    url,
   });
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch Open Markets from Dune: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const data = await response.json();
-
-  return data.result?.rows ?? [];
+  return result?.data ?? [];
 };
 
 type TotalsTradeMetrics = {
@@ -65,96 +38,13 @@ export const getAgentsTotalsTradeMetricsData = async () => {
   const DUNE_AGENTS_TOTALS_QUERY_ID = 4537552;
   const url = `${DUNE_API_BASE_URL}/query/${DUNE_AGENTS_TOTALS_QUERY_ID}/results`;
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'x-dune-api-key': DUNE_API_KEY,
-      'Content-Type': 'application/json',
-    },
+  const result = await fetchDuneQueryResults({
+    queryId: DUNE_AGENTS_TOTALS_QUERY_ID,
+    url,
   });
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch Agent Totals Trade Metrics from Dune: ${response.status} ${response.statusText}`
-    );
-  }
-
-  const data = await response.json();
-
-  const firstRow = data.result?.rows?.[0];
-
+  const firstRow = result?.data?.[0];
   return firstRow ? (firstRow as TotalsTradeMetrics) : null;
-};
-interface DuneUrlParams {
-  queryId: number;
-  page?: number;
-  pageSize?: number;
-  sortBy?: string;
-  filters?: string;
-  baseUrl?: string;
-}
-
-export const setupDuneQueryUrl = ({
-  queryId,
-  page = 1,
-  pageSize = 50,
-  sortBy = 'profit_loss desc',
-  filters = '',
-  baseUrl = DUNE_API_BASE_URL,
-}: DuneUrlParams): string => {
-  const limit = pageSize;
-  const offset = (page - 1) * pageSize;
-
-  const encodedFilters = filters ? `&filters=${encodeURIComponent(filters)}` : '';
-  const encodedSortBy = encodeURIComponent(sortBy);
-
-  return `${baseUrl}/query/${queryId}/results?limit=${limit}&offset=${offset}&sort_by=${encodedSortBy}${encodedFilters}`;
-};
-
-interface PaginationParams {
-  page?: number;
-  pageSize?: number;
-  sortBy?: string;
-  filters?: string;
-}
-
-interface DuneQueryResult<T> {
-  data: T[];
-  totalRows: number;
-}
-
-export const fetchDuneQueryResults = async <T>({
-  queryId,
-  page = 1,
-  pageSize = 50,
-  sortBy = 'profit_loss desc',
-  filters = '',
-}: PaginationParams & { queryId: number }): Promise<DuneQueryResult<T> | null> => {
-  const url = setupDuneQueryUrl({
-    queryId,
-    page,
-    pageSize,
-    sortBy,
-    filters,
-  });
-
-  try {
-    const response = await fetch(url, {
-      headers: { 'X-Dune-API-Key': DUNE_API_KEY },
-    });
-
-    if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
-
-    const data = await response.json();
-
-    return {
-      data: data.result?.rows as T[],
-      totalRows: data.result?.metadata?.total_row_count ?? 0,
-    };
-  } catch (error) {
-    console.error(`Failed to fetch results from Dune query ${queryId}`, error);
-    return null;
-  }
 };
 
 type TradeMetrics = {
@@ -172,33 +62,102 @@ type TradeMetrics = {
 export const getAgentsTradeMetricsData = async ({
   page = 1,
   pageSize = 50,
-  sort_by = 'profit_loss desc',
+  sortBy = 'profit_loss desc',
   filters = '',
 }) => {
   const DUNE_AGENTS_LEADERBOARD_QUERY_ID = 4565681;
 
-  return fetchDuneQueryResults<TradeMetrics>({
+  const url = setupDuneQueryUrlWithFilters({
     queryId: DUNE_AGENTS_LEADERBOARD_QUERY_ID,
     page,
     pageSize,
-    sortBy: sort_by,
+    sortBy,
     filters,
+  });
+
+  return fetchDuneQueryResults<TradeMetrics>({
+    queryId: DUNE_AGENTS_LEADERBOARD_QUERY_ID,
+    url,
   });
 };
 
 export const getOmenTradeMetrics = async ({
   page = 1,
   pageSize = 50,
-  sort_by = 'profit_loss desc',
+  sortBy = 'profit_loss desc',
   filters = '',
 }) => {
   const DUNE_OMEN_TRADE_METRICS = 4576765;
 
-  return fetchDuneQueryResults<TradeMetrics>({
+  const url = setupDuneQueryUrlWithFilters({
     queryId: DUNE_OMEN_TRADE_METRICS,
     page,
     pageSize,
-    sortBy: sort_by,
+    sortBy,
     filters,
   });
+
+  return fetchDuneQueryResults<TradeMetrics>({
+    queryId: DUNE_OMEN_TRADE_METRICS,
+    url,
+  });
+};
+
+// ################  helpers ################
+
+interface DuneUrlParams {
+  queryId: number;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  filters?: string;
+  baseUrl?: string;
+}
+
+export const setupDuneQueryUrlWithFilters = ({
+  queryId,
+  page = 1,
+  pageSize = 50,
+  sortBy = 'profit_loss desc',
+  filters = '',
+  baseUrl = DUNE_API_BASE_URL,
+}: DuneUrlParams): string => {
+  const limit = pageSize;
+  const offset = (page - 1) * pageSize;
+
+  const encodedFilters = filters ? `&filters=${encodeURIComponent(filters)}` : '';
+  const encodedSortBy = encodeURIComponent(sortBy);
+
+  return `${baseUrl}/query/${queryId}/results?limit=${limit}&offset=${offset}&sort_by=${encodedSortBy}${encodedFilters}`;
+};
+
+interface DuneQueryResult<T> {
+  data: T[];
+  totalRows: number;
+}
+
+export const fetchDuneQueryResults = async <T>({
+  queryId,
+  url,
+}: {
+  queryId: number;
+  url: string;
+}): Promise<DuneQueryResult<T> | null> => {
+  try {
+    const response = await fetch(url, {
+      headers: { 'X-Dune-API-Key': DUNE_API_KEY },
+    });
+
+    if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+
+    const data = await response.json();
+
+    return {
+      data: data.result?.rows as T[],
+      totalRows: data.result?.metadata?.total_row_count ?? 0,
+    };
+  } catch (error) {
+    console.error(`Failed to fetch results from Dune query ${queryId}`, error);
+    return null;
+  }
 };
