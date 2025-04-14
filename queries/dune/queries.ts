@@ -103,7 +103,7 @@ export const getOmenTradeMetrics = async ({
   });
 };
 
-// ################  helpers ################
+/* ################  Helpers ################ */
 
 interface DuneUrlParams {
   queryId: number;
