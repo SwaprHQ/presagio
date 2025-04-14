@@ -72,7 +72,7 @@ export default function AgentsLeaderboardTable() {
       getAgentsTradeMetricsData({
         page,
         pageSize: ITEMS_PER_PAGE,
-        sort_by: `${sortKey} ${sortOrder}`,
+        sortBy: `${sortKey} ${sortOrder}`,
         filters: filter ? `address ILIKE '%${filter}%' OR label ILIKE '%${filter}%'` : '',
       }),
     staleTime: Infinity,
