@@ -1,45 +1,65 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-@font-face {
-  font-family: 'OpenSauceTwo';
-  src: url('/fonts/open-sauce-two-extrabold.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
+@config '../tailwind.config.ts';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
 }
 
-@font-face {
-  font-family: 'OpenSauceTwo';
-  src: url('/fonts/open-sauce-two-bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+@layer utilities {
+  @font-face {
+    font-family: 'OpenSauceTwo';
+    src: url('/fonts/open-sauce-two-extrabold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'OpenSauceTwo';
-  src: url('/fonts/open-sauce-two-semibold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'OpenSauceTwo';
+    src: url('/fonts/open-sauce-two-bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'OpenSauceTwo';
-  src: url('/fonts/open-sauce-two-medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+  @font-face {
+    font-family: 'OpenSauceTwo';
+    src: url('/fonts/open-sauce-two-semibold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+  }
 
-@font-face {
-  font-family: 'OpenSauceTwo';
-  src: url('/fonts/open-sauce-two-regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+  @font-face {
+    font-family: 'OpenSauceTwo';
+    src: url('/fonts/open-sauce-two-medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'OpenSauceTwo';
+    src: url('/fonts/open-sauce-two-regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
 }
 
 @layer base {

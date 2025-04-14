@@ -160,7 +160,7 @@ const ChatMessages = ({ initialMessages, id }: ChatMessageProps) => {
             onFocus={() => {
               console.log('hello');
             }}
-            className="h-20 w-full resize-none bg-transparent outline-none placeholder:font-medium"
+            className="h-20 w-full resize-none bg-transparent outline-hidden placeholder:font-medium"
             onKeyDown={event => {
               if (event.key === 'Enter' && !event.shiftKey && !!input) {
                 event.preventDefault();

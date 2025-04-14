@@ -87,7 +87,7 @@ export default function NewChat() {
               disabled={mutation.isPending}
               required
               autoFocus
-              className="h-24 w-full resize-none bg-transparent text-md outline-none placeholder:font-semibold"
+              className="h-24 w-full resize-none bg-transparent text-md outline-hidden placeholder:font-semibold"
               onKeyDown={event => {
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault();
