@@ -20,7 +20,7 @@ export const UserAvatarWithLabel = ({
   return (
     <div
       className={twMerge(
-        'flex w-fit flex-shrink-0 items-center space-x-2 text-sm md:text-base',
+        'flex w-fit shrink-0 items-center space-x-2 text-sm md:text-base',
         className
       )}
     >

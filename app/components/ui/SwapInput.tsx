@@ -34,11 +34,11 @@ export const SwapInput = ({
           onKeyDown={evt =>
             ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()
           }
-          className="placeholder:text-text-disabled w-full overflow-hidden overscroll-none bg-transparent text-2xl caret-text-primary-med-em outline-none"
+          className="placeholder:text-text-disabled w-full overflow-hidden overscroll-none bg-transparent text-2xl caret-text-primary-med-em outline-hidden"
           {...props}
         />
         {selectedToken instanceof Token && (
-          <Button className="flex-shrink-0" variant="secondary">
+          <Button className="shrink-0" variant="secondary">
             <TokenLogo address={selectedToken.address} size="xs" />
             <p className="font-medium">{selectedToken.symbol}</p>
           </Button>
@@ -46,7 +46,7 @@ export const SwapInput = ({
         {selectedToken instanceof Outcome && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button className="flex-shrink-0" variant="secondary">
+              <Button className="shrink-0" variant="secondary">
                 <p
                   className={cx(
                     'text-nowrap font-medium',

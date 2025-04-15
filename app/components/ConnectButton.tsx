@@ -53,7 +53,7 @@ const CustomConnectButton = ({
         variant="tertiary"
         size={size}
         width={width}
-        className="flex-shrink-0 rounded-20 shadow-3 !ring-0"
+        className="shrink-0 rounded-20 shadow-3 ring-0!"
       >
         <Avatar address={address} />
         <p className="text-text-high-em">{ensName ? ensName : truncatedAddress(4)}</p>

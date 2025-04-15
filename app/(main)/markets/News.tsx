@@ -82,7 +82,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
           alt="news image"
         />
       ) : isLoading ? (
-        <Skeleton className="h-16 w-[88px] flex-shrink-0 rounded-4" />
+        <Skeleton className="h-16 w-[88px] shrink-0 rounded-4" />
       ) : null}
       <div className="flex flex-col space-y-1">
         <p className="font-medium">{title}</p>
@@ -101,7 +101,7 @@ const NewsArticle = ({ url, title }: NewsArticleProps) => {
 const LoadingNewsArticle = () => {
   return (
     <div className="flex w-full cursor-pointer space-x-6 py-4">
-      <Skeleton className="h-16 w-[88px] flex-shrink-0 rounded-4" />
+      <Skeleton className="h-16 w-[88px] shrink-0 rounded-4" />
       <div className="flex w-full flex-col space-y-2">
         <Skeleton className="h-9 w-full" />
         <Skeleton className="h-4 w-24" />

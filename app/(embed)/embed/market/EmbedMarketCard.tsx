@@ -27,7 +27,7 @@ export const EmbedMarketCard = ({ fixedProductMarketMaker }: EmbedMarketCardProp
             <MarketThumbnail
               width={48}
               height={48}
-              className="size-12 flex-shrink-0 rounded-8"
+              className="size-12 shrink-0 rounded-8"
               marketId={fixedProductMarketMaker.id}
             />
             <p className="line-clamp-3 text-[13px] text-sm font-medium text-text-high-em">

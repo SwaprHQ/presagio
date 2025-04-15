@@ -132,14 +132,14 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                 <MarketThumbnail
                   width={20}
                   height={20}
-                  className="size-20 flex-shrink-0 rounded-8"
+                  className="size-20 shrink-0 rounded-8"
                   marketId={fixedProductMarketMaker.id}
                 />
                 <h1 className="text-normal text-md font-medium">
                   {fixedProductMarketMaker.title}
                 </h1>
               </div>
-              <div className="!mt-7 space-y-4">
+              <div className="mt-7! space-y-4">
                 <OutcomeBar market={fixedProductMarketMaker} />
                 <div className="flex items-center justify-end space-x-8">
                   <div className="flex items-center space-x-2 text-sm font-semibold text-text-med-em">
@@ -237,10 +237,10 @@ const LoadingMarketDetails = () => (
           <Skeleton className="h-4 w-28" />
         </div>
         <div className="flex space-x-4">
-          <Skeleton className="size-20 flex-shrink-0" />
+          <Skeleton className="size-20 shrink-0" />
           <Skeleton className="h-28 w-full" />
         </div>
-        <Skeleton className="!mt-4 h-6 w-full" />
+        <Skeleton className="mt-4! h-6 w-full" />
       </div>
       <div className="w-full px-4 pb-2">
         <Skeleton className="h-12 w-full" />

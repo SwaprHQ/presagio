@@ -7,7 +7,7 @@ export const EmbeddedMarketCardLoading = () => (
         <Skeleton className="h-3 w-20" />
       </div>
       <div className="flex space-x-4">
-        <Skeleton className="size-20 flex-shrink-0" />
+        <Skeleton className="size-20 shrink-0" />
         <Skeleton className="h-16 w-full" />
       </div>
       <Skeleton className="h-8 w-full" />

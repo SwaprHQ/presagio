@@ -84,7 +84,7 @@ export const CardBet = ({ userBet, children }: CardBetProps) => {
   return (
     <Card
       className={cx(
-        'hover:ring-neutral-inverse-white-alpha-8 group w-full bg-gradient-to-b from-neutral-inverse-white-alpha-4',
+        'hover:ring-neutral-inverse-white-alpha-8 group w-full bg-linear-to-b from-neutral-inverse-white-alpha-4',
         isWinner && 'to-text-success-base-em hover:to-text-success-low-em',
         isLoser
           ? market.isAnswerInvalid
