@@ -15,13 +15,17 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
+import { useMemo } from 'react';
 
 interface MarketsHighlightProps {
   markets: FixedProductMarketMaker[];
 }
 
 export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
-  const randomMarkets = markets.sort(() => 0.5 - Math.random()).slice(0, 3);
+  const randomMarkets = useMemo(
+    () => markets.sort(() => 0.5 - Math.random()).slice(0, 3),
+    [markets]
+  );
 
   return (
     <Carousel

@@ -15,7 +15,7 @@ import {
   ToggleGroup,
   ToggleGroupOption,
 } from '@swapr/ui';
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useShowClientUI, useDebounce } from '@/hooks';
 import { cx } from 'class-variance-authority';
 import { useRouter } from 'next/navigation';
@@ -271,12 +271,25 @@ export default function HomePage() {
   const hasMoreMarkets =
     marketsNextPage && marketsNextPage.fixedProductMarketMakers.length !== 0;
   const marketCategories = openMarkets?.length ? openMarkets : DEFAULT_CATEGORIES;
+
   const markets = data?.fixedProductMarketMakers;
+  const initialHighlightMarketsRef = useRef<typeof markets | null>(null);
+
+  useEffect(() => {
+    if (!initialHighlightMarketsRef.current && markets?.length) {
+      initialHighlightMarketsRef.current = markets;
+    }
+  }, [markets]);
+
+  const highlightMarkets = useMemo(() => {
+    return initialHighlightMarketsRef.current ?? markets ?? [];
+  }, [markets]);
+
   const showPaginationButtons = hasMoreMarkets || page !== 1;
 
   return (
     <div className="mb-32 mt-12 justify-center space-y-8 px-6 md:flex md:flex-col md:items-center md:px-10 lg:px-20 xl:px-40">
-      <MarketsHighlight markets={markets ?? []} />
+      <MarketsHighlight markets={highlightMarkets} />
       {openMarketsLoading ? (
         <LoadingMarketCategories />
       ) : (
