@@ -15,13 +15,23 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import { FA_EVENTS } from '@/analytics';
 import { trackEvent } from 'fathom-client';
+import { useMemo } from 'react';
 
 interface MarketsHighlightProps {
   markets: FixedProductMarketMaker[];
 }
 
 export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
-  const randomMarkets = markets.sort(() => 0.5 - Math.random()).slice(0, 3);
+  // Fisher-Yates shuffle for better randomization
+  const shuffledMarkets = useMemo(() => {
+    const randomized = [...markets];
+    for (let i = randomized.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [randomized[i], randomized[j]] = [randomized[j], randomized[i]];
+    }
+
+    return randomized.slice(0, 3);
+  }, [markets]);
 
   return (
     <Carousel
@@ -39,7 +49,7 @@ export const MarketsHighlight = ({ markets }: MarketsHighlightProps) => {
         <CarouselNext />
       </div>
       <CarouselContent className="relative pb-2">
-        {randomMarkets.map(market => (
+        {shuffledMarkets.map(market => (
           <HighlightCarouselItem key={market.id} market={market} />
         ))}
       </CarouselContent>
