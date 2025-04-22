@@ -37,7 +37,6 @@ export const FA_EVENTS = {
     NEW: 'click/ai-chat/new',
     NAVBAR: 'click/ai-chat/navbar',
     OPEN: (id: string) => `click/ai-chat/open/${id}`,
-    GET_BETA_ACCESS: 'click/ai-chat/get-beta-access',
     CREATE: (id: string) => `create/ai-chat/${id}`,
   },
   MARKETS: {
