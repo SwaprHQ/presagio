@@ -179,18 +179,22 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                 onChange={(value: string) => setTab(value as Tabs)}
                 className="w-full justify-around overflow-auto md:w-full"
               >
-                {Object.values(Tabs).map(tab => (
-                  <div className="w-full" key={tab}>
-                    <ToggleGroupOption
-                      size="md"
-                      value={tab}
-                      className="flex justify-center font-semibold capitalize"
-                      onClick={() => trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(tab))}
-                    >
-                      {tab}
-                    </ToggleGroupOption>
-                  </div>
-                ))}
+                {Object.values(Tabs)
+                  .filter(tab => !(tab === Tabs.LIQUIDITY && marketModel.isClosed))
+                  .map(tab => (
+                    <div className="w-full" key={tab}>
+                      <ToggleGroupOption
+                        size="md"
+                        value={tab}
+                        className="flex justify-center font-semibold capitalize"
+                        onClick={() =>
+                          trackEvent(FA_EVENTS.MARKETS.DETAILS.TABS.NAME(tab))
+                        }
+                      >
+                        {tab}
+                      </ToggleGroupOption>
+                    </div>
+                  ))}
               </ToggleGroup>
             </div>
             {tab === Tabs.BET && (
@@ -209,7 +213,7 @@ export const MarketDetails = ({ id }: MarketDetailsProps) => {
                 <Info fixedProductMarketMaker={fixedProductMarketMaker} />
               </div>
             )}
-            {tab === Tabs.LIQUIDITY && (
+            {tab === Tabs.LIQUIDITY && !marketModel.isClosed && (
               <div className="mx-4 my-2 flex flex-col divide-y divide-outline-low-em">
                 <Liquidity id={id} />
               </div>
