@@ -22,9 +22,6 @@ interface AiBaseProps extends PropsWithChildren {
   marketTitle?: string | null;
 }
 
-const MARKETING_LINK =
-  'https://swpr.notion.site/Presagio-AI-Predictor-Chatbot-Beta-Launch-f4ccdfa867e949d3badf10705b7c90aa';
-
 export const AiChatBase = ({
   children,
   messages,
@@ -114,20 +111,7 @@ export const AiChatBase = ({
               <ScrollArea ref={setScrollAreaElement} className="h-[460px] md:h-[536px]">
                 <div className="space-y-1.5 px-4 pb-32 pt-4">{children}</div>
               </ScrollArea>
-              <div className="absolute bottom-0 w-full rounded-b-16 border-t border-surface-surface-1 bg-surface-surface-0 px-4 pb-4 pt-2">
-                <div className="flex items-center justify-center">
-                  <a
-                    onClick={() => {
-                      trackEvent(FA_EVENTS.AI_CHAT.GET_BETA_ACCESS);
-                    }}
-                    href={MARKETING_LINK}
-                    className="mb-1 hover:underline"
-                    target="_blank"
-                  >
-                    Get beta access to Presagio AI ✨
-                  </a>
-                  <Icon name="arrow-top-right" size={12} />
-                </div>
+              <div className="absolute bottom-0 w-full rounded-b-16 border-t border-surface-surface-1 bg-surface-surface-0 px-4 py-4">
                 {!isConnected ? (
                   <ConnectButton width="full">Connect to chat</ConnectButton>
                 ) : !isLoggedIn ? (
@@ -139,7 +123,7 @@ export const AiChatBase = ({
                     <p>Start chat</p>
                   </Button>
                 )}
-                <p className="w-full text-center text-xs text-text-low-em">
+                <p className="mt-1 w-full text-center text-xs text-text-low-em">
                   AI-generated, for reference only.
                 </p>
               </div>
