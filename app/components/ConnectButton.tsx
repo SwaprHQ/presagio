@@ -56,8 +56,10 @@ const CustomConnectButton = ({
         className="flex-shrink-0 rounded-20 shadow-3 !ring-0"
       >
         <Avatar address={address} />
-        <p className="text-text-high-em">{ensName ? ensName : truncatedAddress(4)}</p>
-        <Icon name="chevron-down" className="text-text-med-em" />
+        <p className="hidden text-text-high-em md:block">
+          {ensName ? ensName : truncatedAddress(4)}
+        </p>
+        <Icon name="chevron-down" className="hidden text-text-med-em md:block" />
       </Button>
     </div>
   );

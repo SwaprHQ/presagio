@@ -5,8 +5,12 @@ import { useWidgetEvents, WidgetEvent } from '@lifi/widget';
 import Link from 'next/link';
 import { FA_EVENTS } from '@/analytics';
 import { Button, Icon } from '@swapr/ui';
-import { ConnectButton, SettingsPopover, LifiWidgetPopover } from '@/app/components';
-import { APP_NAME } from '@/constants';
+import {
+  ConnectButton,
+  SettingsPopover,
+  LifiWidgetPopover,
+  Logo,
+} from '@/app/components';
 import { useQuery } from '@tanstack/react-query';
 import { UserBetsManager, UserBet } from '@/entities';
 import { getUserBets } from '@/queries/omen';
@@ -48,10 +52,12 @@ export const Navbar = () => {
   const unredeemedBetsNumber = unredeemedBets.length;
 
   return (
-    <nav className="border-neutral-inverse-white-alpha-4 dark:border-neutral-inverse-white-alpha-12 h-20 border-b px-6 py-5">
+    <nav className="h-20 border-b border-neutral-inverse-white-alpha-4 px-6 py-5 dark:border-neutral-inverse-white-alpha-12">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Logo />
+          <Link href="/" className="flex items-center">
+            <Logo className="h-9 w-auto" />
+          </Link>
           <div className="mx-3 md:ml-28"></div>
         </div>
         <div className="flex h-10 items-center justify-end space-x-2">
@@ -91,8 +97,8 @@ export const Navbar = () => {
                 <p className="hidden md:block"> My bets</p>
               </Button>
               {hasUnredeemedBets && (
-                <div className="border-surface-success-high-em bg-surface-success-low-em absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border p-1">
-                  <p className="text-text-success-med-em text-2xs font-semibold">
+                <div className="absolute -right-2 -top-1 flex size-4 items-center justify-center rounded-100 border border-surface-success-high-em bg-surface-success-low-em p-1">
+                  <p className="text-2xs font-semibold text-text-success-med-em">
                     {unredeemedBetsNumber}
                   </p>
                 </div>
@@ -110,12 +116,3 @@ export const Navbar = () => {
     </nav>
   );
 };
-
-const Logo = () => (
-  <Link href="/">
-    <div className="text-white flex items-center text-[24px] font-black md:space-x-2">
-      <p>👁️</p>
-      <p className="hidden md:block">{APP_NAME}</p>
-    </div>
-  </Link>
-);
