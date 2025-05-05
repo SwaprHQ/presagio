@@ -73,7 +73,6 @@ export const calcAddFundingDepositedAmounts = (
   poolBalances: bigint[]
 ): bigint[] => {
   if (poolBalances.some(poolBalance => poolBalance === BigInt(0))) {
-    console.log("poolBalances",poolBalances)
     throw new Error(
       'Invalid Pool Balances - you must provide a distribution hint for the desired weightings of the pool'
     );
