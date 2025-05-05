@@ -419,21 +419,24 @@ const getMarkets = async (
    *
    * This fn applies a secondary sort criteria if we get a primary sort result that
    * has multiple markets with the same sorted value.
-   * This fn only sorts a given page results.
+   * This sort will only work for UsdRunningDailyVolume ordering.
    */
-  const sortedResults = response.fixedProductMarketMakers?.sort((a, b) => {
-    const orderBy = params.orderBy as PrimaryOrderBy;
+  const sortedResults =
+    params.orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume
+      ? response.fixedProductMarketMakers?.sort((a, b) => {
+          const orderBy = params.orderBy as PrimaryOrderBy;
 
-    if (b[orderBy] !== a[orderBy]) {
-      return Number(b[orderBy]) - Number(a[orderBy]);
-    }
+          if (b[orderBy] !== a[orderBy]) {
+            return Number(b[orderBy]) - Number(a[orderBy]);
+          }
 
-    if (orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume) {
-      return Number(b.usdVolume) - Number(a.usdVolume);
-    }
+          if (orderBy === FixedProductMarketMaker_OrderBy.UsdRunningDailyVolume) {
+            return Number(b.usdVolume) - Number(a.usdVolume);
+          }
 
-    return Number(b.usdRunningDailyVolume) - Number(a.usdRunningDailyVolume);
-  });
+          return Number(b.usdRunningDailyVolume) - Number(a.usdRunningDailyVolume);
+        })
+      : response.fixedProductMarketMakers;
 
   return { fixedProductMarketMakers: sortedResults };
 };
